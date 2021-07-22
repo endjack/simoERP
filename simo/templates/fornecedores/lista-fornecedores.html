@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load my_tags %}
+
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Fornecedores</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Lista de Fornecedores</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block conteudo %}
+
+
+<div class="row">
+<span style="font-size:30px; color:blue; margin-top: 5px">Fornecedores Cadastrados</span>
+    <hr>
+</div>
+
+<div class="d-flex flex-row-reverse bd-highlight">
+    <div class="">
+            <a href="{% url 'inserir-fornecedor' %}" class="btn btn-primary">Adicionar Fornecedor</a>
+    </div>
+</div>
+
+
+<div class="row"><span style="font-size:14px; color:green;font-style: italic; margin-top: 30px">Fornecedores Cadastrados</span>
+    <hr>
+</div>
+
+<table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:13px">
+    <thead style="border:solid 2px; border-color:#cb356b ;background: linear-gradient(to right, #00b09b, #006600); color: white;">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Cód</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">CPF/CNPJ</th>
+            <th scope="col">Opções</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in list_fornecedores %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{item.pk}}</td>
+            <td><a href="{% url 'detalhar-fornecedor' item.pk %}">{{item.nome}}</a></td>       
+            <td>{{item.tipo}}</td>
+            <td>{% if item.doc %}{{item.doc}}{% else %}-{% endif %}</td>       
+            <td>   
+            <a href="{% url 'editar-fornecedor' item.pk %}" title="Editar Fonecedor: {{item.nome}}"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a>
+            <a href="{% url 'excluir-fornecedor' item.pk %}" title="Excluir Fornecedor: {{item.nome}}"><span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span></a>
+            </td>   
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+{% endblock%}
+
+{% block jquery %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        
+
+        $('.tabela-listar').DataTable({
+            responsive: true,
+            // "bSort": false,
+            "aaSorting": [],
+            "pageLength": 10,
+            "language": {
+
+                "decimal": ",",
+                "emptyTable": "Sem dados disponíveis",
+                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+                "infoFiltered": "(filtrado de _MAX_ registros no total)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "loadingRecords": "A carregar dados...",
+                "processing": "A processar...",
+                "search": "Procurar:",
+                "zeroRecords": "Não foram encontrados resultados",
+                "paginate": {
+                    "first": "Primeiro",
+                    "last": "Último",
+                    "next": "Seguinte",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": ordem crescente",
+                    "sortDescending": ": ordem decrescente"
+                }
+            }
+        });
+       
+    }); 
+    
+</script>
+{% endblock %}

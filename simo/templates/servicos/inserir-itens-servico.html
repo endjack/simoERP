@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block breadcrumb %}
+<div class="row">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="../">Serviços</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Inserir Itens</li>
+    </ol>
+  </nav>
+</div>
+{% endblock %}
+
+{% block conteudo %}
+{% comment %} TITULO {% endcomment %}
+<div class="row mb-3">
+  <div class="titulo col-6 align-self-center">
+    <div class="row d-flex align-self-center justify-content-center">
+      <h5>ORDEM DE SERVIÇO - Inserir Itens do Serviço</h5>
+    </div>
+  </div>
+  <div class="col-3"></div>
+  {% comment %} BOTÕES DE VOLTAR E CONTINUAR {% endcomment %}
+  <div class="col-3">
+    <div class="btn-group">
+      <a href="javascript: history.go(-1)" class="btn btn-light">Voltar</a>
+    </div>
+    <div class="btn-group">
+      <a href="{% url 'salvar-ordem-servico' ordem_serv_atual.pk %}" class="btn btn-primary">Salvar</a>
+    </div>
+  </div>
+</div>
+
+<div class="card border-dark mb-3 border border-dark">
+  <div class="card-header text-white " style="background: linear-gradient(to right, #093637, #44a08d);">Inserir Itens:
+  </div>
+  <div class="card-body">
+    {% comment %} INSERIR ITENS {% endcomment %}
+    <form class="mb-4" id="form-itens" method="post" style="margin-top=20px">
+      {% csrf_token %}
+
+      {% for hidden_field in form.hidden_fields %}
+      {{ hidden_field }}
+      {% endfor %}
+      <!-- Text input -->
+      <div class="row">
+        <div class="col-6">
+          <div class="input-group">
+            <div class="input-group-text">Material: </div>
+            {% render_field form.item class="form-control" id="item" name="item" %}
+          </div>
+        </div>
+        <input type="hidden" name="id_ordem" value="{{ordem_serv_atual.pk}}">
+        <div class="col-2">
+          <div class="input-group">
+            <div class="input-group-text">Qnt: </div>
+            {% render_field form.qnt class="form-control" id="qnt" name="qnt" %}
+          </div>
+        </div>
+
+        <div class="col-2">
+          <button type="submit" class="btn btn-primary">Adicionar</button>
+        </div>
+      </div>
+    </form>
+    
+    {% comment %} ITENS ADICIONADOS {% endcomment %}
+    {% if itens_atuais %}
+    <div class="" style="margin-top:20px">
+      <table class="table table-sm table-bordered">
+        <thead class="card-header text-white " style="background: linear-gradient(to right, #2c3e50 , #616161);">
+          <tr>
+            <th scope="col">Cód:</th>
+            <th scope="col">Descrição</th>
+            <th scope="col">Quantidade</th>
+            <th scope="col">Unidade</th>
+            <th scope="col">Opções</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in itens_atuais %}
+          <tr>
+            <td>{{item.item.pk}}</td>
+            <td>{{item.item.descricao}}</td>
+            <td>{{item.qnt}}</td>
+            <td>{{item.item.unid_medida}}</td>
+            <td>
+            <form method="get">
+              <button type="submit"  name="excluirID" value="{{item.pk}}" class="btn btn-submit">Excluir da Lista</button>
+            </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+  
+
+
+
+{% if funcionarios_atuais %}
+<div class="card border-dark mb-3 border border-dark">
+  <div class="card-header text-white " style="background: linear-gradient(to right, #0f2027, #203a43, #2c5364)">
+    Funcionários Adicionados:</div>
+  <div class="card-body">
+    {% comment %} FUNCIONÁRIOS ATUAIS {% endcomment %}
+    <table class="table table-sm table-bordered">
+      <thead>
+        <tr>
+          <th scope="col">Cód.</th>
+          <th scope="col">Matrícula</th>
+          <th scope="col">Nome</th>
+          <th scope="col">CPF</th>
+          <th scope="col">Cargo</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in funcionarios_atuais %}
+
+        <tr>
+          <td>{{item.funcionario.pk}}</td>
+          <td>{{item.funcionario.matricula}}</td>
+          <td>{{item.funcionario.nome}}</td>
+          <td>{{item.funcionario.cpf}}</td>
+          <td>{{item.funcionario.cargo}}</td>
+        </tr>
+
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endif %}
+
+<div class="card border-dark mb-3 border border-dark">
+  <div class="card-header text-white " style="background: linear-gradient(to right, #0f2027, #203a43, #2c5364)">Dados
+    Serviço nº {{serv_atual.pk}}</div>
+  <div class="card-body">
+    {% comment %} SERVIÇO ATUAL {% endcomment %}
+
+    <ol class="list-group">
+
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          <div class="fw-bold">Descrição:</div>
+          {{serv_atual.descricao}}
+        </div>
+        <div class="ms-2 me-auto">
+          {% if serv_atual.situacao %}
+          <div class="fw-bold">Situação:</div>
+          {{serv_atual.situacao}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Situação:</div>
+          -
+          {% endif %}
+        </div>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          {% if serv_atual.data_inicio %}
+          <div class="fw-bold">Data de Início:</div>
+          {{serv_atual.data_inicio}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Data de Início:</div>
+          -
+          {% endif %}
+        </div>
+        <div class="ms-2 me-auto">
+          {% if serv_atual.prazo %}
+          <div class="fw-bold">Prazo:</div>
+          {{serv_atual.prazo}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Prazo:</div>
+          -
+          {% endif %}
+        </div>
+      </li>
+
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          {% if serv_atual.obs %}
+          <div class="fw-bold">Observações:</div>
+          {{serv_atual.obs}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Observações:</div>
+          -
+          {% endif %}
+        </div>
+      </li>
+
+    </ol>
+  </div>
+</div>
+
+
+<div class="card border-dark mb-3 border border-dark">
+  <div class="card-header text-white " style="background: linear-gradient(to right, #0f2027, #203a43, #2c5364)">Dados da
+    Ordem de Serviço nº {{ordem_serv_atual.pk}}</div>
+  <div class="card-body">
+    {% comment %} ORDEM ATUAL {% endcomment %}
+    <ol class="list-group">
+
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          <div class="fw-bold">Obra:</div>
+          {{ordem_serv_atual.obra}}
+        </div>
+        <div class="ms-2 me-auto">
+          {% if ordem_serv_atual.local %}
+          <div class="fw-bold">Local:</div>
+          {{ordem_serv_atual.local}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Local:</div>
+          -
+          {% endif %}
+        </div>
+      </li>
+
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          {% if ordem_serv_atual.encarregado %}
+          <div class="fw-bold">Encarregado:</div>
+          {{ordem_serv_atual.encarregado}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Encarregado:</div>
+          -
+          {% endif %}
+        </div>
+        <div class="ms-2 me-auto">
+          {% if ordem_serv_atual.data %}
+          <div class="fw-bold">Data:</div>
+          {{ordem_serv_atual.data}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Data:</div>
+          -
+          {% endif %}
+        </div>
+      </li>
+    </ol>
+  </div>
+</div>
+</div>
+</div>
+
+
+<!-- Toast -->
+  {% for message in messages %}
+  <div class="position-fixed bottom-0 end-0 p-3 " style="z-index: 11">  
+    <div id="liveToast" class="toast align-items-center text-black {{ message.tags }} border-0" role="alert"
+      aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+            {{ message }}
+        </div>
+        <button type="button" class="btn-close btn-close-black me-2 m-auto" id="closeToast"></button>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  <!-- Fim Toast -->
+
+{% endblock %}
+
+{% block jquery %}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+  $(document).ready(function () {
+
+    //Toast Events 
+      $("#liveToast").toast('show');
+      $( "#closeToast" ).click(function() {
+        $("#liveToast").toast('hide');
+      });
+    
+
+  });
+</script>
+{% endblock%}

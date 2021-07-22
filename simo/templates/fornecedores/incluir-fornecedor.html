@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Financeiro</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{titulo}}</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+
+{% block conteudo %}
+
+<div class="row">
+    <span style="font-size:30px; color:blue; margin-top: 5px">{{titulo}}</span>
+    <hr>
+</div>
+
+<div class="d-flex flex-row-reverse bd-highlight mb-3">
+    <div class="">
+        <button type="submit" form="addFornecedor" class="btn btn-success">Incluir</button>
+        <a href="{% url 'listar-fornecedores' %}" class="btn btn-light">Voltar</a>
+    </div>
+</div>
+
+
+
+
+
+<form id="addFornecedor" action="" method="post" autocomplete="off">
+    {% csrf_token %}
+
+    {% for hidden_field in form.hidden_fields %}
+    {{ hidden_field }}
+    {% endfor %}
+
+    <div class="form-group row mb-3 " style="">
+        <div class="col-2 ">
+            <div class="input-group ">
+                <div class="input-group-text" style="border: 1px solid; color:blue">Tipo:</div>
+                {% render_field form.tipo class="form-control " style="border: 1px solid; color:blue" id="tipo" name="tipo"%}
+            </div>
+        </div>
+
+        <div class="col-5">
+            <div class="input-group">
+                <div class="input-group-text">Nome:</div>
+                {% render_field form.nome class="form-control " name="nome" required='required'%}
+            </div>
+        </div>
+
+        <div class="col-5">
+            <div class="input-group">
+                <div class="input-group-text">Razão Social:</div>
+                {% render_field form.razao_social class="form-control " id="razao_social" name="razao_social"%}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text" id="labelDoc">CNPJ:</div>
+                {% render_field form.doc class="form-control cnpj" id="doc" name="doc"%}
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Inscrição Estadual:</div>
+                {% render_field form.inscricao class="form-control" id="inscricao" name="inscricao"%}
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Email:</div>
+                {% render_field form.email class="form-control" name="email"%}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Telefone 1:</div>
+                {% render_field form.telefone1 class="form-control phoneBR" name="telefone1"%}
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Telefone 2:</div>
+                {% render_field form.telefone2 class="form-control phoneBR" name="telefone2"%}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <div class="col-3">
+            <div class="input-group">
+                <div class="input-group-text">Banco:</div>
+                {% render_field form.banco class="form-control" name="banco"%}
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="input-group">
+                <div class="input-group-text">Agência:</div>
+                {% render_field form.agencia class="form-control" name="agencia"%}
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="input-group">
+                <div class="input-group-text">Conta:</div>
+                {% render_field form.conta class="form-control" name="conta"%}
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="input-group">
+                <div class="input-group-text">Tipo de Conta:</div>
+                {% render_field form.tipo_conta class="form-control" name="tipo_conta"%}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <div class="col-3">
+            <div class="input-group">
+                <div class="input-group-text">Pix:</div>
+                {% render_field form.pix class="form-control" name="pix"%}
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="input-group">
+                <div class="input-group-text">Tipo Pix:</div>
+                {% render_field form.tipo_pix class="form-control" name="tipo_pix"%}
+            </div>
+        </div>
+        <div class="col-3 d-flex justify-content-center align-items-center">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="faz_nota" id="faz_nota" {{checked}}>
+                <label class="form-check-label" for="faz_nota">
+                    Faz Nota Fiscal?
+                </label>
+            </div>
+        </div>
+        
+    </div>
+    <div class="col-9">
+            <div class="input-group">
+                <div class="input-group-text">Obs:</div>
+                {% render_field form.obs class="form-control" name="obs" style="height: 60px"%}
+            </div>
+    </div>
+
+</form>
+
+{% endblock%}
+
+{% block jquery %}
+
+<script src="{% static 'js/jquery.mask.js' %}"></script>
+<script>
+    $(document).ready(function () {
+
+        //masks
+        $('.cpf').mask('000.000.000-00', {reverse: true});
+        $('.cnpj').mask('00.000.000/0000-00', {reverse: true});
+
+
+        $("#tipo").change( function() {
+            if ($("#tipo").val() == 'PESSOA JURÍDICA') {
+                $("#labelDoc").html('CNPJ: ').removeClass( "cpf" ).addClass( "cnpj" );
+                $("#doc").mask('00.000.000/0000-00', {reverse: true});
+                $("#inscricao").prop('disabled', false);
+                $("#razao_social").prop('disabled', false);
+            } else {
+                $("#labelDoc").html('CPF: ').removeClass( "cnpj" ).addClass( "cpf" );
+                $("#doc").mask('000.000.000-00', {reverse: true});
+                $("#inscricao").prop('disabled','disabled');
+                $("#razao_social").prop('disabled','disabled');
+            }
+        });
+
+
+         //Para mascara de telefone com 8 ou 9 digios
+        var MaskTelBrasil = function (val) {
+        return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
+        },
+        spOptions = {
+            onKeyPress: function(val, e, field, options) {
+                field.mask(MaskTelBrasil.apply({}, arguments), options);
+            }
+        };
+
+        $('.phoneBR').mask(MaskTelBrasil, spOptions);
+
+
+        });
+</script>
+{% endblock %}

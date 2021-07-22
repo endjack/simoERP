@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block breadcrumb %}
+  <div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="../">Funcionários</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Excluir Funcionário</li>
+      </ol>
+    </nav>
+  </div>
+{% endblock %}
+
+{% block conteudo %}
+
+<form method="post">{% csrf_token %}
+    <h5>Você tem certeza que deseja EXCLUIR - <span style="color:red">"Funcionário nº {{ object.matricula }} - {{ object.nome }} - Cargo: {{object.cargo}} ?" </span></h5>
+    <div class="form-group">
+        <a href="javascript: history.go(-1)" class="btn btn-info" >Cancelar</a>
+        <input type="submit" class="btn btn-danger" value="Confirmar">
+    </div>
+</form>
+
+{% endblock%}
+

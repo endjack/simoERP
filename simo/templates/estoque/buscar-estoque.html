@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block breadcrumb %}
+  <div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="../ver-estoque">Estoque</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Buscar</li>
+      </ol>
+    </nav>
+  </div>
+{% endblock %}
+
+{% block conteudo %}
+<form action="{% url 'buscar-estoque' %}" method="get">
+{% csrf_token %}
+  <input name="q" type="text" placeholder="buscar Item...">
+</form>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Id</th>
+      <th scope="col">Item</th>
+      <th scope="col">Quantidade</th>
+      <th scope="col">Unidade</th>
+      <th scope="col">Peso</th>
+      <th scope="col">Opções</th>
+    </tr>
+  </thead>
+<tbody>
+{% for item in object_list %}
+    <tr>
+      <td>{{item.item.pk}}</td>
+      <td>{{item.item.descricao}}</td>
+      <td>{{item.quantidade}}</td>
+      <td>{{item.item.unid_medida}}</td>
+      <td>{{item.item.peso}}</td>
+      <td>Editar | Excluir</td>
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
+
+{% if object_list %}
+  Total de Produtos Encontrados = {{ object_list|length  }} <br>
+{% else %}
+  Nenhum produto encontrado!
+{% endif %}
+
+{% endblock%}

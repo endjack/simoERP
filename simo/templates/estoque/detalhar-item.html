@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block styleHead %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
+  rel="stylesheet" />
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Estoque</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Detalhar Item nº {{item_atual.pk}}</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block conteudo %}
+
+
+<div class="d-flex bd-highlight mb-3">
+    <div class="me-auto p-2 bd-highlight">
+        <span style="font-size:30px; color:green; margin-top: 5px">Item: {{item_atual.descricao}}</span>    
+    </div>
+
+    <div class="ms-auto p-2 bd-highlight">
+        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-light">Voltar</a>
+        <a href="{% url 'editar-item' item_atual.pk %}" class="btn btn-primary">Editar</a>
+        <a href="{% url 'excluir-item' item_atual.pk %}" class="btn btn-danger">Excluir</a>
+    </div>
+    
+</div>
+<hr>
+
+
+<div class="card border-dark mb-3">
+  <div class="card-header">Dados do Item de Estoque:</div>
+  <div class="card-body text-dark">
+    <ol class="list-group">
+
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          <div class="fw-bold">Código:</div>
+          {{item_atual.pk}}
+        </div>
+        <div class="ms-2 me-auto">
+          {% if item_atual.descricao %}
+          <div class="fw-bold">Descrição do Item:</div>
+          {{item_atual.descricao}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Descrição do Item:</div>
+          -
+          {% endif %}
+        </div>
+        <div class="ms-2 me-auto">
+          {% if item_atual.categoria %}
+          <div class="fw-bold">Categoria:</div>
+          {{item_atual.categoria}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Categoria:</div>
+          -
+          {% endif %}
+        </div>
+      </li>
+
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          {% if item_atual.fornecedor %}
+          <div class="fw-bold">Fornecedor:</div>
+          {{item_atual.fornecedor.nome}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Fornecedor:</div>
+          -
+          {% endif %}
+        </div>
+        <div class="ms-2 me-auto">
+          {% if item_atual.peso %}
+          <div class="fw-bold">Peso:</div>
+          {{item_atual.peso}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Peso:</div>
+          -
+          {% endif %}
+        </div>
+        <div class="ms-2 me-auto">
+          {% if item_atual.unid_medida %}
+          <div class="fw-bold">Unid Medida:</div>
+          {{item_atual.unid_medida}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Unid Medida:</div>
+          -
+          {% endif %}
+        </div>
+        <div class="ms-2 me-auto">
+          {% if item_atual.qtd_minima %}
+          <div class="fw-bold">Qtd Mínima no Estoque:</div>
+          {{item_atual.qtd_minima}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Qtd Mínima no Estoque:</div>
+          -
+          {% endif %}
+        </div>
+        <div class="ms-2 me-auto">
+          {% if item_atual.preco %}
+          <div class="fw-bold">Preço:</div>
+          {{item_atual.preco}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Preço:</div>
+          -
+          {% endif %}
+        </div>
+
+
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          {% if item_atual.qr_code %}
+          <div class="fw-bold">QR CODE:</div>
+          <img src="{{item_atual.qr_code.url}}" class="border border-dark overflow-hidden">
+          {% else %}
+          <div class="" style="color:#d9d9d9">QR CODE:</div>
+          -
+          {% endif %}
+        </div>
+      </li>
+
+    </ol>
+  </div>
+</div>
+
+<div class="row" style="margin-top:40px">
+      <div class="row"><span style="font-size=14px; color:gray;font-style: italic;">Últimas Movimentaçãos no Estoque</span><hr></div> 
+  </div>
+
+{% comment %} //TODO LOG INDIVIDUAL DAS MOVIMENTAÇÕES DO ESTOQUE COM USUÁRIO {% endcomment %}
+
+
+{% endblock%}

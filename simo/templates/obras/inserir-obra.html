@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="../ver-requisicoes">Obras</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Inserir Obra</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block conteudo %}
+<form action="" method="post" autocomplete="off">
+  {% csrf_token %}
+
+  {% for hidden_field in form.hidden_fields %}
+  {{ hidden_field }}
+  {% endfor %}
+
+  <div class="row mb-3">
+    <div class="col-8">
+      <div class="input-group">
+        <div class="input-group-text">Nome: </div>
+        {% render_field form.nome class="form-control" id="nome" name="nome" %}
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="input-group">
+        <div class="input-group-text">Contrato nº: </div>
+        {% render_field form.num_contrato class="form-control" id="num_contrato" name="num_contrato" %}
+      </div>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-8">
+      <div class="input-group">
+        <div class="input-group-text">Objeto: </div>
+        {% render_field form.objeto class="form-control" id="objeto" name="objeto" %}
+      </div>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-8">
+      <div class="input-group">
+        <div class="input-group-text">Endereço: </div>
+        {% render_field form.endereco class="form-control" id="endereco" name="endereco" %}
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="input-group">
+        <div class="input-group-text">Contratante: </div>
+        {% render_field form.contratante class="form-control" id="contratante" name="contratante" %}
+      </div>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-4">
+      <div class="input-group">
+        <div class="input-group-text">Início: </div>
+        {% render_field form.inicio class="form-control date" id="inicio" name="inicio" %}
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="input-group">
+        <div class="input-group-text">Fim: </div>
+        {% render_field form.fim class="form-control date" id="fim" name="fim" %}
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="input-group">
+        <div class="input-group-text">Valor: </div>
+        {% render_field form.valor class="form-control money" id="valor" name="valor" %}
+      </div>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-2">
+      <button type="submit" class="btn btn-primary">Adicionar</button>
+    </div>
+  </div>
+</form>
+
+<div class="row"><span style="font-size=14px; color:gray;font-style: italic; margin-top: 30px">Obras Adicionadas</span>
+    <hr>
+</div>
+
+Centros de Custo Cadastrados: <br>
+<div class="card border-secondary mb-3">
+  <div class="card-body">
+    <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:13px;">
+    <thead style="border:solid 2px;border-color:white;background:linear-gradient(to right, #0f0c29, #302b63, #24243e); color: white;">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Cód.</th>
+            <th scope="col">Nº Contrato</th>
+            <th scope="col">Descrição</th>
+            <th scope="col">Contratante</th>
+            <th scope="col">Inicio</th>
+            <th scope="col">Fim</th>
+            <th scope="col">Valor</th>
+            <th scope="col">Opções</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in obras_list %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{item.pk}}</td>
+            <td>{{item.num_contrato}}</td>
+            <td>{{item.nome}}</td>
+            <td class="limitar_td" title="{{item.contratante}}">{{item.contratante}}</td>
+            <td>{{item.inicio}}</td>
+            <td>{{item.fim}}</td>
+            <td>{{item.valor}}</td>
+            <td><a href="" >Ver Detalhes</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+</div>
+
+
+
+{% endblock %}
+{% block jquery %}
+<script src="../static/js/datatables.min.js"></script>
+<script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.pt-BR.min.js' %}"></script>
+<script src="{% static 'js/jquery.mask.js' %}"></script>
+<script>
+    $('.tabela-listar').DataTable({
+        responsive: true,
+        // "bSort": false,
+        "aaSorting": [],
+        "pageLength": 10,
+        "language": {
+
+            "decimal": "",
+            "emptyTable": "Sem dados disponíveis",
+            "info": "Mostrando de _START_ até _END_ de _TOTAL_ registos",
+            "infoEmpty": "Mostrando de 0 até 0 de 0 registos",
+            "infoFiltered": "(filtrado de _MAX_ registos no total)",
+            "infoPostFix": "",
+            "thousands": ",",
+            "lengthMenu": "Mostrar _MENU_ registos",
+            "loadingRecords": "A carregar dados...",
+            "processing": "A processar...",
+            "search": "Procurar:",
+            "zeroRecords": "Não foram encontrados resultados",
+            "paginate": {
+                "first": "Primeiro",
+                "last": "Último",
+                "next": "Seguinte",
+                "previous": "Anterior"
+            },
+            "aria": {
+                "sortAscending": ": ordem crescente",
+                "sortDescending": ": ordem decrescente"
+            }
+        }
+    });
+</script>
+{% endblock%}

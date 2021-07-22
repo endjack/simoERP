@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block breadcrumb %}
+  <div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="../ver-obras">Obras</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Buscar Obra</li>
+      </ol>
+    </nav>
+  </div>
+{% endblock %}
+
+{% block conteudo %}
+<form method="get">
+{% csrf_token %}
+  <input name="q" type="text" placeholder="Nome Obra...">
+</form>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Id</th>
+      <th scope="col">Nome</th>
+      <th scope="col">Contrato</th>
+      <th scope="col">Início</th>
+      <th scope="col">Fim</th>
+      <th scope="col">Opções</th>
+    </tr>
+  </thead>
+<tbody>
+{% for item in object_list %}
+    <tr>
+      <td>{{item.pk}}</td>
+      <td>{{item.nome}}</td>
+      <td>{{item.num_contrato}}</td>
+      <td>{{item.inicio}}</td>
+      <td>{{item.fim}}</td>
+      <td><a href="#">Ver Obra</a></td>
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
+
+{% if object_list %}
+  Total de Obras = {{ object_list|length  }} <br>
+{% else %}
+  Nenhuma obra encontrada!
+{% endif %}
+
+{% endblock%}

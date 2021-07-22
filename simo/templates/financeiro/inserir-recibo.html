@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block styleHead %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
+    rel="stylesheet" />
+
+  <style>
+  .destaque{
+      font-weight:bold
+  }
+  
+  </style>  
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Financeiro</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Inserir Recibo</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+
+{% block conteudo %}
+
+<div class="card mb-3 border border-dark" style="border-color: #093637;">
+  <div class="card-header text-white " style="background: linear-gradient(to right, #0f0c29, #302b63, #24243e );">
+    {% if editar %} Editar Recibo: {% else %} Novo Recibo: {% endif %}</div>
+  <div class="card-body">
+<form id="addRecibo" method="post" autocomplete="off">
+    {% csrf_token %}
+
+    {% for hidden_field in form.hidden_fields %}
+    {{ hidden_field }}
+    {% endfor %}
+
+    <div class="form-group row mb-3">
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Emissão:</div>
+                {% render_field form.data class="form-control date" name="data"%}
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="input-group">
+                <div class="input-group-text">Fornecedor:</div>
+                {% render_field form.fornecedor class="form-control" name="fornecedor"%}
+                <a href="{% url 'inserir-fornecedor' %}" class="btn btn-primary btn-sm"
+                    title="Adicionar um Novo Fornecedor"><i class="fa fa-plus"></i></a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="form-group row mb-3">
+        <div class="col-10">
+            <div class="input-group">
+                <div class="input-group-text">Referente à:</div>
+                {% render_field form.referente class="form-control" name="referente" style="height: 60px"%}
+            </div>
+        </div>
+
+        
+    </div>
+
+    <div class="form-group row mb-3">
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Valor:</div>
+                {% render_field form.valor class="form-control money " name="valor"%}
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="input-group">
+                <div class="input-group-text">Centro de Custo:</div>
+                {% render_field form.centro_de_custo class="form-control" name="centro_de_custo"%}
+            </div>
+        </div>
+
+        
+    </div>
+
+    <div class="form-group row mb-3">
+        <div class="col-8">
+            <div class="input-group">
+                <div class="input-group-text">Obs:</div>
+                {% render_field form.obs class="form-control" name="obs" style="height: 60px"%}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+    <div class="col-2">
+        <button type="submit" form="addRecibo" class="btn btn-primary">{% if editar %}Salvar Recibo {% else %} Gerar Recibo {% endif %} </button>
+    </div>
+</div>
+
+</form>
+
+</div>
+</div>
+<br>
+
+{% if not editar %}
+Recibos Gerados: <br>
+<div class="card border-secondary mb-3">
+  <div class="card-body">
+    <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:13px;">
+    <thead style="border:solid 2px;border-color:white;background:linear-gradient(to right, #0f0c29, #302b63, #24243e); color: white;">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Doc</th>
+            <th scope="col">Emissão</th>
+            <th scope="col">Fornecedor</th>
+            <th scope="col">Referente à</th>           
+            <th scope="col">Valor</th>
+            <th scope="col">Centro de Custo</th>
+            <th scope="col">Opções</th>
+        </tr>
+    </thead>
+    <tbody style="font-size:12px;">
+    {% for item in recibos_list %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{item.pk}}</td>
+            <td>{{item.data | date:"d/m/Y"}}</td>
+            {% if item.fornecedor %}
+            <td class="destaque">{{item.fornecedor}}</td>
+            {% else %}
+            <td> - </td>
+            {% endif %}
+            <td>{{item.referente}}</td>
+            <td class="destaque">{{item.valor}}</td>
+            <td>{{item.centro_de_custo}}</td> 
+            <td style="white-space: nowrap;">
+            <a href="{% url 'imprimir-recibo' item.pk %}"  target="_blank" title="Imprimir Recibo:"><span style="color: black;"><i class="fas fa-print fa-lg"></i></span></a>            
+            <a href="{% url 'editar-recibo' item.pk %}" title="Editar Recibo"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a>
+            <a href="{% url 'excluir-recibo' item.pk %}" title="Excluir Recibo"><span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span></a> 
+            </td>        
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+  </div>
+</div>
+{% endif %}
+
+
+
+
+
+
+{% endblock%}
+
+{% block jquery %}
+
+<script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.pt-BR.min.js' %}"></script>
+<script src="{% static 'js/jquery.mask.js' %}"></script>
+<script>
+    $(document).ready(function () {
+
+        //masks
+        $('.money').mask('000.000.000,00', {
+            reverse: true
+        });
+
+
+
+        //DatePicker
+        $(".date").datepicker({
+            format: "dd/mm/yyyy",
+            todayHighlight: true,
+            language: "pt-BR"
+        });
+
+    });
+</script>
+{% endblock %}

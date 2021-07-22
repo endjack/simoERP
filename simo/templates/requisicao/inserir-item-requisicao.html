@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{%block styleHead%}
+<style>
+
+</style>
+{% endblock %}
+
+{% block breadcrumb %}
+  <div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="../">Início</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Inserir Itens - Requisicao nº {{ numId }}</li>
+      </ol>
+    </nav>
+  </div>
+{% endblock %}
+
+{% block conteudo %}
+<div class="row">
+    <div class="titulo col-8">  
+        <div class="row"><span style="font-size=14px; color:gray;font-style: italic;">Dados da Requisição</span>
+        <hr></div>
+        
+    </div>
+    {% comment %} BOTÕES DE VOLTAR E CONTINUAR {% endcomment %}
+    <div class="col-4">
+    <div class="d-flex justify-content-center ">
+        <div class="btn-group ">
+          <a href="javascript: history.go(-1)"  class="btn btn-light">Voltar</a>
+        </div>
+      </div> 
+    </div>
+</div>
+
+ 
+{% for item in obj %}
+<div class="row container pb-2 well" style="background-color:rgb(230, 255, 255);padding-top:10px">
+  
+  <div class="col-md-6">
+    <div class="row"><span>Obra:</span></div> 
+    <div class="row"><span><strong>{{item.id}} - {{item.obra}}</strong></span></div> 
+     <div class="row"><span>{{item.local}}</span></div> 
+     <div class="row"><span>{{item.data | date:"d/m/Y"}}</span></div> 
+  </div>
+
+  <div class="col-md-6">
+     <div class="row"><span>Solicitante:</span></div> 
+     <div class="row"><span><strong>{{item.solicitante}}</strong></span></div> 
+     <div class="row"><span>Almoxarife:</span></div> 
+     <div class="row"><span><strong>{{item.almoxarife}}</strong></span></div> 
+  </div>
+{% endfor %}
+</div>
+
+<div class="row mt-2"><span style="font-size=14px; color:gray;font-style: italic;">Inserir Materiais</span><hr></div>
+
+<form action="" method="get">
+  <input name="q" type="text" placeholder="Inserir Item..." value="{{query}}">
+  <button action="clear_form_elements(this.form)" type="submit" class="btn btn-info">Procurar</button></td>
+<form>
+
+<table class="table table-sm align-middle" style="font-size:small; padding:2px; margin:2px; ">
+  <thead>
+    <tr>
+      <th scope="col">Id</th>
+      <th scope="col">Item</th>
+      <th scope="col">Quantidade no Estoque</th>
+      <th scope="col">Unidade</th>
+      <th scope="col">Adicionar Item</th>
+     
+    </tr>
+  </thead>
+<tbody>
+{% for item in object_list %}
+    <tr>
+      <td>{{item.item.pk}}</td>
+      <td>{{item.item.descricao}}</td>
+      <td>{{item.quantidade}}</td>
+      <td>{{item.item.unid_medida}}</td> 
+      <td>
+      <form action="" method="get">
+        <input type="text" placeholder="Inserir quantidade..." name="itemQtd" value="0">    
+        <input type="hidden" name="itemDescricao"  value="{{item.item.descricao}}">    
+        <input type="hidden" name="itemUnidade"  value="{{item.item.unid_medida}}"> 
+        <button type="submit" name="itemId" value="{{item.item.pk}}" class="btn btn-info btn-sm px-3">
+          <i class="fas fa-plus"></i>
+        </button>   
+      </form>
+      </td>     
+    </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+{% if object_list_add %}
+<div class="row mt-2"><span style="font-size=14px; color:gray;font-style: italic;">Materiais Adicionados</span><hr></div>
+
+<table class="table table table-sm align-middle" style='font-size:small'>
+  <thead>
+    <tr>
+      <th scope="col">Id</th>
+      <th scope="col">Item</th>
+      <th scope="col">Quantidade no Estoque</th>
+      <th scope="col">Unidade</th>
+      <th scope="col">Excluir</th>
+     
+    </tr>
+  </thead>
+<tbody>
+{% for item in object_list_add %}
+    <tr>
+      <td>{{item.0}}</td>
+      <td>{{item.1}}</td>
+      <td>{{item.2}}</td>
+      <td>{{item.3}}</td> 
+      <td>
+      <form method="get">
+        <button type="submit"  name="excluirID" value="{{item.0}}" class="btn btn-sm btn-outline-danger "><i class="fas fa-trash-alt"></i></button>
+      </form>  
+      </td>     
+    </tr>
+ 
+{% endfor %}
+
+  </tbody>
+</table>
+
+
+
+
+ <form method="post">
+    {% csrf_token %}
+        Total de Itens: {{ object_list_add|length }} 
+        <button type="submit"  name="addReq" value="True" class="btn btn-success">Gerar Requisição</button>
+    {% else %}
+        Sem itens adicionados!
+    
+    {% endif %}
+</form>
+
+
+
+
+
+{% comment %} ALERT MENSAGENS {% endcomment %}
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="iconalert-success" fill="currentColor" viewBox="0 0 16 16">
+    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+  </symbol>
+  <symbol id="iconalert-info" fill="currentColor" viewBox="0 0 16 16">
+    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+  </symbol>
+  <symbol id="iconalert-warning" fill="currentColor" viewBox="0 0 16 16">
+    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+  </symbol>
+  <symbol id="iconalert-danger" fill="currentColor" viewBox="0 0 16 16">
+    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+  </symbol>
+</svg>
+
+{% for message in messages %}
+<div class="alert-fixed d-flex justify-content-center ">
+  <div class="alert {{message.tags}} alert-dismissible fade show col-8" role="alert">
+  <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#icon{{message.tags}}"/></svg>
+  {{ message }}.
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+</div>
+{% endfor %}
+
+
+{% endblock%}

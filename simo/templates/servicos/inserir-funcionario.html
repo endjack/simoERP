@@ -1,0 +1,326 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block breadcrumb %}
+<div class="row">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="../">Serviços</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Inserir/Editar Funcionários</li>
+    </ol>
+  </nav>
+</div>
+{% endblock %}
+
+{% block conteudo %}
+
+
+{% comment %} TITULO {% endcomment %}
+<div class="row mb-3">
+  <div class="titulo col-6 align-self-center">
+    <div class="row d-flex align-self-center justify-content-center">
+      {% if editar %}
+      <h5>EDITAR FUNCIONÁRIO </h5>
+      {% else %}
+      <h5>INSERIR FUNCIONÁRIO </h5>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-3"></div>
+  {% comment %} BOTÕES DE VOLTAR E CONTINUAR {% endcomment %}
+  <div class="col-3">
+    <div class="btn-group">
+      <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-light">Voltar</a>
+    </div>
+    <div class="btn-group">
+      {% if editar %}
+      <a href="{% url 'salvar-ordem-servico' ordem_serv_atual.pk %}" class="btn btn-success">Salvar</a>
+      {% else %}
+      <a href="{% url 'inserir-itens-servico' ordem_serv_atual.pk serv_atual.pk %}"
+        class="btn btn-success">Continuar</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% comment %} INSERIR FUNCIONARIOS {% endcomment %}
+<form class="mb-3" method="post">
+  {% csrf_token %}
+
+  {% for hidden_field in form.hidden_fields %}
+  {{ hidden_field }}
+  {% endfor %}
+
+  <!-- Text input -->
+  <div class="row">
+    <div class="col-7">
+      <div class="input-group">
+        <div class="input-group-text">Funcionário: </div>
+        {% render_field form_funcionario.funcionario class="form-control" id="funcionario" name="funcionario" %}
+      </div>
+    </div>
+    <div class="col-2">
+      <button type="submit" class="btn btn-primary" name="addFuncionario">Adicionar</button>
+    </div>
+  </div>
+</form>
+
+{% comment %} TABELA DE FUNCIONÁRIOS ADICIONADOS {% endcomment %}
+{% if funcionarios_atual %}
+<div class="" style="margin-top:20px">
+  <div class="row "><span style="font-size:14px; color:gray;font-style: italic;">Funcionários Adicionados:</span>
+  </div>
+  <table class="table table-sm table-bordered">
+    <thead class="card-header text-white " style="background: linear-gradient(to right, #2c3e50 , #616161);">
+      <tr>
+        <th scope="col">Cód.</th>
+        <th scope="col">Matrícula</th>
+        <th scope="col">Nome</th>
+        <th scope="col">CPF</th>
+        <th scope="col">Cargo</th>
+        <th scope="col">Opções</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in funcionarios_atual %}
+
+      <tr>
+        <td>{{item.funcionario.pk}}</td>
+        <td>{{item.funcionario.matricula}}</td>
+        <td>{{item.funcionario.nome}}</td>
+        <td>{{item.funcionario.cpf}}</td>
+        <td>{{item.funcionario.cargo}}</td>
+        <td>
+          <form method="post">
+            {% csrf_token %}
+            <button type="submit" name="excluirFuncionario" value="{{item.pk}}" class="btn btn-submit btn-sm"><i
+                style="color:red" class="fas fa-trash fa-lg"></i></button>
+
+          </form>
+        </td>
+      </tr>
+
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% comment %} INSERIR FORNECEDORES {% endcomment %}
+
+<form class="mb-3" method="post">
+  {% csrf_token %}
+
+  {% for hidden_field in form.hidden_fields %}
+  {{ hidden_field }}
+  {% endfor %}
+
+  <!-- Text input -->
+  <div class="row">
+    <div class="col-7">
+      <div class="input-group">
+        <div class="input-group-text">Fornecedor: </div>
+        {% render_field form_fornecedor.fornecedor class="form-control" id="fornecedor" name="fornecedor" %}
+      </div>
+    </div>
+    <div class="col-2">
+      <button type="submit" class="btn btn-primary" name="addFornecedor">Adicionar</button>
+    </div>
+  </div>
+</form>
+
+{% comment %} TABELA DE FORNECEDORES ADICIONADOS {% endcomment %}
+{% if fornecedores_atual %}
+<div class="" style="margin-top:20px">
+  <div class="row "><span style="font-size:14px; color:gray;font-style: italic;">Fornecedores
+      Adicionados:</span>
+  </div>
+  <table class="table table-sm table-bordered">
+    <thead class="card-header text-white " style="background: linear-gradient(to right, #2c3e50 , #616161);">
+      <tr>
+        <th scope="col">Cód.</th>
+        <th scope="col">Nome</th>
+        <th scope="col">CPF/CNPJ</th>
+        <th scope="col">Opções</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in fornecedores_atual %}
+
+      <tr>
+        <td>{{item.fornecedor.pk}}</td>
+        <td><a href="{% url 'detalhar-fornecedor' item.fornecedor.pk %}">{{item.fornecedor.nome}}</a></td>
+        {% if item.fornecedor.doc %}
+        <td>{{item.fornecedor.doc}}</td>
+        {% else %}
+        <td>-</td>
+        {% endif %}
+        <td>
+          <form method="post">
+            {% csrf_token %}
+            <button type="submit" name="excluirFornecedor" value="{{item.pk}}" class="btn btn-submit btn-sm"><i
+                style="color:red" class="fas fa-trash fa-lg"></i></button>
+          </form>
+        </td>
+      </tr>
+
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+
+<div class="card border-dark mb-3 border border-dark">
+  <div class="card-header text-white " style="background: linear-gradient(to right, #0f2027, #203a43, #2c5364)">
+    Dados
+    Serviço nº {{serv_atual.pk}}</div>
+  <div class="card-body">
+    {% comment %} SERVIÇO ATUAL {% endcomment %}
+
+    <ol class="list-group">
+
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          <div class="fw-bold">Descrição:</div>
+          {{serv_atual.descricao}}
+        </div>
+        <div class="ms-2 me-auto">
+          {% if serv_atual.situacao %}
+          <div class="fw-bold">Situação:</div>
+          {{serv_atual.situacao}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Situação:</div>
+          -
+          {% endif %}
+        </div>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          {% if serv_atual.data_inicio %}
+          <div class="fw-bold">Data de Início:</div>
+          {{serv_atual.data_inicio}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Data de Início:</div>
+          -
+          {% endif %}
+        </div>
+        <div class="ms-2 me-auto">
+          {% if serv_atual.prazo %}
+          <div class="fw-bold">Prazo:</div>
+          {{serv_atual.prazo}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Prazo:</div>
+          -
+          {% endif %}
+        </div>
+      </li>
+
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          {% if serv_atual.obs %}
+          <div class="fw-bold">Observações:</div>
+          {{serv_atual.obs}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Observações:</div>
+          -
+          {% endif %}
+        </div>
+      </li>
+
+    </ol>
+  </div>
+</div>
+<div class="card border-dark mb-3 border border-dark">
+  <div class="card-header text-white " style="background: linear-gradient(to right, #0f2027, #203a43, #2c5364)">
+    Dados da
+    Ordem de Serviço nº {{ordem_serv_atual.pk}}</div>
+  <div class="card-body">
+    {% comment %} ORDEM ATUAL {% endcomment %}
+    <ol class="list-group">
+
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          <div class="fw-bold">Obra:</div>
+          {{ordem_serv_atual.obra}}
+        </div>
+        <div class="ms-2 me-auto">
+          {% if ordem_serv_atual.local %}
+          <div class="fw-bold">Local:</div>
+          {{ordem_serv_atual.local}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Local:</div>
+          -
+          {% endif %}
+        </div>
+      </li>
+
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          {% if ordem_serv_atual.encarregado %}
+          <div class="fw-bold">Encarregado:</div>
+          {{ordem_serv_atual.encarregado}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Encarregado:</div>
+          -
+          {% endif %}
+        </div>
+        <div class="ms-2 me-auto">
+          {% if ordem_serv_atual.data %}
+          <div class="fw-bold">Data:</div>
+          {{ordem_serv_atual.data}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Data:</div>
+          -
+          {% endif %}
+        </div>
+      </li>
+    </ol>
+  </div>
+</div>
+
+
+<!-- Toast -->
+{% for message in messages %}
+<div class="position-fixed bottom-0 end-0 p-3 " style="z-index: 11">
+  <div id="liveToast" class="toast align-items-center text-black {{ message.tags }} border-0" role="alert"
+    aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        {{ message }}
+      </div>
+      <button type="button" class="btn-close btn-close-black me-2 m-auto" id="closeToast"></button>
+    </div>
+  </div>
+</div>
+{% endfor %}
+<!-- Fim Toast -->
+
+
+
+{% endblock %}
+
+{% block jquery %}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+  $(document).ready(function () {
+
+    //Toast Events 
+    $("#liveToast").toast('show');
+    $("#closeToast").click(function () {
+      $("#liveToast").toast('hide');
+    });
+
+
+    $(function () {
+        $("#itens").autocomplete({
+          source: "{% url 'autocomplete-itens' %}"
+        });
+      }
+
+    );
+
+  });
+</script>
+{% endblock%}

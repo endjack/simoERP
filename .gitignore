@@ -1,0 +1,15 @@
+__pycache__
+**/__pycache__
+.vscode
+.env
+media/
+venv/
+*.sqlite3
+# **/migrations/**
+# !**/migrations
+# !**/migrations/__init__.py
+db.sqlite3
+.vscode/
+nginx.conf
+uwsgi.ini
+uwsgi_params

@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block breadcrumb %}
+  <div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="../ver-requisicoes">Requisições</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Gerar Requisição</li>
+      </ol>
+    </nav>
+  </div>
+{% endblock %}
+
+{% block conteudo %}
+  <form method="post" >
+      {% csrf_token %}
+
+      {% for hidden_field in form.hidden_fields %}
+        {{ hidden_field }}
+      {% endfor %}
+     
+      <!-- 3 column grid layout -->
+       <div class="form-group row mb-4">
+       
+            <div class="col-3">
+              <div class="input-group">
+                <div class="input-group-text">Data: </div>
+                   {% render_field form.data class="form-control" id="data" %}
+              </div>
+            </div>
+
+            <div class="col-5">
+              <div class="input-group">
+                <div class="input-group-text">Obras: </div>
+                  {% render_field form.obra class="form-control" id="obra" %}
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="input-group">
+                <div class="input-group-text">Local: </div>
+                  {% render_field form.local class="form-control" id="local" %}
+              </div>
+            </div>
+ 
+        </div>
+
+      <!-- 3 column grid layout -->
+       <div class="form-group row mb-4">
+       
+            <div class="col-5">
+              <div class="input-group">
+                <div class="input-group-text">Solicitante: </div>
+                  {% render_field form.solicitante class="form-control" id="solicitante"%}
+              </div>
+            </div>
+
+            <div class="col-5">
+              <div class="input-group">
+                <div class="input-group-text">Almoxarife: </div>
+                  {% render_field form.almoxarife class="form-control" id="almoxarife" %}
+              </div>
+            </div>
+
+            <div class="col-2">
+              <button type="submit" class="btn btn-success">Gerar Requisição</button>
+            </div>  
+
+        </div>
+  </form>
+
+
+<div class="row" style="margin-top:40px">
+      <div class="row"><span style="font-size=14px; color:gray;font-style: italic;">Requisições Geradas no dia: {% now "de/F/Y" %}</span><hr></div> 
+</div>
+
+<table class="table table table-sm align-middle" style='font-size:small;' id="tabela-listar">
+  <thead>
+    <tr>
+      <th scope="col">Id</th>
+      <th scope="col">Obra</th>
+      <th scope="col">Local</th>
+      <th scope="col">Solicitante</th>
+      <th scope="col">Almoxarife</th>
+      <th scope="col">Data</th>
+      <th scope="col">Opções</th>
+    </tr>
+  </thead>
+<tbody>
+{% for item in objects_by %}
+    <tr>
+      <td>{{item.id}}</td>
+      <td>{{item.obra}}</td>
+      <td>{{item.local}}</td>
+      <td>{{item.solicitante}}</td>
+      <td>{{item.almoxarife}}</td>
+      <td>{{item.data | date:"d/m/Y"}}</td>
+      <td><button type="button" onclick="abrir_modal('{% url 'detalhar-itens' item.id %}')" class="btn btn-info btn-sm">Ver Itens</button></td>
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
+
+<div class="modal fade" id="editar" role="dialog"></div>
+{% endblock %}
+
+{% block jquery %}
+<script src="../static/js/datatables.min.js"></script>
+
+<script type="text/javascript">
+
+  var $ = jQuery.noConflict();
+
+  function abrir_modal(url){
+    $('#editar').load(url, function(){
+      $(this).modal('show');
+    });
+  };
+
+</script>
+
+<script>
+$('#tabela-listar').DataTable({
+        responsive: true,
+        // "bSort": false,
+        "oSearch": {"sSearch": '{% now "de/m/Y" %}'},
+        "aaSorting": [],
+        "pageLength": 10,
+        "language": {
+
+            "decimal": "",
+            "emptyTable": "Sem dados disponíveis",
+            "info": "Mostrando de _START_ até _END_ de _TOTAL_ registos",
+            "infoEmpty": "Mostrando de 0 até 0 de 0 registos",
+            "infoFiltered": "(filtrado de _MAX_ registos no total)",
+            "infoPostFix": "",
+            "thousands": ",",
+            "lengthMenu": "Mostrar _MENU_ registos",
+            "loadingRecords": "A carregar dados...",
+            "processing": "A processar...",
+            "search": "Procurar:",
+            "zeroRecords": "Não foram encontrados resultados",
+            "paginate": {
+                "first": "Primeiro",
+                "last": "Último",
+                "next": "Seguinte",
+                "previous": "Anterior"
+            },
+            "aria": {
+                "sortAscending": ": ordem crescente",
+                "sortDescending": ": ordem decrescente"
+            }
+        }
+    });
+</script>
+
+{% endblock%}
+

@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block styleHead %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
+  rel="stylesheet" />
+{% endblock %}
+
+
+{% block breadcrumb %}
+<div class="row">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="../">Serviços</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Finalizando Serviço</li>
+    </ol>
+  </nav>
+</div>
+{% endblock %}
+
+
+{% block conteudo %}
+{% comment %} TITULO {% endcomment %}
+<div class="row">
+  <div class="titulo col-6 align-self-center">
+    <div class="row d-flex align-self-center justify-content-center">
+      <strong><span>
+          <h5>SERVIÇO Nº {{serv_atual.pk}}</h5>
+        </span></strong>
+    </div>
+  </div>
+  {% comment %} BOTÕES DE VOLTAR E CONTINUAR {% endcomment %}
+  <div class="col-6 d-flex justify-content-end">
+    <div class="btn-group">
+      <a href="javascript: history.go(-1)" class="btn btn-light">Voltar</a>
+    </div>
+  </div>
+</div>
+
+{% comment %} FORMULARIO PARA FINALIZAR {% endcomment %}
+{% if not finalizado %}
+<form method="post" id="formFinalizar" style="margin-top:20px" autocomplete="off">
+  {% csrf_token %}
+
+  <div class="form-group row mb-4">
+    <div class="col-3">
+      <div class="input-group">
+        <div class="input-group-text">Data: </div>
+        <input type="text" id="date" name="data_termino" {% if serv_atual.data_termino %}
+          value="{{serv_atual.data_termino}}" {% endif %} class="form-control" required>
+        <span class="input-group-append">
+          <button class="btn btn-outline-secondary " type="button">
+            <i class="fa fa-calendar"></i>
+          </button>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group row mb-4">
+
+    <div class="col-5">
+      <div class="form-group">
+        <div class="input-group-text">Observação:&nbsp
+          <textarea class="form-control" name="obs" id="obs" rows="3">{{serv_atual.obs}}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-2">
+      <button type="submit" class="btn btn-success">Finalizar</button>
+    </div>
+
+  </div>
+</form>
+{% endif %}
+
+
+{% comment %} RESUMO DO SERVIÇO {% endcomment %}
+<div class="row"><span style="font-size=14px; color:gray;font-style: italic;;margin-top:20px">Serviços</span>
+  <hr>
+</div>
+
+<div class="row container pb-2 well" style="background-color:rgb(204, 255, 235);padding-top:10px">
+  <div class="col-md-6">
+
+    <div class="row"><strong>SERVIÇO nº {{serv_atual.pk}} -
+        {% if serv_atual.finalizado %}
+        <span style="color:green">FINALIZADO</span>
+        {% else %}
+        {% if serv_atual.situacao == 'NÃO INICIADO' %}
+        <span style="color:red">{{serv_atual.situacao | upper}}</span>
+        {% else %}
+        <span style="color:blue">{{serv_atual.situacao | upper}}</span>
+        {% endif %}
+        {% endif %}</strong></div>
+    <div class="row"><span>Descrição: {{serv_atual.descricao}}</span></div>
+    <div class="row"><span>Data de Início: {{serv_atual.data_inicio}}</span></div>
+    <div class="row"><span>Prazo de Término: {{serv_atual.prazo}}</span></div>
+    {% if serv_atual.finalizado %}
+    <div class="row"><strong><span style="color:green">Finalizado em: {{serv_atual.data_termino}}</span></strong></div>
+    {% endif %}
+
+  </div>
+
+  {% if serv_atual.funcionarioservico_set.all.count > 0 %} 
+  <div class="col-md-6">
+    <div class="row ">
+      <div class=""><strong>Funcionários:</strong> </div>
+    </div>
+    <div class="row"><span>{{serv_atual.encarregado}}</span></div>
+    {% for func in serv_atual.funcionarioservico_set.all %}
+    <div class="row"><span>{{func.funcionario.nome}} - {{func.funcionario.cargo}}</span></div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if serv_atual.itensservico_set.all.count > 0 %}
+  <div class="row container pb-2 well" style="background-color:rgb(204, 255, 235);padding-top:10px">
+    <div class="col-md-12">
+      <div class="row"><strong>Materiais: </strong></div>
+      <div class="row">
+        <div class="" style="margin-top:5px">
+
+          <table class="table table-bordered table-sm border border-dark">
+            <thead>
+              <tr>
+                <th scope="col">Cód:</th>
+                <th scope="col">Descrição</th>
+                <th scope="col">Quantidade</th>
+                <th scope="col">Unidade</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in serv_atual.itensservico_set.all %}
+              <tr>
+                <td>{{item.item.pk}}</td>
+                <td>{{item.item.descricao}}</td>
+                <td>{{item.qnt}}</td>
+                <td>{{item.item.unid_medida}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+
+  {% endblock%}
+
+  {% block jquery %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js">
+  </script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pt-BR.min.js">
+  </script>
+  <script>
+    $(document).ready(function () {
+
+      //DatePicker
+      $("#date").datepicker({
+        format: "dd/mm/yyyy",
+        todayHighlight: true,
+        language: "pt-BR"
+      });
+    });
+  </script>
+  {% endblock %}

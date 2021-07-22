@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block styleHead %}
+<style>
+  .table td {
+    text-align: center;
+    vertical-align: middle;
+  }
+</style>
+
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="row">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="../">Início</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Ver Estoque</li>
+    </ol>
+  </nav>
+</div>
+{% endblock %}
+
+{% block conteudo %}
+
+
+<div class="card mb-3 border border-dark" style="border-color: #093637;">
+  <div class="card-header text-white " style="background: linear-gradient(to right, #093637, #44a08d );">
+    Filtrar Itens do Estoque:</div>
+  <div class="card-body">
+<form method="get" id="form_filtro">
+  {% csrf_token %}
+
+  {% for hidden_field in form.hidden_fields %}
+  {{ hidden_field }}
+  {% endfor %}
+
+
+  <div class="form-group row mb-3">
+    <div class="col-6">
+      <div class="input-group">
+        <div class="input-group-text">Descrição:</div>
+        {% render_field filter.form.descricao class="form-control " name="descricao"%}
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="input-group">
+        <div class="input-group-text">Categoria:</div>
+        {% render_field filter.form.categoria class="form-control" name="categoria"%}
+      </div>
+  </div>
+  </div>
+
+
+
+  <div class="col-6 mb-3">
+    <div class="input-group">
+      <div class="input-group-text">Fornecedor:</div>
+      {% render_field filter.form.fornecedor class="form-control" name="fornecedor"%}
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end">
+    <input form="form_filtro" class="btn btn-sm btn-info m-2" type="submit" value="Filtrar" />
+    <a class="btn btn-sm btn-light m-2" href="{% url 'relatorio-contas' %}">Limpar Campos</a>
+    <button form="form_pdf" type="submit" class="btn btn-primary m-2">Imprimir</button>
+  </div>
+
+</form>
+</div>
+</div>
+
+
+
+Resultados: (Somente itens com Movimentação no Estoque) <br> 
+<div class="card mb-3 p-3" style="border-color: #093637;">
+  <table class="table table-sm table-bordered tabela-listar">
+    <thead class="card-header text-white text-center" style="background: linear-gradient(to right, #0f2027, #203a43, #2c5364);">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Id</th>
+      <th scope="col">Item</th>
+      <th scope="col">Quantidade</th>
+      <th scope="col">Unidade</th>
+      <th scope="col">Categoria</th>
+      <th scope="col">Peso</th>
+      <th scope="col">Qtd Mínima</th>
+      <th scope="col">QRCode</th>
+      <th scope="col">Opções</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for estoque in filter.qs %}
+    <tr>
+      <td>{{forloop.counter}}</td>
+      <td>{{estoque.item.pk}}</td>
+      <td><a href="{% url 'detalhar-item' estoque.item.pk %}" >{{estoque.item.descricao}}</a></td>
+      {% if estoque.quantidade %} 
+        <td>{{estoque.quantidade}}</td>
+      {% else %}
+        <td><span style="color:red">Sem Entrada</span></td>
+      {% endif %}
+      <td>{{estoque.item.unid_medida}}</td>
+      <td>{{estoque.item.categoria}}</td>
+      <td>{{estoque.item.peso}}</td>
+      <td>{{estoque.item.qtd_minima}}</td>
+      <td><a href="{{estoque.item.qr_code.url}}" target="_blank"><i class="fas fa-qrcode"></i></a></td>
+      <td><a href="{% url 'editar-item' estoque.item.pk %}" >Editar</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+{% endblock%}
+
+{% block jquery %}
+<script src="../static/js/datatables.min.js"></script>
+
+<script>
+  $('.tabela-listar').DataTable({
+    responsive: true,
+    // "bSort": false,
+    "aaSorting": [],
+    "pageLength": 10,
+    "language": {
+
+      "decimal": "",
+      "emptyTable": "Sem dados disponíveis",
+      "info": "Mostrando de _START_ até _END_ de _TOTAL_ registos",
+      "infoEmpty": "Mostrando de 0 até 0 de 0 registos",
+      "infoFiltered": "(filtrado de _MAX_ registos no total)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "Mostrar _MENU_ registos",
+      "loadingRecords": "A carregar dados...",
+      "processing": "A processar...",
+      "search": "Procurar:",
+      "zeroRecords": "Não foram encontrados resultados",
+      "paginate": {
+        "first": "Primeiro",
+        "last": "Último",
+        "next": "Seguinte",
+        "previous": "Anterior"
+      },
+      "aria": {
+        "sortAscending": ": ordem crescente",
+        "sortDescending": ": ordem decrescente"
+      }
+    }
+  });
+</script>
+{% endblock%}

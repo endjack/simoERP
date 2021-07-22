@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block breadcrumb %}
+<div class="row">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="../ver-estoque">Estoque</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{% if inserir %} Inserir Item {% else %} Editar Item
+        {% endif %}</li>
+    </ol>
+  </nav>
+</div>
+{% endblock %}
+
+{% block conteudo %}
+
+
+<div class="card mb-3 border border-dark" style="border-color: #093637;">
+  <div class="card-header text-white " style="background: linear-gradient(to right, #093637, #44a08d );">
+    {% if inserir %} Novo Item no Estoque: {% else %} Editar Item: {% endif %}</div>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+
+      {% for hidden_field in form.hidden_fields %}
+      {{ hidden_field }}
+      {% endfor %}
+
+      <!-- 3 column grid layout -->
+      <div class="form-group row mb-4">
+
+        <div class="col-2">
+          <div class="input-group">
+            <div class="input-group-text">Código: </div>
+            <input type="text" class="form-control" disabled>
+          </div>
+        </div>
+
+        <div class="col-3">
+          <div class="input-group">
+            <div class="input-group-text">Categoria: </div>
+            {% render_field form.categoria class="form-control" id="categoria" required="required" %}
+            <button type="button" class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="input-group">
+            <div class="input-group-text">Descrição: </div>
+            {% render_field form.descricao class="form-control" id="descricao" required="required" %}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 3 column grid layout -->
+      <div class="form-group row mb-4">
+
+        <div class="col-3">
+          <div class="input-group">
+            <div class="input-group-text">Qtd Mínima: </div>
+            {% render_field form.qtd_minima class="form-control" id="qtd_minima" type="number" min="0"%}
+          </div>
+        </div>
+
+        <div class="col-3">
+          <div class="input-group">
+            <div class="input-group-text">Unid: </div>
+            {% render_field form.unid_medida class="form-control" id="unid_medida" %}
+          </div>
+        </div>
+
+        <div class="col-3">
+          <div class="input-group">
+            <div class="input-group-text">Peso: </div>
+            {% render_field form.peso class="form-control" id="peso" type="number" min="0" required="false" %}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 3 column grid layout -->
+      <div class="form-group row mb-4">
+
+        <div class="col-6">
+          <div class="input-group">
+            <div class="input-group-text">Fornecedor: </div>
+            {% render_field form.fornecedor class="form-control" id="fornecedor" %}
+          </div>
+        </div>
+
+        <div class="col-3">
+          <div class="input-group">
+            <div class="input-group-text">Preço: </div>
+            {% render_field form.preco class="form-control money" id="preco" %}
+          </div>
+        </div>
+
+         <div class="col-1">
+          <button type="submit" class="btn btn-success">{% if inserir %} Inserir {% else %} Salvar {% endif %}</button>
+        </div>
+
+
+      </div>
+{% comment %}  
+      <!-- 3 column grid layout -->
+      <div class="form-group row mb-4">     
+        {% if inserir %}
+            <div class="col-3">
+              <div class="input-group">
+                <div class="input-group-text">Iniciar no Estoque com: </div>
+                <input type="number" class="form-control" id="qtn_estoque" name="qtn_estoque" value="0">  //TODO colocar unidade selecionada com Jquery apos a quantidade
+              </div>
+            </div>
+        {% endif %}
+      </div>
+{% endcomment %}
+    </form>
+  </div>
+</div>
+
+{% if inserir %}
+Itens de Estoque Adicionadas: <br>
+<div class="card mb-3 p-3" style="border-color: #093637;">
+
+  <table class="table table-sm table-bordered tabela-listar">
+    <thead class="card-header text-white " style="background: linear-gradient(to right, #0f2027, #203a43, #2c5364);">
+      <tr>
+        <th scope="col">Cód</th>
+        <th scope="col">Descrição</th>
+        <th scope="col">Categoria</th>
+        <th scope="col">Qtd Mínima</th>
+        <th scope="col">Unid</th>
+        <th scope="col">Peso</th>
+        <th scope="col">Fornecedor</th>
+        <th scope="col">Preço</th>
+        <th scope="col">Opções</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in itensEstoque %}
+      <tr>
+        <td>{{item.pk}}</td>
+        <td>{{item.descricao}}</td>
+        <td>{{item.categoria}}</td>
+        <td>{{item.qtd_minima}}</td>
+        <td>{{item.unid_medida}}</td>
+        <td>{{item.peso}}</td>
+        <td>
+          {% if item.fornecedor %}
+          <a href="{% url 'detalhar-fornecedor' item.fornecedor.pk %}">{{item.fornecedor}}</a>
+          {% else %}
+          -
+          {% endif %}
+        </td>
+
+        <td>
+          {% if item.preco %}
+          {{item.preco}}
+          {% else %}
+          -
+          {% endif %}
+        </td>
+        <td>
+          <a href="{% url 'detalhar-item' item.pk %}" title="Opções de {{item.descricao}}"><span
+              style="color: DodgerBlue;"><i class="fas fa-arrow-circle-right fa-lg"></i></span></a>
+          <a href="{% url 'excluir-item' item.pk %}" title="Excluir Item: {{item.descricao}}"><span
+              style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span></a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Nova Categoria</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <form method="post" id="form_categoria">
+            {% csrf_token %}
+            <div class="form-group row">
+              <div class="input-group">
+                <div class="input-group-text">Categoria: </div>
+                <input type="text" class="form-control" name="new_categoria">
+              </div>
+            </div>
+          </form>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button form="form_categoria" type="submit" class="btn btn-primary">Adicionar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Fim Modal -->
+
+  <!-- Toast -->
+  {% for message in messages %}
+  <div class="position-fixed bottom-0 end-0 p-3 " style="z-index: 11">  
+    <div id="liveToast" class="toast align-items-center text-black {{ message.tags }} border-0" role="alert"
+      aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+            {{ message }}
+        </div>
+        <button type="button" class="btn-close btn-close-black me-2 m-auto" id="closeToast"></button>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  <!-- Fim Toast -->
+
+
+  {% endblock %}
+
+
+  {% block jquery %}
+
+  <script src="{% static 'js/jquery-ui.js' %}"></script>
+  <script src="{% static 'js/datatables.min.js' %}"></script>
+  <script src="{% static 'js/jquery.mask.js' %}"></script>
+  <script>
+    $(document).ready(function () {
+
+      //Toast Events 
+      $("#liveToast").toast('show');
+      $( "#closeToast" ).click(function() {
+        $("#liveToast").toast('hide');
+      });
+
+      //Categoria selected
+      {% if inserir %}
+      $('#categoria  option[value="{{selected_categoria}}"]').prop("selected", true);
+      {% endif %}
+      
+      //masks
+      $('.money').mask('000.000.000,00', {
+        reverse: true
+      });
+
+      $('.tabela-listar').DataTable({
+        responsive: true,
+        // "bSort": false,
+        "aaSorting": [],
+        "pageLength": 10,
+        "language": {
+
+          "decimal": "",
+          "emptyTable": "Sem dados disponíveis",
+          "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+          "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+          "infoFiltered": "(filtrado de _MAX_ registros no total)",
+          "infoPostFix": "",
+          "thousands": ",",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "loadingRecords": "A carregar dados...",
+          "processing": "A processar...",
+          "search": "Procurar:",
+          "zeroRecords": "Não foram encontrados resultados",
+          "paginate": {
+            "first": "Primeiro",
+            "last": "Último",
+            "next": "Seguinte",
+            "previous": "Anterior"
+          },
+          "aria": {
+            "sortAscending": ": ordem crescente",
+            "sortDescending": ": ordem decrescente"
+          }
+        }
+      });
+
+
+    });
+  </script>
+  {% endblock %}

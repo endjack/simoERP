@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block styleHead %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
+    rel="stylesheet" />
+ 
+
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="../ver-requisicoes">Funcionários</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Inserir/Editar Funcionário</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="card mb-3 border border-dark" style="border-color: #093637;">
+  <div class="card-header text-white " style="background: linear-gradient(to right, #0f0c29, #302b63, #24243e );">
+    {% if editar %} Editar Funcionário: {% else %} Novo Funcionário: {% endif %}</div>
+  <div class="card-body">
+<form action="" method="post" autocomplete="off">
+  {% csrf_token %}
+
+  {% for hidden_field in form.hidden_fields %}
+  {{ hidden_field }}
+  {% endfor %}
+
+  <div class="row mb-3">
+    <div class="col-2">
+      <div class="input-group">
+        <div class="input-group-text">Situação: </div>
+        {% render_field form.situacao class="form-control" id="situacao" name="situacao"  %}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="input-group">
+        <div class="input-group-text">Matrícula: </div>
+        {% render_field form.matricula class="form-control" id="matricula" name="matricula" required="required" %}
+      </div>
+    </div>
+    <div class="col-7">
+      <div class="input-group">
+        <div class="input-group-text">Nome: </div>
+        {% render_field form.nome class="form-control" id="nome" name="nome" required="required" %}
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-3">
+      <div class="input-group">
+        <div class="input-group-text">CPF: </div>
+        {% render_field form.cpf class="form-control cpf" id="cpf" name="cpf" required="required" %}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="input-group">
+        <div class="input-group-text">RG: </div>
+        {% render_field form.rg class="form-control" id="rg" name="rg" %}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="input-group">
+        <div class="input-group-text">CTPS: </div>
+        {% render_field form.ctps class="form-control" id="ctps" name="ctps" %}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="input-group">
+        <div class="input-group-text">Nascimento: </div>
+        {% render_field form.data_nascimento class="form-control date" id="data_nascimento" name="data_nascimento" required="required" %}
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-6">
+      <div class="input-group">
+        <div class="input-group-text">Endereço: </div>
+        {% render_field form.endereco class="form-control" id="endereco" name="endereco" %}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="input-group">
+        <div class="input-group-text">Telefone1: </div>
+        {% render_field form.telefone1 class="form-control phoneBR" id="telefone1" name="telefone1" %}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="input-group">
+        <div class="input-group-text">Telefone2: </div>
+        {% render_field form.telefone2 class="form-control phoneBR" id="telefone2" name="telefone2" %}
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+   <div class="col-4">
+      <div class="input-group">
+        <div class="input-group-text">Cargo: </div>
+        {% render_field form.cargo class="form-control date" id="cargo" name="cargo" required="required" %}
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="input-group">
+        <div class="input-group-text">Data Admissão: </div>
+        {% render_field form.data_admissao class="form-control date" id="data_admissao" name="data_admissao" required="required" %}
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="input-group">
+        <div class="input-group-text">Data Demissão: </div>
+        {% render_field form.data_demissao class="form-control date" id="data_demissao" name="data_demissao" %}
+      </div>
+    </div>
+  </div>
+  
+  <div class="row mb-3">
+   <div class="col-6">
+      <div class="input-group">
+        <div class="input-group-text">Lotação: </div>
+        {% render_field form.lotacao class="form-control" id="lotacao" name="lotacao" required="required" %}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="input-group">
+        <div class="input-group-text">Salário: </div>
+        {% render_field form.salario class="form-control money" id="salario" name="salario" %}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="input-group">
+        <div class="input-group-text">Adicional: </div>
+        {% render_field form.adicional class="form-control money" id="adicional" name="adicional" %}
+      </div>
+    </div>
+  </div>
+
+  <br>Dados Bancários: <br>
+
+  <div class="row mb-2">
+   <div class="col-3">
+      <div class="input-group">
+        <div class="input-group-text">Banco: </div>
+        {% render_field form.banco class="form-control" id="banco" name="banco" %}
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="input-group">
+        <div class="input-group-text">Agência: </div>
+        {% render_field form.agencia class="form-control" id="agencia" name="agencia" %}
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="input-group">
+        <div class="input-group-text">Tipo: </div>
+        {% render_field form.tipo_conta class="form-control" id="tipo_conta" name="tipo_conta" %}
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="input-group">
+        <div class="input-group-text">Op: </div>
+        {% render_field form.op class="form-control" id="op" name="op" %}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="input-group">
+        <div class="input-group-text">Conta: </div>
+        {% render_field form.conta class="form-control" id="conta" name="conta" %}
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row mb-2">
+   <div class="col-3">
+      <div class="input-group">
+        <div class="input-group-text">Pix: </div>
+        {% render_field form.pix class="form-control" id="pix" name="pix" %}
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="input-group">
+        <div class="input-group-text">Tipo Pix:</div>
+        {% render_field form.tipo_pix class="form-control" id="tipo_pix" name="tipo_pix" %}
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-6">
+      <div class="input-group">
+        <div class="input-group-text">Obs:</div>
+        {% render_field form.obs class="form-control" id="obs" name="obs" style="height: 60px"%}
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-2">
+      <button type="submit" class="btn btn-success">Salvar</button>
+    </div>
+  </div>
+</form>
+</div>
+</div>
+
+
+{% if not editar %}
+Funcionários Cadastrados: <br>
+<div class="card border-secondary mb-3">
+  <div class="card-body">
+    <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:13px;">
+    <thead style="border:solid 2px;border-color:white;background:linear-gradient(to right, #0f0c29, #302b63, #24243e); color: white;">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Mat.</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Cargo</th>
+            <th scope="col">CPF</th>
+            <th scope="col">Lotação</th>
+            <th scope="col">Admissão</th>
+            <th scope="col">Opções</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in funcionarios_list %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{item.matricula}}</td>
+            <td>{{item.nome}}</td>
+            <td class="limitar_td" title="{{item.cargo}}">{{item.cargo}}</td>
+            <td>{{item.cpf}}</td>
+            <td class="limitar_td" title="{{item.lotacao}}">{{item.lotacao}}</td>
+            <td>{{item.data_admissao | date:"d/m/Y"}}</td>
+            <td style="white-space: nowrap;">
+            <a href="{% url 'editar-funcionario' item.pk %}" title="Editar Funcionario"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a>            
+            <a href="{% url 'excluir-funcionario' item.pk %}" title="Excluir Funcionario"><span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span></a> 
+            </td> 
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+
+
+
+{% endblock %}
+{% block jquery %}
+<script src="../static/js/datatables.min.js"></script>
+<script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.pt-BR.min.js' %}"></script>
+<script src="{% static 'js/jquery.mask.js' %}"></script>
+<script>
+ $(document).ready(function () {
+
+      //masks
+      $('.money').mask('000.000.000,00', {
+            reverse: true
+        });
+      $('.cpf').mask('000.000.000-00', {reverse: true});
+
+
+      //DatePicker
+      $(".date").datepicker({
+            format: "dd/mm/yyyy",
+            todayHighlight: true,
+            language: "pt-BR"
+        });
+
+
+
+      $('.tabela-listar').DataTable({
+        responsive: true,
+        // "bSort": false,
+        "aaSorting": [],
+        "pageLength": 10,
+        "language": {
+
+            "decimal": "",
+            "emptyTable": "Sem dados disponíveis",
+            "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+            "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+            "infoFiltered": "(filtrado de _MAX_ registros no total)",
+            "infoPostFix": "",
+            "thousands": ",",
+            "lengthMenu": "Mostrar _MENU_ registros",
+            "loadingRecords": "A carregar dados...",
+            "processing": "A processar...",
+            "search": "Procurar:",
+            "zeroRecords": "Não foram encontrados resultados",
+            "paginate": {
+                "first": "Primeiro",
+                "last": "Último",
+                "next": "Seguinte",
+                "previous": "Anterior"
+            },
+            "aria": {
+                "sortAscending": ": ordem crescente",
+                "sortDescending": ": ordem decrescente"
+            }
+        }
+      });
+
+    //Para mascara de telefone com 8 ou 9 digios
+    var MaskTelBrasil = function (val) {
+    return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
+    },
+    spOptions = {
+        onKeyPress: function(val, e, field, options) {
+            field.mask(MaskTelBrasil.apply({}, arguments), options);
+        }
+    };
+
+    $('.phoneBR').mask(MaskTelBrasil, spOptions);
+
+
+
+
+
+ });
+
+</script>
+{% endblock%}

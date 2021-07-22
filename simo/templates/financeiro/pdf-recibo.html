@@ -1,0 +1,86 @@
+{% load static %}
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <title>Recibo de Fornecedor</title>
+    <style>
+        @page {
+            size: portrait;
+            margin: 0;
+        }
+
+        .destaque {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body style="font-family: sans-serif;">
+
+<div class="d-flex flex-row bd-highlight mb-3" style="margin: 10px 15px;font-size:10px;">
+  <div class="col-6 d-flex justify-content-start">BRASIL CONSTRUÇÃO LTDA - {% now "SHORT_DATETIME_FORMAT" %}</div>
+  <div class="col-6 d-flex justify-content-end">Usuário: {{usuario_atual}}</div>
+</div>
+
+<div class="row" style="margin-top:40px">
+    <div class="d-flex justify-content-center">
+        <div class="p-2 bd-highlight">
+            <img src="{% static 'imagens/logo1.png' %}" alt="" height="100" width="150">
+        </div>
+        <div class="p-2 bd-highlight" style="border-right: 4px solid gray;"></div>&emsp;
+        <div class="p-2 bd-highlight">
+            BRASIL CONSTRUÇÃO LTDA <br>
+            CNPJ: 09.235.353/0001-45 <br>
+            brasilconstrucao3@gmail.com <br>
+            (84) 4103-0176
+        </div>
+    </div>
+</div>
+
+    <div style="text-align:center; margin-top:40px;font-size:16pt;font-weight:bold;">RECIBO</div>
+
+
+    <div style="padding: 2em 4em;text-align:justify;font-size:18px;">
+        &emsp;&emsp;Recebi da empresa <span class="destaque">BRASIL CONSTRUÇÃO LTDA</span>, de CNPJ sob o nº
+        09.234.353/0001-45, localizada na Rua
+        Darcy Vargas, 08, Monte Castelo, Parnamirim – RN (CEP: 59146-245), a quantia de <span class="destaque">R$
+            {{recibo_atual.valor}}</span> ({{por_extenso}}),
+        referente a/ao <span class="destaque">{{recibo_atual.referente}}</span>, ao qual dou plena e total quitação.
+    </div>
+
+    {% if recibo_atual.obs%}
+    <div style="padding: 0em 4em;font-size:18px;">{{recibo_atual.obs}}</div>
+    {% endif %}
+
+
+    <div style="padding: 0em 4em;margin-top:20px; text-align: right;">Parnamirim, {{data_atual}}</div>
+
+
+    <div style="text-align: center;margin-top:50px;"> _________________________________________ </div>
+    <div class="destaque" style="text-align: center;">{{recibo_atual.fornecedor.nome}}</div>
+    <div class="destaque" style="text-align: center;">
+        {% if recibo_atual.fornecedor.doc %}
+        <div class="">
+            {% if recibo_atual.fornecedor.tipo == 'PESSOA JURÍDICA' %}
+            CNPJ: {{recibo_atual.fornecedor.doc}}
+            {% else %}
+            CPF: {{recibo_atual.fornecedor.doc}}
+        </div>
+        {% endif %}
+
+        {% endif %}
+    </div>
+
+    <script>
+        (function () {
+            window.print();
+        })();
+    </script>
+
+
+</body>
+
+</html>

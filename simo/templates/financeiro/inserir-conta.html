@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block styleHead %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
+    rel="stylesheet" />
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Financeiro</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Inserir Conta à Pagar</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+
+{% block conteudo %}
+
+<div class="row">
+    <span style="font-size:30px; color:red; margin-top: 5px"> Inserir Conta à Pagar</span>
+    <hr>
+</div>
+
+<div class="d-flex flex-row-reverse bd-highlight mb-3">
+    <div class="">
+        <button type="submit" form="addConta" class="btn btn-danger">Incluir</button>
+        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-light">Voltar</a>
+    </div>
+</div>
+
+
+<form id="addConta" method="post" autocomplete="off">
+    {% csrf_token %}
+
+    {% for hidden_field in form.hidden_fields %}
+    {{ hidden_field }}
+    {% endfor %}
+
+    <div class="form-group row mb-3">
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Emissão:</div>
+                {% render_field form.data_inclusao class="form-control date" name="data_inclusao"%}
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Vencimento:</div>
+                {% render_field form.vencimento class="form-control date" name="vencimento"%}
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Documento nº:</div>
+                {% render_field form.documento class="form-control" name="documento"%}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <div class="col-7">
+            <div class="input-group">
+                <div class="input-group-text">Descrição:</div>
+                {% render_field form.descricao class="form-control" name="descricao" required="required"%}
+            </div>
+        </div>
+
+        <div class="col-5">
+            <div class="input-group">
+                <div class="input-group-text">Fornecedor:</div>
+                {% render_field form.fornecedor class="form-control" name="fornecedor"%}
+                <a href="{% url 'inserir-fornecedor' %}" class="btn btn-primary btn-sm"
+                    title="Adicionar um Novo Fornecedor"><i class="fa fa-plus"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <div class="col-5">
+            <div class="input-group">
+                <div class="input-group-text">Valor:</div>
+                {% render_field form.valor class="form-control money " name="valor"%}
+            </div>
+        </div>
+
+        <div class="col-7">
+            <div class="input-group">
+                <div class="input-group-text">Centro de Custo:</div>
+                {% render_field form.centro_de_custo class="form-control" name="centro_de_custo" required="required"%}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <div class="col-8">
+            <div class="input-group">
+                <div class="input-group-text">Obs:</div>
+                {% render_field form.obs class="form-control" name="obs" style="height: 60px"%}
+            </div>
+        </div>
+    </div>
+
+</form>
+
+{% endblock%}
+
+{% block jquery %}
+
+<script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.pt-BR.min.js' %}"></script>
+<script src="{% static 'js/jquery.mask.js' %}"></script>
+<script>
+    $(document).ready(function () {
+
+        //masks
+        $('.money').mask('000.000.000,00', {
+            reverse: true
+        });
+
+
+
+        //DatePicker
+        $(".date").datepicker({
+            format: "dd/mm/yyyy",
+            todayHighlight: true,
+            language: "pt-BR"
+        });
+
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block styleHead %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
+  rel="stylesheet" />
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Financeiro</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Incluir Conta à Pagar</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block conteudo %}
+
+
+
+<div class="d-flex bd-highlight mb-3">
+    <div class="me-auto p-2 bd-highlight">
+        <span style="font-size:30px; color:green; margin-top: 5px">Pagamento de Conta</span>    
+    </div>
+
+    <div class="ms-auto p-2 bd-highlight">
+        <button type="submit" form="form_pagamento" class="btn btn-success">Pagar</button>
+        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-light">Voltar</a>
+    </div>
+    
+</div>
+<hr>
+
+<div class="card border-secondary mb-3" style="{{mostrar_conta}}">
+  <div class="card-body">
+    <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:13px;">
+    <thead style="border:solid 2px;border-color:#cb356b;background:linear-gradient(to right, #cb356b, #bd3f32); color: white;">
+        <tr>
+            <th scope="col">Documento</th>
+            <th scope="col">Emissão</th>
+            <th scope="col">Descrição</th>
+            <th scope="col">Fornecedor</th>
+            <th scope="col">Centro de Custo</th>
+            <th scope="col">Valor</th>
+            <th scope="col">Vencimento</th>
+            <th scope="col">Usuário</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{conta_atual.documento}}</td>
+            <td>{{conta_atual.data_inclusao}}</td>
+            <td>{{conta_atual.descricao}}</td>
+            {% if conta_atual.fornecedor %}
+            <td>{{conta_atual.fornecedor}}</td>
+            {% else %}
+            <td> - </td>
+            {% endif %}
+            <td>{{conta_atual.centro_de_custo}}</td>
+            <td>{{conta_atual.valor}}</td>
+            <td>{{conta_atual.vencimento}}</td>
+            <td>{{conta_atual.usuario.username}}</td>
+    </tbody>
+</table>
+
+  </div>
+</div>
+
+
+<div class="card border-light mb-3">
+  <div class="card-header">Realizar Pagamento:</div>
+  <div class="card-body">
+    
+
+<form action="" method="post" autocomplete="off" id="form_pagamento">
+    {% csrf_token %}
+
+    {% for hidden_field in form.hidden_fields %}
+    {{ hidden_field }}
+    {% endfor %}
+
+    <div class="form-group row mb-3">
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Data Pagamento:</div>
+                {% render_field form.data class="form-control date" name="data_inclusao"%}
+            </div>
+        </div>
+
+
+        <div class="col-3">
+            <div class="form-check">
+            <input class="form-check-input" type="checkbox" name ="total" id="flexCheckDefault" {{checked}}>
+            <label class="form-check-label" for="flexCheckDefault">
+                Pagamento Total?
+            </label>
+        </div>
+
+        </div>
+   
+
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Outro Valor:</div>
+                {% render_field form.valor class="form-control money" id="valorCampo" name="valor" required='required'%}
+            </div>
+        </div>
+
+     </div>
+
+    <div class="form-group row mb-3">
+        <div class="col-7">
+            <div class="input-group">
+                <div class="input-group-text">Obs:</div>
+                {% render_field form.obs class="form-control" name="obs"%}
+            </div>
+        </div>
+    </div>
+
+
+</form>
+  </div>
+</div>
+
+
+{% endblock%}
+
+{% block jquery %}
+<script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.pt-BR.min.js' %}"></script>
+<script src="{% static 'js/jquery.mask.js' %}"></script>
+<script>
+
+    $(document).ready(function () {
+
+        //Check 'Pagamento total' está ativo seta disable no input 'valor' automatico
+        if($('#flexCheckDefault').is(':checked')){    
+            $('#valorCampo').prop('disabled','disabled')
+        }else{
+            $('#valorCampo').prop('disabled', false)    
+        }
+
+
+        //Check 'Pagamento total' é clickado seta disable/enable no input 'valor'
+        $('#flexCheckDefault').change(function(){
+            if($(this).is(':checked')){    
+                $('#valorCampo').prop('disabled','disabled')
+                $('#valorCampo').val('{{conta_atual.valor}}')
+            }else{
+                $('#valorCampo').prop('disabled', false)
+                $('#valorCampo').val('')    
+            }
+        });   
+
+        //mascara de Valor
+        $('.money').mask('000.000.000.000.000,00', {reverse: true});
+
+        //DatePicker
+        $(".date").datepicker({
+            format: "dd/mm/yyyy",
+            todayHighlight: true,
+            language: "pt-BR"
+        });
+    });
+
+    
+
+</script>
+{% endblock %}

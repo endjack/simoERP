@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Financeiro</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Contas à Pagar/Pagas</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block styleHead %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
+  rel="stylesheet" />
+<style>
+
+    .destaque-entrada {
+        color: #021b79 !important;
+        font-weight: bold;
+         !important;
+    }
+
+    .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="row">
+    <span style="font-size:30px; color:#021b79; margin-top: 5px"> {% if is_edit %} Editar Recebimento {% else %} Resumo de Recebimentos {% endif %} </span>
+    <hr>
+</div>
+
+
+<div class="card mb-3 border border-dark" style="border-color: #093637;">
+    <div class="card-header text-white " style="background: linear-gradient(to right, #021b79, #0575e6);">
+        {% if not is_edit %}Novo Recebimento {% else %} Editar Recebimento {% endif %}</div>
+    <div class="card-body">
+
+        <form class="mb-3" method="post" autocomplete="off">
+            {% csrf_token %}
+
+            {% for hidden_field in form.hidden_fields %}
+            {{ hidden_field }}
+            {% endfor %}
+
+
+            <!-- 3 column grid layout -->
+            <div class="form-group row mb-3">
+
+                <div class="col-3">
+                    <div class="input-group">
+                        <div class="input-group-text">Data:</div>
+                        {% render_field form.data class="form-control date datepicker" id="date" name="data"%}
+                    </div>
+                </div>
+
+                <div class="col-3">
+                    <div class="input-group">
+                        <div class="input-group-text">Documento: </div>
+                        {% render_field form.documento class="form-control" id="documento" name="documento"%}
+                    </div>
+                </div>
+
+
+                <div class="col-6">
+                    <div class="input-group">
+                        <div class="input-group-text">Centro de Custo: </div>
+                        {% render_field form.centro_de_custo class="form-control" id="centro_de_custo" name="centro_de_custo"%}
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 3 column grid layout -->
+            <div class="form-group row mb-3">
+
+                <div class="col-9">
+                    <div class="input-group">
+                        <div class="input-group-text">Descrição: </div>
+                        {% render_field form.descricao class="form-control" id="descricao" name="descricao" %}
+                    </div>
+                </div>
+
+
+                <div class="col-3">
+                    <div class="input-group">
+                        <div class="input-group-text">Valor: </div>
+                        {% render_field form.valor class="form-control money" id="valor" name="valor" %}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="form-group row mb-3">
+
+                <div class="col-9">
+                    <div class="input-group">
+                        <div class="input-group-text">Observações: </div>
+                        {% render_field form.obs class="form-control" id="obs" name="obs" %}
+                    </div>
+                </div>
+
+
+
+            </div>
+
+
+            <div class="col-2">
+                <button type="submit" class="btn btn-success">{% if is_edit %} Salvar {% else %} Receber {% endif %}</button>
+                {% if is_edit %}
+                <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-light">Voltar</a>
+                {% endif %}
+            </div>
+        </form>
+
+
+
+
+
+
+
+    </div>
+</div>
+
+{% if not is_edit %}
+Recebimentos Adicionados: <br>
+<div class="card mb-3 p-3" style="border-color: #093637;">
+    <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:13px;">
+        <thead
+            style="border:solid 2px;border-color:#021b79;background:linear-gradient(to right, #021b79, #0575e6 ); color: white;">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Data</th>
+                <th scope="col">Documento</th>
+                <th scope="col">Descrição</th>
+                <th scope="col">Centro de Custo</th>
+                <th scope="col">Valor</th>
+                <th scope="col">Opções</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in contas_a_receber_list %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{item.data | date:"d/m/Y"}}</td>
+                <td>{{item.documento}}</td>
+                <td>{{item.descricao}}</td>
+                <td>{{item.centro_de_custo}}</td>
+                <td class="destaque-entrada">{{item.valor}}</td>
+                <td>
+                    <a href="{% url 'editar-conta-a-receber' item.pk %}" title="Editar Recebimento: {{item.descricao}}"><span style="color: DodgerBlue;"><i
+                                class="fas fa-pen-square fa-lg"></i></span></a>
+                    <a href="{% url 'excluir-conta-a-receber' item.pk %}" title="Excluir Recebimento: {{item.descricao}}"><span style="color: tomato;"><i
+                                class="fas fa-trash fa-lg"></i></span></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock%}
+
+{% block jquery %}
+<script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.pt-BR.min.js' %}"></script>
+<script src="{% static 'js/jquery.mask.js' %}"></script>
+<script src="../static/js/datatables.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        //masks
+        $('.money').mask('000.000.000,00', {
+            reverse: true
+        });
+
+   
+        //DatePicker
+        $(".date").datepicker({
+            format: "dd/mm/yyyy",
+            todayHighlight: true,
+            language: "pt-BR"
+        });
+
+
+        $('.tabela-listar').DataTable({
+            responsive: true,
+            // "bSort": false,
+            "aaSorting": [],
+            "pageLength": 10,
+            "order": [
+                [2, "desc"]
+            ], //3º tabela em ordem decrescente
+            "language": {
+
+                "decimal": "",
+                "emptyTable": "Sem dados disponíveis",
+                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+                "infoFiltered": "(filtrado de _MAX_ registros no total)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "loadingRecords": "A carregar dados...",
+                "processing": "A processar...",
+                "search": "Procurar:",
+                "zeroRecords": "Não foram encontrados resultados",
+                "paginate": {
+                    "first": "Primeiro",
+                    "last": "Último",
+                    "next": "Seguinte",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": ordem crescente",
+                    "sortDescending": ": ordem decrescente"
+                }
+            }
+        });
+
+
+
+    });
+</script>
+{% endblock %}

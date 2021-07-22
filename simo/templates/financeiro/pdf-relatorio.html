@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório</title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin:1cm;
+        }
+
+        .destaque-saida {
+            color: red !important;
+            font-weight: bold;
+             !important;
+        }
+
+        .destaque-entrada {
+            color: green !important;
+            font-weight: bold;
+             !important;
+        }
+
+        .centralizar {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .centralizar-v {
+            vertical-align: middle;
+        }
+    </style>
+
+
+</head>
+
+<body>
+<div class="d-flex justify-content-between" style="font-size:10px;">
+    <div class="">BRASIL CONSTRUÇÃO LTDA - {% now "SHORT_DATETIME_FORMAT" %}</div>
+    <div class="">Usuário: {{usuario}}</div>
+</div>
+
+    <div class="d-flex justify-content-center"><h4>Relatório de Contas</h4> </div>
+
+  
+
+    <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px; border-color:gray">
+        <thead class="centralizar"
+            style="border:solid 2px;border-color:#cb356b;background:linear-gradient(to right, #cb356b, #bd3f32); color: white;">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Doc</th>
+                <th scope="col">Emissão</th>
+                <th scope="col">Descrição</th>
+                <th scope="col">Fornecedor</th>
+                <th scope="col">Valor</th>
+                {% if dados_banco %}
+                    <th scope="col">Dados Bancários</th>
+                {% endif %}
+                <th scope="col">Vencimento</th>
+                <th scope="col">Pago?</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in filter.qs %}
+            <tr>
+                <td class="centralizar">{{forloop.counter}}</td>
+                <td class="centralizar">{{item.documento}}</td>
+                <td class="centralizar">{{item.data_inclusao | date:"d/m/y"}}</td>
+                <td class="centralizar-v">{{item.descricao}}</td>
+                {% if item.fornecedor %}
+                <td class="centralizar-v" >{{item.fornecedor}}</td>
+                {% else %}
+                <td class="centralizar-v"> - </td>
+                {% endif %}
+                {% if item.pago %}
+                <td class="destaque-entrada centralizar">&nbsp&nbsp{{item.valor}}&nbsp&nbsp</td>
+                {% else %}
+                <td class="destaque-saida centralizar">&nbsp&nbsp{{item.valor}}&nbsp&nbsp</td>
+                {% endif %}
+
+                {% if dados_banco %}
+                <td>
+                    {% if item.fornecedor.conta %}
+                        Banco: {{item.fornecedor.banco}}<br> 
+                        Agência: {{item.fornecedor.agencia}} - Conta: {{item.fornecedor.conta}}<br>    
+                        Tipo de Conta: {{item.fornecedor.tipo_conta}}<br>
+                    {% endif %}
+                    
+                    {% if item.fornecedor.pix %}
+                       PIX: {{item.fornecedor.pix}}-{{item.fornecedor.tipo_pix}}
+                    {% endif %}
+                </td>
+                {% endif %}
+
+                <td class="centralizar">{{item.vencimento | date:"d/m/y"}}</td>
+                {% if item.pago %}
+                <td class="destaque-entrada centralizar">
+                    SIM
+                    {% else %}
+                <td class="destaque-saida centralizar">
+                    NÃO
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+<div class="d-flex justify-content-end">Total: R$ {{total}}</div>  
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block breadcrumb %}
+  <div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="../">Início</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Lista de Requisições</li>
+      </ol>
+    </nav>
+  </div>
+{% endblock %}
+
+{% block conteudo %}
+
+<table class="table table-bordered table-striped" id="tabela-listar">
+  <thead>
+    <tr>
+      <th scope="col">Id</th>
+      <th scope="col">Obra</th>
+      <th scope="col">Local</th>
+      <th scope="col">Solicitante</th>
+      <th scope="col">Almoxarife</th>
+      <th scope="col">Data</th>
+      <th scope="col">Opções</th>
+    </tr>
+  </thead>
+<tbody>
+{% for item in context['itensEstoque'] =  Estoque.objects.order_by('pk').all()   %}
+    <tr>
+      <td>{{item.id}}</td>
+      <td>{{item.obra}}</td>
+      <td>{{item.local}}</td>
+      <td>{{item.solicitante}}</td>
+      <td>{{item.almoxarife}}</td>
+      <td>{{item.data | date:"d/m/Y"}}</td>
+      <td><button type="button" onclick="abrir_modal('{% url 'detalhar-itens' item.id %}')" class="btn btn-info">Ver Itens</button></td>
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
+
+<div class="modal fade" id="editar" role="dialog"></div>
+{% endblock %}
+
+{% block jquery %}
+<script src="../static/js/datatables.min.js"></script>
+
+<script type="text/javascript">
+
+  var $ = jQuery.noConflict();
+
+  function abrir_modal(url){
+    $('#editar').load(url, function(){
+      $(this).modal('show');
+    });
+  };
+
+</script>
+
+<script>
+$('#tabela-listar').DataTable({
+        responsive: true,
+        // "bSort": false,
+        "aaSorting": [],
+        "pageLength": 10,
+        "language": {
+
+            "decimal": "",
+            "emptyTable": "Sem dados disponíveis",
+            "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+            "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+            "infoFiltered": "(filtrado de _MAX_ registros no total)",
+            "infoPostFix": "",
+            "thousands": ",",
+            "lengthMenu": "Mostrar _MENU_ registros",
+            "loadingRecords": "A carregar dados...",
+            "processing": "A processar...",
+            "search": "Procurar:",
+            "zeroRecords": "Não foram encontrados resultados",
+            "paginate": {
+                "first": "Primeiro",
+                "last": "Último",
+                "next": "Seguinte",
+                "previous": "Anterior"
+            },
+            "aria": {
+                "sortAscending": ": ordem crescente",
+                "sortDescending": ": ordem decrescente"
+            }
+        }
+    });
+</script>
+
+{% endblock%}

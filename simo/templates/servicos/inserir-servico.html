@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block styleHead %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
+  rel="stylesheet" />
+{% endblock %}
+
+
+{% block breadcrumb %}
+<div class="row">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="../">Serviços</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Inserir/Editar Serviço</li>
+    </ol>
+  </nav>
+</div>
+{% endblock %}
+
+
+{% block conteudo %}
+{% comment %} TITULO {% endcomment %}
+<div class="row mb-3">
+  <div class="titulo col-6 align-self-center">
+    <div class="row d-flex align-self-center justify-content-center">
+      {% if editar %}
+      <h5>EDITAR SERVIÇO </h5>
+      {% else %}
+      <h5>INSERIR SERVIÇO </h5>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-3"></div>
+  {% comment %} BOTÕES DE VOLTAR E CONTINUAR {% endcomment %}
+  <div class="col-3">
+    <div class="btn-group">
+      <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-light">Voltar</a>
+    </div>
+    <div class="btn-group">
+      {% if editar %}
+      <button type="submit" form="formServico" class="btn btn-success">Salvar</button>
+      {% else %}
+      <button type="submit" form="formServico" class="btn btn-success">Continuar</button>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% comment %} CARD FORMULARIO PARA INSERIR SERVIÇOS {% endcomment %}
+<div class="card border-dark mb-3 border border-dark">
+  <div class="card-header text-white " style="background: linear-gradient(to right, #093637, #44a08d);">Dados do
+    Serviço:</div>
+  <div class="card-body">
+
+    <form action="" method="post" id="formServico" style="margin-top:20px" autocomplete="off">
+      {% csrf_token %}
+
+      {% for hidden_field in form.hidden_fields %}
+      {{ hidden_field }}
+      {% endfor %}
+
+      <!-- Text input -->
+      <div class="row mb-3">
+        <div class="col">
+          <div class="input-group">
+            <div class="input-group-text">Descrição: </div>
+            {% render_field form.descricao class="form-control" id="descricao" name="descricao" %}
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 column grid layout -->
+      <div class="row mb-3">
+        <div class="col">
+          <div class="input-group">
+            <div class="input-group-text">Início: </div>
+            {% render_field form.data_inicio class="form-control date" id="data_inicio" name="data_inicio" %}
+          </div>
+        </div>
+        <div class="col">
+          <div class="input-group">
+            <div class="input-group-text">Prazo:</div>
+            {% render_field form.prazo class="form-control date" id="prazo" name="prazo" %}
+          </div>
+        </div>
+        <div class="col">
+          <div class="input-group">
+            <div class="input-group-text labelButton" style="color:blue;">Situação: </div>
+            {% render_field form.situacao class="form-control" id="situacao" name="situacao" style="color:blue;"%}
+          </div>
+        </div>
+        <div class="col">
+          <div class="input-group">
+            <div class="input-group-text">Término: </div>
+            {% render_field form.data_termino class="form-control date" id="data_termino" name="data_termino" disabled="disabled"%}
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Text input -->
+      <div class="row mb-3">
+      <div class="col">
+        <div class="input-group">
+          <div class="input-group-text">Obs: </div>
+          {% render_field form.obs class="form-control" id="obs" style="height: 60px" name="obs"%}
+        </div>
+      </div>
+      </div>
+
+    </form>
+
+
+
+
+    {% comment %} DADOS DA ORDEM {% endcomment %}
+    <div class="card border-dark mb-3 border border-dark">
+      <div class="card-header text-white " style="background: linear-gradient(to right, #0f2027, #203a43, #2c5364);">
+        Dados
+        da Ordem de Serviço nº {{ordem_serv_atual.pk}}</div>
+      <div class="card-body">
+
+        <ol class="list-group">
+
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <div class="fw-bold">Obra:</div>
+              {{ordem_serv_atual.obra}}
+            </div>
+            <div class="ms-2 me-auto">
+              {% if ordem_serv_atual.local %}
+              <div class="fw-bold">Local:</div>
+              {{ordem_serv_atual.local}}
+              {% else %}
+              <div class="" style="color:#d9d9d9">Local:</div>
+              -
+              {% endif %}
+            </div>
+          </li>
+
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              {% if ordem_serv_atual.encarregado %}
+              <div class="fw-bold">Encarregado:</div>
+              {{ordem_serv_atual.encarregado}}
+              {% else %}
+              <div class="" style="color:#d9d9d9">Encarregado:</div>
+              -
+              {% endif %}
+            </div>
+            <div class="ms-2 me-auto">
+              {% if ordem_serv_atual.data %}
+              <div class="fw-bold">Data:</div>
+              {{ordem_serv_atual.data}}
+              {% else %}
+              <div class="" style="color:#d9d9d9">Data:</div>
+              -
+              {% endif %}
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block jquery %}
+
+<script src="{% static 'js/jquery-ui.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
+
+<script>
+  $(document).ready(function () {
+    mudarSituacao();
+
+    function mudarSituacao() {
+      if ($("#situacao").val() == 'FINALIZADO') {
+        $(".labelButton").css("color", "green");
+        $("#situacao").css("color", "green");
+        $("#data_termino").prop('disabled', false);
+      }
+      if ($("#situacao").val() == 'EM ANDAMENTO') {
+        $(".labelButton").css("color", "blue");
+        $("#situacao").css("color", "blue");
+        $("#data_termino").prop('disabled', 'disabled').val("");
+      }
+      if ($("#situacao").val() == 'PENDENTE') {
+        $(".labelButton").css("color", "OrangeRed");
+        $("#situacao").css("color", "OrangeRed");
+        $("#data_termino").prop('disabled', 'disabled').val("");
+      }
+      if ($("#situacao").val() == 'PARALISADO') {
+        $(".labelButton").css("color", "Maroon");
+        $("#situacao").css("color", "Maroon");
+        $("#data_termino").prop('disabled', 'disabled').val("");
+      }
+      if ($("#situacao").val() == 'NÃO INICIADO') {
+        $(".labelButton").css("color", "red");
+        $("#situacao").css("color", "red");
+        $("#data_termino").prop('disabled', 'disabled').val("");
+      }
+    }
+
+    $("#situacao").change(function () {
+      mudarSituacao();
+    });
+
+
+    //Auto-Complete Funcionários
+    $("#funcionarios").autocomplete({
+      source: "{% url 'autocomplete-funcionarios' %}"
+    });
+
+
+    //DatePicker
+    $(".date").datepicker({
+      todayHighlight: true,
+    });
+
+
+
+  });
+</script>
+{% endblock%}

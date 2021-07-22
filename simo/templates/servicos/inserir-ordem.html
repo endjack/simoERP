@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block breadcrumb %}
+<div class="row">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="../ver-requisicoes">Serviços</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Inserir Ordem de Serviço</li>
+    </ol>
+  </nav>
+</div>
+{% endblock %}
+
+{% block conteudo %}
+
+
+<div class="card mb-3 border border-dark" style="border-color: #093637;">
+  <div class="card-header text-white " style="background: linear-gradient(to right, #093637, #44a08d );">
+    Nova Ordem de Serviço</div>
+  <div class="card-body">
+
+
+    <form class="mb-3" method="post" autocomplete="off" id="form_Os">
+      {% csrf_token %}
+
+      {% for hidden_field in form.hidden_fields %}
+      {{ hidden_field }}
+      {% endfor %}
+
+      <div class="form-group row mb-3">
+        
+        <div class="col-4">
+          <div class="input-group">
+            <div class="input-group-text">Local: </div>
+            {% render_field form.local class="form-control" id="local" name="local" %}
+            <button type="button" class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        </div>
+
+
+        <div class="col-6">
+          <div class="input-group">
+            <div class="input-group-text">Solicitante: </div>
+            {% render_field form.solicitante class="form-control" id="solicitante" name="solicitante"%}
+          </div>
+        </div>
+      </div>
+
+
+      <!-- 3 column grid layout -->
+      <div class="form-group row mb-3">
+
+        <div class="col-2">
+          <div class="input-group">
+            <div class="input-group-text">Data:</div>
+            {% render_field form.data class="form-control date datepicker" id="date" name="data"%}
+          </div>
+        </div>
+
+        <div class="col-8">
+          <div class="input-group">
+            <div class="input-group-text">Encarregado: </div>
+            {% render_field form.encarregado class="form-control" id="encarregado" name="encarregado"%}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 3 column grid layout -->
+      <div class="form-group row mb-3">
+
+        <div class="col-5">
+          <div class="input-group">
+            <div class="input-group-text">Centro de Custo: </div>
+            {% render_field form.obra class="form-control" id="obra" name="obra" %}
+          </div>
+        </div>
+
+
+        
+
+        <div class="col-2">
+          <button type="submit" class="btn btn-success">Gerar Ordem</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+
+Ordem de Serviço Adicionadas: <br>
+<div class="card mb-3 p-3" style="border-color: #093637;">
+<table class="table table-sm table-bordered tabela-listar">
+  <thead class="card-header text-white " style="background: linear-gradient(to right, #0f2027, #203a43, #2c5364);">
+    <tr>
+      <th scope="col">Id</th>
+      <th scope="col">Data</th>
+      <th scope="col">Solicitante</th>
+      <th scope="col">Obra</th>
+      <th scope="col">Local</th>
+      <th scope="col">Encarregado</th>
+      <th scope="col">Opções</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for ordem in lista_ordens %}
+    <tr>
+      <td>{{ordem.pk}}</td>
+      <td>{{ordem.data | date:"d/m/Y"}}</td>
+      {% if ordem.solicitante %}
+      <td>{{ordem.solicitante}}</td>
+      {% else %}
+      <td>-</td>
+      {% endif %}
+      <td>{{ordem.obra}}</td>
+      <td>{{ordem.local}}</td>
+      <td>{{ordem.encarregado}}</td>
+
+      <td><a href="{% url 'salvar-ordem-servico' ordem.pk %}"><span style="color:blue">Ver Serviços</span></a>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Novo Local de Serviço</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <form method="post" id="form_local">
+            {% csrf_token %}
+            <div class="form-group row">
+              <div class="input-group">
+                <div class="input-group-text">Local: </div>
+                <input type="text" class="form-control" name="new_local">
+              </div>
+            </div>
+          </form>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button form="form_local" type="submit" id="salvarLocal" class="btn btn-primary" name="">Adicionar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Fim Modal -->
+
+<!-- Toast -->
+  {% for message in messages %}
+  <div class="position-fixed bottom-0 end-0 p-3 " style="z-index: 11">  
+    <div id="liveToast" class="toast align-items-center text-black {{ message.tags }} border-0" role="alert"
+      aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+            {{ message }}
+        </div>
+        <button type="button" class="btn-close btn-close-black me-2 m-auto" id="closeToast"></button>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  <!-- Fim Toast -->
+
+{% endblock %}
+
+{% block jquery %}
+<script src="{% static 'js/jquery-ui.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
+<script src="../static/js/datatables.min.js"></script>
+<script>
+  $(document).ready(function () {
+
+    //Toast Events 
+      $("#liveToast").toast('show');
+      $( "#closeToast" ).click(function() {
+        $("#liveToast").toast('hide');
+      });
+
+    //DatePicker
+    $(".date").datepicker({
+      format: "dd/mm/yyyy",
+      todayHighlight: true,
+      language: "pt-BR",
+      zIndexOffset: 10000,
+    });
+  });
+
+  $('.tabela-listar').DataTable({
+    responsive: true,
+    // "bSort": false,
+    "aaSorting": [],
+    "pageLength": 10,
+    "language": {
+
+      "decimal": "",
+      "emptyTable": "Sem dados disponíveis",
+      "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+      "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+      "infoFiltered": "(filtrado de _MAX_ registros no total)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "Mostrar _MENU_ registros",
+      "loadingRecords": "A carregar dados...",
+      "processing": "A processar...",
+      "search": "Procurar:",
+      "zeroRecords": "Não foram encontrados resultados",
+      "paginate": {
+        "first": "Primeiro",
+        "last": "Último",
+        "next": "Seguinte",
+        "previous": "Anterior"
+      },
+      "aria": {
+        "sortAscending": ": ordem crescente",
+        "sortDescending": ": ordem decrescente"
+      }
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block styleHead %}
+<style>
+</style>
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="row">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="../">Serviços</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Salvando Ordem de Serviço</li>
+    </ol>
+  </nav>
+</div>
+{% endblock %}
+
+{% block conteudo %}
+
+{% comment %} TITULO {% endcomment %}
+<div class="row mb-3">
+  <div class="titulo col-6 align-self-center">
+    <div class="row d-flex align-self-center justify-content-center">
+      <strong>
+        <h5>ORDEM DE SERVIÇO Nº {{ordem_serv_atual.pk}}</h5>
+      </strong>
+    </div>
+  </div>
+
+  {% comment %} BOTÕES DE VOLTAR E CONTINUAR {% endcomment %}
+  <div class="col-6 d-flex justify-content-end mb-3">
+    <div class="btn-group">
+      <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-light">Voltar</a>
+    </div>&nbsp&nbsp
+    <div class="btn-group">
+      <a href="{% url 'listar-ordens' %}" class="btn btn-info">Ver Ordens</a>
+    </div>&nbsp&nbsp
+    <div class="btn-group">
+      <button type="button" class="btn btn-danger">Gerar PDF</button>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-3 border border-dark" style="border-color: #093637;">
+  
+  <div class="card-header text-white " style="background: linear-gradient(to right, #0f2027, #203a43, #2c5364);">
+    Ordem de Serviço - {{ordem_serv_atual.obra}} &nbsp&nbspLocal: {{ordem_serv_atual.local}}</div>
+  <div class="card-body">
+
+    <ol class="list-group mb-4">
+
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          {% if ordem_serv_atual.solicitante %}
+          <div class="fw-bold">Solicitante:</div>
+          {{ordem_serv_atual.solicitante}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Solicitante:</div>
+          -
+          {% endif %}
+        </div>
+        <a href="{% url 'inserir-servico' ordem_serv_atual.pk %}" class="btn btn-success" title="Novo Serviço"></i>Novo
+          Serviço</span></a>
+      </li>
+
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          <div class="fw-bold">Obra:</div>
+          {{ordem_serv_atual.obra}}
+        </div>
+        <div class="ms-2 me-auto">
+          {% if ordem_serv_atual.local %}
+          <div class="fw-bold">Local:</div>
+          {{ordem_serv_atual.local}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Local:</div>
+          -
+          {% endif %}
+        </div>
+      </li>
+
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          {% if ordem_serv_atual.encarregado %}
+          <div class="fw-bold">Encarregado:</div>
+          {{ordem_serv_atual.encarregado}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Encarregado:</div>
+          -
+          {% endif %}
+        </div>
+        <div class="ms-2 me-auto">
+          {% if ordem_serv_atual.data %}
+          <div class="fw-bold">Data:</div>
+          {{ordem_serv_atual.data}}
+          {% else %}
+          <div class="" style="color:#d9d9d9">Data:</div>
+          -
+          {% endif %}
+        </div>
+        <a href="{% url 'excluir-ordem' ordem_serv_atual.pk %}" style="color:Tomato; font-size: 20px;"
+          title="Excluir Ordem de Serviço"><i class="fas fa-trash"></i></a>
+
+      </li>
+    </ol>
+
+    Lista de Serviços:
+
+    <div class="accordion" id="accordionServico">
+      {% for serv_atual in serv_atuais %}
+      <div class="accordion-item border border-dark ">
+
+        {% comment %} HEADER Accordion {% endcomment %}
+        {% if serv_atual.situacao == 'FINALIZADO' %}
+        <div class="accordion-header" id="acordS{{serv_atual.pk}}">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse"
+            data-bs-target="#collapseServ{{serv_atual.pk}}" aria-expanded="true"
+            aria-controls="collapseServ{{serv_atual.pk}}">
+            {{forloop.counter}} -&emsp;<span style="color:green">FINALIZADO&emsp;</span>-&emsp;SERVIÇO:
+            {{serv_atual.descricao | upper}}
+          </button>
+        </div>
+        {% endif %}
+
+        {% if serv_atual.situacao == 'EM ANDAMENTO' %}
+        <div class="accordion-header" id="acordS{{serv_atual.pk}}">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse"
+            data-bs-target="#collapseServ{{serv_atual.pk}}" aria-expanded="true"
+            aria-controls="collapseServ{{serv_atual.pk}}">
+            {{forloop.counter}} -&emsp;<span
+              style="color:red">{{serv_atual.situacao | upper}}</span>&emsp;-&emsp;SERVIÇO:
+            {{serv_atual.descricao | upper}}
+          </button>
+        </div>
+        {% endif %}
+
+        {% if serv_atual.situacao == 'NÃO INICIADO' %}
+        <div class="accordion-header" id="acordS{{serv_atual.pk}}">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse"
+            data-bs-target="#collapseServ{{serv_atual.pk}}" aria-expanded="true"
+            aria-controls="collapseServ{{serv_atual.pk}}">
+            {{forloop.counter}} -&emsp;<span
+              style="color:blue">{{serv_atual.situacao | upper}}</span>&emsp;-&emsp;SERVIÇO:
+            {{serv_atual.descricao | upper}}
+          </button>
+        </div>
+        {% endif %}
+
+        {% if serv_atual.situacao == 'PENDENTE' %}
+        <div class="accordion-header" id="acordS{{serv_atual.pk}}">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse"
+            data-bs-target="#collapseServ{{serv_atual.pk}}" aria-expanded="true"
+            aria-controls="collapseServ{{serv_atual.pk}}">
+            {{forloop.counter}} -&emsp;<span
+              style="color:OrangeRed">{{serv_atual.situacao | upper}}</span>&emsp;-&emsp;SERVIÇO:
+            {{serv_atual.descricao | upper}}
+          </button>
+        </div>
+        {% endif %}
+
+        {% if serv_atual.situacao == 'PARALISADO' %}
+        <div class="accordion-header" id="acordS{{serv_atual.pk}}">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse"
+            data-bs-target="#collapseServ{{serv_atual.pk}}" aria-expanded="true"
+            aria-controls="collapseServ{{serv_atual.pk}}">
+            {{forloop.counter}} -&emsp;<span
+              style="color:Maroon">{{serv_atual.situacao | upper}}</span>&emsp;-&emsp;SERVIÇO:
+            {{serv_atual.descricao | upper}}
+          </button>
+        </div>
+        {% endif %}
+
+
+        {% comment %} BODY Accordion {% endcomment %}
+        <div id="collapseServ{{serv_atual.pk}}" class="accordion-collapse collapse show"
+          aria-labelledby="acordS{{serv_atual.pk}}" data-bs-parent="#accordionServico">
+          <div class="accordion-body">
+
+
+            <ol class="list-group mb-4">
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  {% if serv_atual.descricao %}
+                  <div class="fw-bold"> <a href="{% url 'editar-servico' ordem_serv_atual.pk serv_atual.pk %}"
+                      style="color:DodgerBlue; font-size: 20px;" title="Editar Serviço"><i
+                        class="fas fa-pen-square"></i></a>&nbsp Descrição:</div>
+                  {{serv_atual.descricao}}
+                  {% else %}
+                  <div class="" style="color:#d9d9d9"><a
+                      href="{% url 'editar-servico' ordem_serv_atual.pk serv_atual.pk %}"
+                      style="color:gray; font-size: 20px;" title="Editar Serviço"><i
+                        class="fas fa-pen-square"></i></a>&nbsp Descrição:</div> - {% endif %}
+                </div>
+                {% if not serv_atual.finalizado %}
+                <a href="{% url 'finalizar-servico' ordem_serv_atual.pk serv_atual.pk %}"
+                  style="color:MediumSeaGreen; font-size: 30px;" title="Finalizar Serviço"><i
+                    class="fas fa-check-square"></i></a>&nbsp
+                {% else %}
+                <a href="{% url 'editar-servico' ordem_serv_atual.pk serv_atual.pk %}"
+                  style="color:MediumSeaGreen; font-size: 25px;" title="Abrir Serviço">
+                  <i class="fas fa-hammer"></i></i></a>&nbsp
+                {% endif %}
+                <a href="{% url 'anexar-imagens-servicos' ordem_serv_atual.pk serv_atual.pk %}"
+                  style="color:SlateBlue; font-size: 30px;" title="Ver/Anexar Imagens"><i
+                    class="fas fa-images"></i></a>&nbsp
+
+                <a href="{% url 'excluir-servico' ordem_serv_atual.pk serv_atual.pk %}"
+                  style="color:Tomato; font-size: 30px;" title="Excluir Serviço"><i class="fas fa-trash"></i></a>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+
+                <div class="ms-2 me-auto">
+                  {% if serv_atual.data_inicio %}
+                  <div class="fw-bold">Data de Início:</div>
+                  {{serv_atual.data_inicio}}
+                  {% else %}
+                  <div class="" style="color:#d9d9d9">Data de Início:</div> - {% endif %}
+                </div>
+                <div class="ms-2 me-auto">
+                  {% if serv_atual.prazo %}
+                  <div class="fw-bold">Prazo:</div>
+                  {{serv_atual.prazo}}
+                  {% else %}
+                  <div class="" style="color:#d9d9d9">Prazo:</div> - {% endif %}
+                </div>
+                <div class="ms-2 me-auto">
+                  {% if serv_atual.finalizado %}
+                  <div class="fw-bold">Data de Término:</div>
+                  {{serv_atual.data_termino}}
+                  {% else %}
+                  <div class="" style="color:#d9d9d9">Data de Término:</div> - {% endif %}
+                </div>
+
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  {% if serv_atual.obs %}
+                  <div class="fw-bold">Observações:</div>
+                  {{serv_atual.obs |linebreaksbr}}
+                  {% else %}
+                  <div class="" style="color:#d9d9d9">Observações:</div> - {% endif %}
+                </div>
+              </li>
+
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  {% if serv_atual.funcionarioservico_set.count  > 0 %}
+                  <div class="fw-bold"><a
+                      href="{% url 'editar-funcionario-servico' ordem_serv_atual.pk serv_atual.pk %}"
+                      style="color:DodgerBlue; font-size: 20px;" title="Editar Funcionário/Fornecedor"><i
+                        class="fas fa-pen-square"></i></a>&nbsp Funcionários:</div>
+                  {% for func in serv_atual.funcionarioservico_set.all %}
+                  <div class="row"><span>{{func.funcionario.nome}} - {{func.funcionario.cargo}}</span></div>
+                  {% endfor %}
+                  {% else %}
+                  <div class="" style="color:#d9d9d9"><a
+                      href="{% url 'editar-funcionario-servico' ordem_serv_atual.pk serv_atual.pk %}"
+                      style="color:gray; font-size: 20px;" title="Editar Funcionário/Fornecedor"><i
+                        class="fas fa-pen-square"></i></a>&nbsp Funcionários:</div> -
+                  {% endif %}
+                </div>
+              </li>
+
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  {% if serv_atual.fornecedorservico_set.count  > 0 %}
+                  <div class="fw-bold"> Fornecedor:</div>
+                  {% for func in serv_atual.fornecedorservico_set.all %}
+                  <div class="row">
+                    <span>{{func.fornecedor.nome}}{% if func.fornecedor.doc %}-{{func.fornecedor.doc}}{% endif %}</span>
+                  </div>
+                  {% endfor %}
+                  {% else %}
+                  <div class="" style="color:#d9d9d9"> Fornecedor:</div> -
+                  {% endif %}
+                </div>
+              </li>
+
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  {% if serv_atual.itensservico_set.count  > 0 %}
+                  <div class="fw-bold"><a href="{% url 'inserir-itens-servico' ordem_serv_atual.pk serv_atual.pk %}"
+                      style="color:DodgerBlue; font-size: 20px;" title="Editar Materiais"><i
+                        class="fas fa-pen-square"></i></a>&nbsp Materiais:</div>
+                  <table class="table table-bordered table-sm border border-dark">
+                    <thead style="border-color:black;background-color:gray; color: white;">
+                      <tr>
+                        <th scope="col">Cód:</th>
+                        <th scope="col">Descrição</th>
+                        <th scope="col">Quantidade</th>
+                        <th scope="col">Unidade</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for item in serv_atual.itensservico_set.all %}
+                      <tr>
+                        <td>{{item.item.pk}}</td>
+                        <td>{{item.item.descricao}}</td>
+                        <td>{{item.qnt}}</td>
+                        <td>{{item.item.unid_medida}}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                  {% else %}
+                  <div class="" style="color:#d9d9d9"> <a
+                      href="{% url 'inserir-itens-servico' ordem_serv_atual.pk serv_atual.pk %}"
+                      style="color:gray; font-size: 20px;" title="Inserir Materiais"><i
+                        class="fas fa-pen-square"></i></a>&nbsp Materiais:</div> - {% endif %}
+                </div>
+              </li>
+
+            </ol>
+
+          </div>
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% endblock%}
+
+  {% block jquery %}
+  <script>
+    $(document).ready(function () {
+
+      //Esconder todos
+      $('.collapse').collapse('hide');
+
+
+    });
+  </script>
+  {% endblock %}

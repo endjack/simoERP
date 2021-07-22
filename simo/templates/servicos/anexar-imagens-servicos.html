@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="../">Serviços</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Inserir Imagens</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="row col-1 mb-3">
+<a href="{% url 'salvar-ordem-servico' ordem_atual.pk  %}" class="btn btn-light">Voltar</a>
+</div>
+
+<label for="formFile" class="form-label">Clique para Anexar Fotos:</label>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="d-flex flex-row justify-content-start align-items-center">
+        <div class="p-2">
+
+            <input class="form-control" type="file" id="formFile" name="files" multiple required>
+        </div>
+        <div class="p-2 ">
+            <button class="btn btn-success btn-sm" type="submit">Anexar</button>
+        </div>
+    </div>
+</form>
+
+<div class="d-flex flex-column-reverse justify-content-center">
+    {%  for image in fotos_serv_atual %}
+    <div class="row" style="margin:10px">
+        <form id="form_excluir" action="{% url 'deletar-imagem' serv_atual.ordem.pk serv_atual.pk image.pk %}"
+            method="POST">
+            {% csrf_token %}
+            <div class="col-5">
+                <input type="hidden" name="id_foto" value="{{image.pk}}">
+                <img src="{{ image.foto.url }}" class="rounded-3 border border-dark overflow-hidden" width="350"
+                    height="250">
+            </div>
+            <div class="col-3">
+                <a href="{{ image.foto.url }}" target="_blank" class="btn btn-info btn-sm">Ver Imagem</a>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal">
+                    Excluir
+                </button>
+            </div>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Excluir Imagem</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Ter Certeza que deseja Excluir?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info btn-sm" data-bs-dismiss="modal">Sair</button>
+                <button form="form_excluir" type="submit" class="btn btn-danger btn-sm">Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock%}
