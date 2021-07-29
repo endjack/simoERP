@@ -1,0 +1,269 @@
+{% load static %}
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <title>Imprimir Serviços</title>
+    <style>
+        @page {
+            size: portrait;
+            margin: 1cm;
+        }
+
+
+        @media print {
+
+            html,
+            body {
+                height: 99%;
+            }
+        }
+
+        * {
+            color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    </style>
+</head>
+
+<body style="font-family: sans-serif;">
+
+    <div class="d-flex flex-row bd-highlight mb-2" style="margin: 10px 15px;font-size:10px;">
+        <div class="col-6 d-flex justify-content-start">BRASIL CONSTRUÇÃO LTDA - {% now "SHORT_DATETIME_FORMAT" %}</div>
+        <div class="col-6 d-flex justify-content-end">Usuário: {{usuario_atual}}</div>
+    </div>
+
+    <div class="row" style="margin-top:20px">
+        <div class="d-flex justify-content-center">
+            <div class="p-2 bd-highlight">
+                <img src="{% static 'imagens/logo1.png' %}" alt="" height="100" width="150">
+            </div>
+            <div class="p-2 bd-highlight" style="border-right: 4px solid gray;"></div>&emsp;
+            <div class="p-2 bd-highlight">
+                BRASIL CONSTRUÇÃO LTDA <br>
+                CNPJ: 09.235.353/0001-45 <br>
+                brasilconstrucao3@gmail.com <br>
+                (84) 4103-0176
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align:center; margin-top:10px;font-size:16pt;font-weight:bold;">
+        <h5>ORDEM DE SERVIÇO Nº {{ordem_serv_atual.pk}} | SERVIÇO Nº {{serv_atual.pk}}</h5>
+    </div>
+
+    <div style="text-align:center;font-size:10pt;">
+        {{serv_atual.descricao}}
+    </div>
+    {% comment %} DADOS ORDEM DE SERVIÇO {% endcomment %}
+
+    <div class="card-body" style="margin-top:10px;">
+        <ol class="list-group mb-2">
+            Situação:
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+
+                <div class="fw-bold">Status:</div>
+                <div class="ms-2 me-auto">
+                    <span style="color:
+                    {% if serv_atual.situacao == 'NÃO INICIADO' %}red{% endif %}
+                    {% if serv_atual.situacao == 'FINALIZADO' %}green{% endif %}
+                    {% if serv_atual.situacao == 'EM ANDAMENTO' %}blue{% endif %}
+                    {% if serv_atual.situacao == 'PENDENTE' %}OrangeRed{% endif %}
+                    {% if serv_atual.situacao == 'PARALISADO' %}Maroon{% endif %}
+                    ">{{serv_atual.situacao | upper}}</span>
+                </div>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="fw-bold">Data:</div>
+                <div class="ms-2 me-auto">
+                    {% now "SHORT_DATE_FORMAT" %}
+                </div>
+            </li>
+        </ol>
+
+        <ol class="list-group mb-2">
+            Ordem de Serviço:
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    {% if ordem_serv_atual.solicitante %}
+                    <div class="fw-bold">Solicitante:</div>
+                    {{ordem_serv_atual.solicitante}}
+                    {% else %}
+                    <div class="" style="color:#d9d9d9">Solicitante:</div>
+                    -
+                    {% endif %}
+                </div>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold">Obra:</div>
+                    {{ordem_serv_atual.obra}}
+                </div>
+                <div class="ms-2 me-auto">
+                    {% if ordem_serv_atual.local %}
+                    <div class="fw-bold">Local:</div>
+                    {{ordem_serv_atual.local}}
+                    {% else %}
+                    <div class="" style="color:#d9d9d9">Local:</div>
+                    -
+                    {% endif %}
+                </div>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    {% if ordem_serv_atual.encarregado %}
+                    <div class="fw-bold">Encarregado:</div>
+                    {{ordem_serv_atual.encarregado}}
+                    {% else %}
+                    <div class="" style="color:#d9d9d9">Encarregado:</div>
+                    -
+                    {% endif %}
+                </div>
+                <div class="ms-2 me-auto">
+                    {% if ordem_serv_atual.data %}
+                    <div class="fw-bold">Data:</div>
+                    {{ordem_serv_atual.data}}
+                    {% else %}
+                    <div class="" style="color:#d9d9d9">Data:</div>
+                    -
+                    {% endif %}
+                </div>
+            </li>
+        </ol>
+
+
+        {% comment %} DADOS SERVIÇO {% endcomment %}
+        <ol class="list-group mb-2">
+            Serviço:
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    {% if serv_atual.descricao %}
+                    <div class="fw-bold">Descrição:</div>
+                    {{serv_atual.descricao}}
+                    {% else %}
+                    - {% endif %}
+                </div>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    {% if serv_atual.data_inicio %}
+                    <div class="fw-bold">Data de Início:</div>
+                    {{serv_atual.data_inicio}}
+                    {% else %}
+                    <div class="" style="color:#d9d9d9">Data de Início:</div> - {% endif %}
+                </div>
+                <div class="ms-2 me-auto">
+                    {% if serv_atual.prazo %}
+                    <div class="fw-bold">Prazo:</div>
+                    {{serv_atual.prazo}}
+                    {% else %}
+                    <div class="" style="color:#d9d9d9">Prazo:</div> - {% endif %}
+                </div>
+                <div class="ms-2 me-auto">
+                    {% if serv_atual.finalizado %}
+                    <div class="fw-bold">Data de Término:</div>
+                    {{serv_atual.data_termino}}
+                    {% else %}
+                    <div class="" style="color:#d9d9d9">Data de Término:</div> - {% endif %}
+                </div>
+
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    {% if serv_atual.obs %}
+                    <div class="fw-bold">Observações:</div>
+                    {{serv_atual.obs}}
+                    {% else %}
+                    <div class="" style="color:#d9d9d9">Observações:</div> - {% endif %}
+                </div>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    {% if serv_atual.funcionarioservico_set.count  > 0 %}
+                    <div class="fw-bold">Funcionários:</div>
+                    {% for func in serv_atual.funcionarioservico_set.all %}
+                    <div class="row"><span>{{func.funcionario.nome}} - {{func.funcionario.cargo}}</span></div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </li>
+
+            {% if serv_atual.fornecedorservico_set.count  > 0 %}
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold"> Fornecedor:</div>
+                    {% for func in serv_atual.fornecedorservico_set.all %}
+                    <div class="row">
+                        <span>{{func.fornecedor.nome}}{% if func.fornecedor.doc %}-{{func.fornecedor.doc}}{% endif %}</span>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </li>
+
+            {% if serv_atual.itensservico_set.count  > 0 %}
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold">Materiais:</div>
+                    <table class="table table-bordered table-sm border border-dark">
+                        <thead style="border-color:black;background-color:gray; color: white;">
+                            <tr>
+                                <th scope="col">Cód:</th>
+                                <th scope="col">Descrição</th>
+                                <th scope="col">Quantidade</th>
+                                <th scope="col">Unidade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in serv_atual.itensservico_set.all %}
+                            <tr>
+                                <td>{{item.item.pk}}</td>
+                                <td>{{item.item.descricao}}</td>
+                                <td>{{item.qnt}}</td>
+                                <td>{{item.item.unid_medida}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
+                </div>
+            </li>
+
+        </ol>
+
+
+            Parnamirim, {% now "SHORT_DATE_FORMAT" %}.<br><br>
+
+            <div class="d-flex flex-row bd-highlight mb-3">
+                <div class="d-flex justify-content-start">______________________________ <br>
+                    Solicitante {% if ordem_serv_atual.solicitante %}
+                    ({{ordem_serv_atual.solicitante}}):
+                    {% else %}
+                    {% endif %}
+                    </div> 
+
+                 <div class="d-flex ms-auto justify-content-end">______________________________<br>
+                    Resposável (BRASIL CONSTRUÇÃO LTDA)</div>
+            </div>
+   
+    </div>
+
+
+
+    <script>
+        (function () {
+            window.print();
+        })();
+    </script>
+
+
+</body>
+
+</html>

@@ -56,6 +56,7 @@ urlpatterns = [
     path('os/<id_ordem>/<pk>/excluir-servico', ExcluirServicoView.as_view(), name='excluir-servico'),
     path('os/<id_ordem>/<pk>/detalhar-servico', DetalharServicoView.as_view(), name='detalhar-servico'),
     path('os/<id_ordem>/<pk>/finalizar-servico', FinalizarServicoView.as_view(), name='finalizar-servico'),
+    path('os/<id_ordem>/<pk>/imprimir-servico', ImprimirServicoView.as_view(), name='imprimir-os-servico'),
     path('os/<id_ordem>/<pk>/inserir-funcionario', InserirFuncionarioServicoView.as_view(), { 'editar': False }, name='inserir-funcionario-servico'),
     path('os/<id_ordem>/<pk>/editar-funcionario', InserirFuncionarioServicoView.as_view(), { 'editar': True }, name='editar-funcionario-servico'),
     path('os/<id_ordem>/<pk>/inserir-itens', ItensServicoCreateView.as_view(), name='inserir-itens-servico'),
