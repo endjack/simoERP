@@ -139,6 +139,9 @@
                 <a href="{% url 'anexar-imagens-servicos' ordem_serv_atual.pk serv_atual.pk %}"
                     style="color:SlateBlue; font-size: 30px;" title="Ver/Anexar Imagens"><i
                         class="fas fa-images"></i></a>&nbsp
+                
+                <a href="{% url 'imprimir-os-servico' ordem_serv_atual.pk serv_atual.pk %}"
+                  style="color:black; font-size: 30px;" title="Imprimir Ordem de Serviço"><i class="fas fa-print"></i></a>&nbsp
 
                 <a href="{% url 'excluir-servico' ordem_serv_atual.pk serv_atual.pk %}"
                     style="color:Tomato; font-size: 30px;" title="Excluir Serviço"><i class="fas fa-trash"></i></a>

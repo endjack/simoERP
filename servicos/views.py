@@ -368,6 +368,7 @@ class ListFuncionarioServicosView(GroupRequiredMixin, LoginRequiredMixin, ListVi
 
         return context
 
+
 class ImprimirListaFuncionarioServicosView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
     group_required = [u'Administrador', u'Engenharia', u'Encarregado']
@@ -381,6 +382,23 @@ class ImprimirListaFuncionarioServicosView(GroupRequiredMixin, LoginRequiredMixi
         
         context["filter"] = filter_list
         return context
+
+class ImprimirServicoView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Engenharia', u'Encarregado']
+
+    template_name = 'servicos/imprimir-os-servico.html'
+       
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        ordem_atual = OrdemServico.objects.get(pk=self.kwargs.get('id_ordem'))
+        servico_atual = Servico.objects.get(pk=self.kwargs.get('pk'))
+        
+        context["ordem_serv_atual"] = ordem_atual
+        context["serv_atual"] = servico_atual    
+        
+        return context 
+
     
 class ListOrdensView(GroupRequiredMixin, LoginRequiredMixin, ListView):   
     login_url = reverse_lazy('login')
