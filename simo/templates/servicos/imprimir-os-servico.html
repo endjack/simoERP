@@ -60,10 +60,10 @@
     </div>
     {% comment %} DADOS ORDEM DE SERVIÇO {% endcomment %}
 
-    <div class="card-body" style="margin-top:10px;">
-        <ol class="list-group mb-2">
+    <div class="card-body" style="margin-top:10px;font-size:12px;">
+        <ol class="list-group mb-2 ">
             Situação:
-            <li class="list-group-item d-flex justify-content-between align-items-start">
+            <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
 
                 <div class="fw-bold">Status:</div>
                 <div class="ms-2 me-auto">
@@ -77,7 +77,7 @@
                 </div>
             </li>
 
-            <li class="list-group-item d-flex justify-content-between align-items-start">
+            <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
                 <div class="fw-bold">Data:</div>
                 <div class="ms-2 me-auto">
                     {% now "SHORT_DATE_FORMAT" %}
@@ -87,7 +87,7 @@
 
         <ol class="list-group mb-2">
             Ordem de Serviço:
-            <li class="list-group-item d-flex justify-content-between align-items-start">
+            <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
                 <div class="ms-2 me-auto">
                     {% if ordem_serv_atual.solicitante %}
                     <div class="fw-bold">Solicitante:</div>
@@ -99,7 +99,7 @@
                 </div>
             </li>
 
-            <li class="list-group-item d-flex justify-content-between align-items-start">
+            <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
                 <div class="ms-2 me-auto">
                     <div class="fw-bold">Obra:</div>
                     {{ordem_serv_atual.obra}}
@@ -115,7 +115,7 @@
                 </div>
             </li>
 
-            <li class="list-group-item d-flex justify-content-between align-items-start">
+            <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
                 <div class="ms-2 me-auto">
                     {% if ordem_serv_atual.encarregado %}
                     <div class="fw-bold">Encarregado:</div>
@@ -137,11 +137,10 @@
             </li>
         </ol>
 
-
         {% comment %} DADOS SERVIÇO {% endcomment %}
         <ol class="list-group mb-2">
             Serviço:
-            <li class="list-group-item d-flex justify-content-between align-items-start">
+            <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
                 <div class="ms-2 me-auto">
                     {% if serv_atual.descricao %}
                     <div class="fw-bold">Descrição:</div>
@@ -151,7 +150,7 @@
                 </div>
             </li>
 
-            <li class="list-group-item d-flex justify-content-between align-items-start">
+            <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
                 <div class="ms-2 me-auto">
                     {% if serv_atual.data_inicio %}
                     <div class="fw-bold">Data de Início:</div>
@@ -174,7 +173,7 @@
                     <div class="" style="color:#d9d9d9">Data de Término:</div> - {% endif %}
                 </div>
 
-            <li class="list-group-item d-flex justify-content-between align-items-start">
+            <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
                 <div class="ms-2 me-auto">
                     {% if serv_atual.obs %}
                     <div class="fw-bold">Observações:</div>
@@ -184,7 +183,7 @@
                 </div>
             </li>
 
-            <li class="list-group-item d-flex justify-content-between align-items-start">
+            <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
                 <div class="ms-2 me-auto">
                     {% if serv_atual.funcionarioservico_set.count  > 0 %}
                     <div class="fw-bold">Funcionários:</div>
@@ -196,7 +195,7 @@
             </li>
 
             {% if serv_atual.fornecedorservico_set.count  > 0 %}
-            <li class="list-group-item d-flex justify-content-between align-items-start">
+            <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
                 <div class="ms-2 me-auto">
                     <div class="fw-bold"> Fornecedor:</div>
                     {% for func in serv_atual.fornecedorservico_set.all %}
@@ -209,7 +208,7 @@
             </li>
 
             {% if serv_atual.itensservico_set.count  > 0 %}
-            <li class="list-group-item d-flex justify-content-between align-items-start">
+            <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
                 <div class="ms-2 me-auto">
                     <div class="fw-bold">Materiais:</div>
                     <table class="table table-bordered table-sm border border-dark">
@@ -235,23 +234,36 @@
                     {% endif %}
                 </div>
             </li>
-
-        </ol>
-
-
+            </ol>
+            <ol style="margin-top:10px;font-size:12px;">
             Parnamirim, {% now "SHORT_DATE_FORMAT" %}.<br><br>
-
+            
             <div class="d-flex flex-row bd-highlight mb-3">
-                <div class="d-flex justify-content-start">______________________________ <br>
-                    Solicitante {% if ordem_serv_atual.solicitante %}
+
+                <div style="width:30px"> </div>
+
+
+                <div class="d-flex justify-content-center">
+                ______________________________ <br>
+                Solicitante {% if ordem_serv_atual.solicitante %}
                     ({{ordem_serv_atual.solicitante}}):
                     {% else %}
                     {% endif %}
-                    </div> 
+                </div> 
 
-                 <div class="d-flex ms-auto justify-content-end">______________________________<br>
-                    Resposável (BRASIL CONSTRUÇÃO LTDA)</div>
+                <div style="width:10px"> </div>
+
+
+                 <div class="d-flex ms-auto justify-content-center">
+                 ______________________________<br>
+                Resposável (BRASIL CONSTRUÇÃO LTDA)
+                </div>
+
+               
+                 
+               <div style="width:30px"> </div>
             </div>
+            </ol>
    
     </div>
 
