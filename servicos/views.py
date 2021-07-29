@@ -7,7 +7,7 @@ from django.views.generic.edit import DeleteView, FormView, UpdateView
 from django.views.generic.list import ListView
 from servicos.models import Servico
 from funcionarios.models import Funcionario
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from .forms import *
 from django.urls  import reverse_lazy
 from django.views.generic import TemplateView, CreateView
@@ -329,42 +329,57 @@ class ListServicosView(GroupRequiredMixin, LoginRequiredMixin, ListView):
     login_url = reverse_lazy('login')
     group_required = [u'Administrador', u'Engenharia', u'Encarregado']
     
-    
     model = Servico
     template_name = "servicos/listar-servicos.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        objects = Servico.objects.all()
+
+        if not 'descricao' in self.request.GET:
+            objects = Servico.objects.filter(situacao="EM ANDAMENTO")
+        else:
+            objects = Servico.objects.all()
+
         filter_list = ServicosFilter(self.request.GET, queryset= objects )
-
         cache.set('filter', filter_list, 600)
-
         context["filter"] = filter_list  
   
    
-      
         return context
 
 class ListFuncionarioServicosView(GroupRequiredMixin, LoginRequiredMixin, ListView):   
     login_url = reverse_lazy('login')
     group_required = [u'Administrador', u'Engenharia', u'Encarregado']
-    
-    
+      
     model = FuncionarioServico
     template_name = "servicos/listar-servicos-funcionario.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        objects = FuncionarioServico.objects.all()
-        filter_list = ServicosFuncionarioFilter(self.request.GET, queryset= objects )
 
+        if not 'funcionario' in self.request.GET:
+            objects = FuncionarioServico.objects.none()
+        else:
+            objects = FuncionarioServico.objects.all()
+                   
+        filter_list = ServicosFuncionarioFilter(self.request.GET, queryset= objects)
         cache.set('filter_funcionarios', filter_list, 600)
+        context["filter"] = filter_list 
 
-        context["filter"] = filter_list  
-        # context["query_filter"] = self.request.GET    
-   
-      
+        return context
+
+class ImprimirListaFuncionarioServicosView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Engenharia', u'Encarregado']
+
+    template_name = 'servicos/imprimir-lista-servicos-funcionario.html'
+       
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        filter_list = cache.get('filter_funcionarios')
+        
+        context["filter"] = filter_list
         return context
     
 class ListOrdensView(GroupRequiredMixin, LoginRequiredMixin, ListView):   

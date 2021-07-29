@@ -77,8 +77,8 @@ Filtrar Serviços por: <br><br>
 
     <div class="d-flex justify-content-start">
         <input form="form_filtro" class="btn btn-sm btn-info m-2" type="submit" value="Filtrar" />
-        <a class="btn btn-sm btn-light m-2" href="{% url 'listar-servicos' %}">Limpar Campos</a>
-        <a href="{% url 'imprimir-servicos'%}" target="_blank" title="Imprimir Resultados"><span
+        <a class="btn btn-sm btn-light m-2" href="{% url 'listar-servicos-funcionario' %}">Limpar Campos</a>
+        <a href="{% url 'imprimir-servicos-funcionario'%}" target="_blank" title="Imprimir Resultados"><span
                 style="color: black;"><i class="fas fa-print fa-lg"></i></span></a>
     </div>
 
@@ -108,8 +108,8 @@ Resultados: <br>
                     <td>
                     <div style="width:15px;">{{forloop.counter}}</div>
                     </td>
-                    <td>{{funcionario.nome}}</td>
-                    <td>{{funcionario.servico.local}}</td>
+                    <td>{{funcionario.funcionario.nome}}</td>
+                    <td>{{funcionario.servico.ordem.local}}</td>
                     <td><a href="{% url 'detalhar-servico' funcionario.servico.ordem.pk funcionario.servico.pk %}">{{funcionario.servico.descricao}}</a>
                     </td>
                     {% if funcionario.servico.finalizado %}
