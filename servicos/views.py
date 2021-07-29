@@ -1,4 +1,4 @@
-from servicos.filters import ServicosFilter
+from servicos.filters import ServicosFilter, ServicosFuncionarioFilter
 from django.contrib import messages
 from django.db import IntegrityError
 from django.http.response import HttpResponseRedirect
@@ -341,7 +341,28 @@ class ListServicosView(GroupRequiredMixin, LoginRequiredMixin, ListView):
         cache.set('filter', filter_list, 600)
 
         context["filter"] = filter_list  
-        context["query_filter"] = self.request.GET    
+  
+   
+      
+        return context
+
+class ListFuncionarioServicosView(GroupRequiredMixin, LoginRequiredMixin, ListView):   
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Engenharia', u'Encarregado']
+    
+    
+    model = FuncionarioServico
+    template_name = "servicos/listar-servicos-funcionario.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        objects = FuncionarioServico.objects.all()
+        filter_list = ServicosFuncionarioFilter(self.request.GET, queryset= objects )
+
+        cache.set('filter_funcionarios', filter_list, 600)
+
+        context["filter"] = filter_list  
+        # context["query_filter"] = self.request.GET    
    
       
         return context

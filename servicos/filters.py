@@ -24,3 +24,13 @@ class ServicosFilter(django_filters.FilterSet):
     class Meta:
         model = Servico
         fields = ['descricao','data_inicio','situacao','ordem__local',]
+
+
+class ServicosFuncionarioFilter(django_filters.FilterSet):
+    data_inicial = DateFilter(field_name="servico__data_inicio", lookup_expr='gte')
+    data_final = DateFilter(field_name="servico__data_inicio", lookup_expr='lte')
+    situacao = django_filters.TypedChoiceFilter(field_name="servico__situacao", choices = SITUAÇÃO_AND_EMPTY)
+
+    class Meta:
+        model = FuncionarioServico
+        fields = ['funcionario','servico__data_inicio','servico__situacao','servico__ordem__local',]

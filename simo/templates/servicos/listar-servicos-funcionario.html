@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block styleHead %}
+<style>
+    .dataTables_wrapper .dataTables_filter {
+        float: right;
+        text-align: right;
+        visibility: hidden;
+    }
+</style>
+{% endblock %}
+
+
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="../">Serviços</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Listar Serviço por Funcionário</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block conteudo %}
+
+Filtrar Serviços por: <br><br>
+
+<form method="get" id="form_filtro">
+    {% csrf_token %}
+
+    {% for hidden_field in filter.form.hidden_fields %}
+    {{ hidden_field }}
+    {% endfor %}
+
+
+    <div class="form-group row mb-3">
+        <div class="col-6">
+            <div class="input-group">
+                <div class="input-group-text">Funcionário:</div>
+                {% render_field filter.form.funcionario class="form-control " name="funcionario"%}
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="input-group">
+                <div class="input-group-text">Local:</div>
+                {% render_field filter.form.servico__ordem__local class="form-control " name="servico__ordem__local"%}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Data Inicial:</div>
+                {% render_field filter.form.data_inicial class="form-control date" name="data_inicial"%}
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Data Final:</div>
+                {% render_field filter.form.data_final class="form-control date" name="data_final"%}
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Situação:</div>
+                {% render_field filter.form.situacao class="form-control" name="situacao"%}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="d-flex justify-content-start">
+        <input form="form_filtro" class="btn btn-sm btn-info m-2" type="submit" value="Filtrar" />
+        <a class="btn btn-sm btn-light m-2" href="{% url 'listar-servicos' %}">Limpar Campos</a>
+        <a href="{% url 'imprimir-servicos'%}" target="_blank" title="Imprimir Resultados"><span
+                style="color: black;"><i class="fas fa-print fa-lg"></i></span></a>
+    </div>
+
+</form>
+<br><br>
+Resultados: <br>
+<div class="card border-secondary mb-3">
+    <div class="card-body">
+
+        <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:13px">
+            <thead
+                style="border:solid 2px; border-color:white;background: linear-gradient(to right, #0f2027, #203a43, #2c5364); color: white;">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Local</th>
+                    <th scope="col">Serviço</th>
+                    <th scope="col">Situação</th>
+                    <th scope="col">Início</th>
+                    <th scope="col">Término</th>
+                    <th scope="col">Opções</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for funcionario in filter.qs %}
+                <tr>
+                    <td>
+                    <div style="width:15px;">{{forloop.counter}}</div>
+                    </td>
+                    <td>{{funcionario.nome}}</td>
+                    <td>{{funcionario.servico.local}}</td>
+                    <td><a href="{% url 'detalhar-servico' funcionario.servico.ordem.pk funcionario.servico.pk %}">{{funcionario.servico.descricao}}</a>
+                    </td>
+                    {% if funcionario.servico.finalizado %}
+                    <td>FINALIZADO</td>
+                    {% else %}
+                    <td>{{funcionario.servico.situacao}}</td>
+                    {% endif %}
+                    <td>{{funcionario.servico.data_inicio | date:"d/m/Y"}}</td>
+                    {% if funcionario.servico.finalizado %}
+                    <td>{{funcionario.servico.data_termino | date:"d/m/Y"}}</td>
+                    {% else %}
+                    <td> - </td>
+                    {% endif %}
+                    <td><a href="{% url 'detalhar-servico' funcionario.servico.ordem.pk funcionario.servico.pk %}"><span style="color:blue">Ver
+                                Detalhes</span></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% endblock%}
+
+{% block jquery %}
+<script src="../static/js/datatables.min.js"></script>
+<script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.pt-BR.min.js' %}"></script>
+<script src="{% static 'js/jquery.mask.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        
+        $('.money').mask('000.000.000.000.000,00', {
+            reverse: true
+        });
+
+        $('.tabela-listar').DataTable({
+            responsive: true,
+            // "bSort": false,
+            "aaSorting": [],
+            "pageLength": 10,
+            "language": {
+
+                "decimal": "",
+                "emptyTable": "Sem dados disponíveis",
+                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+                "infoFiltered": "(filtrado de _MAX_ registros no total)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "loadingRecords": "A carregar dados...",
+                "processing": "A processar...",
+                "search": "Procurar:",
+                "zeroRecords": "Não foram encontrados resultados",
+                "paginate": {
+                    "first": "Primeiro",
+                    "last": "Último",
+                    "next": "Seguinte",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": ordem crescente",
+                    "sortDescending": ": ordem decrescente"
+                }
+            }
+        });
+
+        //DatePicker
+        $(".date").datepicker({
+            format: "dd/mm/yyyy",
+            todayHighlight: true,
+            language: "pt-BR"
+        });
+
+
+
+
+
+
+
+
+
+    });
+</script>
+{% endblock%}
