@@ -61,10 +61,12 @@ urlpatterns = [
     path('os/<id_ordem>/<pk>/inserir-itens', ItensServicoCreateView.as_view(), name='inserir-itens-servico'),
     path('salvar-ordem-servico/os/<pk>', SalvarServicoView.as_view(), name='salvar-ordem-servico'),
     path('listar-servicos/', ListServicosView.as_view(), name='listar-servicos'),
+    path('listar-servicos-funcionario/', ListFuncionarioServicosView.as_view(), name='listar-servicos-funcionario'),
     path('listar-ordens/', ListOrdensView.as_view(), name='listar-ordens'),
     path('anexar-imagens-servicos/os/<pk>/servico/<int:idServ>', AnexarImagensServicoView.as_view(), name='anexar-imagens-servicos'),
     path('deletar-imagem/os/<id_ordem>/servico/<idServ>/deletar-imagem/<pk>', DeletarImagemServicoView.as_view(), name='deletar-imagem'),
     path('imprimir-servicos/', ImprimirListaServicosView.as_view(), name='imprimir-servicos'),
+    path('imprimir-servicos-funcionario/', ImprimirListaFuncionarioServicosView.as_view(), name='imprimir-servicos-funcionario'),
 
     #auto-completes
     path('autocomplete-funcionarios/', autocompletefuncionario, name='autocomplete-funcionarios'),
