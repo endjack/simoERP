@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load widget_tweaks %}
 {% load static %}
+{% load my_tags %}
 
 {% block styleHead %}
 <style>
@@ -113,7 +114,13 @@ Resultados: <br>
                         <div style="width:15px;">{{forloop.counter}}</div>
                     </td>
                     <td>{{servico.ordem.local}}</td>
-                    <td><a href="{% url 'detalhar-servico' servico.ordem.pk servico.pk %}">{{servico.descricao}}</a>
+                    <td><a href="{% url 'detalhar-servico' servico.ordem.pk servico.pk %}">{{servico.descricao}} 
+                            {% if request.user|has_group:"Engenharia" or request.user|has_group:"Administrador"%}
+                                {% if servico.na_planilha %}
+                                        &nbsp&nbsp&nbsp<a style="color:MediumSeaGreen;" title="Planilhado"><i class="fas fa-check-double"></i></a>
+                                {% endif %}    
+                            {% endif %}
+                    </a>
                     </td>
                     {% if servico.finalizado %}
                     <td>FINALIZADO</td>

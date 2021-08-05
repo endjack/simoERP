@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load widget_tweaks %}
+{% load my_tags %}
 
 
 {% block styleHead %}
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
-  rel="stylesheet" />
+<style>
+.big-checkbox {width: 30px; height: 30px;}
+</style>
 {% endblock %}
 
 
@@ -50,17 +52,29 @@
 </div>
 
 {% comment %} CARD FORMULARIO PARA INSERIR SERVIÇOS {% endcomment %}
-<div class="card border-dark mb-3 border border-dark">
+<div class="card border-dark border border-dark">
   <div class="card-header text-white " style="background: linear-gradient(to right, #093637, #44a08d);">Dados do
     Serviço:</div>
   <div class="card-body">
 
-    <form action="" method="post" id="formServico" style="margin-top:20px" autocomplete="off">
+    <form action="" method="post" id="formServico" autocomplete="off">
       {% csrf_token %}
 
       {% for hidden_field in form.hidden_fields %}
       {{ hidden_field }}
       {% endfor %}
+
+      {% if request.user|has_group:"Engenharia" or request.user|has_group:"Administrador"%}
+       <!-- Boolean NA_PLANILHA ? input -->
+      <div class="d-flex flex-row-reverse bd-highlight">
+        <div class="p-2 bd-highlight">
+          <div class="form-check form-switch">
+            {% render_field form.na_planilha class="big-checkbox form-check-input" id="na_planilha"%}
+          <label class="form-check-label" id="na_planilha_label">Já está na Planilha?</label>
+          </div>    
+        </div>
+      </div>
+      {% endif %}
 
       <!-- Text input -->
       <div class="row mb-3">
@@ -99,7 +113,6 @@
           </div>
         </div>
       </div>
-
 
       <!-- Text input -->
       <div class="row mb-3">
@@ -176,6 +189,8 @@
 <script>
   $(document).ready(function () {
     mudarSituacao();
+    mudarCorNaPlanilha();
+
 
     function mudarSituacao() {
       if ($("#situacao").val() == 'FINALIZADO') {
@@ -205,8 +220,20 @@
       }
     }
 
+    function mudarCorNaPlanilha() {
+        if( $("#na_planilha").is(":checked") == true ) {
+          $("#na_planilha_label").css("color", "blue");
+        }else{
+          $("#na_planilha_label").css("color", "black");
+        }
+    }
+
     $("#situacao").change(function () {
       mudarSituacao();
+    });
+
+    $("#na_planilha").change(function () {
+      mudarCorNaPlanilha();
     });
 
 

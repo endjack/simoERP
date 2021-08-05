@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load my_tags %}
 
 {% block styleHead %}
 <style>
@@ -147,6 +148,12 @@
               &nbsp&nbsp&nbsp<a href="{% url 'anexar-imagens-servicos' ordem_serv_atual.pk serv_atual.pk %}"
               style="color:SlateBlue; font-size: 20px;" title="Ver/Anexar Imagens"><i
               class="fas fa-images"></i> {{serv_atual.fotosservico_set.count}} fotos</a>
+            {% endif %}
+
+            {% if request.user|has_group:"Engenharia" or request.user|has_group:"Administrador"%}
+                {% if serv_atual.na_planilha %}
+                        &nbsp&nbsp&nbsp<a style="color:MediumSeaGreen; font-size: 20px;" title="Planilhado"><i class="fas fa-check-double"></i></a>
+                {% endif %}    
             {% endif %}
 
           </button>
