@@ -1,3 +1,4 @@
+from clientes.models import Fiscal
 from django.db import models
 from django.db.models import F
 
@@ -10,6 +11,7 @@ class Obra(models.Model):
     contratante = models.CharField(max_length=100)
     num_contrato = models.CharField(max_length=50)
     inicio = models.CharField(max_length=200)
+    fiscal = models.ForeignKey(Fiscal, on_delete=models.SET_NULL, null=True)  
     fim = models.CharField(max_length=200)
     valor = models.DecimalField('preço', max_digits=15, decimal_places=2, default=0, blank=True, null=True)
 

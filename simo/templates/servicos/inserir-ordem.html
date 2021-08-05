@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load widget_tweaks %}
+{% load my_tags %}
 
 
 {% block breadcrumb %}
@@ -42,7 +43,7 @@
           </div>
         </div>
 
-
+        
         <div class="col-6">
           <div class="input-group">
             <div class="input-group-text">Solicitante: </div>
@@ -65,7 +66,11 @@
         <div class="col-8">
           <div class="input-group">
             <div class="input-group-text">Encarregado: </div>
+            {% if request.user|has_group:"FiscalSESAD" %}
+            {% render_field form.encarregado class="form-control" id="encarregado" name="encarregado" disabled="disabled"%}
+            {% else %}
             {% render_field form.encarregado class="form-control" id="encarregado" name="encarregado"%}
+            {% endif %}
           </div>
         </div>
 
@@ -77,7 +82,7 @@
         <div class="col-5">
           <div class="input-group">
             <div class="input-group-text">Centro de Custo: </div>
-            {% render_field form.obra class="form-control" id="obra" name="obra" %}
+             {% render_field form.obra class="form-control" id="obra" name="obra" %}
           </div>
         </div>
 
