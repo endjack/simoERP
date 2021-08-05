@@ -25,7 +25,7 @@
 <div class="d-flex flex-row-reverse bd-highlight mb-3">
     <div class="">
         <button type="submit" form="addFornecedor" class="btn btn-success">Incluir</button>
-        <a href="{% url 'listar-fornecedores' %}" class="btn btn-light">Voltar</a>
+        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-light">Voltar</a>
     </div>
 </div>
 

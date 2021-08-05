@@ -235,6 +235,7 @@ class SalvarServicoView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
         id_ordem = self.kwargs.get('pk')
         ordem_atual = OrdemServico.objects.get(pk=id_ordem)
         servico_atuais = Servico.objects.filter(ordem=ordem_atual)
+    
                            
         context["ordem_serv_atual"] =  ordem_atual 
         context["serv_atuais"] = servico_atuais        

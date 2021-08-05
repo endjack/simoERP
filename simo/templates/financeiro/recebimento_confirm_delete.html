@@ -16,7 +16,7 @@
 <form method="post">{% csrf_token %}
     <h5>Você tem certeza que deseja EXCLUIR - <span style="color:green">"Recebimento nº {{ object.id }} - {{ object.descricao }} - Valor: R$ {{object.valor}} ?" </span></h5>
     <div class="form-group">
-        <a href="javascript: history.go(-1)" class="btn btn-info" >Cancelar</a>
+        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-info" >Cancelar</a>
         <input type="submit" class="btn btn-danger" value="Confirmar">
     </div>
 </form>

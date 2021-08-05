@@ -113,65 +113,45 @@
       <div class="accordion-item border border-dark ">
 
         {% comment %} HEADER Accordion {% endcomment %}
-        {% if serv_atual.situacao == 'FINALIZADO' %}
+        
         <div class="accordion-header" id="acordS{{serv_atual.pk}}">
           <button class="accordion-button" type="button" data-bs-toggle="collapse"
             data-bs-target="#collapseServ{{serv_atual.pk}}" aria-expanded="true"
             aria-controls="collapseServ{{serv_atual.pk}}">
-            {{forloop.counter}} -&emsp;<span style="color:green">FINALIZADO&emsp;</span>-&emsp;SERVIÇO:
-            {{serv_atual.descricao | upper}}
+            {{forloop.counter}} -&emsp;
+
+            {% if serv_atual.situacao == 'FINALIZADO' %}
+            <span style="color:green">FINALIZADO&emsp;</span>
+            {% endif %}
+            {% if serv_atual.situacao == 'EM ANDAMENTO' %}
+            <span style="color:red">{{serv_atual.situacao | upper}}</span>
+            {% endif %}
+            {% if serv_atual.situacao == 'NÃO INICIADO' %}
+            <span style="color:blue">{{serv_atual.situacao | upper}}</span>
+            {% endif %}
+            {% if serv_atual.situacao == 'PENDENTE' %}
+            <span style="color:OrangeRed">{{serv_atual.situacao | upper}}</span>
+            {% endif %}
+            {% if serv_atual.situacao == 'PARALISADO' %}
+            <span style="color:Maroon">{{serv_atual.situacao | upper}}</span>
+            {% endif %}
+            -&emsp;SERVIÇO: {{serv_atual.descricao | upper}}
+
+
+            {% if serv_atual.fotosservico_set.count == 1 %}
+              &nbsp&nbsp&nbsp<a href="{% url 'anexar-imagens-servicos' ordem_serv_atual.pk serv_atual.pk %}"
+              style="color:SlateBlue; font-size: 20px;" title="Ver/Anexar Imagens"><i
+              class="fas fa-images"></i> {{serv_atual.fotosservico_set.count}} foto</a>
+            {% endif %}
+            {% if serv_atual.fotosservico_set.count > 1 %}
+              &nbsp&nbsp&nbsp<a href="{% url 'anexar-imagens-servicos' ordem_serv_atual.pk serv_atual.pk %}"
+              style="color:SlateBlue; font-size: 20px;" title="Ver/Anexar Imagens"><i
+              class="fas fa-images"></i> {{serv_atual.fotosservico_set.count}} fotos</a>
+            {% endif %}
+
           </button>
         </div>
-        {% endif %}
-
-        {% if serv_atual.situacao == 'EM ANDAMENTO' %}
-        <div class="accordion-header" id="acordS{{serv_atual.pk}}">
-          <button class="accordion-button" type="button" data-bs-toggle="collapse"
-            data-bs-target="#collapseServ{{serv_atual.pk}}" aria-expanded="true"
-            aria-controls="collapseServ{{serv_atual.pk}}">
-            {{forloop.counter}} -&emsp;<span
-              style="color:red">{{serv_atual.situacao | upper}}</span>&emsp;-&emsp;SERVIÇO:
-            {{serv_atual.descricao | upper}}
-          </button>
-        </div>
-        {% endif %}
-
-        {% if serv_atual.situacao == 'NÃO INICIADO' %}
-        <div class="accordion-header" id="acordS{{serv_atual.pk}}">
-          <button class="accordion-button" type="button" data-bs-toggle="collapse"
-            data-bs-target="#collapseServ{{serv_atual.pk}}" aria-expanded="true"
-            aria-controls="collapseServ{{serv_atual.pk}}">
-            {{forloop.counter}} -&emsp;<span
-              style="color:blue">{{serv_atual.situacao | upper}}</span>&emsp;-&emsp;SERVIÇO:
-            {{serv_atual.descricao | upper}}
-          </button>
-        </div>
-        {% endif %}
-
-        {% if serv_atual.situacao == 'PENDENTE' %}
-        <div class="accordion-header" id="acordS{{serv_atual.pk}}">
-          <button class="accordion-button" type="button" data-bs-toggle="collapse"
-            data-bs-target="#collapseServ{{serv_atual.pk}}" aria-expanded="true"
-            aria-controls="collapseServ{{serv_atual.pk}}">
-            {{forloop.counter}} -&emsp;<span
-              style="color:OrangeRed">{{serv_atual.situacao | upper}}</span>&emsp;-&emsp;SERVIÇO:
-            {{serv_atual.descricao | upper}}
-          </button>
-        </div>
-        {% endif %}
-
-        {% if serv_atual.situacao == 'PARALISADO' %}
-        <div class="accordion-header" id="acordS{{serv_atual.pk}}">
-          <button class="accordion-button" type="button" data-bs-toggle="collapse"
-            data-bs-target="#collapseServ{{serv_atual.pk}}" aria-expanded="true"
-            aria-controls="collapseServ{{serv_atual.pk}}">
-            {{forloop.counter}} -&emsp;<span
-              style="color:Maroon">{{serv_atual.situacao | upper}}</span>&emsp;-&emsp;SERVIÇO:
-            {{serv_atual.descricao | upper}}
-          </button>
-        </div>
-        {% endif %}
-
+      
 
         {% comment %} BODY Accordion {% endcomment %}
         <div id="collapseServ{{serv_atual.pk}}" class="accordion-collapse collapse show"
@@ -203,7 +183,7 @@
                   <i class="fas fa-hammer"></i></i></a>&nbsp
                 {% endif %}
 
-                <a href="{% url 'imprimir-os-servico' ordem_serv_atual.pk serv_atual.pk %}"
+                <a href="{% url 'imprimir-os-servico' ordem_serv_atual.pk serv_atual.pk %}" target="_blank"
                   style="color:black; font-size: 30px;" title="Imprimir Ordem de Serviço"><i class="fas fa-print"></i></a>&nbsp
 
                 <a href="{% url 'anexar-imagens-servicos' ordem_serv_atual.pk serv_atual.pk %}"

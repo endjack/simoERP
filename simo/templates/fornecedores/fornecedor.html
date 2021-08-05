@@ -22,7 +22,7 @@
   </div>
 
   <div class="ms-auto p-2 bd-highlight">
-    <a href="{% url 'listar-fornecedores' %}" class="btn btn-light">Voltar</a>
+    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-light">Voltar</a>
     <a href="{% url 'editar-fornecedor' fornecedor.pk %}" class="btn btn-primary">Editar</a>
     <a href="{% url 'excluir-fornecedor' fornecedor.pk %}" class="btn btn-danger">Excluir</a>
   </div>
