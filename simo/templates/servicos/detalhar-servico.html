@@ -33,7 +33,21 @@
                 {% if serv_atual.situacao == 'PENDENTE' %}OrangeRed{% endif %}
                 {% if serv_atual.situacao == 'PARALISADO' %}Maroon{% endif %}
                 ">{{serv_atual.situacao | upper}}</span>
-            </h5></div>
+
+                {% if serv_atual.fotosservico_set.count == 1 %}
+                    &nbsp&nbsp&nbsp<a href="{% url 'anexar-imagens-servicos' ordem_serv_atual.pk serv_atual.pk %}"
+                    style="color:SlateBlue; font-size: 20px;" title="Ver/Anexar Imagens"><i
+                    class="fas fa-images"></i> {{serv_atual.fotosservico_set.count}} foto</a>
+                    {% endif %}
+                    {% if serv_atual.fotosservico_set.count > 1 %}
+                    &nbsp&nbsp&nbsp<a href="{% url 'anexar-imagens-servicos' ordem_serv_atual.pk serv_atual.pk %}"
+                    style="color:SlateBlue; font-size: 20px;" title="Ver/Anexar Imagens"><i
+                    class="fas fa-images"></i> {{serv_atual.fotosservico_set.count}} fotos</a>
+                    {% endif %}
+            </div>
+                </h5>
+
+
         </div>
     </div>
 
@@ -42,11 +56,8 @@
     <div class="btn-group">
            <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-light">Voltar</a>
         </div>&nbsp&nbsp
-        {% comment %} <div class="btn-group">
-            <a href="{% url 'listar-ordens' %}" class="btn btn-info">Ver Ordens</a>
-        </div>&nbsp&nbsp {% endcomment %}
         <div class="btn-group">
-            <button type="button" class="btn btn-danger">Imprimir</button>
+            <a href="{% url 'imprimir-os-servico' ordem_serv_atual.pk serv_atual.pk %}" target="_blank" class="btn btn-danger">Imprimir</a>
         </div>
     </div>
 </div>

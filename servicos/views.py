@@ -1,3 +1,4 @@
+from clientes.models import Fiscal
 from servicos.filters import ServicosFilter, ServicosFuncionarioFilter
 from django.contrib import messages
 from django.db import IntegrityError
@@ -17,6 +18,7 @@ from django.core.cache import cache
 
 
 
+
 # Create your views here.
 class bcolors:
     OK = '\033[92m' #GREEN
@@ -26,24 +28,30 @@ class bcolors:
 
 class OrdemServicoCreateView(GroupRequiredMixin, LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Engenharia', u'Encarregado']
+    group_required = [u'Administrador', u'Engenharia', u'Encarregado', u'FiscalSESAD']
     
     
     template_name = 'servicos/inserir-ordem.html'
     model = OrdemServico
     form_class = OrdemServicoForm
-    
+
+   
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)     
         context["lista_ordens"] = OrdemServico.objects.all()
+           
         return context
-    
-    def form_valid(self, form):
-        data = form.cleaned_data.get('data')
-        local = form.cleaned_data.get('local')
-        return super().form_valid(form)
-    
-    
+
+    def get_form(self, *args, **kwargs): #//TODO ENVIAR QUERYSET POR TIPO DE USUARIO
+        form= super().get_form(*args, **kwargs)
+        if self.request.user.groups.filter(name='FiscalSESAD').exists():
+            obra_atual = Obra.objects.filter(fiscal=1)
+            obra_atual_ = Obra.objects.get(fiscal=1)
+            form.fields['obra'].queryset= obra_atual
+            form.fields['solicitante'].value = obra_atual_.fiscal.nome
+
+        return form 
+         
     def post(self, request, *args, **kwargs):
         # if request.method == "POST" and request.is_ajax():
         
@@ -68,11 +76,13 @@ class OrdemServicoCreateView(GroupRequiredMixin, LoginRequiredMixin, CreateView)
         return super().post(request, *args, **kwargs)
     
     def get_success_url(self):
+        # if self.request.user.groups.filter(name='FiscalSESAD').exists():
+        #     return reverse('salvar-ordem-servico', args=(self.object.id,))
         return reverse('inserir-servico', args=(self.object.id,))
 
 class ServicoCreateView(GroupRequiredMixin, LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Engenharia', u'Encarregado']
+    group_required = [u'Administrador', u'Engenharia', u'Encarregado', u'FiscalSESAD']
         
     template_name = 'servicos/inserir-servico.html'
     model = Servico
@@ -215,7 +225,7 @@ class ItensServicoCreateView(GroupRequiredMixin, LoginRequiredMixin, CreateView)
 
 class SalvarServicoView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Engenharia', u'Encarregado']
+    group_required = [u'Administrador', u'Engenharia', u'Encarregado', u'FiscalSESAD']
     
     
     template_name = 'servicos/salvar-servico.html'
@@ -225,6 +235,7 @@ class SalvarServicoView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
         id_ordem = self.kwargs.get('pk')
         ordem_atual = OrdemServico.objects.get(pk=id_ordem)
         servico_atuais = Servico.objects.filter(ordem=ordem_atual)
+    
                            
         context["ordem_serv_atual"] =  ordem_atual 
         context["serv_atuais"] = servico_atuais        
@@ -261,7 +272,7 @@ class FinalizarServicoView(GroupRequiredMixin, LoginRequiredMixin, TemplateView)
 
 class EditarServicoView(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
     login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Engenharia', u'Encarregado']
+    group_required = [u'Administrador', u'Engenharia', u'Encarregado', u'FiscalSESAD']
     
     model = Servico
     form_class = ServicoForm
@@ -288,7 +299,7 @@ class EditarServicoView(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
         
 class ExcluirServicoView(GroupRequiredMixin, LoginRequiredMixin, DeleteView):   
     login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Engenharia', u'Encarregado']
+    group_required = [u'Administrador', u'Engenharia', u'Encarregado', u'FiscalSESAD']
     
         
     model = Servico
@@ -299,14 +310,14 @@ class ExcluirServicoView(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
 
 class ExcluirOrdemDeServicoView(GroupRequiredMixin, LoginRequiredMixin, DeleteView):   
     login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Engenharia', u'Encarregado']
+    group_required = [u'Administrador', u'Engenharia', u'Encarregado', u'FiscalSESAD']
      
     model = OrdemServico
     success_url = reverse_lazy("listar-ordens")  
 
 class DetalharServicoView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Engenharia', u'Encarregado']
+    group_required = [u'Administrador', u'Engenharia', u'Encarregado', u'FiscalSESAD']
 
     template_name = 'servicos/detalhar-servico.html'
 
@@ -327,7 +338,7 @@ class DetalharServicoView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
 
 class ListServicosView(GroupRequiredMixin, LoginRequiredMixin, ListView):   
     login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Engenharia', u'Encarregado']
+    group_required = [u'Administrador', u'Engenharia', u'Encarregado', u'FiscalSESAD']
     
     model = Servico
     template_name = "servicos/listar-servicos.html"
@@ -368,7 +379,6 @@ class ListFuncionarioServicosView(GroupRequiredMixin, LoginRequiredMixin, ListVi
 
         return context
 
-
 class ImprimirListaFuncionarioServicosView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
     group_required = [u'Administrador', u'Engenharia', u'Encarregado']
@@ -385,7 +395,7 @@ class ImprimirListaFuncionarioServicosView(GroupRequiredMixin, LoginRequiredMixi
 
 class ImprimirServicoView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Engenharia', u'Encarregado']
+    group_required = [u'Administrador', u'Engenharia', u'Encarregado', u'FiscalSESAD']
 
     template_name = 'servicos/imprimir-os-servico.html'
        
@@ -398,11 +408,10 @@ class ImprimirServicoView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
         context["serv_atual"] = servico_atual    
         
         return context 
-
-    
+  
 class ListOrdensView(GroupRequiredMixin, LoginRequiredMixin, ListView):   
     login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Engenharia', u'Encarregado']
+    group_required = [u'Administrador', u'Engenharia', u'Encarregado', u'FiscalSESAD']
     
     
     model = OrdemServico
@@ -428,7 +437,7 @@ class ListOrdensView(GroupRequiredMixin, LoginRequiredMixin, ListView):
 
 class AnexarImagensServicoView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Engenharia', u'Encarregado']
+    group_required = [u'Administrador', u'Engenharia', u'Encarregado', u'FiscalSESAD']
      
     template_name = 'servicos/anexar-imagens-servicos.html'
   
@@ -454,7 +463,7 @@ class AnexarImagensServicoView(GroupRequiredMixin, LoginRequiredMixin, TemplateV
 
 class DeletarImagemServicoView(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
     login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Engenharia', u'Encarregado']
+    group_required = [u'Administrador', u'Engenharia', u'Encarregado', u'FiscalSESAD']
     
     
     model = FotosServico
@@ -464,7 +473,7 @@ class DeletarImagemServicoView(GroupRequiredMixin, LoginRequiredMixin, DeleteVie
 
 class ImprimirListaServicosView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Engenharia', u'Encarregado']
+    group_required = [u'Administrador', u'Engenharia', u'Encarregado', u'FiscalSESAD']
 
     template_name = 'servicos/imprimir-servicos.html'
        

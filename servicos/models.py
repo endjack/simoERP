@@ -1,4 +1,4 @@
-from clientes.models import Cliente
+from clientes.models import Cliente, Fiscal
 from datetime import datetime
 from funcionarios.models import Funcionario
 from fornecedores.models import Fornecedor
@@ -19,8 +19,8 @@ TIPO = (
     )
 
 class OrdemServico(models.Model):
-    solicitante = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True)
-    encarregado = models.ForeignKey(Funcionario, on_delete=models.SET_NULL, null=True)
+    solicitante = models.ForeignKey(Fiscal, on_delete=models.SET_NULL, null=True, blank=True)
+    encarregado = models.ForeignKey(Funcionario, on_delete=models.SET_NULL, null=True, blank=True)
     obra = models.ForeignKey(Obra, on_delete=models.SET_NULL, null=True)
     local = models.ForeignKey(Local, on_delete=models.SET_NULL, null=True)
     data = models.DateField(null=True, blank=True, default=datetime.now().strftime("%d/%m/%Y"))

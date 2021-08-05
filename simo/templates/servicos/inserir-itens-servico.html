@@ -24,7 +24,7 @@
   {% comment %} BOTÕES DE VOLTAR E CONTINUAR {% endcomment %}
   <div class="col-3">
     <div class="btn-group">
-      <a href="javascript: history.go(-1)" class="btn btn-light">Voltar</a>
+      <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-light">Voltar</a>
     </div>
     <div class="btn-group">
       <a href="{% url 'salvar-ordem-servico' ordem_serv_atual.pk %}" class="btn btn-primary">Salvar</a>

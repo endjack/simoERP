@@ -1,4 +1,5 @@
 from django import template
+from django.contrib.auth.models import Group 
 
 register = template.Library()
 
@@ -9,9 +10,14 @@ def format(value):
     c = b.replace('.',',')
     return c.replace('v','.')
 
-@register.filter(name='has_group')
+@register.filter(name='has_group') 
 def has_group(user, group_name):
-    return user.groups.filter(name=group_name).exists()
+    group = Group.objects.filter(name=group_name)
+    if group:
+        group = group.first()
+        return group in user.groups.all()
+    else:
+        return False
 
 
 

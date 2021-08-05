@@ -9,7 +9,6 @@ from .models import *
 
 AnexarImagensServicoFormSet = inlineformset_factory(Servico, FotosServico, fields=("foto",))
 
-
 class ServicoForm(ModelForm):
     class Meta:
         model = Servico
