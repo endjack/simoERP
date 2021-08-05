@@ -10,10 +10,13 @@ from .models import *
 AnexarImagensServicoFormSet = inlineformset_factory(Servico, FotosServico, fields=("foto",))
 
 class ServicoForm(ModelForm):
+
+ 
+
     class Meta:
         model = Servico
         fields = '__all__'
-        exclude = ['ordem','finalizado','na_planilha']
+        exclude = ['ordem','finalizado',]
         
 class FinalizarServicoForm(ModelForm):
     class Meta:
