@@ -4,7 +4,7 @@ from django_filters.filters import DateFilter
 from .models import *
 from distutils.util import strtobool
 
-# BOOLEAN_CHOICES = (('null', 'TODOS'),('false', 'À PAGAR'), ('true', 'PAGO'),)
+BOOLEAN_CHOICES = (('null', 'TODOS'),('false', 'NÃO'), ('true', 'SIM'),)
 
 SITUAÇÃO = [
         ("NÃO INICIADO", "Não Iniciado"),("EM ANDAMENTO", "Em andamento" ), ("FINALIZADO", "Finalizado"),
@@ -19,7 +19,7 @@ class ServicosFilter(django_filters.FilterSet):
     data_inicial = DateFilter(field_name="data_inicio", lookup_expr='gte')
     data_final = DateFilter(field_name="data_inicio", lookup_expr='lte')
     situacao = django_filters.TypedChoiceFilter(choices = SITUAÇÃO_AND_EMPTY)
-    # na_planilha = django_filters.TypedChoiceFilter(choices=BOOLEAN_CHOICES, coerce=strtobool)
+    na_planilha = django_filters.TypedChoiceFilter(choices=BOOLEAN_CHOICES, coerce=strtobool)
 
     class Meta:
         model = Servico

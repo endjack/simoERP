@@ -76,20 +76,32 @@ Filtrar Serviços por: <br><br>
 
     </div>
 
-    <div class="d-flex justify-content-start">
-        <input form="form_filtro" class="btn btn-sm btn-info m-2" type="submit" value="Filtrar" />
-        <a class="btn btn-sm btn-light m-2" href="{% url 'listar-servicos' %}">Limpar Campos</a>
-        <a href="{% url 'imprimir-servicos'%}" target="_blank" title="Imprimir Resultados"><span
-                style="color: black;"><i class="fas fa-print fa-lg"></i></span></a>
+    {% if request.user|has_group:"Engenharia" or request.user|has_group:"Administrador"%}
+       <!-- Boolean NA_PLANILHA ? input -->
+       <div class="d-flex flex-row-reverse bd-highlight">
+        <div class="p-2 bd-highlight">
+            <div class="input-group">
+                <div class="input-group-text">Serviços Planilhados?</div>
+                {% render_field filter.form.na_planilha class="form-control" id="na_planilha"%}
+            </div>
+        </div> </div>
+      {% endif %}
+
+    <div class="d-flex justify-content-center">
+        <button form="form_filtro" class="btn btn-sm btn-info m-2" type="submit"><i class="fas fa-search"></i> Filtrar</button>
+        <a class="btn btn-sm btn-light m-2" href="{% url 'listar-servicos' %}"><i class="fas fa-eraser"></i> Limpar Campos</a>
+        <a  class="btn btn-sm btn-dark m-2" href="{% url 'imprimir-servicos'%}" target="_blank" title="Imprimir Resultados"><span
+                style=""><i class="fas fa-print"></i> Imprimir</span></a>
     </div>
 
 </form>
 <br><br>
+<span style="font-size:10px">* Dados iniciais são filtrados como 'EM ANDAMENTO'</span><br>
 Resultados: <br>
 <div class="card border-secondary mb-3">
     <div class="card-body">
 
-        <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:13px">
+        <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px">
             <thead
                 style="border:solid 2px; border-color:white;background: linear-gradient(to right, #0f2027, #203a43, #2c5364); color: white;">
                 <tr>
