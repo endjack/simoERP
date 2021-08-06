@@ -17,7 +17,7 @@
 <div class="row">
     <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="../">Serviços</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'listar-servicos' %}">Serviços</a></li>
             <li class="breadcrumb-item active" aria-current="page">Listar Serviço por Funcionário</li>
         </ol>
     </nav>
@@ -55,14 +55,14 @@ Filtrar Serviços por: <br><br>
         <div class="col-4">
             <div class="input-group">
                 <div class="input-group-text">Data Inicial:</div>
-                {% render_field filter.form.data_inicial class="form-control date" name="data_inicial"%}
+                {% render_field filter.form.data_inicial class="form-control date datepicker" name="data_inicial"%}
             </div>
         </div>
 
         <div class="col-4">
             <div class="input-group">
                 <div class="input-group-text">Data Final:</div>
-                {% render_field filter.form.data_final class="form-control date" name="data_final"%}
+                {% render_field filter.form.data_final class="form-control date datepicker" name="data_final"%}
             </div>
         </div>
 
@@ -75,20 +75,20 @@ Filtrar Serviços por: <br><br>
 
     </div>
 
-    <div class="d-flex justify-content-start">
-        <input form="form_filtro" class="btn btn-sm btn-info m-2" type="submit" value="Filtrar" />
-        <a class="btn btn-sm btn-light m-2" href="{% url 'listar-servicos-funcionario' %}">Limpar Campos</a>
-        <a href="{% url 'imprimir-servicos-funcionario'%}" target="_blank" title="Imprimir Resultados"><span
-                style="color: black;"><i class="fas fa-print fa-lg"></i></span></a>
+     <div class="d-flex justify-content-center">
+        <button form="form_filtro" class="btn btn-sm btn-info m-2" type="submit"><i class="fas fa-search"></i> Filtrar</button>
+        <a class="btn btn-sm btn-light m-2" href="{% url 'listar-servicos-funcionario' %}"><i class="fas fa-eraser"></i> Limpar Campos</a>
+        <a  class="btn btn-sm btn-dark m-2" href="{% url 'imprimir-servicos-funcionario'%}" target="_blank" title="Imprimir Resultados"><span
+                style=""><i class="fas fa-print"></i> Imprimir</span></a>
     </div>
 
 </form>
 <br><br>
 Resultados: <br>
 <div class="card border-secondary mb-3">
-    <div class="card-body">
+    <div class="card-body"> 
 
-        <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:13px">
+        <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px">
             <thead
                 style="border:solid 2px; border-color:white;background: linear-gradient(to right, #0f2027, #203a43, #2c5364); color: white;">
                 <tr>
