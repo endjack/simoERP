@@ -29,8 +29,8 @@ class CostasAPagarView(TemplateView):
         first_date = date(1, 1, 1)
         today_date = datetime.today()
        
-        contas_do_dia = ContaPagamento.objects.filter(vencimento=today_date)
-        contas_atrasadas = ContaPagamento.objects.filter(vencimento__range=[first_date, today_date])
+        contas_do_dia = ContaPagamento.objects.filter(pago=False).filter(vencimento=today_date)
+        contas_atrasadas = ContaPagamento.objects.filter(pago=False).filter(vencimento__range=[first_date, today_date])
         context["contas_do_dia"] = contas_do_dia
         context["contas_atrasadas"] = contas_atrasadas
         context["contas_do_dia_SUM"] = sum(contas_do_dia.values_list('valor', flat=True))
