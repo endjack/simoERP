@@ -27,6 +27,7 @@
     text-align: center;
     vertical-align: middle;   
     }
+
 </style>    
 {% endblock %}
 
@@ -74,16 +75,16 @@
             {% else %}
             <td> - </td>
             {% endif %}
-            <td>{{item.data_inclusao | date:"d/m/Y"}}</td>
-            <td class="limitar_td" title="{{item.descricao}}">{{item.descricao}}</td>
+            <td><span style="display:none;">{{item.data_inclusao | date:"Ymd"}}</span>{{item.data_inclusao | date:"d/m/Y"}}</td>
+            <td class="limitar_td" style="text-align: left; vertical-align:middle !important" title="{{item.descricao}}">{{item.descricao}}</td>
             {% if item.fornecedor %}
-            <td class="limitar_td" title="{{item.fornecedor}}"><a href="{% url 'detalhar-fornecedor' item.fornecedor.pk %}" title="Ver {{item.fornecedor}}">{{item.fornecedor}}</a>    </td>
+            <td class="limitar_td" style="text-align: left; vertical-align:middle !important" title="{{item.fornecedor}}"><a href="{% url 'detalhar-fornecedor' item.fornecedor.pk %}" title="Ver {{item.fornecedor}}">{{item.fornecedor}}</a>    </td>
             {% else %}
             <td> - </td>
             {% endif %}
             <td class="limitar_td" title="{{item.centro_de_custo}}">{{item.centro_de_custo}}</td>
             <td class="destaque-saida">{{item.valor}}</td>
-            <td>{{item.vencimento | date:"d/m/Y"}}</td>
+            <td><span style="display:none;">{{item.vencimento | date:"Ymd"}}</span>{{item.vencimento | date:"d/m/Y"}}</td>
             <td>{{item.usuario.username}}</td>
             <td><a href="{% url 'pagar-conta' item.pk %}" title="Pagar Conta: {{item.descricao}}"><span style="color: MediumSeaGreen;"><i class="fas fa-check-square fa-lg"></i></span></a></td>
             <td>
@@ -121,21 +122,21 @@
         <tr>
             <td class="limitar_forloop">{{forloop.counter}}</td>
             {% if item.conta.documento %}
-            <td>{{item.conta.documento}}</td>
+            <td >{{item.conta.documento}}</td>
             {% else %}
             <td> - </td>
             {% endif %}
-            <td>{{item.conta.data_inclusao | date:"d/m/Y"}}</td>
-            <td class="limitar_td" title="{{item.conta.descricao}}">{{item.conta.descricao}}</td>
+            <td><span style="display:none;">{{item.conta.data_inclusao | date:"Ymd"}}</span>{{item.conta.data_inclusao | date:"d/m/Y"}}</td>
+            <td class="limitar_td" style="text-align: left; vertical-align:middle !important" title="{{item.conta.descricao}}">{{item.conta.descricao}}</td>
             {% if item.conta.fornecedor %}
-            <td class="limitar_td" title="{{item.conta.fornecedor}}"><a href="{% url 'detalhar-fornecedor' item.conta.fornecedor.pk %}">{{item.conta.fornecedor}}</a></td>
+            <td class="limitar_td" style="text-align: left; vertical-align:middle !important" title="{{item.conta.fornecedor}}"><a href="{% url 'detalhar-fornecedor' item.conta.fornecedor.pk %}">{{item.conta.fornecedor}}</a></td>
             {% else %}
             <td> - </td>
             {% endif %}
             <td class="limitar_td" title="{{item.conta.centro_de_custo}}">{{item.conta.centro_de_custo}}</td>
             <td>{{item.valor_original}}</td>
             <td class="destaque-entrada">{{item.valor}}</td>
-            <td>{{item.data | date:"d/m/Y"}}</td>
+            <td><span style="display:none;">{{item.data | date:"Ymd"}}</span>{{item.data | date:"d/m/Y"}}</td>
             <td>{{item.conta.usuario.username}}</td>
              <td>
             <a href="{% url 'editar-pagamento' item.pk %}" title="Editar Pagamento: {{item.conta.descricao}}"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a>
@@ -167,13 +168,13 @@
             "order": [[2, "desc"]],  //3º tabela em ordem decrescente
             "language": {
 
-                "decimal": "",
+                "decimal": ",",
                 "emptyTable": "Sem dados disponíveis",
                 "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
                 "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
                 "infoFiltered": "(filtrado de _MAX_ registros no total)",
                 "infoPostFix": "",
-                "thousands": ",",
+                "thousands": ".",
                 "lengthMenu": "Mostrar _MENU_ registros",
                 "loadingRecords": "A carregar dados...",
                 "processing": "A processar...",
@@ -190,6 +191,9 @@
                     "sortDescending": ": ordem decrescente"
                 }
             }
+            columns: [  
+            { data: "importe", className: "text-right" }
+        ]
         });
 
 
