@@ -1,4 +1,5 @@
 from financeiro.filters import ContasFilter
+from datetime import datetime, date
 from django.views.generic.base import TemplateView
 from servicos.views import bcolors
 from financeiro.forms import *
@@ -24,6 +25,16 @@ class CostasAPagarView(TemplateView):
         context = super().get_context_data(**kwargs)      
         context["contas_list"] = ContaPagamento.objects.filter(pago=False)
         context["contas_list_pagas"] = Pagamento.objects.all()
+
+        first_date = date(1, 1, 1)
+        today_date = datetime.today()
+       
+        contas_do_dia = ContaPagamento.objects.filter(vencimento=today_date)
+        contas_atrasadas = ContaPagamento.objects.filter(vencimento__range=[first_date, today_date])
+        context["contas_do_dia"] = contas_do_dia
+        context["contas_atrasadas"] = contas_atrasadas
+        context["contas_do_dia_SUM"] = sum(contas_do_dia.values_list('valor', flat=True))
+        context["contas_atrasadas_SUM"] = sum(contas_atrasadas.values_list('valor', flat=True))
         return context     
 
 class InserirCostasAPagarView(CreateView):
