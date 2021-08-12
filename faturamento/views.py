@@ -14,11 +14,16 @@ class FaturamentoView(TemplateView):
  
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs) 
+
+        if self.request.GET.get('obra'):
+            obra = self.request.GET.get('obra')
+            cache.set('obra_faturamento', obra, 600)
+
         faturamentos = Faturamento.objects.all()     
         context["faturamento_list"] = faturamentos
         filter_list = FaturamentoFilter(self.request.GET, queryset= faturamentos )
         cache.set('filter_faturamento', filter_list, 600)
-        cache.set('obra_faturamento', self.request.GET.get('obra'), 600)
+        
         context["filter"] = filter_list
 
         valor_total = sum(filter_list.qs.values_list('valor', flat=True))
@@ -63,7 +68,8 @@ class ImprimirFaturamentoView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["filter"] = cache.get('filter_faturamento')
-        context["obra_faturamento"] = Obra.objects.get(pk=cache.get('obra_faturamento'))      
+        if cache.get('obra_faturamento'):    
+            context["obra_faturamento"] = Obra.objects.get(pk=cache.get('obra_faturamento'))      
         context["valor_total"] = cache.get('valor_total')
         context["valor_pago"] = cache.get('valor_pago')
         context["saldo_faturamento"] = cache.get('saldo_faturamento')
