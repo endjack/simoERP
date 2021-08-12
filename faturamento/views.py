@@ -15,10 +15,12 @@ class FaturamentoView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs) 
 
-        if self.request.GET.get('obra'):
-            obra = self.request.GET.get('obra')
-            cache.set('obra_faturamento', obra, 600)
-
+        if self.request.GET.get('obra') != "":
+            obra = self.request.GET.get('obra') 
+        else:
+            obra = ""
+        
+        cache.set('obra_faturamento', obra, 600)
         faturamentos = Faturamento.objects.all()     
         context["faturamento_list"] = faturamentos
         filter_list = FaturamentoFilter(self.request.GET, queryset= faturamentos )
