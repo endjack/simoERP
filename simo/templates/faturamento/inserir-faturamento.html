@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block styleHead %}
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'listar-faturamentos' %}">Faturamento</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Listar Faturamentos</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+
+{% block conteudo %}
+
+<div class="row">
+    <span style="font-size:30px; color:red; margin-top: 5px"> Inserir Faturamento</span>
+    <hr>
+</div>
+
+<div class="d-flex flex-row-reverse bd-highlight mb-3">
+    <div class="">
+        <button type="submit" form="addFaturamento" class="btn btn-danger">Salvar</button>
+        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-light">Voltar</a>
+    </div>
+</div>
+
+
+<form id="addFaturamento" method="post" autocomplete="off">
+    {% csrf_token %}
+
+    {% for hidden_field in form.hidden_fields %}
+    {{ hidden_field }}
+    {% endfor %}
+
+    <div class="form-group row mb-3">
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Data de Inclusão:</div>
+                {% render_field form.data_inclusao class="form-control date" name="data_inclusao"%}
+            </div>
+        </div>
+
+        <div class="col-8">
+            <div class="input-group">
+                <div class="input-group-text">Centro de Custo:</div>
+                {% render_field form.obra class="form-control" name="obra"%}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <div class="col-2">
+            <div class="input-group">
+                <div class="input-group-text">Nº Medição:</div>
+                {% render_field form.num_medicao class="form-control" name="num_medicao"%}
+            </div>
+        </div>
+
+        <div class="col-3">
+            <div class="input-group">
+                <div class="input-group-text">Valor:</div>
+                {% render_field form.valor class="form-control money" name="valor"%}
+            </div>
+        </div>
+
+        <div class="col-3">
+            <div class="input-group">
+                <div class="input-group-text">Protocolo:</div>
+                {% render_field form.protocolo class="form-control" name="protocolo"%}
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Fase:</div>
+                {% render_field form.fase class="form-control" name="fase"%}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="form-group row mb-3">
+        <div class="col-3 d-flex justify-content-center align-items-center">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="faz_nota" id="faz_nota" {{checked}}>
+                <label class="form-check-label" for="faz_nota">
+                    Foi Pago?
+                </label>
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Data de Pagamento:</div>
+                {% render_field form.data_pagamento class="form-control date" name="data_pagamento"%}
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Saldo:</div>
+                {% render_field form.saldo class="form-control money" name="saldo"%}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="form-group row mb-3">
+        <div class="col-5">
+            <div class="input-group">
+                <div class="input-group-text">Movimentação:</div>
+                {% render_field form.movimentacao class="form-control" name="movimentacao"%}
+            </div>
+        </div>
+        <div class="col-7">
+            <div class="input-group">
+                <div class="input-group-text">Obs:</div>
+                {% render_field form.obs class="form-control" name="obs" style="height: 80px"%}
+            </div>
+        </div>
+    </div>
+
+</form>
+
+{% endblock%}
+
+{% block jquery %}
+
+<script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.pt-BR.min.js' %}"></script>
+<script src="{% static 'js/jquery.mask.js' %}"></script>
+<script>
+    $(document).ready(function () {
+
+        //masks
+        $('.money').mask('000.000.000,00', {
+            reverse: true
+        });
+
+
+
+        //DatePicker
+        $(".date").datepicker({
+            format: "dd/mm/yyyy",
+            todayHighlight: true,
+            language: "pt-BR"
+        });
+
+    });
+</script>
+{% endblock %}

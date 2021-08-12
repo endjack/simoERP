@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'listar-faturamentos' %}">Faturamento</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Listar Faturamentos</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block styleHead %}
+<style>
+    .destaque-saida { 
+        color: red !important;
+        font-weight: bold; !important;
+     }
+     .destaque-entrada { 
+        color: green !important;
+        font-weight: bold; !important;
+     }
+    .table td {
+    text-align: center;
+    vertical-align: middle;   
+    }
+
+</style>    
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="d-flex flex-row bd-highlight">
+    <div class="">
+            <a href="{% url 'inserir-faturamento' %}" class="btn btn-sm btn-danger">Adicionar Faturamento</a>
+    </div>
+</div>
+
+<div class="col-12" style="margin-top: 10px; margin-bottom:10px;"><span style="font-size:16px; color:black;font-weight: bold;">
+Faturamentos em Aberto:     
+</span>
+
+<form method="get" id="form_filtro">
+    {% csrf_token %}
+
+    {% for hidden_field in filter.form.hidden_fields %}
+    {{ hidden_field }}
+    {% endfor %}
+
+    <div class="form-group row mb-3">
+        <div class="col-6">
+            <div class="input-group">
+                <div class="input-group-text">Centro de Custo:</div>
+                {% render_field filter.form.obra class="form-control" name="obra"%}
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <button form="form_filtro" class="btn btn-sm btn-info m-2" type="submit"><i class="fas fa-search"></i> Filtrar</button>
+        <a class="btn btn-sm btn-light m-2" href="{% url 'listar-faturamentos' %}"><i class="fas fa-eraser"></i> Limpar Campos</a>
+        <a  class="btn btn-sm btn-dark m-2" href="{% url 'imprimir-faturamento'%}" target="_blank" title="Imprimir Resultados"><span
+                style=""><i class="fas fa-print"></i> Imprimir</span></a>
+    </div>
+
+</form>
+
+
+
+</div>
+<table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:13px;">
+    <thead style="border:solid 2px;border-color:#cb356b;background:linear-gradient(to left, #ed213a, #93291e); color: white;">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col"><span style="white-space: nowrap; !important">Nº Medição</span></th>
+            <th scope="col">Valor</th>
+            <th scope="col">Fase</th>
+            <th scope="col">Protocolo</th>
+            <th scope="col">Movimentação</th>
+            <th scope="col">Observação</th>
+            <th scope="col">Pago?</th>
+            <th scope="col"><span style="white-space: nowrap; !important">Pago em:</span></th>
+            <th scope="col">Saldo</th>
+            <th scope="col">Opções</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in filter.qs %}
+        <tr>
+            <td class="limitar_forloop">{{forloop.counter}}</td>
+            {% if item.num_medicao %}<td style="font-weight:bold; font-size:11pt">{{item.num_medicao}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.valor %}<td style="font-weight:bold; font-size:11pt">{{item.valor}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.fase %}<td>{{item.fase}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.protocolo %}<td style="font-weight:bold; font-size:11pt">{{item.protocolo}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.movimentacao %}<td>{{item.movimentacao}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.obs %}<td style="text-align: justify; text-justify: inter-word;">{{item.obs}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.pago %}<td> Sim </td>{% else %}<td> Não </td>{% endif %}
+            {% if item.pago %}
+            <td><span style="display:none;">{{item.data_pagamento | date:"Ymd"}}</span>{{item.data_pagamento | date:"d/m/Y"}}</td>
+            {% else %}<td> - </td>{% endif %}
+            {% if item.saldo %}<td style="font-weight:bold; font-size:11pt; color:red">{{item.saldo}}</td>{% else %}<td> - </td>{% endif %}
+            <td>
+            <a href="{% url 'editar-faturamento' item.pk %}" title="Editar Protocolo: {{item.protocolo}}"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a>
+            <a href="{% url 'excluir-faturamento' item.pk %}" title="Excluir Protocolo: {{item.protocolo}}"><span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span></a>
+            </td> 
+    
+    
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="col-12" style="margin-top: 10px; margin-bottom:10px;"><span style="font-size:16px;">
+Resumo de Faturamentos em Aberto: <br>    
+</span>
+
+<span style="font-size:18px; color:black;font-weight: bold;">Valor Total (+) = {{valor_total}}</span> <br>
+<span style="font-size:18px; color:black;font-weight: bold;">Valor Pago  (-) = {{valor_pago}}</span> <br>
+<span style="font-size:18px; color:red;font-weight: bold;">Saldo à Pagar   = {{saldo_faturamento}}</span><br>
+
+{% endblock%}
+
+{% block jquery %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script>
+
+
+    $(document).ready(function () {
+        
+        
+        $('.tabela-listar').DataTable({
+            responsive: true,
+            // "bSort": false,
+            "aaSorting": [],
+            "pageLength": 10,
+            "order": [[2, "desc"]],  //3º tabela em ordem decrescente
+            "language": {
+
+                "decimal": ",",
+                "emptyTable": "Sem dados disponíveis",
+                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+                "infoFiltered": "(filtrado de _MAX_ registros no total)",
+                "infoPostFix": "",
+                "thousands": ".",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "loadingRecords": "A carregar dados...",
+                "processing": "A processar...",
+                "search": "Procurar:",
+                "zeroRecords": "Não foram encontrados resultados",
+                "paginate": {
+                    "first": "Primeiro",
+                    "last": "Último",
+                    "next": "Seguinte",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": ordem crescente",
+                    "sortDescending": ": ordem decrescente"
+                }
+            }
+        });
+
+    }); 
+    
+</script>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% load static %}
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <title>Imprimir Faturamento</title>
+    <style>
+        @page {
+            size: landscape;
+            margin: 1cm;
+        }
+
+
+        @media print {
+
+            html,
+            body {
+                height: 99%;
+            }
+        }
+
+        * {
+            color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    </style>
+</head>
+
+<body style="font-family: sans-serif;">
+
+    <div class="d-flex flex-row bd-highlight mb-2" style="margin: 10px 15px;font-size:10px;">
+        <div class="col-6 d-flex justify-content-start">BRASIL CONSTRUÇÃO LTDA - {% now "SHORT_DATETIME_FORMAT" %}</div>
+        <div class="col-6 d-flex justify-content-end">Usuário: {{usuario_atual}}</div>
+    </div>
+
+    <div class="row" style="margin-bottom:15px;font-size:12px;">
+        <div class="d-flex justify-content-center">
+            <div class="p-2 bd-highlight">
+                <img src="{% static 'imagens/logo1.png' %}" alt="" height="75" width="110">
+            </div>
+            <div class="p-2 bd-highlight" style="border-right: 4px solid gray;"></div>&emsp;
+            <div class="p-2 bd-highlight">
+                BRASIL CONSTRUÇÃO LTDA <br>
+                CNPJ: 09.235.353/0001-45 <br>
+                brasilconstrucao3@gmail.com <br>
+                (84) 4103-0176
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align:center; margin-bottom:10px;font-size:16pt;font-weight:bold;">
+        <h5>FATURAMENTOS EM ABERTO</h5>
+    </div>
+
+    <div style="color:black;text-align:center;font-size:12pt;">
+        Centro de Custo: {{obra_faturamento.nome}}
+    </div>
+    {% comment %} DADOS ORDEM DE SERVIÇO {% endcomment %}
+
+
+    <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:13px;">
+    <thead style="border:solid 2px;border-color:#cb356b;background:linear-gradient(to left, #ed213a, #93291e); color: white;">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col"><span style="white-space: nowrap; !important">Nº Medição</span></th>
+            <th scope="col">Valor</th>
+            <th scope="col">Fase</th>
+            <th scope="col">Protocolo</th>
+            <th scope="col">Movimentação</th>
+            <th scope="col">Observação</th>
+            <th scope="col">Pago?</th>
+            <th scope="col"><span style="white-space: nowrap; !important">Pago em:</span></th>
+            <th scope="col">Saldo</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in filter.qs %}
+        <tr>
+            <td class="limitar_forloop">{{forloop.counter}}</td>
+            {% if item.num_medicao %}<td style="font-weight:bold; font-size:11pt">{{item.num_medicao}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.valor %}<td style="font-weight:bold; font-size:11pt">{{item.valor}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.fase %}<td>{{item.fase}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.protocolo %}<td style="font-weight:bold; font-size:11pt">{{item.protocolo}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.movimentacao %}<td>{{item.movimentacao}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.obs %}<td style="text-align: justify; text-justify: inter-word; min-width: 200px;">{{item.obs}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.pago %}<td> Sim </td>{% else %}<td> Não </td>{% endif %}
+            {% if item.pago %}
+            <td><span style="display:none;">{{item.data_pagamento | date:"Ymd"}}</span>{{item.data_pagamento | date:"d/m/Y"}}</td>
+            {% else %}<td> - </td>{% endif %}
+            {% if item.saldo %}<td style="font-weight:bold; font-size:11pt; color:red">{{item.saldo}}</td>{% else %}<td> - </td>{% endif %}     
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="col-12" style="margin-top: 10px; margin-bottom:10px;"><span style="font-size:16px;">
+Resumo de Faturamentos em Aberto: <br>    
+</span>
+
+<span style="font-size:18px; color:black;font-weight: bold;">Valor Total (+) = {{valor_total}}</span> <br>
+<span style="font-size:18px; color:black;font-weight: bold;">Valor Pago  (-) = {{valor_pago}}</span> <br>
+<span style="font-size:18px; color:red;font-weight: bold;">Saldo à Pagar   = {{saldo_faturamento}}</span><br>   
+
+
+<script>
+    (function () {
+        window.print();
+    })();
+</script>
+
+
+</body>
+
+</html>
