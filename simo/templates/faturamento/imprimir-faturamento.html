@@ -26,6 +26,14 @@
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
+
+        td, th {
+        padding: .7em;
+        margin: 0;
+        /*border: 1px solid #ccc;*/
+        text-align: center;
+        vertical-align: middle;
+        }
     </style>
 </head>
 
@@ -56,7 +64,7 @@
     </div>
 
     <div style="color:black;text-align:center;font-size:12pt;">
-        Centro de Custo: {{obra_faturamento.nome}}
+        {% if obra_faturamento %} Centro de Custo: {{obra_faturamento.nome}} {% else %} Todos os Centros de Custo {% endif %}
     </div>
     {% comment %} DADOS ORDEM DE SERVIÇO {% endcomment %}
 
@@ -65,6 +73,7 @@
     <thead style="border:solid 2px;border-color:#cb356b;background:linear-gradient(to left, #ed213a, #93291e); color: white;">
         <tr>
             <th scope="col">#</th>
+            {% if not obra_faturamento %}<th scope="col">Obra</th>{% endif %}
             <th scope="col"><span style="white-space: nowrap; !important">Nº Medição</span></th>
             <th scope="col">Valor</th>
             <th scope="col">Fase</th>
@@ -80,6 +89,7 @@
         {% for item in filter.qs %}
         <tr>
             <td class="limitar_forloop">{{forloop.counter}}</td>
+            {% if not obra_faturamento %}<td>{{item.obra.nome}}</td>{% endif %}
             {% if item.num_medicao %}<td style="font-weight:bold; font-size:11pt">{{item.num_medicao}}</td>{% else %}<td> - </td>{% endif %}
             {% if item.valor %}<td style="font-weight:bold; font-size:11pt">{{item.valor}}</td>{% else %}<td> - </td>{% endif %}
             {% if item.fase %}<td>{{item.fase}}</td>{% else %}<td> - </td>{% endif %}
