@@ -8,6 +8,7 @@ from financeiro.views import *
 from servicos.views import *
 from dashboard.views import *
 from obras.views import *
+from faturamento.views import *
 from fornecedores.views import *
 from django.contrib import admin
 from django.urls import path, include
@@ -79,21 +80,21 @@ urlpatterns = [
     
     #urls Financeiro 
     path('contas-a-pagar/', CostasAPagarView.as_view(), name='contas-a-pagar'),
-    path('inserir-conta-a-pagar/', InserirCostasAPagarView.as_view(), name='inserir-conta-a-pagar'),
-    path('editar-conta-a-pagar/<pk>', EditarContasAPagarView.as_view(), name='editar-conta-a-pagar'),
-    path('excluir-conta-a-pagar/<pk>', ExcluirContasAPagarView.as_view(), name='excluir-conta-a-pagar'),
-    path('pagar-conta/<pk>', PagamentoView.as_view(), name='pagar-conta'),
-    path('editar-pagamento/<pk>', EditarPagamentoView.as_view(), name='editar-pagamento'),
-    path('excluir-pagamento/<pk>', ExcluirPagamentoView.as_view(), name='excluir-pagamento'),
+    path('contas-a-pagar/inserir', InserirCostasAPagarView.as_view(), name='inserir-conta-a-pagar'),
+    path('contas-a-pagar/editar/<pk>', EditarContasAPagarView.as_view(), name='editar-conta-a-pagar'),
+    path('contas-a-pagar/excluir/<pk>', ExcluirContasAPagarView.as_view(), name='excluir-conta-a-pagar'),
+    path('pagamento/<pk>', PagamentoView.as_view(), name='pagar-conta'),
+    path('pagamento/editar/<pk>', EditarPagamentoView.as_view(), name='editar-pagamento'),
+    path('pagamento/excluir/<pk>', ExcluirPagamentoView.as_view(), name='excluir-pagamento'),
     path('relatorio-contas/', ResumosCostasAPagarView.as_view(), name='relatorio-contas'),
-    path('imprimir-relatorio-contas/', GerarPDFContasView.as_view(), name='imprimir-relatorio-contas'),
+    path('relatorio-contas/imprimir', GerarPDFContasView.as_view(), name='imprimir-relatorio-contas'),
     path('contas-a-receber/', ContasAReceberView.as_view(), name='contas-a-receber'),
-    path('contas-a-receber/<pk>/editar', EditarRecebimentoView.as_view(), name='editar-conta-a-receber'),
-    path('excluir-conta-a-receber/<pk>', ExcluirRecebimentoView.as_view(), name='excluir-conta-a-receber'),
+    path('contas-a-receber/editar/<pk>', EditarRecebimentoView.as_view(), name='editar-conta-a-receber'),
+    path('contas-a-receber/excluir/<pk>', ExcluirRecebimentoView.as_view(), name='excluir-conta-a-receber'),
     path('recibos/', InserirReciboFornecedorView.as_view(), name='inserir-recibo'),
-    path('recibos/<pk>/editar', EditarReciboFornecedorView.as_view(), name='editar-recibo'),
-    path('recibos/<pk>/excluir', ExcluirReciboFornecedorView.as_view(), name='excluir-recibo'),
-    path('imprimir-recibo/<pk>',ImprimirReciboFornecedorView.as_view(), name='imprimir-recibo'),
+    path('recibos/editar/<pk>', EditarReciboFornecedorView.as_view(), name='editar-recibo'),
+    path('recibos/excluir/<pk>', ExcluirReciboFornecedorView.as_view(), name='excluir-recibo'),
+    path('recibos/imprimir/<pk>',ImprimirReciboFornecedorView.as_view(), name='imprimir-recibo'),
 
     
     #urls Fornecedores
@@ -112,6 +113,13 @@ urlpatterns = [
      path('cargos/<pk>/editar', EditarCargoView.as_view(), name='editar-cargo'),
      path('cargos/<pk>/excluir', ExcluirCargoView.as_view(), name='excluir-cargo'),
      path('cargo/<pk>', DetalharCargoView.as_view(), name='detalhar-cargo'),
+
+      #urls Faturamento
+     path('faturamentos/', FaturamentoView.as_view(), name='listar-faturamentos'),
+     path('faturamentos/inserir', InserirFaturamentoView.as_view(), name='inserir-faturamento'),
+     path('faturamentos/editar/<pk>', EditarFaturamentoView.as_view(), name='editar-faturamento'),
+     path('faturamentos/excluir/<pk>', ExcluirFaturamentoView.as_view(), name='excluir-faturamento'),
+     path('faturamentos/imprimir', ImprimirFaturamentoView.as_view(), name='imprimir-faturamento'),
 ]
 
 
