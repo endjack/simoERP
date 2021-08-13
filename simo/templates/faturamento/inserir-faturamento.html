@@ -63,10 +63,17 @@
             </div>
         </div>
 
-        <div class="col-3">
+        <div class="col-2">
             <div class="input-group">
                 <div class="input-group-text">Valor:</div>
                 {% render_field form.valor class="form-control money" name="valor"%}
+            </div>
+        </div>
+
+        <div class="col-2">
+            <div class="input-group">
+                <div class="input-group-text">Nº Nota Fiscal:</div>
+                {% render_field form.num_notafiscal class="form-control" name="num_notafiscal"%}
             </div>
         </div>
 
@@ -77,7 +84,7 @@
             </div>
         </div>
 
-        <div class="col-4">
+        <div class="col-3">
             <div class="input-group">
                 <div class="input-group-text">Fase:</div>
                 {% render_field form.fase class="form-control" name="fase"%}
@@ -113,13 +120,13 @@
     </div>
 
     <div class="form-group row mb-3">
-        <div class="col-5">
+        <div class="col-6">
             <div class="input-group">
                 <div class="input-group-text">Movimentação:</div>
                 {% render_field form.movimentacao class="form-control" name="movimentacao"%}
             </div>
         </div>
-        <div class="col-7">
+        <div class="col-6">
             <div class="input-group">
                 <div class="input-group-text">Obs:</div>
                 {% render_field form.obs class="form-control" name="obs" style="height: 80px"%}

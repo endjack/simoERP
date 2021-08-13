@@ -73,7 +73,7 @@ Faturamentos em Aberto:
 
 
 </div>
-<table class="table table-sm table-bordered dt-responsive" style="font-size:13px;">
+<table class="table table-sm table-bordered dt-responsive" style="font-size:10px;">
     <thead style="border:solid 2px;border-color:#cb356b;background:linear-gradient(to left, #ed213a, #93291e); color: white;">
         <tr>
             <th scope="col">#</th>
@@ -96,13 +96,13 @@ Faturamentos em Aberto:
         <tr>
             <td class="limitar_forloop">{{forloop.counter}}</td>
             {% if item.obra %}<td>{{item.obra.nome}}</td>{% else %}<td> - </td>{% endif %}
-            {% if item.num_medicao %}<td style="font-weight:bold; font-size:11pt">{{item.num_medicao}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.num_medicao %}<td style="font-weight:bold; font-size:11pt;">{{item.num_medicao}}</td>{% else %}<td> - </td>{% endif %}
             {% if item.valor %}<td style="font-weight:bold; font-size:11pt">{{item.valor}}</td>{% else %}<td> - </td>{% endif %}
             {% if item.num_notafiscal %}<td>{{item.num_notafiscal}}</td>{% else %}<td> - </td>{% endif %}
             {% if item.fase %}<td>{{item.fase}}</td>{% else %}<td> - </td>{% endif %}
             {% if item.protocolo %}<td style="font-weight:bold; font-size:11pt">{{item.protocolo}}</td>{% else %}<td> - </td>{% endif %}
             {% if item.movimentacao %}<td>{{item.movimentacao}}</td>{% else %}<td> - </td>{% endif %}
-            {% if item.obs %}<td style="text-align: justify; text-justify: inter-word;">{{item.obs}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.obs %}<td style="text-align: justify; text-justify: inter-word; min-width: 300px;">{{item.obs}}</td>{% else %}<td> - </td>{% endif %}
             {% if item.pago %}<td> Sim </td>{% else %}<td> Não </td>{% endif %}
             {% if item.pago %}
             <td><span style="display:none;">{{item.data_pagamento | date:"Ymd"}}</span>{{item.data_pagamento | date:"d/m/Y"}}</td>
