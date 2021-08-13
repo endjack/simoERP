@@ -26,7 +26,6 @@
     td, th {
         padding: .7em;
         margin: 0;
-        /*border: 1px solid #ccc;*/
         text-align: center;
         vertical-align: middle;
         }
@@ -78,8 +77,10 @@ Faturamentos em Aberto:
     <thead style="border:solid 2px;border-color:#cb356b;background:linear-gradient(to left, #ed213a, #93291e); color: white;">
         <tr>
             <th scope="col">#</th>
+            <th scope="col">Obra</th>
             <th scope="col"><span style="white-space: nowrap; !important">Nº Medição</span></th>
             <th scope="col">Valor</th>
+            <th scope="col">Nota Fiscal</th>
             <th scope="col">Fase</th>
             <th scope="col">Protocolo</th>
             <th scope="col">Movimentação</th>
@@ -94,8 +95,10 @@ Faturamentos em Aberto:
         {% for item in filter.qs %}
         <tr>
             <td class="limitar_forloop">{{forloop.counter}}</td>
+            {% if item.obra %}<td>{{item.obra.nome}}</td>{% else %}<td> - </td>{% endif %}
             {% if item.num_medicao %}<td style="font-weight:bold; font-size:11pt">{{item.num_medicao}}</td>{% else %}<td> - </td>{% endif %}
             {% if item.valor %}<td style="font-weight:bold; font-size:11pt">{{item.valor}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.num_notafiscal %}<td>{{item.num_notafiscal}}</td>{% else %}<td> - </td>{% endif %}
             {% if item.fase %}<td>{{item.fase}}</td>{% else %}<td> - </td>{% endif %}
             {% if item.protocolo %}<td style="font-weight:bold; font-size:11pt">{{item.protocolo}}</td>{% else %}<td> - </td>{% endif %}
             {% if item.movimentacao %}<td>{{item.movimentacao}}</td>{% else %}<td> - </td>{% endif %}
