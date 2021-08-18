@@ -94,7 +94,7 @@
      <div class="d-flex justify-content-center">
         <button form="form_filtro" class="btn btn-sm btn-info m-2" type="submit"><i class="fas fa-search"></i> Filtrar</button>
         <a class="btn btn-sm btn-light m-2" href="{% url 'relatorios-contas-a-pagar' %}"><i class="fas fa-eraser"></i> Limpar Campos</a>
-        <a  class="btn btn-sm btn-dark m-2" href="" target="_blank" title="Imprimir Resultados"><span
+        <a  class="btn btn-sm btn-dark m-2" href="{% url 'imprimir-relatorio-contas' %}" target="_blank" title="Imprimir Resultados"><span
                 style=""><i class="fas fa-print"></i> Imprimir</span></a>
     </div>
     <div class="d-flex justify-content-center">
@@ -104,8 +104,11 @@
 </form>
 
 <hr>
-<div class="row"><span style="font-size:16px;"> Resultados:</span> <br><br>
-</div>
+    <div style="text-align:center; margin-bottom:10px;">
+        <span style= "font-size:12pt;">Resultados para: </span><br>
+        Centro de Custo: <span style= "font-size:12pt;font-weight:bold;">{{form_centro_custo}}</span> | Fornecedor: <span style= "font-size:12pt;font-weight:bold;">{{form_fornecedor}}</span> <br>
+        {% if form_data_inicial %}Data Inicial: <span style= "font-size:12pt;font-weight:bold;">{{form_data_inicial}}</span> {% endif %}  {% if form_data_final %} | Data Final: <span style= "font-size:12pt;font-weight:bold;">{{form_data_final}}</span>  {% endif %}
+    </div>
 
 <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:11px;">
     <thead style="border:solid 2px;border-color:#cb356b;background:linear-gradient(to right, #cb356b, #bd3f32); color: white;">
@@ -152,6 +155,14 @@
         {% endfor %}
     </tbody>
 </table>
+
+<div class="col-12" style="margin-top: 10px; margin-bottom:10px;"><span style="font-size:16px;">
+Resumo de Contas à Pagar: <br>    
+</span>
+
+<span style="font-size:14px; color:black;font-weight: bold;">Total de Contas = {{filter.qs.count}}</span> <br>
+<span style="font-size:18px; color:red;font-weight: bold;">Valor Total = {{valor_total}}</span> <br>
+
 {% endblock%}
 
 {% block jquery %}

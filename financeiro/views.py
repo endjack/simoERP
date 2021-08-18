@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from financeiro.filters import ContasFilter, ContasPagasFilter
 from datetime import datetime, date
 from django.views.generic.base import TemplateView
@@ -193,9 +194,77 @@ class RelatoriosCostasAPagarView(GroupRequiredMixin, LoginRequiredMixin, Templat
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         objects = ContaPagamento.objects.all()
-        filter_list = ContasFilter(self.request.GET, queryset= objects )    
+
+        dados_form = self.request.GET
+        cache.set('dados_form_contas_a_pagar', dados_form, 600)  
+        
+        filter_list = ContasFilter(dados_form, queryset= objects )
+        cache.set('filter_contas_a_pagar', filter_list, 600)  
+
+        valor_total = sum(filter_list.qs.values_list('valor', flat=True))
+        cache.set('valor_total_contas_a_pagar', valor_total, 600) 
+
+        context["valor_total"] = valor_total
         context["filter"] = filter_list
+
+                
+        if dados_form.get('fornecedor'):
+            context["form_fornecedor"] = Fornecedor.objects.get(pk = dados_form.get('fornecedor'))
+        else:
+            context["form_fornecedor"] = 'Todos os Fornecedores'
+
+        if dados_form.get('centro_de_custo'):
+            context["form_centro_custo"] = Obra.objects.get(pk = dados_form.get('centro_de_custo'))
+        else:
+            context["form_centro_custo"] = 'Todos os Centros de Custo'
+        
+        if dados_form.get('data_inicial'):
+            context["form_data_inicial"] = dados_form.get('data_inicial')
+        
+        if dados_form.get('data_final'):
+            context["form_data_final"] = dados_form.get('data_final')
         return context       
+
+class ImprimirRelatoriosCostasAPagarView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Financeiro',]
+
+    template_name = 'financeiro/imprimir-contas-a-pagar.html'
+       
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        filter_list = cache.get('filter_contas_a_pagar')
+        valor_total = cache.get('valor_total_contas_a_pagar')
+        dados_form = cache.get('dados_form_contas_a_pagar') 
+        
+        context["filter"] = filter_list
+        context["valor_total"] = valor_total
+        
+        
+        if dados_form.get('fornecedor'):
+            context["form_fornecedor"] = Fornecedor.objects.get(pk = dados_form.get('fornecedor'))
+        else:
+            context["form_fornecedor"] = 'Todos os Fornecedores'
+
+        if dados_form.get('centro_de_custo'):
+            context["form_centro_custo"] = Obra.objects.get(pk = dados_form.get('centro_de_custo'))
+        else:
+            context["form_centro_custo"] = 'Todos os Centros de Custo'
+        
+        if dados_form.get('data_inicial'):
+            context["form_data_inicial"] = dados_form.get('data_inicial')
+        
+        if dados_form.get('data_final'):
+            context["form_data_final"] = dados_form.get('data_final')
+
+        
+        
+
+        
+        return context
+
+
 
 class ContasAReceberView(GroupRequiredMixin, LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('login')
@@ -237,7 +306,7 @@ class ExcluirRecebimentoView(GroupRequiredMixin, LoginRequiredMixin, DeleteView)
 class GerarPDFContasView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
     group_required = [u'Administrador', u'Financeiro',]
-    
+
     login_url = reverse_lazy('login')  
     contextPDF= {}
        
