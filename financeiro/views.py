@@ -193,7 +193,7 @@ class RelatoriosCostasAPagarView(GroupRequiredMixin, LoginRequiredMixin, Templat
      
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        objects = ContaPagamento.objects.all()
+        objects = ContaPagamento.objects.filter(pago=False)
 
         dados_form = self.request.GET
         cache.set('dados_form_contas_a_pagar', dados_form, 600)  
@@ -257,11 +257,7 @@ class ImprimirRelatoriosCostasAPagarView(GroupRequiredMixin, LoginRequiredMixin,
         
         if dados_form.get('data_final'):
             context["form_data_final"] = dados_form.get('data_final')
-
-        
-        
-
-        
+ 
         return context
 
 
