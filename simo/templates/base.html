@@ -44,10 +44,7 @@
         }
       }
 
-    .datepicker { 
-     overflow: visible;
-     z-index:9999;
-    }
+.datepicker{z-index: 99999999 !important};
     
         .alert-fixed {
             position:fixed; 
@@ -70,6 +67,16 @@
         overflow: hidden; 
         text-overflow: ellipsis; 
         white-space: nowrap;
+    }
+    .loader{
+        position: absolute;
+        height: 100px;
+        width: 100px;
+        top: 50%;
+        left: 50%;
+        margin-left: -50px;
+        margin-top: -50px;
+        background-size: 100%;
     }
 
     </style>
@@ -181,7 +188,7 @@
                             {% comment %} OBRAS E LOCAIS MENU {% endcomment %} 
                             {% if not request.user|has_group:"FiscalSESAD" %}
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
-                                <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
+                                <div class="sb-nav-link-icon"><i class="fas fa-edit"></i></div>
                                 Cadastros                                
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                             </a>
@@ -197,16 +204,16 @@
                             {% comment %} FINANCEIRO {% endcomment %}
                             {% if request.user|has_group:"Financeiro" or  request.user|has_group:"Administrador" %}
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
-                                <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
+                                <div class="sb-nav-link-icon"><i class="fas fa-donate"></i></div>
                                 Financeiro                               
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                             </a>
                             <div class="collapse" id="collapse5" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" href="{% url 'contas-a-pagar' %}">Contas à Pagar</a>
+                                    <a class="nav-link" href="{% url 'contas-pagas' %}">Contas Pagas</a>
                                     <a class="nav-link" href="{% url 'contas-a-receber' %}">Recebimentos</a>
                                     <a class="nav-link" href="{% url 'inserir-recibo' %}">Recibos</a>
-                                    <a class="nav-link" href="{% url 'relatorio-contas' %}">Relatórios</a>
                                     <a class="nav-link" href="{% url 'listar-faturamentos' %}">Faturamento</a>
                                 </nav>
                             </div>  
@@ -215,7 +222,7 @@
                             {% comment %} RECURSOS HUMAMOS {% endcomment %}
                             {% if request.user|has_group:"RecursosHumanos" or  request.user|has_group:"Administrador" %}
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
-                                <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
+                                <div class="sb-nav-link-icon"><i class="fas fa-user-alt"></i></div>
                                 Recusos Humanos                               
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                             </a>
@@ -232,7 +239,7 @@
                             {% comment %} admin {% endcomment %}
                             {% if request.user|has_group:"Administrador" %}
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
-                                <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
+                                <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
                                 Admin                               
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                             </a>
@@ -252,7 +259,12 @@
                     </div>
                 </nav>
             </div>
-            <div id="layoutSidenav_content">
+            <div class="text-center loader">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            </div>
+            <div style="display:none" id="layoutSidenav_content">
                 <main >
                     <div class="container-fluid px-4 mb-0" style="padding-top:10px">
                         <ol class="breadcrumb mb-0">
@@ -293,17 +305,15 @@
 <!-- MDB -->
 <script  type="text/javascript"  src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.5.0/mdb.min.js"></script>
 <script>
-    $(document).ready(function() {
-            // show the alert
-            setTimeout(function() {
-                $(".alert").alert('close');
-            }, 4000);
+   $(window).on('load', function(){ 
+        
+        $(".loader").css("display", "none");
+        $("#layoutSidenav_content").toggle("display", "show");
+
     });
 </script>
+
 {% block jquery %}{% endblock%}
-
-
-
 </body>
 </html>
 
