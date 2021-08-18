@@ -1,4 +1,4 @@
-from financeiro.filters import ContasFilter
+from financeiro.filters import ContasFilter, ContasPagasFilter
 from datetime import datetime, date
 from django.views.generic.base import TemplateView
 from servicos.views import bcolors
@@ -8,16 +8,20 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.urls.base import reverse, reverse_lazy
 from .models import *
 from django.db.models import Sum
-# imports para Geração de PDF
 from django.conf import settings
 from django.template.loader import render_to_string
 import os
 from django.http.response import HttpResponse
 from weasyprint import HTML, CSS
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from braces.views import GroupRequiredMixin
 
 
-class CostasAPagarView(TemplateView):
+class ContasAPagarView(GroupRequiredMixin, LoginRequiredMixin,TemplateView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Financeiro',]
+
     template_name = 'financeiro/contas-a-pagar.html'
  
     
@@ -37,7 +41,26 @@ class CostasAPagarView(TemplateView):
         context["contas_atrasadas_SUM"] = sum(contas_atrasadas.values_list('valor', flat=True))
         return context     
 
-class InserirCostasAPagarView(CreateView):
+class ContasPagasView(GroupRequiredMixin, LoginRequiredMixin,TemplateView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Financeiro',]
+
+    template_name = 'financeiro/contas-pagas.html'
+ 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        contas_pagas = Pagamento.objects.all()     
+        context["contas_pagas_SUM"] = sum(contas_pagas.values_list('valor', flat=True))
+
+        #filtros
+        filter_list = ContasPagasFilter(self.request.GET, queryset= contas_pagas )    
+        context["filter"] = filter_list 
+        return context  
+
+class InserirContasAPagarView(GroupRequiredMixin, LoginRequiredMixin,CreateView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Financeiro',]
+
     template_name = 'financeiro/inserir-conta.html'
     model = ContaPagamento
     form_class = ContaPagamentoForm
@@ -57,17 +80,26 @@ class InserirCostasAPagarView(CreateView):
         form.instance.valor = float(form.cleaned_data['valor'])
         return super().form_valid(form)
       
-class EditarContasAPagarView(UpdateView):
+class EditarContasAPagarView(GroupRequiredMixin, LoginRequiredMixin,UpdateView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Financeiro',]
+
     template_name = 'financeiro/inserir-conta.html'
     model = ContaPagamento
     form_class = ContaPagamentoForm
     success_url = reverse_lazy('contas-a-pagar')
         
-class ExcluirContasAPagarView(DeleteView):
+class ExcluirContasAPagarView(GroupRequiredMixin, LoginRequiredMixin,DeleteView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Financeiro',]
+
     model = ContaPagamento
     success_url = reverse_lazy('contas-a-pagar')
 
-class PagamentoView(CreateView):
+class PagamentoView(GroupRequiredMixin, LoginRequiredMixin,CreateView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Financeiro',]
+
     template_name = 'financeiro/pagamento.html'
     model = Pagamento
     form_class = PagamentoForm
@@ -99,7 +131,10 @@ class PagamentoView(CreateView):
         
         return super().form_valid(form)
 
-class EditarPagamentoView(UpdateView):
+class EditarPagamentoView(GroupRequiredMixin, LoginRequiredMixin,UpdateView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Financeiro',]
+
     template_name = 'financeiro/pagamento.html'
     model = Pagamento
     form_class = PagamentoForm
@@ -133,7 +168,10 @@ class EditarPagamentoView(UpdateView):
                            
         return super().form_valid(form)
 
-class ExcluirPagamentoView(DeleteView):
+class ExcluirPagamentoView(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Financeiro',]
+
     model = Pagamento
     success_url = reverse_lazy('contas-a-pagar')
     
@@ -146,25 +184,23 @@ class ExcluirPagamentoView(DeleteView):
         print(bcolors.WARNING + "CONTA EXCLUIDA - {}".format(object.conta.descricao) + bcolors.RESET)
         return super(ExcluirPagamentoView, self).delete(*args, **kwargs)
 
-class ResumosCostasAPagarView(TemplateView):     
-    template_name = 'financeiro/contas-resumos.html'
+class RelatoriosCostasAPagarView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):  
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Financeiro',]
+
+    template_name = 'financeiro/relatorios-contas-a-pagar.html'
      
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         objects = ContaPagamento.objects.all()
-        filter_list = ContasFilter(self.request.GET, queryset= objects )
-        
-        if self.request.GET.get('dados_banco') == '2':
-            context['dados_banco'] = True
-        else:
-            context['dados_banco'] = False
-        
+        filter_list = ContasFilter(self.request.GET, queryset= objects )    
         context["filter"] = filter_list
-        context["contas_list"] = ContaPagamento.objects.filter(pago=False)
-        context["contas_list_pagas"] = Pagamento.objects.all()
         return context       
 
-class ContasAReceberView(CreateView):
+class ContasAReceberView(GroupRequiredMixin, LoginRequiredMixin, CreateView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Financeiro',]
+
     template_name = 'financeiro/contas-a-receber.html'
     model = Recebimento
     form_class = RecebimentoForm
@@ -177,7 +213,10 @@ class ContasAReceberView(CreateView):
         context["contas_a_receber_list"] = Recebimento.objects.all()
         return context   
 
-class EditarRecebimentoView(UpdateView):
+class EditarRecebimentoView(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Financeiro',]
+
     template_name = 'financeiro/contas-a-receber.html'
     model = Recebimento
     form_class = RecebimentoForm
@@ -188,11 +227,17 @@ class EditarRecebimentoView(UpdateView):
         context["is_edit"] = True   
         return context
 
-class ExcluirRecebimentoView(DeleteView):
+class ExcluirRecebimentoView(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Financeiro',]
+
     model = Recebimento
     success_url = reverse_lazy('contas-a-receber')
 
-class GerarPDFContasView(TemplateView):
+class GerarPDFContasView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Financeiro',]
+    
     login_url = reverse_lazy('login')  
     contextPDF= {}
        

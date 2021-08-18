@@ -10,9 +10,16 @@ class ContasFilter(django_filters.FilterSet):
     descricao = django_filters.CharFilter(lookup_expr='icontains')
     data_inicial = DateFilter(field_name="vencimento", lookup_expr='gte')
     data_final = DateFilter(field_name="vencimento", lookup_expr='lte')
-    pago = django_filters.TypedChoiceFilter(choices=BOOLEAN_CHOICES,
-                                            coerce=strtobool)
 
     class Meta:
         model = ContaPagamento
-        fields = ['descricao','centro_de_custo','pago','fornecedor',]
+        fields = ['descricao','centro_de_custo','fornecedor',]
+
+class ContasPagasFilter(django_filters.FilterSet):
+    descricao = django_filters.CharFilter(field_name="conta__descricao", lookup_expr='icontains')
+    data_inicial = DateFilter(field_name="data", lookup_expr='gte')
+    data_final = DateFilter(field_name="data", lookup_expr='lte')
+
+    class Meta:
+        model = Pagamento
+        fields = ['conta__descricao','conta__centro_de_custo','conta__fornecedor',]

@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Financeiro</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Contas à Pagar/Pagas</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block styleHead %}
+<style>
+    .destaque-entrada { 
+        color: green !important;
+        font-weight: bold; !important;
+     }
+    .table td {
+    text-align: center;
+    vertical-align: middle;   
+    }
+
+</style>    
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="row"><span style="font-size:18px; color:green;font-weight: bold; margin-top: 30px">Contas Pagas</span>
+</div>
+
+<form method="get" id="form_filtro">
+    {% csrf_token %}
+
+    {% for hidden_field in filter.form.hidden_fields %}
+    {{ hidden_field }}
+    {% endfor %}
+
+    <div class="form-group row mb-2 d-flex justify-content-center">
+        <div class="col-6 ">
+            <div class="input-group">
+                <div class="input-group-text">Descrição:</div>
+                {% render_field filter.form.descricao class="form-control " name="descricao"%}
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="input-group">
+                <div class="input-group-text">Centro de Custo:</div>
+                {% render_field filter.form.conta__centro_de_custo class="form-control " name="centro_de_custo"%}
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group row mb-2 d-flex justify-content-center">
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Data Inicial:</div>
+                {% render_field filter.form.data_inicial class="form-control date" name="data_inicial"%}
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-text">Data Final:</div>
+                {% render_field filter.form.data_final class="form-control date" name="data_final"%}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row mb-2 d-flex justify-content-center">
+        <div class="col-6 mb-3">
+            <div class="input-group">
+                <div class="input-group-text">Fornecedor:</div>
+                {% render_field filter.form.conta__fornecedor class="form-control" name="fornecedor"%}
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <button form="form_filtro" class="btn btn-sm btn-info m-2" type="submit"><i class="fas fa-search"></i> Filtrar</button>
+        <a class="btn btn-sm btn-light m-2" href="{% url 'contas-pagas' %}"><i class="fas fa-eraser"></i> Limpar Campos</a>
+    </div>
+
+</form>
+
+
+
+
+
+<table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:11px;">
+    <thead style="border:solid 2px; border-color:#006600 ;background: linear-gradient(to right, #00b09b, #006600); color: white;">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Documento</th>
+            <th scope="col">Emissão</th>
+            <th scope="col">Descrição</th>
+            <th scope="col">Fornecedor</th>
+            <th scope="col">Centro de Custo</th>
+            <th scope="col">Valor Original</th>
+            <th scope="col">Valor Pago</th>
+            <th scope="col">Pago em</th>
+            <th scope="col">Usuário</th>
+            <th scope="col">Opções</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in filter.qs %}
+        <tr>
+            <td class="limitar_forloop">{{forloop.counter}}</td>
+            {% if item.conta.documento %}
+            <td >{{item.conta.documento}}</td>
+            {% else %}
+            <td> - </td>
+            {% endif %}
+            <td><span style="display:none;">{{item.conta.data_inclusao | date:"Ymd"}}</span>{{item.conta.data_inclusao | date:"d/m/Y"}}</td>
+            <td class="limitar_td" style="text-align: left; vertical-align:middle !important" title="{{item.conta.descricao}}">{{item.conta.descricao}}</td>
+            {% if item.conta.fornecedor %}
+            <td class="limitar_td" style="text-align: left; vertical-align:middle !important" title="{{item.conta.fornecedor}}"><a href="{% url 'detalhar-fornecedor' item.conta.fornecedor.pk %}">{{item.conta.fornecedor}}</a></td>
+            {% else %}
+            <td> - </td>
+            {% endif %}
+            <td class="limitar_td" title="{{item.conta.centro_de_custo}}">{{item.conta.centro_de_custo}}</td>
+            <td>{{item.valor_original}}</td>
+            <td class="destaque-entrada">{{item.valor}}</td>
+            <td><span style="display:none;">{{item.data | date:"Ymd"}}</span>{{item.data | date:"d/m/Y"}}</td>
+            <td>{{item.conta.usuario.username}}</td>
+             <td>
+            <a href="{% url 'editar-pagamento' item.pk %}" title="Editar Pagamento: {{item.conta.descricao}}"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a>
+            <a href="{% url 'excluir-pagamento' item.pk %}" title="Excluir Conta: {{item.conta.descricao}}"><span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span></a>
+            </td>   
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+{% endblock%}
+
+{% block jquery %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.pt-BR.min.js' %}"></script>
+<script>
+
+    //DatePicker
+        $(".date").datepicker({
+            format: "dd/mm/yyyy",
+            todayHighlight: true,
+            language: "pt-BR",
+            
+        });
+
+
+    $(document).ready(function () {
+        
+        
+        $('.tabela-listar').DataTable({
+            responsive: true,
+            // "bSort": false,
+            "aaSorting": [],
+            "pageLength": 10,
+            "order": [[8, "desc"]],  //3º tabela em ordem decrescente
+            "language": {
+
+                "decimal": ",",
+                "emptyTable": "Sem dados disponíveis",
+                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+                "infoFiltered": "(filtrado de _MAX_ registros no total)",
+                "infoPostFix": "",
+                "thousands": ".",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "loadingRecords": "A carregar dados...",
+                "processing": "A processar...",
+                "search": "Procurar:",
+                "zeroRecords": "Não foram encontrados resultados",
+                "paginate": {
+                    "first": "Primeiro",
+                    "last": "Último",
+                    "next": "Seguinte",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": ordem crescente",
+                    "sortDescending": ": ordem decrescente"
+                }
+            }
+        });
+
+
+
+    }); 
+    
+</script>
+{% endblock %}

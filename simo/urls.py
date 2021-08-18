@@ -79,14 +79,14 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     
     #urls Financeiro 
-    path('contas-a-pagar/', CostasAPagarView.as_view(), name='contas-a-pagar'),
-    path('contas-a-pagar/inserir', InserirCostasAPagarView.as_view(), name='inserir-conta-a-pagar'),
+    path('contas-a-pagar/', ContasAPagarView.as_view(), name='contas-a-pagar'),
+    path('contas-a-pagar/inserir', InserirContasAPagarView.as_view(), name='inserir-conta-a-pagar'),
     path('contas-a-pagar/editar/<pk>', EditarContasAPagarView.as_view(), name='editar-conta-a-pagar'),
     path('contas-a-pagar/excluir/<pk>', ExcluirContasAPagarView.as_view(), name='excluir-conta-a-pagar'),
     path('pagamento/<pk>', PagamentoView.as_view(), name='pagar-conta'),
     path('pagamento/editar/<pk>', EditarPagamentoView.as_view(), name='editar-pagamento'),
     path('pagamento/excluir/<pk>', ExcluirPagamentoView.as_view(), name='excluir-pagamento'),
-    path('relatorio-contas/', ResumosCostasAPagarView.as_view(), name='relatorio-contas'),
+    path('relatorios/financeiro/contas-a-pagar', RelatoriosCostasAPagarView.as_view(), name='relatorios-contas-a-pagar'),
     path('relatorio-contas/imprimir', GerarPDFContasView.as_view(), name='imprimir-relatorio-contas'),
     path('contas-a-receber/', ContasAReceberView.as_view(), name='contas-a-receber'),
     path('contas-a-receber/editar/<pk>', EditarRecebimentoView.as_view(), name='editar-conta-a-receber'),
@@ -95,6 +95,7 @@ urlpatterns = [
     path('recibos/editar/<pk>', EditarReciboFornecedorView.as_view(), name='editar-recibo'),
     path('recibos/excluir/<pk>', ExcluirReciboFornecedorView.as_view(), name='excluir-recibo'),
     path('recibos/imprimir/<pk>',ImprimirReciboFornecedorView.as_view(), name='imprimir-recibo'),
+    path('contas-pagas/', ContasPagasView.as_view(), name='contas-pagas'),
 
     
     #urls Fornecedores
