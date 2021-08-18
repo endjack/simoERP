@@ -71,6 +71,16 @@
         text-overflow: ellipsis; 
         white-space: nowrap;
     }
+    .loader{
+        position: absolute;
+        height: 100px;
+        width: 100px;
+        top: 50%;
+        left: 50%;
+        margin-left: -50px;
+        margin-top: -50px;
+        background-size: 100%;
+    }
 
     </style>
     {% block styleHead %}{% endblock %}
@@ -252,7 +262,12 @@
                     </div>
                 </nav>
             </div>
-            <div id="layoutSidenav_content">
+            <div class="text-center loader">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            </div>
+            <div style="display:none" id="layoutSidenav_content">
                 <main >
                     <div class="container-fluid px-4 mb-0" style="padding-top:10px">
                         <ol class="breadcrumb mb-0">
@@ -293,17 +308,15 @@
 <!-- MDB -->
 <script  type="text/javascript"  src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.5.0/mdb.min.js"></script>
 <script>
-    $(document).ready(function() {
-            // show the alert
-            setTimeout(function() {
-                $(".alert").alert('close');
-            }, 4000);
+   $(window).on('load', function(){ 
+        
+        $(".loader").css("display", "none");
+        $("#layoutSidenav_content").toggle("display", "show");
+
     });
 </script>
+
 {% block jquery %}{% endblock%}
-
-
-
 </body>
 </html>
 
