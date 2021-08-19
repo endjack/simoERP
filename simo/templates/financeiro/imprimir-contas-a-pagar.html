@@ -91,7 +91,7 @@
             <td><span style="display:none;">{{item.data_inclusao | date:"Ymd"}}</span>{{item.data_inclusao | date:"d/m/Y"}}</td>
             <td class="limitar_td" style="text-align: left; vertical-align:middle !important" title="{{item.descricao}}">{{item.descricao}}</td>
             {% if item.fornecedor %}
-            <td class="limitar_td" style="text-align: left; vertical-align:middle !important" title="{{item.fornecedor}}"><a href="{% url 'detalhar-fornecedor' item.fornecedor.pk %}" title="Ver {{item.fornecedor}}">{{item.fornecedor}}</a>    </td>
+            <td class="limitar_td" style="text-align: left; vertical-align:middle !important" title="{{item.fornecedor}}">{{item.fornecedor}}</td>
             {% else %}
             <td> - </td>
             {% endif %}

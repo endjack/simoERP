@@ -98,17 +98,18 @@ class ExcluirItemView(LoginRequiredMixin,DeleteView):
     success_url = reverse_lazy("inserir-item")
 
 #         
-class InicioEstoque(LoginRequiredMixin, CreateView):
+class InicioEstoque(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
     
-    model = Estoque
     template_name= 'estoque/ver-estoque.html'
     success_url = reverse_lazy('ver-estoque')
-    form_class = EstoqueModelForm
+ 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        objects = Estoque.objects.select_related('item') 
+        # objects = Estoque.objects.select_related('item') 
+        objects = Estoque.objects.all()
+
         filter_list = EstoqueFilter(self.request.GET, queryset = objects )
         context["filter"] = filter_list
         # context["contas_list"] = Estoque.objects.filter()
