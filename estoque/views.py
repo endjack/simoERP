@@ -27,7 +27,7 @@ class InserirItemView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['itensEstoque'] =  Item.objects.order_by('pk').all()   
+        context['ultimos_dez'] =  Item.objects.all().order_by('-id')
         context['inserir'] =  True
         context['selected_categoria'] =  self.selected_categoria
         return context
@@ -88,7 +88,8 @@ class EditarItemView(LoginRequiredMixin, UpdateView):
     form_class = InserirItemForm
         
     def get_success_url(self):
-        return reverse('detalhar-item', kwargs = {'pk': self.kwargs.get('pk')})
+        return reverse('ver-estoque')
+        # return reverse('detalhar-item', kwargs = {'pk': self.kwargs.get('pk')})
     
 # EXCLUI ITEM DO ESTOQUE
 class ExcluirItemView(LoginRequiredMixin,DeleteView):

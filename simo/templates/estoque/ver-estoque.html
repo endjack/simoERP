@@ -1,15 +1,17 @@
 {% extends "base.html" %}
 {% load widget_tweaks %}
+{% load static %}
 
 {% block styleHead %}
+<link href="{% static 'css/image_preview.css' %}" rel="stylesheet">
 <style>
   .table td {
     text-align: center;
     vertical-align: middle;
   }
 </style>
-
 {% endblock %}
+
 
 {% block breadcrumb %}
 <div class="row">
@@ -86,7 +88,7 @@ Resultados: (Somente itens com Movimentação no Estoque) <br>
       <th scope="col">Categoria</th>
       <th scope="col">Peso</th>
       <th scope="col">Qtd Mínima</th>
-      <th scope="col">QRCode</th>
+      <th scope="col">Preço</th>
       <th scope="col">Opções</th>
     </tr>
   </thead>
@@ -95,7 +97,12 @@ Resultados: (Somente itens com Movimentação no Estoque) <br>
     <tr>
       <td>{{forloop.counter}}</td>
       <td>{{estoque.item.pk}}</td>
-      <td><a href="{% url 'detalhar-item' estoque.item.pk %}" >{{estoque.item.descricao}}</a></td>
+      <td>
+        <a class="thumbnail" href="{% url 'detalhar-item' estoque.item.pk %}">{{estoque.item.descricao}}
+        {% if estoque.item.imagem %}
+        <span><img src="{{estoque.item.imagem.url}}" style="max-height:200px;max-width:240px"/></span></a>
+        {% endif %}</a>
+        </td>
       {% if estoque.quantidade %} 
         <td>{{estoque.quantidade}}</td>
       {% else %}
@@ -105,8 +112,8 @@ Resultados: (Somente itens com Movimentação no Estoque) <br>
       <td>{{estoque.item.categoria.categoria}}</td>
       <td>{{estoque.item.peso}}</td>
       <td>{{estoque.item.qtd_minima}}</td>
-      <td><a href="{{estoque.item.qr_code.url}}" target="_blank"><i class="fas fa-qrcode"></i></a></td>
-      <td><a href="{% url 'editar-item' estoque.item.pk %}" >Editar</a></td>
+      <td>{{estoque.item.preco}}</td>
+      <td><a href="{% url 'editar-item' estoque.item.pk %}"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a></td>
     </tr>
     {% endfor %}
   </tbody>

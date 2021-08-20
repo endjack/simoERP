@@ -2,11 +2,16 @@
 {% load widget_tweaks %}
 {% load static %}
 
+
+{% block styleHead %}
+ <link href="{% static 'css/image_preview.css' %}" rel="stylesheet">
+{% endblock %}
+
 {% block breadcrumb %}
 <div class="row">
   <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="../ver-estoque">Estoque</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'ver-estoque' %}">Estoque</a></li>
       <li class="breadcrumb-item active" aria-current="page">{% if inserir %} Inserir Item {% else %} Editar Item
         {% endif %}</li>
     </ol>
@@ -21,7 +26,8 @@
   <div class="card-header text-white " style="background: linear-gradient(to right, #093637, #44a08d );">
     {% if inserir %} Novo Item no Estoque: {% else %} Editar Item: {% endif %}</div>
   <div class="card-body">
-    <form method="post">
+  
+  <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
 
       {% for hidden_field in form.hidden_fields %}
@@ -29,36 +35,37 @@
       {% endfor %}
 
       <!-- 3 column grid layout -->
-      <div class="form-group row mb-4">
-
-        <div class="col-2">
-          <div class="input-group">
-            <div class="input-group-text">Código: </div>
-            <input type="text" class="form-control" disabled>
-          </div>
-        </div>
-
-        <div class="col-3">
+      <div class="form-group row mb-2">
+        <div class="col-5">
           <div class="input-group">
             <div class="input-group-text">Categoria: </div>
             {% render_field form.categoria class="form-control" id="categoria" required="required" %}
-            <button type="button" class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal">
             <i class="fas fa-plus"></i>
             </button>
           </div>
         </div>
+      </div>
+        <div class="form-group row mb-2">
 
-        <div class="col-6">
+        <div class="col-7">
           <div class="input-group">
             <div class="input-group-text">Descrição: </div>
             {% render_field form.descricao class="form-control" id="descricao" required="required" %}
           </div>
         </div>
 
+        <div class="col-5">
+          <div class="input-group">
+            <div class="input-group-text">Marca: </div>
+            {% render_field form.marca class="form-control" id="marca"%}
+          </div>
+        </div>
+
       </div>
 
       <!-- 3 column grid layout -->
-      <div class="form-group row mb-4">
+      <div class="form-group row mb-2">
 
         <div class="col-3">
           <div class="input-group">
@@ -81,18 +88,6 @@
           </div>
         </div>
 
-      </div>
-
-      <!-- 3 column grid layout -->
-      <div class="form-group row mb-4">
-
-        <div class="col-6">
-          <div class="input-group">
-            <div class="input-group-text">Fornecedor: </div>
-            {% render_field form.fornecedor class="form-control" id="fornecedor" %}
-          </div>
-        </div>
-
         <div class="col-3">
           <div class="input-group">
             <div class="input-group-text">Preço: </div>
@@ -100,31 +95,51 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- 3 column grid layout -->
+      <div class="form-group row mb-2">
+
+        <div class="col-6">
+          <div class="input-group">
+            <div class="input-group-text">Fornecedor: </div>
+            {% render_field form.fornecedor class="form-control" id="fornecedor" %}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row mb-2" style="margin-top:30px">
+        <div class="col-6">
+          <div class="">
+            Anexar Imagem: </br>
+            {% render_field form.imagem class="form-control" id="imagem_upload" type="file" %}
+            {% comment %} <input class="form-control" type="file" id="formFile" name="files"> {% endcomment %}
+          </div>
+        </div>
+        
+        {% if form.instance.imagem %}
+          <img src="{{form.instance.imagem.url}}" style="max-height: 300px;max-width: 360px;text-align: center;">
+         
+        {% endif %}
+
+        <div class="col-6" style="text-align: center">
+          <img id="myimg" style="max-height: 300px;max-width: 360px;text-align: center;">
+        </div>
+       
+      </div>
+
+      <div class="form-group row mb-2">
          <div class="col-1">
           <button type="submit" class="btn btn-success">{% if inserir %} Inserir {% else %} Salvar {% endif %}</button>
         </div>
-
-
       </div>
-{% comment %}  
-      <!-- 3 column grid layout -->
-      <div class="form-group row mb-4">     
-        {% if inserir %}
-            <div class="col-3">
-              <div class="input-group">
-                <div class="input-group-text">Iniciar no Estoque com: </div>
-                <input type="number" class="form-control" id="qtn_estoque" name="qtn_estoque" value="0">  //TODO colocar unidade selecionada com Jquery apos a quantidade
-              </div>
-            </div>
-        {% endif %}
-      </div>
-{% endcomment %}
+
     </form>
   </div>
 </div>
 
 {% if inserir %}
-Itens de Estoque Adicionadas: <br>
+Itens Adicionados ao Estoque: <br>
 <div class="card mb-3 p-3" style="border-color: #093637;">
 
   <table class="table table-sm table-bordered tabela-listar">
@@ -132,6 +147,7 @@ Itens de Estoque Adicionadas: <br>
       <tr>
         <th scope="col">Cód</th>
         <th scope="col">Descrição</th>
+        <th scope="col">Marca</th>
         <th scope="col">Categoria</th>
         <th scope="col">Qtd Mínima</th>
         <th scope="col">Unid</th>
@@ -142,10 +158,19 @@ Itens de Estoque Adicionadas: <br>
       </tr>
     </thead>
     <tbody>
-      {% for item in itensEstoque %}
+      {% for item in ultimos_dez %}
       <tr>
         <td>{{item.pk}}</td>
-        <td>{{item.descricao}}</td>
+        
+       
+        <td>
+        <a class="thumbnail" href="{% url 'detalhar-item' item.pk %}">{{item.descricao}}
+        {% if item.imagem %}
+        <span><img src="{{item.imagem.url}}" style="max-height:200px;max-width:240px"/></span></a>
+        {% endif %}</a>
+        </td>
+        
+       <td>{% if item.marca %}{{item.marca}}{% else %}-{% endif %}</td>
         <td>{{item.categoria}}</td>
         <td>{{item.qtd_minima}}</td>
         <td>{{item.unid_medida}}</td>
@@ -170,8 +195,10 @@ Itens de Estoque Adicionadas: <br>
               style="color: DodgerBlue;"><i class="fas fa-arrow-circle-right fa-lg"></i></span></a>
           <a href="{% url 'excluir-item' item.pk %}" title="Excluir Item: {{item.descricao}}"><span
               style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span></a>
+          
+
         </td>
-      </tr>
+      </tr> 
       {% endfor %}
     </tbody>
   </table>
@@ -225,18 +252,33 @@ Itens de Estoque Adicionadas: <br>
   </div>
   {% endfor %}
   <!-- Fim Toast -->
-
-
   {% endblock %}
 
-
   {% block jquery %}
-
   <script src="{% static 'js/jquery-ui.js' %}"></script>
   <script src="{% static 'js/datatables.min.js' %}"></script>
   <script src="{% static 'js/jquery.mask.js' %}"></script>
+  <script src="{% static 'js/mini-preview.js' %}"></script>
   <script>
     $(document).ready(function () {
+
+       //preview imagem_upload 
+      function readURL(input) {
+          if (input.files && input.files[0]) {
+              var reader = new FileReader();
+
+              reader.onload = function (e) {
+                  $('#myimg').attr('src', e.target.result);
+              }
+
+              reader.readAsDataURL(input.files[0]);
+          }
+      }
+      $(function () { 
+          $("#imagem_upload").change(function(){
+              readURL(this);
+          });
+      });
 
       //Toast Events 
       $("#liveToast").toast('show');
@@ -254,39 +296,38 @@ Itens de Estoque Adicionadas: <br>
         reverse: true
       });
 
-      $('.tabela-listar').DataTable({
-        responsive: true,
-        // "bSort": false,
-        "aaSorting": [],
-        "pageLength": 10,
-        "language": {
-
-          "decimal": "",
-          "emptyTable": "Sem dados disponíveis",
-          "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
-          "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
-          "infoFiltered": "(filtrado de _MAX_ registros no total)",
-          "infoPostFix": "",
-          "thousands": ",",
-          "lengthMenu": "Mostrar _MENU_ registros",
-          "loadingRecords": "A carregar dados...",
-          "processing": "A processar...",
-          "search": "Procurar:",
-          "zeroRecords": "Não foram encontrados resultados",
-          "paginate": {
-            "first": "Primeiro",
-            "last": "Último",
-            "next": "Seguinte",
-            "previous": "Anterior"
-          },
-          "aria": {
-            "sortAscending": ": ordem crescente",
-            "sortDescending": ": ordem decrescente"
-          }
-        }
-      });
-
-
     });
+
+    $('.tabela-listar').DataTable({
+    responsive: true,
+    // "bSort": false,
+    "aaSorting": [],
+    "pageLength": 10,
+    "language": {
+
+      "decimal": "",
+      "emptyTable": "Sem dados disponíveis",
+      "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+      "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+      "infoFiltered": "(filtrado de _MAX_ registros no total)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "Mostrar _MENU_ registros",
+      "loadingRecords": "A carregar dados...",
+      "processing": "A processar...",
+      "search": "Procurar:",
+      "zeroRecords": "Não foram encontrados resultados",
+      "paginate": {
+        "first": "Primeiro",
+        "last": "Último",
+        "next": "Seguinte",
+        "previous": "Anterior"
+      },
+      "aria": {
+        "sortAscending": ": ordem crescente",
+        "sortDescending": ": ordem decrescente"
+      }
+    }
+  });
   </script>
   {% endblock %}

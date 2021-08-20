@@ -37,16 +37,18 @@
     .panel-body table tr td { padding-left: 15px }
     .panel-body .table {margin-bottom: 0px; }
 
-      /*CSS para impressão*/
-      @media print {
+
+    @media print {
         .oculto{
         display: none;
         }
       }
 
-.datepicker{z-index: 99999999 !important};
+    .datepicker{
+        z-index: 99999999 !important
+        };
     
-        .alert-fixed {
+    .alert-fixed {
             position:fixed; 
             top: 0px; 
             left: 0px; 
@@ -259,12 +261,12 @@
                     </div>
                 </nav>
             </div>
-            <div class="text-center loader">
+            {% comment %} <div class="text-center loader">
             <div class="spinner-border" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-            </div>
-            <div style="display:none" id="layoutSidenav_content">
+            </div> {% endcomment %}
+             <div {% comment %}style="display:none"{% endcomment %} id="layoutSidenav_content"> 
                 <main >
                     <div class="container-fluid px-4 mb-0" style="padding-top:10px">
                         <ol class="breadcrumb mb-0">
@@ -305,12 +307,6 @@
 <!-- MDB -->
 <script  type="text/javascript"  src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.5.0/mdb.min.js"></script>
 <script>
-   $(window).on('load', function(){ 
-        
-        $(".loader").css("display", "none");
-        $("#layoutSidenav_content").toggle("display", "show");
-
-    });
 </script>
 
 {% block jquery %}{% endblock%}

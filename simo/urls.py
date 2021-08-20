@@ -23,7 +23,7 @@ urlpatterns = [
     path('__debug__/', include(debug_toolbar.urls)),
     
     #url DashBoard
-    path('', DashboardSimo.as_view(), name='dashboard'),
+    path('', InicioView.as_view(), name='dashboard'),
     
     #urls Estoque
     path('ver-estoque', InicioEstoque.as_view(), name='ver-estoque'),
