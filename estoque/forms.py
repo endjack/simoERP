@@ -15,6 +15,7 @@ class MovimentacaoModelForm(ModelForm):
 
 class InserirItemForm(ModelForm):
     preco = forms.DecimalField(max_digits=20, decimal_places=2, localize=True, required=False)
+    
     class Meta:
         model = Item
         fields = '__all__'

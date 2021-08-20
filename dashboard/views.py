@@ -6,6 +6,8 @@ from django.shortcuts import render
 from django.urls.base import reverse_lazy
 from django.views.generic.base import TemplateView
 from django.db.models import Sum
+from django.shortcuts import redirect
+from django.urls import reverse
 
 # Create your views here.
 
@@ -87,3 +89,13 @@ def real_br_money_mask(my_value):
     b = a.replace(',','v')
     c = b.replace('.',',')
     return c.replace('v','.')
+
+
+class InicioView(LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('login')
+    
+    def get(self, request, *args, **kwargs):
+        if request.user.groups.filter(name='Financeiro').exists() or request.user.groups.filter(name='Administrador').exists():
+            return redirect(reverse('contas-a-pagar'))
+        if request.user.groups.filter(name='Tecnico').exists() or request.user.groups.filter(name='Engenharia').exists():
+            return redirect(reverse('listar-servicos'))

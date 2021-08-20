@@ -11,7 +11,7 @@
 <div class="row">
     <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/">Estoque</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'ver-estoque' %}">Estoque</a></li>
             <li class="breadcrumb-item active" aria-current="page">Detalhar Item nº {{item_atual.pk}}</li>
         </ol>
     </nav>
@@ -23,18 +23,25 @@
 
 <div class="d-flex bd-highlight mb-3">
     <div class="me-auto p-2 bd-highlight">
-        <span style="font-size:30px; color:green; margin-top: 5px">Item: {{item_atual.descricao}}</span>    
+        {% if item_atual.imagem %}
+          <div class="fw-bold"></div>
+          <img src="{{item_atual.imagem.url}}" class="border border-dark overflow-hidden" style="margin-right:10px;max-height: 300px;max-width: 360px;">
+          
+         {% endif %}
+        <span style="font-size:30px; color:black; margin-top: 5px">Item: {{item_atual.descricao}}</span>   
+        {% if item_atual.imagem %}
+        </br><a style="font-size:11px;" href="{{item_atual.imagem.url}}" target="_blank">ver imagem</a>
+        {% endif %}
     </div>
 
     <div class="ms-auto p-2 bd-highlight">
-        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-light">Voltar</a>
-        <a href="{% url 'editar-item' item_atual.pk %}" class="btn btn-primary">Editar</a>
-        <a href="{% url 'excluir-item' item_atual.pk %}" class="btn btn-danger">Excluir</a>
+        <a href="{{ request.META.HTTP_REFERER }}" title="Voltar para Inserir Itens" class="btn btn-sm btn-light">Voltar</a>
+        <a href="{% url 'ver-estoque'%}" class="btn btn-sm btn-info">Ver Estoque</a>
+        <a href="{% url 'editar-item' item_atual.pk %}" class="btn btn-sm btn-primary">Editar</a>
+        <a href="{% url 'excluir-item' item_atual.pk %}" class="btn btn-sm btn-danger">Excluir</a>
     </div>
     
 </div>
-<hr>
-
 
 <div class="card border-dark mb-3">
   <div class="card-header">Dados do Item de Estoque:</div>
@@ -130,9 +137,9 @@
   </div>
 </div>
 
-<div class="row" style="margin-top:40px">
+{% comment %} <div class="row" style="margin-top:40px">
       <div class="row"><span style="font-size=14px; color:gray;font-style: italic;">Últimas Movimentaçãos no Estoque</span><hr></div> 
-  </div>
+  </div> {% endcomment %}
 
 {% comment %} //TODO LOG INDIVIDUAL DAS MOVIMENTAÇÕES DO ESTOQUE COM USUÁRIO {% endcomment %}
 

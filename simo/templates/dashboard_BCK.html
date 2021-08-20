@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+
+
+{% block conteudo %}
+{% comment %} DASHBOARD FINANCEIRO {% endcomment %}
+<div class="card mb-3 border border-dark" style="border-color: #093637;">
+    <div class="card-header text-white " style="background: linear-gradient(to right, #93291E, #ED213A );">
+        Resumo do Dia {% now "d/m/Y" %} FINANCEIRO</div>
+
+    <div class="card-body d-flex flex-wrap justify-content-center">
+        Hoje:
+        <div class="card-body d-flex justify-content-start">
+            <div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
+                <div class="card-header">Saídas</div>
+                <div class="card-body">
+                    <p class="card-title">R$</p>
+                    <h5 class="card-text">{{saidas_dia}}</h5>
+                </div>
+            </div>
+            &nbsp&nbsp
+            <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-header">Entradas</div>
+                <div class="card-body">
+                    <p class="card-title">R$</p>
+                    <h5 class="card-text">{{entrada_dia}}</h5>
+                </div>
+            </div>
+            &nbsp&nbsp
+            <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+                <div class="card-header">Saldo</div>
+                <div class="card-body">
+                    <p class="card-title">R$</p>
+                    <h5 class="card-text">{{saldo_dia}}</h5>
+                </div>
+            </div>
+        </div>
+        Geral:
+        <div class="card-body d-flex flex-wrap justify-content-start">
+            <div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
+                <div class="card-header">Saídas</div>
+                <div class="card-body">
+                    <p class="card-title">R$</p>
+                    <h5 class="card-text">{{saidas_geral}}</h5>
+                </div>
+            </div>
+            &nbsp&nbsp
+            <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-header">Entradas</div>
+                <div class="card-body">
+                    <p class="card-title">R$</p>
+                    <h5 class="card-text">{{entradas_geral}}</h5>
+                </div>
+            </div>
+            &nbsp&nbsp
+            <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+                <div class="card-header">Saldo</div>
+                <div class="card-body">
+                    <p class="card-title">R$</p>
+                    <h5 class="card-text">{{saldo_geral}}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3 border border-dark" style="border-color: #093637;">
+    <div class="card-header text-white " style="background: linear-gradient(to right, #093637, #44a08d );">
+        Resumo - Caixas de Obra FINANCEIRO</div>
+    <div class="card-body">
+
+        <div class="card-group">
+            <div class="card">
+                <h5 class="card-title">
+                    <form method="get" action="">
+                        {% csrf_token %}
+                        <div class="card-body d-flex flex-wrap justify-content-start">
+                            <div class="col-6">
+                                <div class="input-group flex-nowrap">
+                                    <div class="input-group-text">Centro de Custo: </div>
+                                    <select class="form-select" name="centro_custo_sel">
+                                        {% for ob in obras_list %}
+                                        {% if request.GET.centro_custo_sel == ob.pk|slugify %}
+                                        <option value="{{ ob.pk }}" selected> {{ ob.nome }}</option>
+                                        {% else %}
+                                        <option value="{{ ob.pk }}"> {{ ob.nome }}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="btn btn-primary">Ver</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </h5>
+                <div class="card-body">
+                    <div class="card-body d-flex flex-wrap justify-content-start">
+                        <div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
+                            <div class="card-header">Saídas</div>
+                            <div class="card-body">
+                                <p class="card-title">R$</p>
+                                <h5 class="card-text">{{saidas_obra_select}}</h5>
+                            </div>
+                        </div>
+                        &nbsp&nbsp
+                        <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                            <div class="card-header">Entradas</div>
+                            <div class="card-body">
+                                <p class="card-title">R$</p>
+                                <h5 class="card-text">{{entrada_obra_select}}</h5>
+                            </div>
+                        </div>
+                        &nbsp&nbsp
+                        <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+                            <div class="card-header">Saldo</div>
+                            <div class="card-body">
+                                <p class="card-title">R$</p>
+                                <h5 class="card-text">{{saldo_obra_select}}</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}
