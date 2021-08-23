@@ -121,7 +121,7 @@ class PagamentoView(GroupRequiredMixin, LoginRequiredMixin,CreateView):
         form.instance.valor_original = conta_atual.valor
                 
         if form.instance.valor_original <= form.instance.valor:  # o ckeckbox return 'on' ou None
-            form.instance.valor = conta_atual.valor
+            conta_atual.valor = form.instance.valor
             conta_atual.pago = True
             conta_atual.save()
         else:
@@ -129,7 +129,6 @@ class PagamentoView(GroupRequiredMixin, LoginRequiredMixin,CreateView):
             conta_atual.valor -= form.instance.valor 
             conta_atual.save()
                    
-        
         return super().form_valid(form)
 
 class EditarPagamentoView(GroupRequiredMixin, LoginRequiredMixin,UpdateView):
@@ -140,7 +139,6 @@ class EditarPagamentoView(GroupRequiredMixin, LoginRequiredMixin,UpdateView):
     model = Pagamento
     form_class = PagamentoForm
     success_url = reverse_lazy('contas-a-pagar')
-
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -159,7 +157,7 @@ class EditarPagamentoView(GroupRequiredMixin, LoginRequiredMixin,UpdateView):
         form.instance.conta = pagamento_atual.conta
                 
         if form.instance.valor_original <= form.instance.valor:  # o ckeckbox return 'on' ou None
-            form.instance.valor = pagamento_atual.valor
+            conta_atual.valor = form.instance.valor
             pagamento_atual.conta.pago = True
             pagamento_atual.conta.save()
         else:
