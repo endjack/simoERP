@@ -120,7 +120,7 @@ class PagamentoView(GroupRequiredMixin, LoginRequiredMixin,CreateView):
         form.instance.conta = conta_atual
         form.instance.valor_original = conta_atual.valor
                 
-        if self.request.POST.get('total') != None :  # o ckeckbox return 'on' ou None
+        if form.instance.valor_original <= form.instance.valor:  # o ckeckbox return 'on' ou None
             form.instance.valor = conta_atual.valor
             conta_atual.pago = True
             conta_atual.save()
