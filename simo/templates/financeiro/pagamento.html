@@ -45,7 +45,7 @@
             <th scope="col">Descrição</th>
             <th scope="col">Fornecedor</th>
             <th scope="col">Centro de Custo</th>
-            <th scope="col">Valor</th>
+            <th scope="col">Valor Original</th>
             <th scope="col">Vencimento</th>
             <th scope="col">Usuário</th>
         </tr>
@@ -61,7 +61,7 @@
             <td> - </td>
             {% endif %}
             <td>{{conta_atual.centro_de_custo}}</td>
-            <td>{{conta_atual.valor}}</td>
+            <td style="color: red; font-weight: bold !important;">R$ {{conta_atual.valor}}</td>
             <td>{{conta_atual.vencimento}}</td>
             <td>{{conta_atual.usuario.username}}</td>
     </tbody>
@@ -106,7 +106,7 @@
         <div class="col-4">
             <div class="input-group">
                 <div class="input-group-text">Outro Valor:</div>
-                {% render_field form.valor class="form-control money" id="valorCampo" name="valor" required='required'%}
+                {% render_field form.valor class="form-control money" id="valorCampo" name="valor"  required='required'%}
             </div>
         </div>
 
@@ -136,6 +136,7 @@
 <script>
 
     $(document).ready(function () {
+   
 
         //Check 'Pagamento total' está ativo seta disable no input 'valor' automatico
         if($('#flexCheckDefault').is(':checked')){    
@@ -148,8 +149,9 @@
         //Check 'Pagamento total' é clickado seta disable/enable no input 'valor'
         $('#flexCheckDefault').change(function(){
             if($(this).is(':checked')){    
-                $('#valorCampo').prop('disabled','disabled')
                 $('#valorCampo').val('{{conta_atual.valor}}')
+                $('#valorCampo').prop('disabled','disabled')
+                
             }else{
                 $('#valorCampo').prop('disabled', false)
                 $('#valorCampo').val('')    
