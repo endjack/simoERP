@@ -124,7 +124,7 @@
             <td> - </td>
             {% endif %}
             <td class="limitar_td" title="{{item.conta.centro_de_custo}}">{{item.conta.centro_de_custo}}</td>
-            <td>{{item.valor_original}}</td>
+            <td>{{item.conta.valor}}</td>
             <td class="destaque-entrada">{{item.valor}}</td>
             <td><span style="display:none;">{{item.data | date:"Ymd"}}</span>{{item.data | date:"d/m/Y"}}</td>
             <td>{{item.conta.usuario.username}}</td>

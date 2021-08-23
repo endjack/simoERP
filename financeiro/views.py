@@ -25,7 +25,6 @@ class ContasAPagarView(GroupRequiredMixin, LoginRequiredMixin,TemplateView):
 
     template_name = 'financeiro/contas-a-pagar.html'
  
-    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)      
         context["contas_list"] = ContaPagamento.objects.filter(pago=False)
@@ -97,7 +96,7 @@ class ExcluirContasAPagarView(GroupRequiredMixin, LoginRequiredMixin,DeleteView)
     model = ContaPagamento
     success_url = reverse_lazy('contas-a-pagar')
 
-class PagamentoView(GroupRequiredMixin, LoginRequiredMixin,CreateView):
+class PagamentoView(GroupRequiredMixin, LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('login')
     group_required = [u'Administrador', u'Financeiro',]
 
@@ -118,17 +117,14 @@ class PagamentoView(GroupRequiredMixin, LoginRequiredMixin,CreateView):
     def form_valid(self, form):
         conta_atual = ContaPagamento.objects.get(pk=self.kwargs.get('pk'))
         form.instance.conta = conta_atual
-        form.instance.valor_original = conta_atual.valor
-                
-        if form.instance.valor_original <= form.instance.valor:  # o ckeckbox return 'on' ou None
-            conta_atual.valor = form.instance.valor
+         
+        if self.request.POST.get('total') != None :  # o ckeckbox return 'on' ou None
+            form.instance.valor = conta_atual.valor 
+                   
+        if form.instance.valor >= form.instance.conta.valor: 
             conta_atual.pago = True
             conta_atual.save()
-        else:
-            conta_atual.pago = False
-            conta_atual.valor -= form.instance.valor 
-            conta_atual.save()
-                   
+                
         return super().form_valid(form)
 
 class EditarPagamentoView(GroupRequiredMixin, LoginRequiredMixin,UpdateView):
@@ -138,13 +134,18 @@ class EditarPagamentoView(GroupRequiredMixin, LoginRequiredMixin,UpdateView):
     template_name = 'financeiro/pagamento.html'
     model = Pagamento
     form_class = PagamentoForm
-    success_url = reverse_lazy('contas-a-pagar')
+    success_url = reverse_lazy('contas-pagas')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
         pagamento_atual = Pagamento.objects.get(pk=self.kwargs.get('pk'))
-        context['mostrar_conta'] = 'display: none;'
+        conta_atual = pagamento_atual.conta
+        context["conta_atual"] = conta_atual
+    
+        
+        
+        # context['mostrar_conta'] = 'display: none;'
         
         if pagamento_atual.total:   
             context['checked'] = 'checked'
@@ -153,16 +154,13 @@ class EditarPagamentoView(GroupRequiredMixin, LoginRequiredMixin,UpdateView):
     
     def form_valid(self, form):
         pagamento_atual = Pagamento.objects.get(pk=self.kwargs.get('pk'))
-        form.instance.valor_original = pagamento_atual.valor
         form.instance.conta = pagamento_atual.conta
+        
+        if self.request.POST.get('total') != None :  # o ckeckbox return 'on' ou None
+            form.instance.valor = pagamento_atual.conta.valor
                 
-        if form.instance.valor_original <= form.instance.valor:  # o ckeckbox return 'on' ou None
-            pagamento_atual.valor = form.instance.valor
+        if form.instance.valor >= pagamento_atual.conta.valor:  # o ckeckbox return 'on' ou None
             pagamento_atual.conta.pago = True
-            pagamento_atual.conta.save()
-        else:
-            pagamento_atual.conta.pago = False
-            pagamento_atual.conta.valor -= form.instance.valor 
             pagamento_atual.conta.save()
                            
         return super().form_valid(form)
@@ -172,13 +170,12 @@ class ExcluirPagamentoView(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
     group_required = [u'Administrador', u'Financeiro',]
 
     model = Pagamento
-    success_url = reverse_lazy('contas-a-pagar')
+    success_url = reverse_lazy('contas-pagas')
     
     def delete(self, *args, **kwargs):
         # TODO conta do pagamento voltar para ser "à pagar"
         object = self.get_object()
         object.conta.pago = False
-        object.conta.valor = object.valor_original
         object.conta.save()
         print(bcolors.WARNING + "CONTA EXCLUIDA - {}".format(object.conta.descricao) + bcolors.RESET)
         return super(ExcluirPagamentoView, self).delete(*args, **kwargs)
