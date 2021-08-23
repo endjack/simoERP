@@ -157,7 +157,7 @@ class EditarPagamentoView(GroupRequiredMixin, LoginRequiredMixin,UpdateView):
         form.instance.conta = pagamento_atual.conta
                 
         if form.instance.valor_original <= form.instance.valor:  # o ckeckbox return 'on' ou None
-            conta_atual.valor = form.instance.valor
+            pagamento_atual.valor = form.instance.valor
             pagamento_atual.conta.pago = True
             pagamento_atual.conta.save()
         else:
