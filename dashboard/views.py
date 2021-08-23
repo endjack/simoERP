@@ -95,7 +95,8 @@ class InicioView(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
     
     def get(self, request, *args, **kwargs):
-        if request.user.groups.filter(name='Financeiro').exists() or request.user.groups.filter(name='Administrador').exists():
-            return redirect(reverse('contas-a-pagar'))
-        if request.user.groups.filter(name='Tecnico').exists() or request.user.groups.filter(name='Engenharia').exists():
-            return redirect(reverse('listar-servicos'))
+        # if request.user.groups.filter(name='Financeiro').exists() or request.user.groups.filter(name='Administrador').exists():
+        #     return redirect(reverse('contas-a-pagar'))
+        # if request.user.groups.filter(name='Tecnico').exists() or request.user.groups.filter(name='Engenharia').exists():
+        #     return redirect(reverse('listar-servicos'))
+        return render(request, 'home.html')

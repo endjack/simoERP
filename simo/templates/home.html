@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+
+Bem-vindo <strong>{% firstof request.user.get_full_name request.user.username %}</strong>
+</br></br>
+Hoje é <strong>{% now "j/F/Y" %} </strong>
+
+
+{% endblock %}

@@ -24,7 +24,7 @@ urlpatterns = [
     
     #url DashBoard
     path('', InicioView.as_view(), name='dashboard'),
-    
+   
     #urls Estoque
     path('ver-estoque', InicioEstoque.as_view(), name='ver-estoque'),
     path('mov-estoque/', MovimentacaoEstoqueView.as_view(), name='mov-estoque'),
