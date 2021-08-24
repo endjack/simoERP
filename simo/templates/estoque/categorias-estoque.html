@@ -5,7 +5,7 @@
   <div class="row">
     <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="../ver-estoque">Estoque</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'ver-estoque' %}">Estoque</a></li>
         <li class="breadcrumb-item active" aria-current="page">Categorias</li>
       </ol>
     </nav>
@@ -13,9 +13,14 @@
 {% endblock %}
 
 {% block conteudo %}
-<div class="card mb-3 border border-dark" style="border-color: #093637;">
-  <div class="card-header text-white " style="background: linear-gradient(to right, #093637, #44a08d );">
-    Adicionar Categoria:</div>
+<div class="card mb-3 border border-dark col-6" style="border-color: #093637;">
+    {% if editar %} 
+    <div class="card-header text-white " style="background: linear-gradient(to right, #93291E, #ED213A );">
+    Editar Categoria:
+    {% else %}
+    <div class="card-header text-white " style="background: linear-gradient(to right, #093637, #44a08d );"> 
+    Adicionar Categoria:
+    {% endif %}</div>
   <div class="card-body">
   <form method="post" >
       {% csrf_token %}
@@ -28,15 +33,17 @@
       <!-- 3 column grid layout -->
        <div class="form-group row">
        
-       <div class="col-5">
+       <div class="col-8">
             <div class="input-group">
               <div class="input-group-text">Categoria: </div>
                 {% render_field form.categoria class="form-control" id="categoria" %}
             </div>
           </div>
 
-        <div class="col-1">
-        <button type="submit" class="btn btn-success">Adicionar</button>
+        <div class="col-4">
+        <button type="submit" class="{% if editar %}btn btn-danger">Salvar
+        {% else %}btn btn-success"> Adicionar
+        {% endif %}</button>
         </div>  
 
       </div>
@@ -46,7 +53,7 @@
 
 <br><br>
 <h5>Categorias Adicionadas: </h5>
-<div class="card mb-3 p-3" style="border-color: #093637;">
+<div class="card mb-2 p-3 col-6" style="border-color: #093637;">
 
 <table class="table table-sm table-bordered tabela-listar">
    <thead class="card-header text-white " style="background: linear-gradient(to right, #0f2027, #203a43, #2c5364);">
@@ -61,7 +68,10 @@
     <tr>
       <td>{{c.pk}}</td>
       <td>{{c.categoria}}</td>
-      <td>Editar | Excluir</td>
+      <td>
+      <a href="{% url 'editar-categoria' c.pk %}"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a>
+      <a href="{% url 'excluir-categoria' c.pk %}"><span style="color: red;"><i class="fas fa-trash fa-lg"></i></span></a>
+      </td>
     </tr>
 {% endfor %}
   </tbody>

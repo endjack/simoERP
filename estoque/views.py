@@ -12,12 +12,13 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
+from braces.views import GroupRequiredMixin
 from django.views.generic import TemplateView, CreateView
 
-
-# INSERE ITENS NO SISTEMA E NÃO NO ESTOQUE
-class InserirItemView(LoginRequiredMixin, CreateView):
+class InserirItemView(GroupRequiredMixin, LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Estoque', u'Tecnico',]
+    
     selected_categoria ='0'
     
     model = Item
@@ -69,9 +70,10 @@ class InserirItemView(LoginRequiredMixin, CreateView):
         
         return super().post(request, *args, **kwargs)
 
-# DETALHA OS DADOS DO ITEM INDIVIDUALMENTE
-class DetalharItemView(LoginRequiredMixin, TemplateView):
+class DetalharItemView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Estoque', u'Tecnico',]
+    
     template_name = "estoque/detalhar-item.html"
     
     def get_context_data(self, **kwargs):
@@ -79,9 +81,9 @@ class DetalharItemView(LoginRequiredMixin, TemplateView):
         context["item_atual"] = Item.objects.get(pk=self.kwargs.get('pk'))
         return context
 
-# EDITA OS ITENS NO MESMO TEMPLATE DE CRIAÇÃO
-class EditarItemView(LoginRequiredMixin, UpdateView):
+class EditarItemView(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
     login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Estoque', u'Tecnico',]
     
     template_name = 'estoque/inserir-item.html'
     model = Item
@@ -90,17 +92,17 @@ class EditarItemView(LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         return reverse('ver-estoque')
         # return reverse('detalhar-item', kwargs = {'pk': self.kwargs.get('pk')})
-    
-# EXCLUI ITEM DO ESTOQUE
-class ExcluirItemView(LoginRequiredMixin,DeleteView):
+
+class ExcluirItemView(GroupRequiredMixin, LoginRequiredMixin,DeleteView):
     login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Estoque', u'Tecnico',]
     
     model = Item
     success_url = reverse_lazy("inserir-item")
-
-#         
-class InicioEstoque(LoginRequiredMixin, TemplateView):
+      
+class InicioEstoque(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Estoque', u'Tecnico',]
     
     template_name= 'estoque/ver-estoque.html'
     success_url = reverse_lazy('ver-estoque')
@@ -117,9 +119,10 @@ class InicioEstoque(LoginRequiredMixin, TemplateView):
         
         return context
 
-#
-class MovimentacaoEstoqueView(LoginRequiredMixin, CreateView):
+class MovimentacaoEstoqueView(GroupRequiredMixin, LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Estoque', u'Tecnico',]
+    
     model = MovimentacaoEstoque
     template_name= 'estoque/mov-estoque.html'
     success_url = reverse_lazy('mov-estoque')
@@ -206,22 +209,46 @@ class MovimentacaoEstoqueView(LoginRequiredMixin, CreateView):
         
         return response
 
-#   
-class CategoriasEstoque(LoginRequiredMixin, CreateView):
+class CategoriasEstoque(GroupRequiredMixin, LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Estoque', u'Tecnico',]
+    
     model = Categoria
     template_name= 'estoque/categorias-estoque.html'
     success_url = reverse_lazy('categorias-estoque')
     form_class = CategoriaModelForm
 
     def get_context_data(self, **kwargs):
-        context = super(CategoriasEstoque, self).get_context_data(**kwargs)
-        context['categorias'] =  Categoria.objects.order_by('pk').all() 
+        context = super().get_context_data(**kwargs)
+        context['categorias'] =  Categoria.objects.all().order_by('pk')
         return context
 
-#
-class BuscaEstoqueView(LoginRequiredMixin, ListView):
+class EditarCategoriaEstoque(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
     login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Estoque', u'Tecnico',]
+    
+    model = Categoria
+    template_name= 'estoque/categorias-estoque.html'
+    success_url = reverse_lazy('categorias-estoque')
+    form_class = CategoriaModelForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categorias'] =  Categoria.objects.all().order_by('pk')
+        context['editar'] =  True
+        return context
+
+class ExcluirCategoriaEstoque(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Estoque', u'Tecnico',]
+    
+    model = Categoria
+    success_url = reverse_lazy("categorias-estoque")
+
+class BuscaEstoqueView(GroupRequiredMixin, LoginRequiredMixin, ListView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Estoque', u'Tecnico',]
+    
     model = Estoque
     template_name = 'estoque/buscar-estoque.html'
 
@@ -232,7 +259,8 @@ class BuscaEstoqueView(LoginRequiredMixin, ListView):
             object_list = Estoque.objects.filter(Q(item__descricao__icontains=query))
         return  object_list
 
-#
+
+
 def autocompleteitens(request):
     query = request.GET.get('term')
     query_set = Item.objects.filter(descricao__icontains=query)
@@ -240,7 +268,6 @@ def autocompleteitens(request):
     myList += [x.descricao+' - '+x.unid_medida+' - COD: '+str(x.pk) for x in query_set]
     return JsonResponse(myList,safe=False)    
 
-#
 def gerar_qrcode(text):  
     code = pyqrcode.create(text)
     code.png(f"simo/media/qrcodes/{text}.png", scale=6,)
