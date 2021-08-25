@@ -26,14 +26,6 @@
     <hr>
 </div>
 
-<div class="d-flex flex-row-reverse bd-highlight mb-3">
-    <div class="">
-        <button type="submit" form="addConta" class="btn btn-danger">Incluir</button>
-        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-light">Voltar</a>
-    </div>
-</div>
-
-
 <form id="addConta" method="post" autocomplete="off">
     {% csrf_token %}
 
@@ -41,21 +33,32 @@
     {{ hidden_field }}
     {% endfor %}
 
-    <div class="form-group row mb-3">
-        <div class="col-4">
+    <div class="form-group row mb-2">
+        <div class="col-9">
+            <div class="input-group">
+                <div class="input-group-text">Fornecedor:</div>
+                {% render_field form.fornecedor class="form-control" name="fornecedor" id="fornecedor"%}
+                <a href="{% url 'inserir-fornecedor' %}" class="btn btn-primary btn-sm"
+                    title="Adicionar um Novo Fornecedor"><i class="fa fa-plus"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row mb-2">
+        <div class="col-3">
             <div class="input-group">
                 <div class="input-group-text">Emissão:</div>
                 {% render_field form.data_inclusao class="form-control date" name="data_inclusao"%}
             </div>
         </div>
 
-        <div class="col-4">
+        <div class="col-3">
             <div class="input-group">
                 <div class="input-group-text">Vencimento:</div>
                 {% render_field form.vencimento class="form-control date" name="vencimento"%}
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-3">
             <div class="input-group">
                 <div class="input-group-text">Documento nº:</div>
                 {% render_field form.documento class="form-control" name="documento"%}
@@ -63,50 +66,76 @@
         </div>
     </div>
 
-    <div class="form-group row mb-3">
-        <div class="col-7">
+    <div class="form-group row mb-2">
+        <div class="col-9">
             <div class="input-group">
                 <div class="input-group-text">Descrição:</div>
                 {% render_field form.descricao class="form-control" name="descricao" required="required"%}
             </div>
         </div>
 
-        <div class="col-5">
-            <div class="input-group">
-                <div class="input-group-text">Fornecedor:</div>
-                {% render_field form.fornecedor class="form-control" name="fornecedor"%}
-                <a href="{% url 'inserir-fornecedor' %}" class="btn btn-primary btn-sm"
-                    title="Adicionar um Novo Fornecedor"><i class="fa fa-plus"></i></a>
-            </div>
-        </div>
     </div>
 
-    <div class="form-group row mb-3">
-        <div class="col-5">
+    <div class="form-group row mb-2">
+        <div class="col-4">
             <div class="input-group">
-                <div class="input-group-text">Valor:</div>
+                <div class="input-group-text">Valor R$:</div>
                 {% render_field form.valor class="form-control money " name="valor"%}
             </div>
         </div>
 
-        <div class="col-7">
+        <div class="col-5">
             <div class="input-group">
                 <div class="input-group-text">Centro de Custo:</div>
                 {% render_field form.centro_de_custo class="form-control" name="centro_de_custo" required="required"%}
             </div>
         </div>
     </div>
-
-    <div class="form-group row mb-3">
-        <div class="col-8">
+    <br>
+    Detalhes da Conta:
+    <div class="form-group row mb-2">
+        <div class="col-9">
             <div class="input-group">
                 <div class="input-group-text">Obs:</div>
-                {% render_field form.obs class="form-control" name="obs" style="height: 60px"%}
+                {% render_field form.obs class="form-control" name="obs" style="height: 150px"%}
             </div>
+        </div>
+    <div class="col-3" >
+        <div class="d-flex align-items-start flex-column bd-highlight mb-3" >
+        
+            <div class="p-2 bd-highlight "><button type="submit" form="addConta" name="pagar" value="False" class="btn btn-danger">Salvar</button></div>
+            <div class="p-2 bd-highlight "><button type="submit" form="addConta" name="pagar" value="True" class="btn btn-success">Salvar e Pagar</a></div>
+            <div class="p-2 bd-highlight"><a href="{{ request.META.HTTP_REFERER }}" class="btn btn-sm btn-light">Cancelar</a></div>
         </div>
     </div>
 
+    </div>
+
 </form>
+    
+<hr>
+<div class="row"><span style="font-size:18px;font-weight: bold;; margin-top: 10px">
+Contas <span style="color:red">não pagas</span> Cadastradas por Fornecedor
+</span>
+
+</div>
+<table class="table table-sm table-striped  table-hover" style="font-size:13px;">
+    <thead>
+        <tr >
+            <th scope="col" style="font-weight: bold; text-align:center">#</th>
+            <th scope="col" style="font-weight: bold; text-align:center">Emissão</th>
+            <th scope="col" style="font-weight: bold; text-align:center">Documento</th>
+            <th scope="col" style="font-weight: bold; text-align:center">Descrição</th>
+            <th scope="col" style="font-weight: bold; text-align:center">Valor R$</th>
+            <th scope="col" style="font-weight: bold; text-align:center">Vencimento</th>
+        </tr>
+    </thead>
+    <tbody id="contas">
+        
+    </tbody>
+</table>
+
+
 
 {% endblock%}
 
@@ -115,6 +144,7 @@
 <script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
 <script src="{% static 'js/bootstrap-datepicker.pt-BR.min.js' %}"></script>
 <script src="{% static 'js/jquery.mask.js' %}"></script>
+
 <script>
     $(document).ready(function () {
 
@@ -123,14 +153,82 @@
             reverse: true
         });
 
-
-
         //DatePicker
         $(".date").datepicker({
             format: "dd/mm/yyyy",
             todayHighlight: true,
             language: "pt-BR"
         });
+
+        function formatReal(numero) {
+                var tmp = numero + '';
+                var neg = false;
+
+                if (tmp - (Math.round(numero)) == 0) {
+                    tmp = tmp + '00';        
+                }
+
+                if (tmp.indexOf(".")) {
+                    tmp = tmp.replace(".", "");
+                }
+
+                if (tmp.indexOf("-") == 0) {
+                    neg = true;
+                    tmp = tmp.replace("-", "");
+                }
+
+                if (tmp.length == 1) tmp = "0" + tmp
+
+                tmp = tmp.replace(/([0-9]{2})$/g, ",$1");
+
+                if (tmp.length > 6)
+                    tmp = tmp.replace(/([0-9]{3}),([0-9]{2}$)/g, ".$1,$2");
+
+                if (tmp.length > 9)
+                    tmp = tmp.replace(/([0-9]{3}).([0-9]{3}),([0-9]{2}$)/g, ".$1.$2,$3");
+
+                if (tmp.length = 12)
+                    tmp = tmp.replace(/([0-9]{3}).([0-9]{3}).([0-9]{3}),([0-9]{2}$)/g, ".$1.$2.$3,$4");
+
+                if (tmp.length > 12)
+                    tmp = tmp.replace(/([0-9]{3}).([0-9]{3}).([0-9]{3}).([0-9]{3}),([0-9]{2}$)/g, ".$1.$2.$3.$4,$5");
+
+                if (tmp.indexOf(".") == 0) tmp = tmp.replace(".", "");
+                if (tmp.indexOf(",") == 0) tmp = tmp.replace(",", "0,");
+
+                return (neg ? '-' + tmp : tmp);
+            }
+
+        $("#fornecedor").change(function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "GET",
+                url: "{% url 'ajax-fornecedor-contas-a-pagar' %}",
+                dataType: "json",
+                data: {'id': $('#fornecedor').val() },
+                success: function(data) {
+                    $("#contas").html('');
+                    if(data.contas.length > 0){
+                        for (var i = 0; i < data.contas.length; i++) {
+                        var valor = formatReal(data.contas[i]["valor"]);
+                       
+                        var d = new Date(data.contas[i]["data_inclusao"]);    
+                        var data_emissao = d.toLocaleDateString();
+                        var d2 = new Date(data.contas[i]["vencimento"]);    
+                        var data_vencimento = d2.toLocaleDateString();
+                        $("#contas").append('<tr><td style="text-align:center">'+(i+1)+'</td><td style="text-align:center">'+data_emissao+'</td><td style="text-align:center">'+data.contas[i]["documento"]+'</td><td>'+data.contas[i]["descricao"]+'</td><td style="text-align:center">'+valor+'</td> <td style="text-align:center">'+data_vencimento+'</td></tr>');
+                            }
+                    }else{
+                        $("#contas").html('<td colspan="100%" style="text-align:center">Sem Contas!</td>');
+                    }
+                        
+              
+                },  
+                error: function(xhr, textStatus) {
+                    alert("ERRO! Fornecedor NÃO ENCONTRADO!");
+                }
+            });
+        })  
 
     });
 </script>

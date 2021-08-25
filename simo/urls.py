@@ -14,6 +14,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+from financeiro.ajax import *
 
 
 
@@ -98,6 +99,7 @@ urlpatterns = [
     path('recibos/excluir/<pk>', ExcluirReciboFornecedorView.as_view(), name='excluir-recibo'),
     path('recibos/imprimir/<pk>',ImprimirReciboFornecedorView.as_view(), name='imprimir-recibo'),
     path('contas-pagas/', ContasPagasView.as_view(), name='contas-pagas'),
+    path('ajax/fornecedor/contas-a-pagar', getContasAPagar, name = "ajax-fornecedor-contas-a-pagar"),
 
     
     #urls Fornecedores
