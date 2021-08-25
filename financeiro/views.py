@@ -79,6 +79,13 @@ class InserirContasAPagarView(GroupRequiredMixin, LoginRequiredMixin,CreateView)
         print(bcolors.OK + "VALORRRR - {}".format(self.request.POST.get('valor')) + bcolors.RESET) 
         form.instance.valor = float(form.cleaned_data['valor'])
         return super().form_valid(form)
+    
+    def get_success_url(self):
+        if self.request.POST.get('pagar') == 'True':
+            return reverse('pagar-conta', kwargs = {'pk': self.object.id})
+        else:
+            return super().get_success_url()  
+      
       
 class EditarContasAPagarView(GroupRequiredMixin, LoginRequiredMixin,UpdateView):
     login_url = reverse_lazy('login')
@@ -330,7 +337,7 @@ class GerarPDFContasView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
         pdf = HTML(string=html,base_url=request.build_absolute_uri()).write_pdf(stylesheets=[CSS(css_url)])
 
         return HttpResponse(pdf, content_type='application/pdf')
-    
+       
 def real_br_money_mask(my_value):
     a = '{:,.2f}'.format(float(my_value))
     b = a.replace(',','v')
