@@ -51,7 +51,9 @@ INSTALLED_APPS = [
     'fornecedores.apps.FornecedoresConfig',
     'financeiro.apps.FinanceiroConfig',
     'dashboard.apps.DashboardConfig',
+    'tarefas.apps.TarefasConfig',
     'faturamento',
+    
 
 ]
 
