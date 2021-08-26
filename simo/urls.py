@@ -1,3 +1,4 @@
+from tarefas.views import *
 import debug_toolbar
 from recibos.views import *
 from simo.settings import STATIC_URL
@@ -24,7 +25,9 @@ urlpatterns = [
     path('__debug__/', include(debug_toolbar.urls)),
     
     #url DashBoard
-    path('', InicioView.as_view(), name='dashboard'),
+    path('', TarefasView.as_view(), name='dashboard'),
+    path('tarefa/excluir/<pk>', DeleteTarefaView.as_view(), name='excluir-tarefa'),
+    path('tarefa/editar/<pk>', EditarTarefaView.as_view(), name='editar-tarefa'),
    
     #urls Estoque
     path('ver-estoque', InicioEstoque.as_view(), name='ver-estoque'),
