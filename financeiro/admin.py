@@ -5,3 +5,4 @@ from django.contrib import admin
 
 admin.site.register(ContaPagamento)
 admin.site.register(Pagamento)
+admin.site.register(TagConta)

@@ -21,11 +21,17 @@
 
 {% block conteudo %}
 
-<div class="row">
-    <span style="font-size:30px; color:red; margin-top: 5px"> Inserir Conta à Pagar</span>
-    <hr>
-</div>
+<div class="d-flex bd-highlight align-self-center mb-2">
 
+    <div class="me-auto p-2 bd-highlight"><span style="font-size:30px; color:red; margin-top: 5px"> Inserir Conta à Pagar</span></div>
+    <div class="p-1 bd-highlight align-self-center"><button type="submit" form="addConta" name="pagar" value="False"
+            class="btn  btn-danger "><i class="fas fa-save"></i>&nbsp Salvar</button></div>
+    <div class="p-1 bd-highlight align-self-center"><button type="submit" form="addConta" name="pagar" value="True"
+            class="btn  btn-success"><i class="fas fa-hand-holding-usd"></i>&nbsp Salvar e Pagar</a></div>
+    <div class="p-1 bd-highlight align-self-center" ><a href="{{ request.META.HTTP_REFERER }}"
+            class="btn  btn-light"><i class="fas fa-window-close"></i>&nbsp Cancelar</a></div>
+</div>
+Inserir Dados:
 <form id="addConta" method="post" autocomplete="off">
     {% csrf_token %}
 
@@ -92,36 +98,41 @@
         </div>
     </div>
     <br>
+    Tags
+    <div class="row mb-2">
+        <div class="d-flex flex-wrap ">
+            {% for value, text in form.tags.field.choices %}
+            <div class="ui slider checkbox mx-2">
+                <input id="id_tags_{{ forloop.counter0 }}" name="{{ form.tags.name }}" type="checkbox" value="{{ value }}"{% if value in checked_tags %} checked="checked"{% endif %}>
+                <label for="id_tags_{{ forloop.counter0 }}">{{ text }}</label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <br>
     Detalhes da Conta:
     <div class="form-group row mb-2">
         <div class="col-9">
             <div class="input-group">
                 <div class="input-group-text">Obs:</div>
-                {% render_field form.obs class="form-control" name="obs" style="height: 150px"%}
+                {% render_field form.obs class="form-control" name="obs" style="height: 50px"%}
             </div>
         </div>
-    <div class="col-3" >
-        <div class="d-flex align-items-start flex-column bd-highlight mb-3" >
-        
-            <div class="p-2 bd-highlight "><button type="submit" form="addConta" name="pagar" value="False" class="btn btn-danger">Salvar</button></div>
-            <div class="p-2 bd-highlight "><button type="submit" form="addConta" name="pagar" value="True" class="btn btn-success">Salvar e Pagar</a></div>
-            <div class="p-2 bd-highlight"><a href="{{ request.META.HTTP_REFERER }}" class="btn btn-sm btn-light">Cancelar</a></div>
+        <div class="col-3">
+            
         </div>
-    </div>
 
     </div>
 
 </form>
-    
-<hr>
-<div class="row"><span style="font-size:18px;font-weight: bold;; margin-top: 10px">
-Contas <span style="color:red">não pagas</span> Cadastradas por Fornecedor
-</span>
 
+
+<br>
+Contas <span style="color:red">não pagas</span> Cadastradas por Fornecedor:
 </div>
 <table class="table table-sm table-striped  table-hover" style="font-size:13px;">
     <thead>
-        <tr >
+        <tr>
             <th scope="col" style="font-weight: bold; text-align:center">#</th>
             <th scope="col" style="font-weight: bold; text-align:center">Emissão</th>
             <th scope="col" style="font-weight: bold; text-align:center">Documento</th>
@@ -131,7 +142,7 @@ Contas <span style="color:red">não pagas</span> Cadastradas por Fornecedor
         </tr>
     </thead>
     <tbody id="contas">
-        
+
     </tbody>
 </table>
 
@@ -166,31 +177,46 @@ Contas <span style="color:red">não pagas</span> Cadastradas por Fornecedor
                 type: "GET",
                 url: "{% url 'ajax-fornecedor-contas-a-pagar' %}",
                 dataType: "json",
-                data: {'id': $('#fornecedor').val() },
-                success: function(data) {
+                data: {
+                    'id': $('#fornecedor').val()
+                },
+                success: function (data) {
                     $("#contas").html('');
-                    if(data.contas.length > 0){
+                    if (data.contas.length > 0) {
                         for (var i = 0; i < data.contas.length; i++) {
-                
-                        var valor = parseFloat(data.contas[i]["valor"]).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'});
-                       
-                        var d = new Date(data.contas[i]["data_inclusao"]);    
-                        var data_emissao = d.toLocaleDateString();
-                        var d2 = new Date(data.contas[i]["vencimento"]);    
-                        var data_vencimento = d2.toLocaleDateString();
-                        $("#contas").append('<tr><td style="text-align:center">'+(i+1)+'</td><td style="text-align:center">'+data_emissao+'</td><td style="text-align:center">'+data.contas[i]["documento"]+'</td><td>'+data.contas[i]["descricao"]+'</td><td style="text-align:center">'+valor+'</td> <td style="text-align:center">'+data_vencimento+'</td></tr>');
-                            }
-                    }else{
-                        $("#contas").html('<td colspan="100%" style="text-align:center">Sem Contas!</td>');
+
+                            var valor = parseFloat(data.contas[i]["valor"]).toLocaleString(
+                                'pt-br', {
+                                    style: 'currency',
+                                    currency: 'BRL'
+                                });
+
+                            var d = new Date(data.contas[i]["data_inclusao"]);
+                            var data_emissao = d.toLocaleDateString();
+                            var d2 = new Date(data.contas[i]["vencimento"]);
+                            var data_vencimento = d2.toLocaleDateString();
+                            $("#contas").append('<tr><td style="text-align:center">' + (i +
+                                    1) + '</td><td style="text-align:center">' +
+                                data_emissao + '</td><td style="text-align:center">' +
+                                data.contas[i]["documento"] + '</td><td>' + data.contas[
+                                    i]["descricao"] +
+                                '</td><td style="text-align:center">' + valor +
+                                '</td> <td style="text-align:center">' +
+                                data_vencimento + '</td></tr>');
+                        }
+                    } else {
+                        $("#contas").html(
+                            '<td colspan="100%" style="text-align:center">Sem Contas!</td>'
+                            );
                     }
-                        
-              
-                },  
-                error: function(xhr, textStatus) {
+
+
+                },
+                error: function (xhr, textStatus) {
                     alert("ERRO! Fornecedor NÃO ENCONTRADO!");
                 }
             });
-        })  
+        })
 
     });
 </script>

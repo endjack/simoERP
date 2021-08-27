@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django_filters',
     'debug_toolbar',
     'django_cleanup.apps.CleanupConfig',
+    'multiselectfield',
 
     #apps SIMO
     'estoque.apps.EstoqueConfig',
