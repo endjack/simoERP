@@ -11,7 +11,7 @@ class ContasFilter(django_filters.FilterSet):
     descricao = django_filters.CharFilter(lookup_expr='icontains')
     data_inicial = DateFilter(field_name="vencimento", lookup_expr='gte')
     data_final = DateFilter(field_name="vencimento", lookup_expr='lte')
-    tags = MultiSelectField(choices=tuple(TagConta.objects.values_list('pk', 'nome')))
+ 
 
     class Meta:
         model = ContaPagamento
@@ -21,7 +21,7 @@ class ContasPagasFilter(django_filters.FilterSet):
     descricao = django_filters.CharFilter(field_name="conta__descricao", lookup_expr='icontains')
     data_inicial = DateFilter(field_name="data", lookup_expr='gte')
     data_final = DateFilter(field_name="data", lookup_expr='lte')
-    tags = MultiSelectField(choices=tuple(TagConta.objects.values_list('pk', 'nome')))
+
 
     class Meta:
         model = Pagamento
