@@ -19,7 +19,7 @@ class ContaPagamento(models.Model):
     obs = models.TextField(max_length=500, null=True, blank=True)
     centro_de_custo = models.ForeignKey(Obra, on_delete=CASCADE, null=True, blank=True)
     usuario = models.ForeignKey(User, on_delete=PROTECT)
-    tags = models.ManyToManyField('TagConta', blank=True)
+    tags = models.ManyToManyField(to='TagConta', blank=True)
     
     class Meta:
        ordering = ('vencimento',)
