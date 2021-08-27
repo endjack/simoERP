@@ -19,9 +19,13 @@ class ContaPagamento(models.Model):
     obs = models.TextField(max_length=500, null=True, blank=True)
     centro_de_custo = models.ForeignKey(Obra, on_delete=CASCADE, null=True, blank=True)
     usuario = models.ForeignKey(User, on_delete=PROTECT)
+    tags = models.ManyToManyField('TagConta', blank=True)
     
     class Meta:
        ordering = ('vencimento',)
+       
+    def __str__(self) -> str:
+        return f"{self.pk} - {self.descricao}"
     
 class Pagamento(models.Model):
     conta = models.ForeignKey(ContaPagamento, on_delete=CASCADE, null=True, blank=True)
@@ -33,6 +37,9 @@ class Pagamento(models.Model):
     
     class Meta:
        ordering = [F('data').desc(nulls_last=True)]
+       
+    def __str__(self) -> str:
+        return f"{self.pk} - {self.valor}"
     
     
 class Recebimento(models.Model):
@@ -45,3 +52,9 @@ class Recebimento(models.Model):
     
     class Meta:
        ordering = [F('data').desc(nulls_last=True)]
+       
+class TagConta(models.Model):
+    nome = models.CharField(max_length=100, null=True, blank=True)
+    
+    def __str__(self) -> str:
+        return f"{self.pk} - {self.nome}"
