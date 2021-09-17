@@ -90,7 +90,6 @@
 
 
 
-
 <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:11px;">
     <thead style="border:solid 2px; border-color:#006600 ;background: linear-gradient(to right, #00b09b, #006600); color: white;">
         <tr>
@@ -99,7 +98,6 @@
             <th scope="col">Emissão</th>
             <th scope="col">Descrição</th>
             <th scope="col">Fornecedor</th>
-            <th scope="col">Centro de Custo</th>
             <th scope="col">Valor Original</th>
             <th scope="col">Valor Pago</th>
             <th scope="col">Pago em</th>
@@ -123,7 +121,6 @@
             {% else %}
             <td> - </td>
             {% endif %}
-            <td class="limitar_td" title="{{item.conta.centro_de_custo}}">{{item.conta.centro_de_custo}}</td>
             <td>{{item.conta.valor}}</td>
             <td class="destaque-entrada">{{item.valor}}</td>
             <td><span style="display:none;">{{item.data | date:"Ymd"}}</span>{{item.data | date:"d/m/Y"}}</td>
@@ -138,7 +135,12 @@
     </tbody>
 </table>
 
+<div class="col-12" style="margin-top: 10px; margin-bottom:10px;"><span style="font-size:16px;">
+Resumo de Pagamentos: <br>    
+</span>
 
+<span style="font-size:14px; color:black;font-weight: bold;">Total de Contas = {{filter.qs.count}}</span> <br>
+<span style="font-size:18px; color:green;font-weight: bold;">Valor Total = {{contas_pagas_SUM}}</span> <br>
 
 {% endblock%}
 
@@ -175,7 +177,7 @@
                 "infoFiltered": "(filtrado de _MAX_ registros no total)",
                 "infoPostFix": "",
                 "thousands": ".",
-                "lengthMenu": "Mostrar _MENU_ registros",
+                "lengthMenu": "{{label_results}}",
                 "loadingRecords": "A carregar dados...",
                 "processing": "A processar...",
                 "search": "Procurar:",

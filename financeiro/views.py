@@ -27,18 +27,20 @@ class ContasAPagarView(GroupRequiredMixin, LoginRequiredMixin,TemplateView):
  
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)      
-        context["contas_list"] = ContaPagamento.objects.filter(pago=False)
-        context["contas_list_pagas"] = Pagamento.objects.all()
+        
 
         first_date = date(1, 1, 1)
         today_date = datetime.today()
-       
+        
+        contas = ContaPagamento.objects.filter(pago=False)
         contas_do_dia = ContaPagamento.objects.filter(pago=False).filter(vencimento=today_date)
         contas_atrasadas = ContaPagamento.objects.filter(pago=False).filter(vencimento__range=[first_date, today_date])
         context["contas_do_dia"] = contas_do_dia
         context["contas_atrasadas"] = contas_atrasadas
+        context["contas_list"] = contas
         context["contas_do_dia_SUM"] = sum(contas_do_dia.values_list('valor', flat=True))
         context["contas_atrasadas_SUM"] = sum(contas_atrasadas.values_list('valor', flat=True))
+        context["contas_SUM"] = sum(contas.values_list('valor', flat=True))
         return context     
 
 class ContasPagasView(GroupRequiredMixin, LoginRequiredMixin,TemplateView):
@@ -48,13 +50,23 @@ class ContasPagasView(GroupRequiredMixin, LoginRequiredMixin,TemplateView):
     template_name = 'financeiro/contas-pagas.html'
  
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs) 
-        contas_pagas = Pagamento.objects.all()     
-        context["contas_pagas_SUM"] = sum(contas_pagas.values_list('valor', flat=True))
+        context = super().get_context_data(**kwargs)     
+        
 
         #filtros
-        filter_list = ContasPagasFilter(self.request.GET, queryset= contas_pagas )    
+        if not 'descricao' in self.request.GET:
+            contas_pagas = Pagamento.objects.order_by('-id')[:10] ##SELECT ••• FROM `financeiro_pagamento` ORDER BY `financeiro_pagamento`.`id` DESC LIMIT 10
+            label_results = "Últimos 10 pagamentos cadastrados"
+        else:
+            contas_pagas = Pagamento.objects.all()   
+            label_results = "Resultados | Mostrar _MENU_ registros"
+        
+        
+        filter_list = ContasPagasFilter(self.request.GET, queryset= contas_pagas)    
         context["filter"] = filter_list 
+        context["label_results"] = label_results
+        context["contas_pagas_SUM"] = sum(filter_list.qs.values_list('valor', flat=True))
+        
         return context  
 
 class InserirContasAPagarView(GroupRequiredMixin, LoginRequiredMixin,CreateView):
