@@ -29,7 +29,7 @@ class Item(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, blank=True, null=True, default='Sem Descrição')
     fornecedor = models.ForeignKey(Fornecedor, on_delete=models.SET_NULL, blank=True, null=True, default='Sem Fornecedor')
     descricao = models.CharField(max_length=200, blank=True, null=True, unique=True)
-    marca = models.CharField(max_length=200, blank=True, null=True, unique=True)
+    marca = models.CharField(max_length=200, blank=True, null=True)
     imagem = models.ImageField(upload_to='estoque/', validators=[validate_image], blank=True, null=True)
     peso = models.FloatField(default=0, blank=True, null=True)
     unid_medida = models.CharField(max_length=50, choices=UNIDADES, default="UNID")
