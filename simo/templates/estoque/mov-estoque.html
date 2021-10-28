@@ -41,7 +41,7 @@
         <div class="col-2"> 
           <div class="input-group">
             <div class="input-group-text"><span id="labelButton" style="color:blue;" >Acrescentar(+): </span></div>
-              {% render_field form.qtd class="form-control" id="data" type="number"  min='1'%}
+              {% render_field form.qtd class="form-control" id="data" type="number" step="any"  min='1'%}
           </div>
         </div>
 
@@ -58,7 +58,7 @@
 <br><br>
 <h5>Materiais no Estoque: </h5>
 <div class="card mb-3 p-3" style="border-color: #093637;">
-<table class="table table-sm table-bordered tabela-listar">
+<table class="table table-sm table-bordered" id="tabela-listar">
   <thead class="card-header text-white " style="background: linear-gradient(to right, #0f2027, #203a43, #2c5364);">
     <tr>
       <th scope="col">Id</th>
