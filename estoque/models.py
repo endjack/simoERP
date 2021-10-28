@@ -58,7 +58,7 @@ class MovimentacaoEstoque(models.Model):
 
 class Estoque(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="estoque")
-    quantidade = models.PositiveIntegerField(default=0)
+    quantidade = models.FloatField(default=0)
 
     def __str__(self) -> str:   
         return str(self.item.descricao)+ ' - ' + str(self.quantidade)

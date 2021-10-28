@@ -28,7 +28,7 @@
 
 
 <div class="card mb-3 border border-dark" style="border-color: #093637;">
-  <div class="card-header text-white " style="background: linear-gradient(to right, #093637, #44a08d );">
+  <div class="card-header text-white " style="background: MidnightBlue;">
     Filtrar Itens do Estoque:</div>
   <div class="card-body">
 <form method="get" id="form_filtro">
@@ -40,33 +40,38 @@
 
 
   <div class="form-group row mb-3">
-    <div class="col-6">
+    <div class="col-7">
       <div class="input-group">
         <div class="input-group-text">Descrição:</div>
         {% render_field filter.form.descricao class="form-control " name="descricao"%}
       </div>
     </div>
-    <div class="col-4">
+    <div class="col-5">
+      <div class="input-group">
+        <div class="input-group-text">Marca:</div>
+        {% render_field filter.form.marca class="form-control" name="marca"%}
+      </div>
+    </div>
+  </div>
+
+<div class="form-group row mb-3">
+    <div class="col-5">
       <div class="input-group">
         <div class="input-group-text">Categoria:</div>
         {% render_field filter.form.item__categoria class="form-control" name="categoria"%}
       </div>
-  </div>
-  </div>
-
-
-
-  <div class="col-6 mb-3">
+    </div>
+  <div class="col-7">
     <div class="input-group">
       <div class="input-group-text">Fornecedor:</div>
       {% render_field filter.form.item__fornecedor class="form-control" name="fornecedor"%}
     </div>
   </div>
+</div>
 
   <div class="d-flex justify-content-end">
     <input form="form_filtro" class="btn btn-sm btn-info m-2" type="submit" value="Filtrar" />
     <a class="btn btn-sm btn-light m-2" href="{% url 'ver-estoque' %}">Limpar Campos</a>
-    <button form="form_pdf" type="submit" class="btn btn-primary m-2">Imprimir</button>
   </div>
 
 </form>
@@ -74,15 +79,17 @@
 </div>
 
 
+<div class="d-flex justify-content-end"><a href="{% url 'imprimir-resultados' %}"  target="_blank" title="Imprimir Resultados"><span style="color: black;"><i class="fas fa-print fa-lg"></i> Imprimir Resultados</span></a>            
+</div>
 
-Resultados: (Somente itens com Movimentação no Estoque) <br> 
-<div class="card mb-3 p-3" style="border-color: #093637;">
+<div class="card p-3" style="border-color: #093637;">
   <table class="table table-sm table-bordered tabela-listar">
-    <thead class="card-header text-white text-center" style="background: linear-gradient(to right, #0f2027, #203a43, #2c5364);">
+    <thead class="card-header text-white text-center" style="background: MidnightBlue;">
     <tr>
       <th scope="col">#</th>
       <th scope="col">Id</th>
       <th scope="col">Item</th>
+      <th scope="col">Marca</th>
       <th scope="col">Quantidade</th>
       <th scope="col">Unidade</th>
       <th scope="col">Categoria</th>
@@ -103,16 +110,32 @@ Resultados: (Somente itens com Movimentação no Estoque) <br>
         <span><img src="{{estoque.item.imagem.url}}" style="max-height:200px;max-width:240px"/></span></a>
         {% endif %}</a>
         </td>
+      
+      {% if estoque.item.marca %} 
+        <td>{{estoque.item.marca}}</td>
+      {% else %}
+        <td>-</td>
+      {% endif %}
+
       {% if estoque.quantidade %} 
         <td>{{estoque.quantidade}}</td>
       {% else %}
         <td><span style="color:red">Sem Entrada</span></td>
       {% endif %}
+      
       <td>{{estoque.item.unid_medida}}</td>
+      {% if estoque.item.categoria %} 
       <td>{{estoque.item.categoria.categoria}}</td>
+      {% else %}
+      <td>-</td>
+      {% endif %}
       <td>{{estoque.item.peso}}</td>
       <td>{{estoque.item.qtd_minima}}</td>
+      {% if estoque.item.preco %} 
       <td>{{estoque.item.preco}}</td>
+      {% else %}
+      <td>-</td>
+      {% endif %}
       <td><a href="{% url 'editar-item' estoque.item.pk %}"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a></td>
     </tr>
     {% endfor %}

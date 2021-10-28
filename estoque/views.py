@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from estoque.filters import EstoqueFilter
 from django.db import IntegrityError
 from django.http.response import JsonResponse
@@ -115,7 +116,8 @@ class InicioEstoque(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
 
         filter_list = EstoqueFilter(self.request.GET, queryset = objects )
         context["filter"] = filter_list
-        # context["contas_list"] = Estoque.objects.filter()
+        
+        cache.set('filter_estoque_resultados', filter_list, 600)  
         
         return context
 
@@ -258,6 +260,20 @@ class BuscaEstoqueView(GroupRequiredMixin, LoginRequiredMixin, ListView):
         if query != None:
             object_list = Estoque.objects.filter(Q(item__descricao__icontains=query))
         return  object_list
+    
+class ImprimirResultadosEstoqueView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Estoque', u'Tecnico',]
+    
+    model = Categoria
+    template_name= 'estoque/resultados-impressao.html'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_list'] = cache.get('filter_estoque_resultados')
+        
+        return context
 
 
 

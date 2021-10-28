@@ -18,8 +18,6 @@ from django.contrib.auth import views as auth_views
 from financeiro.ajax import *
 
 
-
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('__debug__/', include(debug_toolbar.urls)),
@@ -40,6 +38,7 @@ urlpatterns = [
     path('excluir-item/<pk>', ExcluirItemView.as_view(), name='excluir-item'),
     path('detalhar-item/<pk>', DetalharItemView.as_view(), name='detalhar-item'),
     path('editar-item/<pk>', EditarItemView.as_view(), name='editar-item'),
+    path('imprimir-resultados', ImprimirResultadosEstoqueView.as_view(), name='imprimir-resultados'),
     
     #urls Requisição
     path('gerar-requisicao/', GerarRequisicaoView.as_view(), name='gerar-requisicao'),
@@ -48,7 +47,7 @@ urlpatterns = [
     path('detalhar-itens/<pk>', DetalharItensDeRequisicaoView.as_view(), name='detalhar-itens'),
     path('inserir-item-requisicao/<pk>', InserirRequisicaoView.as_view(), name='inserir-item-requisicao'),
     path('buscar-requisicao/', BuscaRequisicaoView.as_view(), name='buscar-requisicao'),
-    path('gerar-pdf-requisicao/', GerarPdfRequisicao.as_view(), name='gerar-pdf-requisicao'),
+    path('gerar-pdf-requisicao/', GerarPdfRequisicao.as_view(), name='gerar-pdf-requisicao'),   
 
     #urls Obras
     path('inserir-obra/', InserirObraView.as_view(), name='inserir-obra'),

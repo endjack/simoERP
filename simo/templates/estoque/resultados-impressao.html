@@ -1,0 +1,105 @@
+{% load static %}
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <title>Imprimir Resultados</title>
+        <style>
+        @page {
+            size: landscape;
+            margin: 1cm;
+        }
+
+
+        @media print {
+
+            html,
+            body {
+                height: 99%;
+            }
+        }
+
+        * {
+            color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        td, th {
+        padding: .7em;
+        margin: 0;
+        /*border: 1px solid #ccc;*/
+        text-align: center;
+        vertical-align: middle;
+        }
+
+        .wrapper {
+        min-width: 10em; /* Will be AT LEAST 20em wide */
+        }
+        </style>
+</head>
+
+<body style="font-family: sans-serif;">
+
+<div class="d-flex flex-row bd-highlight mb-3" style="margin: 10px 15px;font-size:10px;">
+  <div class="col-6 d-flex justify-content-start">BRASIL CONSTRUÇÃO LTDA - {% now "SHORT_DATETIME_FORMAT" %}</div>
+  <div class="col-6 d-flex justify-content-end">Usuário: {{usuario_atual}}</div>
+</div>
+
+<div class="row" style="margin-top:40px">
+    <div class="d-flex justify-content-center">
+        <div class="p-2 bd-highlight">
+            <img src="{% static 'imagens/logo1.png' %}" alt="" height="100" width="150">
+        </div>
+        <div class="p-2 bd-highlight" style="border-right: 4px solid gray;"></div>&emsp;
+        <div class="p-2 bd-highlight">
+            BRASIL CONSTRUÇÃO LTDA <br>
+            CNPJ: 09.235.353/0001-45 <br>
+            brasilconstrucao3@gmail.com <br>
+            (84) 4103-0176
+        </div>
+    </div>
+</div>
+<div class="d-flex justify-content-center"><h5>Relatório de Estoque</h5></div>
+<div class="d-flex justify-content-center">Resultados de Busca</div>
+
+    <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px; border-color:gray">
+        <thead class="centralizar"
+            style="border:solid 2px;border-color:white;background:MidnightBlue; color: white;">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Item</th>
+                <th scope="col">Marca</th>
+                <th scope="col">Fornecedor</th>
+                <th scope="col">Quantidade</th>
+                <th scope="col">Und</th>
+                <th scope="col">Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in filter_list.qs %}
+            <tr>
+                <td class="centralizar">{{forloop.counter}}</td>
+                <td class="centralizar wrapper">{{item.item.descricao}}</td>
+                {% if item.item.marca %} <td class="centralizar wrapper">{{item.item.marca}}</td>{%else%}<td>-</td>{%endif%}
+                {% if item.item.fornecedor %} <td class="centralizar">{{item.item.fornecedor.nome}}</td>{%else%}<td>-</td>{%endif%}
+                {% if item.quantidade > 0 %} <td class="centralizar">{{item.quantidade}}</td>{%else%}<td style="color:red">0</td>{%endif%}
+                <td> {{item.item.unid_medida}}</td>
+                {% if item.item.preco %} <td class="centralizar">R$ {{item.item.preco}}</td>{%else%}<td>-</td>{%endif%}             
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        (function () {
+            window.print();
+        })();
+    </script>
+
+
+</body>
+
+</html>
