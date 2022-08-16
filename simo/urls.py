@@ -39,6 +39,7 @@ urlpatterns = [
     path('detalhar-item/<pk>', DetalharItemView.as_view(), name='detalhar-item'),
     path('editar-item/<pk>', EditarItemView.as_view(), name='editar-item'),
     path('imprimir-resultados', ImprimirResultadosEstoqueView.as_view(), name='imprimir-resultados'),
+    path('filtrar-estoque', estoque_filter, name='estoque-filter'),
     
     #urls Requisição
     path('gerar-requisicao/', GerarRequisicaoView.as_view(), name='gerar-requisicao'),

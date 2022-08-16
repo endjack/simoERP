@@ -19,11 +19,12 @@ def has_group(user, group_name):
     else:
         return False
 
+@register.filter(name="no_dot")
+def replace_dot(value):
+    text = str(value)
+    return text.replace(".","")
 
 
-# @register.filter
-# def get_tipo_fornecedor(obj):
-#     return obj.get_model_type
 
 
     

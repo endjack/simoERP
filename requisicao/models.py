@@ -20,7 +20,7 @@ class Requisicao(models.Model):
 class ItemRequisicao(models.Model):
     requisicao = models.ForeignKey(Requisicao, on_delete=CASCADE)
     item = models.ManyToManyField(Item, blank=True)
-    quantidade = models.PositiveIntegerField(blank=True, null=True)
+    quantidade = models.FloatField(blank=True, null=True)
 
     
     def __str__(self) -> str:

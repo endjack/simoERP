@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% load my_tags %}
+
+
 {% block breadcrumb %}
 <div class="row">
     <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
@@ -38,15 +41,33 @@
             {% csrf_token %}
             <div class="col-5">
                 <input type="hidden" name="id_foto" value="{{image.pk}}">
-                <img src="{{ image.foto.url }}" class="rounded-3 border border-dark overflow-hidden" width="350"
-                    height="250">
+                <img src="{{ image.foto.url }}" class="rounded-3 border border-dark overflow-hidden" width="180"
+                    height="100">
             </div>
             <div class="col-3">
-                <a href="{{ image.foto.url }}" target="_blank" class="btn btn-info btn-sm">Ver Imagem</a>
+                    <a href="#" onClick="abreJanela('{{ image.foto.url }}','Imagem','{{image.foto.width | no_dot}}','{{image.foto.height | no_dot}}','')">Ver Imagem</a>
+                    <script language="JavaScript">
+
+                        /////////////////////////////////////////////
+                        //abrir janela no centro da tela          ///
+                        //Eric Silva eric_silva@javamail.com.br///
+                        ////////////////////////////////////////////
+
+                        function abreJanela(Url,NomeJanela,width,height,extras) { 
+                            var largura = width;
+                            var altura = height;
+                            var adicionais= extras;
+                            var topo = (screen.height-altura)/2;
+                            var esquerda = (screen.width-largura)/2;
+                            novaJanela=window.open(''+ Url + '',''+ NomeJanela + '','width=' + largura + ',height=' + altura + ',top=' + topo + ',left=' + esquerda + ',features=' + adicionais + '');
+                            novaJanela.focus();
+                        }
+                    </script>
+
                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                |  <button type="button" class="btn btn-sm" data-bs-toggle="modal"
                     data-bs-target="#exampleModal">
-                    Excluir
+                    <span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span>
                 </button>
             </div>
         </form>

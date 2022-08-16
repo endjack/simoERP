@@ -1,4 +1,5 @@
 from django.views.generic.list import ListView
+from estoque.filters import EstoqueFilter
 from estoque.models import *
 from .models import *
 from django.http.response import HttpResponse
@@ -27,11 +28,12 @@ class GerarRequisicaoView(LoginRequiredMixin, CreateView):
     form_class = GerarRequisicaoForm
 
     def get_success_url(self):
-        return reverse('inserir-item-requisicao',args=(self.object.id,))
+        return reverse('inserir-item-requisicao', args=(self.object.id,))
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)    
-        context['objects_by'] =  Requisicao.objects.order_by('pk').all()  
+        context = super().get_context_data(**kwargs) 
+           
+        context['objects_by'] =  Requisicao.objects.order_by('pk').all()  #TODO filtrar pelos últimos ou por data
         return context
 
 class InserirItensView(LoginRequiredMixin, ListView):
@@ -46,46 +48,10 @@ class InserirRequisicaoView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["obj"] =  Requisicao.objects.filter(pk=self.kwargs.get('pk'))
         context["numId"] = self.kwargs.get('pk')
+        objects = Estoque.objects.all()
 
-        #buscar item
-        query = ''
-        context["query"] = query  
-        object_list = ''
-        if self.request.GET.get('q') != '':
-            if self.request.GET.get('q') != None:
-                query = self.request.GET.get('q')
-                object_list = Estoque.objects.filter(Q(item__descricao__icontains=query))
-                context["query"] = query
-                context["object_list"] = object_list
-
-          
-        #inserir objetos adicionados   
-        if 'itemId' in self.request.GET:
-            tem_item = False
-            #verificar se existe na lista    
-            for item in estoque_add:
-                if self.request.GET.get('itemId') == item[0]:
-                    tem_item=True
-
-            if not tem_item:
-                estoque_add.append([
-                    self.request.GET.get('itemId'),
-                    self.request.GET.get('itemDescricao'),
-                    self.request.GET.get('itemUnidade'),
-                    self.request.GET.get('itemQtd'),
-                ])
-                messages.success(self.request, "Qtd: "+self.request.GET.get('itemQtd')+" - Item: "+self.request.GET.get('itemDescricao') +" Adicionado!" )
-        
-        #excluir Item selecionado
-        if 'excluirID' in self.request.GET:         
-            for item in estoque_add:
-                if self.request.GET.get('excluirID') == item[0]:
-                    desc_item = str(item[1])    
-                    estoque_add.remove(item)
-                    messages.warning(self.request, "Item: "+desc_item+" Removido!" )
-                    pass      
-        
-        context["object_list_add"] = estoque_add    
+        filter_list = EstoqueFilter(self.request.GET, queryset = objects )
+        context["filter"] = filter_list 
         return context 
 
 
