@@ -68,5 +68,8 @@ class ItensServico(models.Model):
 class FotosServico(models.Model):
 
     servico = models.ForeignKey(Servico, on_delete=models.CASCADE, null=True, blank=True)
-    foto = models.ImageField(upload_to='servicos/', height_field=None, width_field=None, max_length=None)
+    foto = models.ImageField(upload_to='servicos/', height_field='image_height', width_field='image_width', max_length=None)
     tipo = models.CharField(max_length=50, choices=TIPO, default='INICIO')
+    
+    image_height = models.IntegerField(blank=True, null=True)
+    image_width = models.IntegerField(blank=True, null=True)

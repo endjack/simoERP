@@ -1,4 +1,6 @@
+from json.encoder import JSONEncoder
 from django.core.cache import cache
+from django.forms.models import model_to_dict
 from estoque.filters import EstoqueFilter
 from django.db import IntegrityError
 from django.http.response import JsonResponse
@@ -15,6 +17,7 @@ from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from braces.views import GroupRequiredMixin
 from django.views.generic import TemplateView, CreateView
+import json
 
 class InserirItemView(GroupRequiredMixin, LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('login')
@@ -295,6 +298,39 @@ def gerar_qrcode(text):
         print(f"ERRO ao gerar QRCode - {text}!")
         return False
     
+def estoque_filter(request):
+    if request.method == 'POST': 
+        objects = Estoque.objects.all()
+        
+        filter_list = EstoqueFilter(request.POST, queryset = objects)
+        lista_itens = list()
+      
+        
+        for item in list(filter_list.qs.values()):
+            lista_aux = list()
+            obj = Item.objects.get(id=item['item_id'])
+            lista_aux.append(item['id'])
+            lista_aux.append(obj.id)
+            lista_aux.append(obj.descricao)
+            if obj.marca:
+                lista_aux.append(obj.marca)
+            else:
+                lista_aux.append('-')
+            if obj.categoria:    
+                lista_aux.append(obj.categoria.categoria)
+            else:
+                lista_aux.append('-')
+            if obj.fornecedor:
+                lista_aux.append(obj.fornecedor.nome)
+            else:
+                lista_aux.append('-')
+            lista_aux.append(obj.unid_medida)
+            lista_aux.append(item['quantidade'])
+            
+            lista_itens.append(lista_aux)            
+       
+        return JsonResponse({'filter': lista_itens}, status=200)
+
 
         
     
