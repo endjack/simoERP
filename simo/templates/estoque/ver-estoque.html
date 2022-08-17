@@ -23,73 +23,76 @@
   </nav>
 </div>
 {% endblock %}
-
 {% block conteudo %}
 
-
-<div class="card mb-3 border border-dark" style="border-color: #093637;">
-  <div class="card-header text-white " style="background: MidnightBlue;">
-    Filtrar Itens do Estoque:</div>
-  <div class="card-body">
-<form method="get" id="form_filtro">
-  {% csrf_token %}
-
-  {% for hidden_field in form.hidden_fields %}
-  {{ hidden_field }}
-  {% endfor %}
-
-
-  <div class="form-group row mb-3">
-    <div class="col-7">
-      <div class="input-group">
-        <div class="input-group-text">Descrição:</div>
-        {% render_field filter.form.descricao class="form-control " name="descricao"%}
-      </div>
-    </div>
-    <div class="col-5">
-      <div class="input-group">
-        <div class="input-group-text">Marca:</div>
-        {% render_field filter.form.marca class="form-control" name="marca"%}
-      </div>
-    </div>
+<div class="" style="border-color: #093637;">
+  
+  <div class="texto-enfase" style="">
+    Filtrar Itens do Estoque:
   </div>
+  
+  <div class="card p-3">
+    <form method="get" id="form_filtro">
+      {% csrf_token %}
 
-<div class="form-group row mb-3">
-    <div class="col-5">
-      <div class="input-group">
-        <div class="input-group-text">Categoria:</div>
-        {% render_field filter.form.item__categoria class="form-control" name="categoria"%}
+      {% for hidden_field in form.hidden_fields %}
+      {{ hidden_field }}
+      {% endfor %}
+
+
+      <div class="form-group row mb-2">
+        <div class="col-3">
+          <div class="col-12">
+            <label for="inputDescricao" class="">Descrição</label>
+            {% render_field filter.form.descricao class="form-control" id="inputDescricao" name="descricao"%}
+          </div>
+
+        </div>
+        <div class="col-2">
+          <div class="col-12">
+            <label for="inputmarca" class="">Marca</label>
+            {% render_field filter.form.marca class="form-control" id="inputmarca" name="marca"%}
+          </div>
+
+        </div>
+
+        <div class="col-2">
+          <div class="col-12">
+            <label for="inputCategoria" class="">Categoria</label>
+            {% render_field filter.form.item__categoria  class="form-control" id="inputCategoria" name="categoria"%}
+          </div>
+
+        </div>
+
+        <div class="col-3">
+          <div class="col-12">
+            <label for="inputFornecedor" class="">Fornecedor</label>
+            {% render_field filter.form.item__fornecedor  class="form-control" id="inputFornecedor" name="fornecedor"%}
+          </div>
+        </div>
+
+        <div class="col-2 d-flex align-items-end">
+          <input form="form_filtro" class="btn btn-sm btn-info m-2" type="submit" value="Filtrar" />
+          <a class="btn btn-sm btn-light m-2" href="{% url 'ver-estoque' %}">Limpar</a>
+        </div>
+
       </div>
-    </div>
-  <div class="col-7">
-    <div class="input-group">
-      <div class="input-group-text">Fornecedor:</div>
-      {% render_field filter.form.item__fornecedor class="form-control" name="fornecedor"%}
-    </div>
-  </div>
+
+  </form>
+</div>
 </div>
 
-  <div class="d-flex justify-content-end">
-    <input form="form_filtro" class="btn btn-sm btn-info m-2" type="submit" value="Filtrar" />
-    <a class="btn btn-sm btn-light m-2" href="{% url 'ver-estoque' %}">Limpar Campos</a>
-  </div>
-
-</form>
-</div>
-</div>
-
-
-<div class="d-flex justify-content-end"><a href="{% url 'imprimir-resultados' %}"  target="_blank" title="Imprimir Resultados"><span style="color: black;"><i class="fas fa-print fa-lg"></i> Imprimir Resultados</span></a>            
+<div class="texto-enfase " style="">
+Resultados:
 </div>
 
 <div class="card p-3" style="border-color: #093637;">
-  <table class="table table-sm table-bordered tabela-listar">
-    <thead class="card-header text-white text-center" style="background: MidnightBlue;">
-    <tr>
-      <th scope="col">#</th>
+  <table class="table table-sm table-bordered table-striped tabela-listar">
+    <thead class="card-header text-white text-center" style="background: linear-gradient(to right, #0052D4, #4364F7);">
+    <tr style="LINE-HEIGHT:10px">
       <th scope="col">Id</th>
-      <th scope="col">Item</th>
-      <th scope="col">Marca</th>
+      <th scope="col" style="text-align: left;">Item</th>
+      <th scope="col" style="text-align: left;">Marca</th>
       <th scope="col">Quantidade</th>
       <th scope="col">Unidade</th>
       <th scope="col">Categoria</th>
@@ -99,28 +102,32 @@
       <th scope="col">Opções</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody >
     {% for estoque in filter.qs %}
-    <tr>
-      <td>{{forloop.counter}}</td>
+    {% if estoque.quantidade %}
+    <tr style="LINE-HEIGHT:10px;">
+    {% else %}
+      <tr style="LINE-HEIGHT:10px; color:red">
+    {% endif %}
+       
       <td>{{estoque.item.pk}}</td>
-      <td>
-        <a class="thumbnail" href="{% url 'detalhar-item' estoque.item.pk %}">{{estoque.item.descricao}}
+      <td style="text-align: left; ">
+        <a style="text-decoration: none; color: inherit;" class="thumbnail" href="{% url 'detalhar-item' estoque.item.pk %}">{{estoque.item.descricao}}
         {% if estoque.item.imagem %}
         <span><img src="{{estoque.item.imagem.url}}" style="max-height:200px;max-width:240px"/></span></a>
         {% endif %}</a>
         </td>
       
       {% if estoque.item.marca %} 
-        <td>{{estoque.item.marca}}</td>
+        <td style="text-align: left;">{{estoque.item.marca}}</td>
       {% else %}
-        <td>-</td>
+        <td style="text-align: left;">-</td>
       {% endif %}
 
       {% if estoque.quantidade %} 
         <td>{{estoque.quantidade}}</td>
       {% else %}
-        <td><span style="color:red">Sem Entrada</span></td>
+        <td><span style="font-weight: bold;">0</span></td>
       {% endif %}
       
       <td>{{estoque.item.unid_medida}}</td>
@@ -143,7 +150,13 @@
 </table>
 </div>
 
+
+<div class="" style="margin-top:20px">
+  <a href="{% url 'imprimir-resultados' %}"  target="_blank" title="Imprimir Resultados"><span style="color: black;"><i class="fas fa-print fa-lg"></i> Imprimir Resultados</span></a>            
+</div>
+
 {% endblock%}
+
 
 {% block jquery %}
 <script src="../static/js/datatables.min.js"></script>
