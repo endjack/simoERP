@@ -8,11 +8,11 @@
 {% endblock %}
 
 {% block conteudo %}
-<div class="card mb-3 border border-dark" style="border-color: #093637;">
-  <div class="card-header text-white " style="background: linear-gradient(to right, #093637, #44a08d );">
+<div class="mb-2">
+  <div class="texto-enfase" style="">
     Movimentar Estoque:</div>
   <div class="card-body">
-  <form method="post" >
+  <form method="post" style="line-height: normal; font-size:10pt">
       {% csrf_token %}
 
       {% for hidden_field in form.hidden_fields %}
@@ -22,31 +22,37 @@
 
       <!-- 3 column grid layout -->
        <div class="form-group row">
-       
-       <div class="col-2">
-            <div class="input-group">
-              <div class="input-group-text">Tipo: </div>
-                {% render_field form.tipo class="form-control" id="tipo" %}
-            </div>
-          </div>
 
-        
         <div class="col-6">
-            <div class="input-group">
-            <div class="input-group-text">Item: </div>
-              <input type="text" id="itens" name="item_selecionado" class="form-control"/>
-            </div>
-        </div>
+          <label for="inputItem" class="">Buscar por Nome ou Código:</label>
+          <input type="text" id="itens" name="item_selecionado" class="form-control"/>
+       </div>
 
+       <!-- 
+        <div class="col-3">
+        <label for="inputItem" class="">Buscar por Código:</label>
+          <input type="text" id="itens" name="item_selecionado" class="form-control"/>
+       </div>-->
+
+      </div>
+
+      <div class="form-group row mt-2">
+
+        <div class="col-2">
+          <label for="inputTipo" class="">Tipo</label>
+          {% render_field form.tipo  class="form-control" id="tipo"%}
+        </div>
+     
+  
         <div class="col-2"> 
-          <div class="input-group">
-            <div class="input-group-text"><span id="labelButton" style="color:blue;" >Acrescentar(+): </span></div>
-              {% render_field form.qtd class="form-control" id="data" type="number" step="any"  min='1'%}
-          </div>
+          <label for="inputQtd" class=""><span id="labelButton" style="color:blue;" >Acrescentar(+): </span></label>
+              {% render_field form.qtd class="form-control" id="inputQtd" type="number" step="any"  min='1'%}
+
         </div>
 
         <div class="col-1">
-        <button type="submit" class="btn btn-success">Movimentar</button>
+        <label for="buttonMovimentar" class="">  </label>
+        <button type="submit" id="buttonMovimentar" class="btn btn-sm btn-primary">Movimentar</button>
         </div>  
 
       </div>
@@ -54,13 +60,38 @@
 </div>
 </div>
 
-
+{% comment %}  LOG DAS MOVIMENTAÇÕES DO ESTOQUE COM USUÁRIO {% endcomment %}
 
 <div class="row" style="margin-top:40px">
-      <div class="row"><span style="font-size=14px; color:gray;font-style: italic;">Últimas Movimentaçãos no Estoque:</span><hr></div> 
+      <div class=" texto-enfase"> Últimas Movimentações no Estoque:</div>
+        <hr>
+      <div style="line-height: 12px;white-space: nowrap; font-size:9pt;">Abaixo 20 últimas movimentações, para mais, solicitar ao Admin.</div> 
+      <div class="">
+        <table class="table table-sm table-bordered">
+          <thead class="text-center" style="background: silver;">
+              <tr style="line-height: 9px;white-space: nowrap; font-size:9pt;">
+                  <th style="max-width:40px">Data</th>
+                  <th style="max-width:40px">Usuário</th>
+                  <th scope="col">Movimentação</th>
+              </tr>
+          </thead>
+          <tbody>
+            {% for item in log_list %}
+              <tr style="line-height: 12px;white-space: nowrap; font-size:9pt;">
+                  <td class="text-center" style="">{{item.data_inclusao}}</td>
+                  <td class="text-center" style="">{{item.usuario}}</td>
+                  {% if item.adicionado %}
+                  <td><span style="color:blue;">Adicionado</span> {{item.quantidade}} {{item.item.unid_medida}} de {{item.item.descricao}} [Total = {{item.saldo}} {{item.item.unid_medida}}]</td>
+                  {% else %}
+                  <td><span style="color:red;">Retirado</span> {{item.quantidade}} {{item.item.unid_medida}} de {{item.item.descricao}} [Total = {{item.saldo}} {{item.item.unid_medida}}]</td>
+                  {% endif %}
+              </tr>
+            {% endfor %}
+          </tbody>
+      </table>
+    </div>
   </div>
 
-{% comment %} //TODO LOG DAS MOVIMENTAÇÕES DO ESTOQUE COM USUÁRIO {% endcomment %}
 
 <!-- Toast -->
   {% for message in messages %}
@@ -97,8 +128,12 @@ $(document).ready(function () {
       $("#tipo").change( function() {
           if ($("#tipo").val() == '1') {
             $("#labelButton").html('Acrescentar(+): ').css("color", "blue");
+            $("#buttonMovimentar").removeClass("btn-danger");
+            $("#buttonMovimentar").addClass( "btn-primary" );
           } else {
               $("#labelButton").html('Retirar(-): ').css("color", "red");
+              $("#buttonMovimentar").removeClass( "btn-primary" );
+              $("#buttonMovimentar").addClass( "btn-danger" );
           }
       });
 

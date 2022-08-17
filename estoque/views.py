@@ -1,3 +1,4 @@
+from cgitb import text
 from json.encoder import JSONEncoder
 from django.core.cache import cache
 from django.forms.models import model_to_dict
@@ -17,6 +18,8 @@ from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from braces.views import GroupRequiredMixin
 from django.views.generic import TemplateView, CreateView
+from datetime import date, datetime, timedelta
+
 
 class InserirItemView(GroupRequiredMixin, LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('login')
@@ -115,8 +118,8 @@ class InicioEstoque(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         # objects = Estoque.objects.select_related('item') 
         
-        #get-the-last-10-item-data
         
+        #Ao iniciar o estoque não carrega todos os itens de primeira, somente quando usar o Form de filtragem
         if self.request.GET.get('filter-status'):
             objects = Estoque.objects.all()
             filter_list = EstoqueFilter(self.request.GET, queryset = objects )
@@ -142,6 +145,7 @@ class MovimentacaoEstoqueView(GroupRequiredMixin, LoginRequiredMixin, CreateView
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['itensEstoque'] =  Estoque.objects.order_by('pk').all()   
+        context["log_list"] = LogMovimentacao.objects.all().order_by('-pk')[:20]
         return context
 
 
@@ -164,7 +168,7 @@ class MovimentacaoEstoqueView(GroupRequiredMixin, LoginRequiredMixin, CreateView
                 )    
         else:
             item_atual = Item.objects.get(pk=item_id)
-            print('--------------------'+(str(item_atual)))
+       
             estoque.quantidade = form.cleaned_data['qtd']
             
             # Verificando se a quantidade é somente positiva e maior que zero
@@ -186,12 +190,15 @@ class MovimentacaoEstoqueView(GroupRequiredMixin, LoginRequiredMixin, CreateView
                         qnt_anterior = Estoque.objects.get(item= item_atual).quantidade
                         soma = quantidade=estoque.quantidade+qnt_anterior
                         Estoque.objects.filter(item= item_atual).update(quantidade=soma)
-                        #print('Item atualizado: ENTRADA -'+ str(estoque.quantidade) +' itens: '+ estoque.item.descricao)   
+                        
+                        msg = str(estoque.quantidade)+' '+str(estoque.item.unid_medida)+' - '+str(estoque.item.descricao)+' foi ACRESCENTADO ao Estoque - Total no Estoque: '+str(soma)
+                        log_item_updated(request = self.request, item = item_atual, qnt = estoque.quantidade, saldo = soma, adicionado= True)
+                        
 
                         messages.add_message(
                             self.request, 
                             messages.SUCCESS,
-                            str(estoque.quantidade)+' '+str(estoque.item.unid_medida)+' - '+str(estoque.item.descricao)+' foi ACRESCENTADO ao Estoque - Total no Estoque: '+str(soma)
+                            msg
                         )
                 else: #caso seja Saída
                     if not Estoque.objects.filter(item= item_atual).exists():
@@ -206,10 +213,14 @@ class MovimentacaoEstoqueView(GroupRequiredMixin, LoginRequiredMixin, CreateView
                         sobra = qnt_anterior-estoque.quantidade
                         if sobra >= 0:
                             Estoque.objects.filter(item= item_atual).update(quantidade=sobra)
+                            
+                            msg = str(estoque.quantidade)+' '+str(estoque.item.unid_medida)+' - '+str(estoque.item.descricao)+' foi RETIRADO ao Estoque - Total no Estoque: '+str(sobra)
+
+                            log_item_updated(request = self.request, item = item_atual, qnt = estoque.quantidade, saldo = sobra, adicionado= False)
                             messages.add_message(
                                 self.request, 
                                 messages.WARNING,
-                                str(estoque.quantidade)+' '+str(estoque.item.unid_medida)+' - '+str(estoque.item.descricao)+' foi RETIRADO ao Estoque - Total no Estoque: '+str(sobra)
+                                msg
                             )
                         else:        
                             messages.add_message(
@@ -288,7 +299,7 @@ class ImprimirResultadosEstoqueView(GroupRequiredMixin, LoginRequiredMixin, Temp
 
 def autocompleteitens(request):
     query = request.GET.get('term')
-    query_set = Item.objects.filter(descricao__icontains=query)
+    query_set = Item.objects.filter(descricao__icontains=query) | Item.objects.filter(pk__icontains=query)
     myList=[]
     myList += [x.descricao+' - '+x.unid_medida+' - COD: '+str(x.pk) for x in query_set]
     return JsonResponse(myList,safe=False)    
@@ -338,5 +349,16 @@ def estoque_filter(request):
         return JsonResponse({'filter': lista_itens}, status=200)
 
 
-        
-    
+   
+def log_item_updated(request, item, qnt, saldo, adicionado):
+
+   current_time = datetime.now()
+   #formated_data = current_time.strftime("%d/%m/%Y - %H:%M")
+   
+   usuario = None
+   if request.user.is_authenticated:
+        usuario = request.user
+   
+   novo_log = LogMovimentacao(usuario=usuario, item=item, quantidade=qnt, saldo=saldo, adicionado=adicionado, data_inclusao=current_time)
+   novo_log.save()
+
