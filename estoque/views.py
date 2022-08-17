@@ -17,7 +17,6 @@ from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from braces.views import GroupRequiredMixin
 from django.views.generic import TemplateView, CreateView
-import json
 
 class InserirItemView(GroupRequiredMixin, LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('login')
@@ -115,11 +114,18 @@ class InicioEstoque(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # objects = Estoque.objects.select_related('item') 
-        objects = Estoque.objects.all()
-
-        filter_list = EstoqueFilter(self.request.GET, queryset = objects )
-        context["filter"] = filter_list
         
+        #get-the-last-10-item-data
+        
+        if self.request.GET.get('filter-status'):
+            objects = Estoque.objects.all()
+            filter_list = EstoqueFilter(self.request.GET, queryset = objects )
+        else:
+            objects = Estoque.objects.none()
+            filter_list = EstoqueFilter(self.request.GET, queryset = objects )
+        
+        
+        context["filter"] = filter_list
         cache.set('filter_estoque_resultados', filter_list, 600)  
         
         return context
