@@ -88,11 +88,11 @@
 
     .titulo-empresa{
         color: #f7fad2;
-        fontweight: bold;
+        font-weight: bold;
     }
     .titulo-empresa:hover{
         color: white;
-        fontweight: bold;
+        font-weight: bold;
     }
 
     .titulo-menu{
@@ -107,11 +107,21 @@
 
     .titulo-menu:hover{
         color: #f7fad2;
-        fontweight: bold;
+        font-weight: bold;
     }
+
+    .texto-enfase{
+      font-weight: bold;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+      background-color:  rgba(72, 113, 248, 0.04);
+    }
+
+    .table-bordered td, .table-bordered th{
+      border-color: silver !important;
+  }
    
-
-
     </style>
     {% block styleHead %}{% endblock %}
 
