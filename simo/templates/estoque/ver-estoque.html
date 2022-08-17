@@ -31,8 +31,8 @@
     Filtrar Itens do Estoque:
   </div>
   
-  <div class="card p-3">
-    <form method="get" id="form_filtro">
+  <div class="card p-1">
+    <form method="get" id="form_filtro" style="line-height: normal; font-size:10pt">
       {% csrf_token %}
 
       {% for hidden_field in form.hidden_fields %}
@@ -40,9 +40,9 @@
       {% endfor %}
 
 
-      <div class="form-group row mb-2">
+      <div class="form-group row mb-2 ">
         <div class="col-3">
-          <div class="col-12">
+          <div class="col-12 ">
             <label for="inputDescricao" class="">Descrição</label>
             {% render_field filter.form.descricao class="form-control" id="inputDescricao" name="descricao"%}
           </div>
@@ -71,11 +71,13 @@
           </div>
         </div>
 
+        <input type="hidden" id="filteringId" name="filter-status" value="1">
+
         <div class="col-2 d-flex align-items-end">
-          <input form="form_filtro" class="btn btn-sm btn-info m-2" type="submit" value="Filtrar" />
+          <input form="form_filtro" class="btn btn-sm btn-primary m-2" type="submit" value="Filtrar" />
           <a class="btn btn-sm btn-light m-2" href="{% url 'ver-estoque' %}">Limpar</a>
         </div>
-
+        <span class="help-block">*Para ver todos os itens do estoque: filtrar com os campos vazios.</span>
       </div>
 
   </form>
@@ -86,10 +88,10 @@
 Resultados:
 </div>
 
-<div class="card p-3" style="border-color: #093637;">
+<div class="card p-2" style="border-color: #093637;">
   <table class="table table-sm table-bordered table-striped tabela-listar">
     <thead class="card-header text-white text-center" style="background: linear-gradient(to right, #0052D4, #4364F7);">
-    <tr style="LINE-HEIGHT:10px">
+    <tr style="line-height: 12px;white-space: nowrap; font-size:10pt">
       <th scope="col">Id</th>
       <th scope="col" style="text-align: left;">Item</th>
       <th scope="col" style="text-align: left;">Marca</th>
@@ -105,9 +107,9 @@ Resultados:
   <tbody >
     {% for estoque in filter.qs %}
     {% if estoque.quantidade %}
-    <tr style="LINE-HEIGHT:10px;">
+    <tr style="line-height: normal; font-size:9pt">
     {% else %}
-      <tr style="LINE-HEIGHT:10px; color:red">
+      <tr style="LINE-HEIGHT:normal; color:red; font-size:9pt">
     {% endif %}
        
       <td>{{estoque.item.pk}}</td>

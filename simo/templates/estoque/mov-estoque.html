@@ -54,36 +54,10 @@
 </div>
 </div>
 
-{% comment %} LISTAR ESTOQUE {% endcomment %}
-<br><br>
-<h5>Materiais no Estoque: </h5>
-<div class="card mb-3 p-3" style="border-color: #093637;">
-<table class="table table-sm table-bordered" id="tabela-listar">
-  <thead class="card-header text-white " style="background: linear-gradient(to right, #0f2027, #203a43, #2c5364);">
-    <tr>
-      <th scope="col">Id</th>
-      <th scope="col">Item</th>
-      <th scope="col">Quantidade</th>
-      <th scope="col">Unidade</th>
-      <th scope="col">Peso</th>
-    </tr>
-  </thead>
-<tbody>
-{% for item in itensEstoque %}
-    <tr>
-      <td>{{item.item.pk}}</td>
-      <td><a href="{% url 'detalhar-item' item.item.pk  %}">{{item.item.descricao}}</a></td>
-      <td>{{item.quantidade}}</td>
-      <td>{{item.item.unid_medida}}</td>
-      <td>{{item.item.peso}}</td>
-    </tr>
-{% endfor %}
-  </tbody>
-</table>
-</div>
+
 
 <div class="row" style="margin-top:40px">
-      <div class="row"><span style="font-size=14px; color:gray;font-style: italic;">Últimas Movimentaçãos no Estoque</span><hr></div> 
+      <div class="row"><span style="font-size=14px; color:gray;font-style: italic;">Últimas Movimentaçãos no Estoque:</span><hr></div> 
   </div>
 
 {% comment %} //TODO LOG DAS MOVIMENTAÇÕES DO ESTOQUE COM USUÁRIO {% endcomment %}
