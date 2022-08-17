@@ -3,6 +3,9 @@ from django.db.models.base import Model
 from django.db.models.deletion import SET_NULL
 from fornecedores.models import Fornecedor
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
+from django.db.models.deletion import PROTECT
+from datetime import datetime
 
 
 # Create your models here.
@@ -62,3 +65,13 @@ class Estoque(models.Model):
 
     def __str__(self) -> str:   
         return str(self.item.descricao)+ ' - ' + str(self.quantidade)
+    
+class LogMovimentacao(models.Model):
+    usuario = models.ForeignKey(User, on_delete=PROTECT)
+    item = models.ForeignKey(Item, on_delete=models.DO_NOTHING)
+    quantidade = models.FloatField(default=0)
+    saldo = models.FloatField(default=0)
+    adicionado = models.BooleanField(default=False)
+    data_inclusao = models.DateTimeField(auto_now_add=True)
+    log = models.CharField(max_length=300, blank=True, null=True)
+    

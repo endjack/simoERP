@@ -8,4 +8,5 @@ admin.site.register(Categoria)
 admin.site.register(Item)
 admin.site.register(MovimentacaoEstoque)
 admin.site.register(Estoque)
+admin.site.register(LogMovimentacao)
 
