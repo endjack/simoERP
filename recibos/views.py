@@ -23,7 +23,7 @@ class InserirReciboFornecedorView(CreateView):
        
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["recibos_list"] = ReciboFornecedor.objects.all()
+        context["recibos_list"] = ReciboFornecedor.objects.all().order_by('-pk')
         context["editar"] = False
         return context
 
