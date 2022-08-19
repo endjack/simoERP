@@ -46,8 +46,6 @@ class Item(models.Model):
     def __str__(self) -> str:
         return str(self.descricao)+ ' - '+ str(self.categoria if self.categoria != None else 'sem categoria')
     
-    
-
 class MovimentacaoEstoque(models.Model):
     TIPOS = (("1","Entrada"),("2","Saída"))
 
@@ -74,4 +72,7 @@ class LogMovimentacao(models.Model):
     adicionado = models.BooleanField(default=False)
     data_inclusao = models.DateTimeField(auto_now_add=True)
     log = models.CharField(max_length=300, blank=True, null=True)
+    
+class ItensSelecionados(models.Model):
+    estoque = models.OneToOneField(Estoque, on_delete=models.DO_NOTHING)
     

@@ -1,5 +1,7 @@
 from cgitb import text
-from json.encoder import JSONEncoder
+from urllib import request
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
 from django.core.cache import cache
 from django.forms.models import model_to_dict
 from estoque.filters import EstoqueFilter
@@ -19,6 +21,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from braces.views import GroupRequiredMixin
 from django.views.generic import TemplateView, CreateView
 from datetime import date, datetime, timedelta
+from django.core import serializers
+from django.views.decorators.csrf import csrf_exempt
 
 
 class InserirItemView(GroupRequiredMixin, LoginRequiredMixin, CreateView):
@@ -120,18 +124,47 @@ class InicioEstoque(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
         
         
         #Ao iniciar o estoque não carrega todos os itens de primeira, somente quando usar o Form de filtragem
-        if self.request.GET.get('filter-status'):
+        if self.request.GET.get('filterStatus'):
             objects = Estoque.objects.all()
             filter_list = EstoqueFilter(self.request.GET, queryset = objects )
         else:
             objects = Estoque.objects.none()
             filter_list = EstoqueFilter(self.request.GET, queryset = objects )
-        
+                   
         
         context["filter"] = filter_list
         cache.set('filter_estoque_resultados', filter_list, 600)  
         
         return context
+
+class VerEstoqueVarios(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Estoque', u'Tecnico',]
+    
+    template_name= 'estoque/ver-estoque-varios.html'
+    success_url = reverse_lazy('ver-estoque-varios')
+ 
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # objects = Estoque.objects.select_related('item') 
+        
+        
+        #Ao iniciar o estoque não carrega todos os itens de primeira, somente quando usar o Form de filtragem
+        if self.request.GET.get('filterStatus'):
+            objects = Estoque.objects.all()
+            filter_list = EstoqueFilter(self.request.GET, queryset = objects )
+        else:
+            objects = Estoque.objects.none()
+            filter_list = EstoqueFilter(self.request.GET, queryset = objects )
+                   
+        
+        context["filter"] = filter_list
+        cache.set('filter_estoque_resultados', filter_list, 600)  
+        
+        return context
+
+
 
 class MovimentacaoEstoqueView(GroupRequiredMixin, LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('login')
@@ -294,6 +327,20 @@ class ImprimirResultadosEstoqueView(GroupRequiredMixin, LoginRequiredMixin, Temp
         context['filter_list'] = cache.get('filter_estoque_resultados')
         
         return context
+    
+class ImprimirListaItensView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('login')
+    group_required = [u'Administrador', u'Estoque', u'Tecnico',]
+    
+    model = ItensSelecionados
+    template_name= 'estoque/lista-itens-impressao.html'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_list'] = ItensSelecionados.objects.all()
+        
+        return context
 
 
 
@@ -348,7 +395,63 @@ def estoque_filter(request):
        
         return JsonResponse({'filter': lista_itens}, status=200)
 
+@csrf_exempt
+def add_filtro_varios(request):
+    
+    print("add_itens a Lista")
+    
+    carregar_itens = ItensSelecionados.objects.all()
+    
+    template_name = 'estoque/lista-itens-selecionados.html'
+    if request.method == 'POST':
+        tasks = request.POST.getlist('array[]')       
+        print(tasks)     
+        
+        for item in tasks:
+            if not carregar_itens.filter(estoque__item__pk=int(item)):
+                aux = ItensSelecionados(estoque = Estoque.objects.get(item__pk=int(item)))
+                aux.save()
+        
+        context = {
+            'itens_selecionados': carregar_itens.order_by('-pk')
+        }
+        
+        return render(request, template_name, context )
+    else:
+        return HttpResponse('Item Não Adicionado') #TODO FAZER UMA RESPOSTA EM HTML COM TABELA VAZIA
+    
+@csrf_exempt
+def remover_filtro_varios(request):
+    
+    print("Remove_itens a Lista - " + request.POST.get('id'))
+    
+    template_name = 'estoque/lista-itens-selecionados.html'
+    
+    try:
+        item_selecionado = ItensSelecionados.objects.get(estoque__item__pk=request.POST.get('id'))
+        item_selecionado.delete()
+        
+        context = {
+            'itens_selecionados': ItensSelecionados.objects.all().order_by('-pk')
+        }
+        return render(request, template_name, context )
+        
+    except: 
+        
+      return HttpResponse('Item Não Encontrado ou Já excluído!') #TODO FAZER UMA RESPOSTA EM HTML COM TABELA VAZIA
 
+@csrf_exempt       
+def remover_lista_selecionada(request):
+    template_name = 'estoque/lista-itens-selecionados.html'
+    
+    try:
+        ItensSelecionados.objects.all().delete()
+        
+        return render(request, template_name)
+        
+    except: 
+        
+      return HttpResponse('Lista Não encontrada ou já excluída!') #TODO FAZER UMA RESPOSTA EM HTML COM TABELA VAZIA       
    
 def log_item_updated(request, item, qnt, saldo, adicionado):
 

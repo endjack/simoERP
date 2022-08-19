@@ -26,131 +26,144 @@
 {% block conteudo %}
 
 <div class="">
-  
-  <div class="texto-enfase" style="">
-    Filtrar Itens do Estoque:
-  </div>
-  
-  <div class="card p-1">
-    <form method="get" id="form_filtro" style="line-height: normal; font-size:10pt">
-      {% csrf_token %}
-
-      {% for hidden_field in form.hidden_fields %}
-      {{ hidden_field }}
-      {% endfor %}
-
-
-      <div class="form-group row mb-2 ">
-        <div class="col-3">
-          <div class="col-12 ">
-            <label for="inputDescricao" class="">Descrição</label>
-            {% render_field filter.form.descricao class="form-control" id="inputDescricao" name="descricao"%}
+  <ul class="nav nav-tabs" id="myTab">
+      <li class="nav-item">
+          <a  href="#filtro-um" class="nav-link active" data-bs-toggle="tab">Filtrar item </a>
+      </li>
+      <li class="nav-item">
+          <a id="tab-varios" href="{% url 'ver-estoque-varios' %}" class="nav-link">Filtrar vários itens</a>
+      </li>
+  </ul>
+  <div class="tab-content">
+      <div class="tab-pane fade show active" id="filtro-um">
+          <h4 class="mt-2">Filtrar Itens do Estoque:</h4>
+          
+            
+            <div class="p-1">
+              <form method="get" id="form_filtro" style="line-height: normal; font-size:10pt">
+                {% csrf_token %}
+          
+                {% for hidden_field in form.hidden_fields %}
+                {{ hidden_field }}
+                {% endfor %}
+          
+          
+                <div class="form-group row mb-2 ">
+                  <div class="col-3">
+                    <div class="col-12 ">
+                      <label for="inputDescricao" class="">Descrição</label>
+                      {% render_field filter.form.descricao class="form-control" id="inputDescricao" name="descricao"%}
+                    </div>
+          
+                  </div>
+                  <div class="col-2">
+                    <div class="col-12">
+                      <label for="inputmarca" class="">Marca</label>
+                      {% render_field filter.form.marca class="form-control" id="inputmarca" name="marca"%}
+                    </div>
+                  </div>
+          
+                  <div class="col-2">
+                    <div class="col-12">
+                      <label for="inputCategoria" class="">Categoria</label>
+                      {% render_field filter.form.item__categoria  class="form-control" id="inputCategoria" name="categoria"%}
+                    </div>
+                  </div>
+          
+                  <div class="col-3">
+                    <div class="col-12">
+                      <label for="inputFornecedor" class="">Fornecedor</label>
+                      {% render_field filter.form.item__fornecedor  class="form-control" id="inputFornecedor" name="fornecedor"%}
+                    </div>
+                  </div>
+          
+                  <input type="hidden" id="filteringId" name="filterStatus" value="1">
+          
+                  <div class="col-2 d-flex align-items-end">
+                    <input form="form_filtro" class="btn btn-sm btn-primary m-2" type="submit" value="Filtrar" />
+                    <a class="btn btn-sm btn-light m-2" href="{% url 'ver-estoque' %}">Limpar</a>
+                  </div>
+                  <span class="help-block">*Para ver todos os itens do estoque: filtrar com os campos vazios.</span>
+                </div>
+          
+              </form>
+            </div>
+          
+          
+          <div class="texto-enfase " style=""> Resultados: </div>
+          
+          <div class="p-2" style="border-color: #093637;">
+            <table class="table table-sm table-bordered table-striped tabela-listar">
+              <thead class="text-white text-center" style="background: #0d6efd;">
+              <tr style="line-height: 12px;white-space: nowrap; font-size:10pt">
+                <th scope="col">Id</th>
+                <th scope="col" style="text-align: left;">Item</th>
+                <th scope="col" style="text-align: left;">Marca</th>
+                <th scope="col">Quantidade</th>
+                <th scope="col">Unidade</th>
+                <th scope="col">Categoria</th>
+                <th scope="col">Peso</th>
+                <th scope="col">Qtd Mínima</th>
+                <th scope="col">Preço</th>
+                <th scope="col">Opções</th>
+              </tr>
+            </thead>
+            <tbody >
+              {% for estoque in filter.qs %}
+              {% if estoque.quantidade %}
+              <tr style="line-height: normal; font-size:9pt">
+              {% else %}
+                <tr style="LINE-HEIGHT:normal; color:red; font-size:9pt">
+              {% endif %}
+                 
+                <td>{{estoque.item.pk}}</td>
+                <td style="text-align: left; ">
+                  <a style="text-decoration: none; color: inherit;" class="thumbnail" href="{% url 'detalhar-item' estoque.item.pk %}">{{estoque.item.descricao}}
+                  {% if estoque.item.imagem %}
+                  <span><img src="{{estoque.item.imagem.url}}" style="max-height:200px;max-width:240px"/></span></a>
+                  {% endif %}</a>
+                  </td>
+                
+                {% if estoque.item.marca %} 
+                  <td style="text-align: left;">{{estoque.item.marca}}</td>
+                {% else %}
+                  <td style="text-align: left;">-</td>
+                {% endif %}
+          
+                {% if estoque.quantidade %} 
+                  <td>{{estoque.quantidade}}</td>
+                {% else %}
+                  <td><span style="font-weight: bold;">0</span></td>
+                {% endif %}
+                
+                <td>{{estoque.item.unid_medida}}</td>
+                {% if estoque.item.categoria %} 
+                <td>{{estoque.item.categoria.categoria}}</td>
+                {% else %}
+                <td>-</td>
+                {% endif %}
+                <td>{{estoque.item.peso}}</td>
+                <td>{{estoque.item.qtd_minima}}</td>
+                {% if estoque.item.preco %} 
+                <td>{{estoque.item.preco}}</td>
+                {% else %}
+                <td>-</td>
+                {% endif %}
+                <td><a href="{% url 'editar-item' estoque.item.pk %}"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
           </div>
+          
 
-        </div>
-        <div class="col-2">
-          <div class="col-12">
-            <label for="inputmarca" class="">Marca</label>
-            {% render_field filter.form.marca class="form-control" id="inputmarca" name="marca"%}
-          </div>
-
-        </div>
-
-        <div class="col-2">
-          <div class="col-12">
-            <label for="inputCategoria" class="">Categoria</label>
-            {% render_field filter.form.item__categoria  class="form-control" id="inputCategoria" name="categoria"%}
-          </div>
-
-        </div>
-
-        <div class="col-3">
-          <div class="col-12">
-            <label for="inputFornecedor" class="">Fornecedor</label>
-            {% render_field filter.form.item__fornecedor  class="form-control" id="inputFornecedor" name="fornecedor"%}
-          </div>
-        </div>
-
-        <input type="hidden" id="filteringId" name="filter-status" value="1">
-
-        <div class="col-2 d-flex align-items-end">
-          <input form="form_filtro" class="btn btn-sm btn-primary m-2" type="submit" value="Filtrar" />
-          <a class="btn btn-sm btn-light m-2" href="{% url 'ver-estoque' %}">Limpar</a>
-        </div>
-        <span class="help-block">*Para ver todos os itens do estoque: filtrar com os campos vazios.</span>
       </div>
-
-  </form>
-</div>
-</div>
-
-<div class="texto-enfase " style="">
-Resultados:
+      <div class="tab-pane fade" id="filtro-varios">
+          
+      </div>
+  </div>
 </div>
 
-<div class="card p-2" style="border-color: #093637;">
-  <table class="table table-sm table-bordered table-striped tabela-listar">
-    <thead class="card-header text-white text-center" style="background: linear-gradient(to right, #0052D4, #4364F7);">
-    <tr style="line-height: 12px;white-space: nowrap; font-size:10pt">
-      <th scope="col">Id</th>
-      <th scope="col" style="text-align: left;">Item</th>
-      <th scope="col" style="text-align: left;">Marca</th>
-      <th scope="col">Quantidade</th>
-      <th scope="col">Unidade</th>
-      <th scope="col">Categoria</th>
-      <th scope="col">Peso</th>
-      <th scope="col">Qtd Mínima</th>
-      <th scope="col">Preço</th>
-      <th scope="col">Opções</th>
-    </tr>
-  </thead>
-  <tbody >
-    {% for estoque in filter.qs %}
-    {% if estoque.quantidade %}
-    <tr style="line-height: normal; font-size:9pt">
-    {% else %}
-      <tr style="LINE-HEIGHT:normal; color:red; font-size:9pt">
-    {% endif %}
-       
-      <td>{{estoque.item.pk}}</td>
-      <td style="text-align: left; ">
-        <a style="text-decoration: none; color: inherit;" class="thumbnail" href="{% url 'detalhar-item' estoque.item.pk %}">{{estoque.item.descricao}}
-        {% if estoque.item.imagem %}
-        <span><img src="{{estoque.item.imagem.url}}" style="max-height:200px;max-width:240px"/></span></a>
-        {% endif %}</a>
-        </td>
-      
-      {% if estoque.item.marca %} 
-        <td style="text-align: left;">{{estoque.item.marca}}</td>
-      {% else %}
-        <td style="text-align: left;">-</td>
-      {% endif %}
-
-      {% if estoque.quantidade %} 
-        <td>{{estoque.quantidade}}</td>
-      {% else %}
-        <td><span style="font-weight: bold;">0</span></td>
-      {% endif %}
-      
-      <td>{{estoque.item.unid_medida}}</td>
-      {% if estoque.item.categoria %} 
-      <td>{{estoque.item.categoria.categoria}}</td>
-      {% else %}
-      <td>-</td>
-      {% endif %}
-      <td>{{estoque.item.peso}}</td>
-      <td>{{estoque.item.qtd_minima}}</td>
-      {% if estoque.item.preco %} 
-      <td>{{estoque.item.preco}}</td>
-      {% else %}
-      <td>-</td>
-      {% endif %}
-      <td><a href="{% url 'editar-item' estoque.item.pk %}"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a></td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-</div>
 
 
 <div class="" style="margin-top:20px">
@@ -164,7 +177,9 @@ Resultados:
 <script src="../static/js/datatables.min.js"></script>
 
 <script>
-  $('.tabela-listar').DataTable({
+
+
+   $('.tabela-listar').DataTable({
     responsive: true,
     // "bSort": false,
     "aaSorting": [],

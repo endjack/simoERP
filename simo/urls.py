@@ -29,6 +29,10 @@ urlpatterns = [
    
     #urls Estoque
     path('ver-estoque', InicioEstoque.as_view(), name='ver-estoque'),
+    path('ver-estoque/varios', VerEstoqueVarios.as_view(), name='ver-estoque-varios'),
+    path('add-varios/', add_filtro_varios, name='add-varios'),
+    path('remover-item-selecionado/', remover_filtro_varios, name='remover-item-selecionado'),
+    path('remover-lista-selecionada/', remover_lista_selecionada, name='remover-lista-selecionada'),
     path('mov-estoque/', MovimentacaoEstoqueView.as_view(), name='mov-estoque'),
     path('buscar-estoque/', BuscaEstoqueView.as_view(), name='buscar-estoque'),
     path('categorias-estoque/', CategoriasEstoque.as_view(), name='categorias-estoque'),
@@ -39,6 +43,7 @@ urlpatterns = [
     path('detalhar-item/<pk>', DetalharItemView.as_view(), name='detalhar-item'),
     path('editar-item/<pk>', EditarItemView.as_view(), name='editar-item'),
     path('imprimir-resultados', ImprimirResultadosEstoqueView.as_view(), name='imprimir-resultados'),
+    path('imprimir-lista-itens', ImprimirListaItensView.as_view(), name='imprimir-lista-itens'),
     path('filtrar-estoque', estoque_filter, name='estoque-filter'),
     
     #urls Requisição

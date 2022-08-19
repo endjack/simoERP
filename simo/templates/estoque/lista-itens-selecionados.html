@@ -1,0 +1,88 @@
+<div id="targetAdd" class="p-2">
+    <table class="table table-sm table-bordered table-striped ">
+      <thead class="text-black text-center" style="background: silver;">
+      <tr style="line-height: 12px;white-space: nowrap; font-size:10pt">
+        
+        <th scope="col">Retirar</th>
+        <th scope="col">Id</th>
+        <th scope="col" style="text-align: left;">Item</th>
+        <th scope="col" style="text-align: left;">Marca</th>
+        <th scope="col">Quantidade</th>
+        <th scope="col">Unidade</th>
+        <th scope="col">Categoria</th>
+        <th scope="col">Peso</th>
+        <th scope="col">Qtd Mínima</th>
+        <th scope="col">Preço</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+      {% for estoque in itens_selecionados %}
+      
+      <tr style="line-height: normal; font-size:9pt">
+        <td> 
+            <button style="font-size:9pt; color:red;border:none!important;" type="button" title="Excluir Item Selecionado" class="buttonDel" value="{{estoque.estoque.item.pk}}">
+              <span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span>
+            </button>
+        </td>
+
+        <td>{{estoque.estoque.item.pk}}</td>
+
+        <td style="text-align: left;">{{ estoque.estoque.item.descricao }}</td>
+
+        {% if estoque.estoque.item.marca %} 
+          <td style="text-align: left;">{{estoque.estoque.item.marca}}</td>
+        {% else %}
+          <td style="text-align: left;">-</td>
+        {% endif %}
+
+        <td>{{estoque.estoque.quantidade}}</td> 
+
+        <td>{{estoque.estoque.item.unid_medida}}</td>
+
+        {% if estoque.estoque.item.categoria %} 
+          <td>{{estoque.estoque.item.categoria.categoria}}</td>
+        {% else %}
+          <td>-</td>
+        {% endif %}
+
+        <td>{{estoque.estoque.item.peso}}</td>
+
+        <td>{{estoque.estoque.item.qtd_minima}}</td>
+        
+        {% if estoque.estoque.item.preco %} 
+          <td>{{estoque.estoque.item.preco}}</td>
+        {% else %}
+        <td>-</td>
+        {% endif %}
+        
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+  <script>
+    $(document).ready(function () {
+      // códigos jQuery a serem executados quando a página carregar
+     
+      $(".buttonDel").click(function () {
+                
+        $.ajax({
+            type: "POST",
+            url: "{% url 'remover-item-selecionado' %}",
+            data:{
+              'id': $(this).val()
+            },
+            success: function(response)
+            {
+              $('#targetAdd').html(response
+
+        );
+            }
+        });
+        
+    });
+
+
+    });
+  </script>
