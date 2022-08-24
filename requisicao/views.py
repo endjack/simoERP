@@ -1,9 +1,11 @@
+from time import sleep
 from django.views.generic.list import ListView
 from estoque.filters import EstoqueFilter
+from estoque.forms import ItemBuscaForm
 from estoque.models import *
 from .models import *
 from django.http.response import HttpResponse
-from requisicao.forms import GerarRequisicaoForm
+from requisicao.forms import ObraRequisicaoForm
 from django.urls.base import reverse, reverse_lazy
 from requisicao.models import ItemRequisicao, Requisicao
 from django.shortcuts import render
@@ -11,172 +13,180 @@ from django.views.generic.base import TemplateView, View
 from django.views.generic.edit import CreateView
 from weasyprint import HTML, CSS
 from django.db.models import Q
-import os
+from django.core.cache import cache
 from django.contrib import messages
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
-estoque_add = []
 
-class GerarRequisicaoView(LoginRequiredMixin, CreateView):
+
+class GerarRequisicaoView(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
-    model = Requisicao
     template_name = 'requisicao/gerar-requisicao.html'
-    form_class = GerarRequisicaoForm
-
-    def get_success_url(self):
-        return reverse('inserir-item-requisicao', args=(self.object.id,))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs) 
-           
-        context['objects_by'] =  Requisicao.objects.order_by('pk').all()  #TODO filtrar pelos últimos ou por data
-        return context
-
-class InserirItensView(LoginRequiredMixin, ListView):
-    login_url = reverse_lazy('login')
-    template_name = 'requisicao/inserir-itens-requisicao.html'
-
-class InserirRequisicaoView(LoginRequiredMixin, TemplateView):
-    login_url = reverse_lazy('login')
-    template_name = 'requisicao/inserir-item-requisicao.html'
         
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["obj"] =  Requisicao.objects.filter(pk=self.kwargs.get('pk'))
-        context["numId"] = self.kwargs.get('pk')
-        objects = Estoque.objects.all()
-
-        filter_list = EstoqueFilter(self.request.GET, queryset = objects )
-        context["filter"] = filter_list 
-        return context 
-
-
-    def post(self, request, *args, **kwargs):
-        requisicao_atual = Requisicao.objects.get(pk=self.kwargs.get('pk'))
-        if 'addReq' in self.request.POST:
-            global contextPDF
-
-            contextPDF = {
-                "reqID": self.kwargs.get('pk'),
-                "list_itens": estoque_add,
-                "req_solicitante": requisicao_atual.solicitante,
-                "req_obra": requisicao_atual.obra,
-                "req_local": requisicao_atual.local,
-                "req_almoxarife": requisicao_atual.almoxarife,
-                "modo_aba": "_blank"
-            }
-
-            #salvando ItensRequisicao no Banco
-            for elemento in estoque_add:
-                item_req = ItemRequisicao.objects.create(requisicao=requisicao_atual, quantidade=elemento[3])
-                item_req.item.add(Item.objects.get(pk = elemento[0]))
-                item_req.save()
-                
-            return render(request, 'requisicao/detalhar-requisicao.html', contextPDF)
-                
-class DetalharRequisicaoView(LoginRequiredMixin, TemplateView):
-    login_url = reverse_lazy('login')
-    template_name = 'requisicao/detalhar-requisicao.html'
-  
-class ListarRequisicoesView(LoginRequiredMixin, ListView):
-    login_url = reverse_lazy('login')
-    template_name = 'requisicao/listar-requisicoes.html'
-    queryset = Requisicao.objects.all()
-    context_object_name = 'objects_by'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)    
-
-        # #buscar requisição
-        # query = self.request.GET.get('q')
-        # query2 = self.request.GET.get('q2')
-        # query3 = self.request.GET.get('q3')
-        
-        # if query != "" and query2 == "":
-        #    if query != None: 
-        #         objects_by_data = Requisicao.objects.filter(Q(data__icontains=query))
-        #         context["objects_by"] = objects_by_data
-        #         print("-----------------------------ENTREI query     " + str(objects_by_data))
-
-        # elif query2 != '' and query == "":
-        #     if query2 != None:
-        #         objects_by_solicitante = Requisicao.objects.filter(Q(solicitante__icontains=query2))
-        #         context["objects_by"] = objects_by_solicitante
-        #         print("-----------------------------ENTREI query2    " + str(objects_by_solicitante))
-
-        # elif query3 != "" and query2 == "" and query == "":
-        #     if query3 != None:
-        #         objects_ = ItemRequisicao.objects.filter(Q(item__descricao__icontains=query3))
-        #         print("-----------------------------ENTREI query3    " + str(objects_))
-        #         objects_by_item = ""
-        #         for item in objects_:
-        #             objects_by_item = Requisicao.objects.filter(pk=item.requisicao.pk)   
-
-
-        #         context["objects_by"] = objects_by_item
-        #         print("-----------------------------ENTREI query3    " + str(objects_by_item))
-
-        # elif query != "" and query2 != "" and query3 != "":
-        #     if query != None and query2 != None and query3 != None:
-        #         objects_by_all = Requisicao.objects.filter(Q(data__icontains=query), Q(solicitante__icontains=query2))
-        #         context["objects_by"] = objects_by_all 
-        #         print("-----------------------------ENTREI" + str(objects_by_all )) 
-        # else:
-        #     pass
-
-
-        return context
-
-class DetalharItensDeRequisicaoView(LoginRequiredMixin, TemplateView):
-    login_url = reverse_lazy('login')
-    template_name = 'requisicao/detalhar-itens.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        id_req = self.kwargs.get('pk')
-        requisicao_atual = Requisicao.objects.get(pk=id_req)
-        objects_req = ItemRequisicao.objects.filter(Q(requisicao__pk=id_req))
-        itens_req = objects_req.values_list('item__pk','item__descricao','item__unid_medida')
-
-        zip_list_itens = zip(objects_req,itens_req)
+        context["funcionarios_busca"] = ""
+        context["form_obra"] = ObraRequisicaoForm()
+        context["filter"] = EstoqueFilter()
+        # cache.clear()
+        context["list_in_cache"] = cache.get('list_item_requisicao')
         
            
-        context['reqID'] =id_req
-        context['req_solicitante'] = requisicao_atual.solicitante
-        context['req_obra'] = requisicao_atual.obra
-        context['req_local'] = requisicao_atual.local
-        context['req_almoxarife'] = requisicao_atual.almoxarife
-        context['req_data'] = requisicao_atual.data
-        context['objects_itens'] = zip_list_itens
-
-        
-        context['size_list'] = len(objects_req)
-
         return context
-
-class BuscaRequisicaoView(LoginRequiredMixin, TemplateView):
-    login_url = reverse_lazy('login')
-    template_name = 'requisicao/buscar-requisicao.html'
-
-class GerarPdfRequisicao(LoginRequiredMixin, View):
-    login_url = reverse_lazy('login')  
-    def get(self, request, *args, **kwargs):             
-        #template  = get_template('requisicao/detalhar-requisicao.html')        
-        try:
-            print(contextPDF)
-        except:
-            context = {"modo_aba": "",}
-            messages.warning(self.request, "ERRO: Não foi possível gerar o PDF")
-            return render(request, 'requisicao/detalhar-requisicao.html', context) 
-        
-        html = render_to_string("requisicao/gerar-pdf-requisicao.html", contextPDF)
     
-        css_url = os.path.join(settings.PROJECT_ROOT, 'static\\css\\bootstrap.min.css')
-        pdf = HTML(string=html,base_url=request.build_absolute_uri()).write_pdf(stylesheets=[CSS(css_url)])
+@csrf_exempt
+def requisicao_search_funcionario(request):
+    busca = request.POST.get('busca_funcionario')
+    if busca != "":
+            resultados = Funcionario.objects.filter(nome__istartswith=busca)
+        
+            if resultados.exists():
+                return render(request, template_name='requisicao/fragmentos/lista_busca_funcionarios.html', context={'funcionarios_busca': resultados})
 
-        return HttpResponse(pdf, content_type='application/pdf')
+            else:
+                return render(request, template_name='requisicao/fragmentos/lista_busca_funcionarios.html', context={'funcionarios_busca': ""})
+    else:
+        return render(request, template_name='requisicao/fragmentos/lista_busca_funcionarios.html', context={'funcionarios_busca': ""}) 
+    
+@csrf_exempt
+def requisicao_add_funcionario(request, pk):
+    if request.POST:
+        funcionario = Funcionario.objects.get(pk=pk)
+        if funcionario:
+            return render(request, template_name='requisicao/fragmentos/funcionario_selecionado.html', context={'funcionario': funcionario})
 
+  
+    return render(request, template_name='requisicao/fragmentos/funcionario_selecionado.html', context={'funcionario': ""})
+     
+    
+@csrf_exempt
+def requisicao_add_obra(request):
+    obra = request.POST.get('obra')
+    if obra != "":
+        obra_sel = Obra.objects.get(pk=int(obra))
+        if obra_sel:
+            return render(request, template_name='requisicao/fragmentos/obra_selecionado.html', context={'obra': obra_sel})
+
+  
+    return render(request, template_name='requisicao/fragmentos/obra_selecionado.html', context={'obra': ""})
+
+    
+@csrf_exempt
+def requisicao_add_local(request):
+    local = request.POST.get('local')
+    if local != "":
+        local_sel = Local.objects.get(pk=int(local))
+        if local_sel:
+            return render(request, template_name='requisicao/fragmentos/local_selecionado.html', context={'local': local_sel})
+
+  
+    return render(request, template_name='requisicao/fragmentos/local_selecionado.html', context={'local': ""})
+    
+       
+@csrf_exempt
+def requisicao_add_itens_selecionados(request, pk):
+    item = Estoque.objects.get(item__pk=pk)
+    list_in_cache = cache.get('list_item_requisicao')
+    if list_in_cache == None:   
+        list_item_requisicao = list()
+        list_item_requisicao.append(item)
+        cache.set('list_item_requisicao', list_item_requisicao)
+    else:
+        list_in_cache.append(item)
+        cache.set('list_item_requisicao', list_in_cache)  
+    
+    return render(request, template_name='requisicao/fragmentos/itens_selecionados.html', context={'list_in_cache': cache.get('list_item_requisicao')})
+
+@csrf_exempt
+def requisicao_excluir_item_lista_selecionada(request, pk):
+    item = Estoque.objects.get(item__pk=pk)
+    list_in_cache = cache.get('list_item_requisicao')
+    
+    list_in_cache.remove(item)
+    cache.set('list_item_requisicao', list_in_cache)
+        
+    return render(request, template_name='requisicao/fragmentos/itens_selecionados.html', context={'list_in_cache': cache.get('list_item_requisicao')})
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+# @csrf_exempt   
+# def autocomplete_funcionarios(request):
+#     busca = request.POST.get('busca')
+#     template_name = 'requisicao/lista-funcionarios.html'
+
+#     if busca != "":
+#         print(str(busca))
+#         funcionarios = Funcionario.objects.filter(nome__istartswith=str(busca))
+        
+#         if funcionarios.exists():
+#             context = {
+#             'funcionarios': funcionarios
+#         }
+#             return render(request, template_name, context )
+    
+#     return render(request, template_name, context={'funcionarios':""} )
+
+# @csrf_exempt     
+# def add_funcionario_requisicao(request):
+       
+#     if request.method == 'POST':
+#         if request.POST.get('id'):
+#             id = request.POST.get('id')   
+            
+#             print(id)
+#             solicitante =  Funcionario.objects.get(pk=int(id))
+#             req = Requisicao(solicitante=solicitante)
+                     
+#         cache.set('requisicao_temp', req, 600)      
+        
+#         return HttpResponse(status=200)
+#     else:
+#         return HttpResponse('Item Não Adicionado') #TODO FAZER UMA RESPOSTA EM HTML COM TABELA VAZIA
+    
+# @csrf_exempt     
+# def remove_funcionario_requisicao(request):
+                       
+#     cache.set('requisicao_temp', "", 600)      
+        
+#     return HttpResponse(status=200)
+
+
+# @csrf_exempt     
+# def add_obra_local_requisicao(request):
+                       
+#     print(request.POST.get('dados_form[obra]'))   
+#     print(request.POST.get('dados_form[local]'))   
+    
+#     #TODO fazer a adição e mostrar no template
+        
+#     return HttpResponse(status=200)
+
+  
+ 
+    

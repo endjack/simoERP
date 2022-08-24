@@ -4,15 +4,15 @@
 {% block conteudo %}
 
 Bem-vindo <strong>{% firstof request.user.get_full_name request.user.username %}</strong>
-</br></br>
-Hoje é <strong>{% now "j/F/Y" %} </strong>
+<hr><br>
+{% comment %} Hoje é <strong>{% now "j/F/Y" %} </strong> {% endcomment %}
 
 <br>
 <br>
 
 <div class="col-6 mt-3">
 
-    <form method="post" autocomplete="off" action="" data-url="{% url "dashboard" %}" id="formTarefa">
+    <form method="post" autocomplete="off" action="" data-url="{% url 'dashboard' %}" id="formTarefa">
         {% csrf_token %}
 
         {% for hidden_field in form.hidden_fields %}

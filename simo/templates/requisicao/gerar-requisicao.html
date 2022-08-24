@@ -2,159 +2,212 @@
 {% load static %}
 {% load widget_tweaks %}
 
+{% block styleHead %}
+<link href="{% static 'css/image_preview.css' %}" rel="stylesheet">
+<style>
+    .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .highlight-cell {
+        background-color: #0066FF !important;
+        color: white !important;
+    }
+</style>
+{% endblock %}
+
+
 {% block breadcrumb %}
-  <div class="row">
+<div class="row">
     <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="../ver-requisicoes">Requisições</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Gerar Requisição</li>
-      </ol>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="../ver-requisicoes">Requisições</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Gerar Requisição</li>
+        </ol>
     </nav>
-  </div>
+</div>
 {% endblock %}
 
 {% block conteudo %}
-  <form method="post" >
-      {% csrf_token %}
 
-      {% for hidden_field in form.hidden_fields %}
-        {{ hidden_field }}
-      {% endfor %}
-     
-      <!-- 3 column grid layout -->
-       <div class="form-group row mb-4">
-       
-            <div class="col-3">
-              <div class="input-group">
-                <div class="input-group-text">Data: </div>
-                   {% render_field form.data class="form-control" id="data" %}
-              </div>
+<div class="row">
+    <div class="col-4">
+        <h6 class="">Requerente:</h6>
+
+        <form style="line-height: normal; font-size:10pt">
+
+            <!-- 3 column grid layout -->
+
+            <div class="">
+                <label for="input_funcionarios" class="">
+                    <i class="fas fa-search"></i>
+                    Buscar por Nome:</label>
+                <input type="text" id="input_funcionarios" name="busca_funcionario" class="form-control"
+                    hx-post="{% url 'requisicao-search-funcionario' %}" hx-target='#busca_funcionarios_target'
+                    hx-trigger="keyup" />
             </div>
 
-            <div class="col-5">
-              <div class="input-group">
-                <div class="input-group-text">Obras: </div>
-                  {% render_field form.obra class="form-control" id="obra" %}
-              </div>
+            <div class="row">
+                <div class="" id="busca_funcionarios_target">
+                </div>
             </div>
 
-            <div class="col-4">
-              <div class="input-group">
-                <div class="input-group-text">Local: </div>
-                  {% render_field form.local class="form-control" id="local" %}
-              </div>
+        </form>
+    </div>
+    <div class="col 4" style="">
+        <h6 class="">Obra/Contrato:</h6>
+
+        <form style="line-height: normal; font-size:10pt">
+
+            <div class="form-group row">
+                <div class="">
+                    <label for="input_obra" class="">
+                        <i class="fas fa-arrow-right"></i>
+                        Selecionar:</label>
+                    {% render_field form_obra.obra class="form-control" id="input_obra" name="obra" hx-target="#obra-selecionada" hx-post="/requisicao/add-obra" hx-trigger="change" %}
+
+                </div>
+                <div class="row" id="obra-selecionada">
+                </div>
+
             </div>
- 
+
+        </form>
+    </div>
+    <div class="col 4" style="">
+        <h6 class="">Local/Setor:</h6>
+
+        <form style="line-height: normal; font-size:10pt">
+
+            <div class="form-group row mt-2">
+                <div class="">
+                    <label for="input_local" class="">
+                        <i class="fas fa-arrow-right"></i>
+                        Selecionar:</label>
+                    {% render_field form_obra.local class="form-control" id="input_local" name="local" hx-target="#local-selecionado" hx-post="/requisicao/add-local" hx-trigger="change" %}
+                </div>
+                <div class="row" id="local-selecionado">
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+
+    <div class="row mt-3">
+        <div class="col-2">
+            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Adicionar Itens
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary" hx-swap="innerHTML" hx-post="{% url 'limpar-cache' %}" hx-trigger="click" hx-target="#itens-selecionados">
+                Limpar
+            </button>
         </div>
 
-      <!-- 3 column grid layout -->
-       <div class="form-group row mb-4">
-       
-            <div class="col-5">
-              <div class="input-group">
-                <div class="input-group-text">Solicitante: </div>
-                  {% render_field form.solicitante class="form-control" id="solicitante"%}
-              </div>
-            </div>
-
-            <div class="col-5">
-              <div class="input-group">
-                <div class="input-group-text">Almoxarife: </div>
-                  {% render_field form.almoxarife class="form-control" id="almoxarife" %}
-              </div>
-            </div>
-
-            <div class="col-2">
-              <button type="submit" class="btn btn-success">Gerar Requisição</button>
-            </div>  
-
+        <div class="row mt-2" id="itens-selecionados">
+            {% include "requisicao/fragmentos/itens_selecionados.html" %}
         </div>
-  </form>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header" id="modalItens">
+                        <h5 class="modal-title" id="exampleModalLabel">Filtrar Itens no Estoque</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="">
+                            <form id="form_filtro" style="line-height: normal; font-size:10pt" hx-trigger="submit"
+                                hx-post="{% url 'buscar-estoque-varios' %}" hx-swap="innerHTML" hx-target="#resultados">
+
+                                {% for hidden_field in form.hidden_fields %}
+                                {{ hidden_field }}
+                                {% endfor %}
 
 
-<div class="row" style="margin-top:40px">
-      <div class="row"><span style="font-size=14px; color:gray;font-style: italic;">Requisições Geradas no dia: {% now "de/F/Y" %}</span><hr></div> 
+                                <div class="form-group row mb-2 ">
+                                    <div class="col-3">
+                                        <div class="col-12 ">
+                                            <label for="inputDescricao" class="">Descrição</label>
+                                            {% render_field filter.form.descricao class="form-control" id="inputDescricao" name="descricao"%}
+                                        </div>
+
+                                    </div>
+                                    <div class="col-2">
+                                        <div class="col-12">
+                                            <label for="inputmarca" class="">Marca</label>
+                                            {% render_field filter.form.marca class="form-control" id="inputmarca" name="marca"%}
+                                        </div>
+                                    </div>
+
+                                    <div class="col-2">
+                                        <div class="col-12">
+                                            <label for="inputCategoria" class="">Categoria</label>
+                                            {% render_field filter.form.item__categoria  class="form-control" id="inputCategoria" name="categoria"%}
+                                        </div>
+                                    </div>
+
+                                    <div class="col-3">
+                                        <div class="col-12">
+                                            <label for="inputFornecedor" class="">Fornecedor</label>
+                                            {% render_field filter.form.item__fornecedor  class="form-control" id="inputFornecedor" name="fornecedor"%}
+                                        </div>
+                                    </div>
+
+                                    <input type="hidden" id="filteringId" name="filterStatus" value="1">
+
+                                    <div class="col-2 d-flex align-items-end">
+                                        <input form="form_filtro" class="btn btn-sm btn-primary m-2" type="submit"
+                                            value="Filtrar" />
+                                        <button class="btn btn-sm btn-light m-2" id="bttLimpar">Limpar</button>
+                                    </div>
+                                    <span class="help-block">*Para ver todos os itens do estoque: filtrar com os campos
+                                        vazios.</span>
+                                </div>
+
+                            </form>
+
+                            <div id="resultados">
+                                {% include "estoque/fragmentos/itens_busca_varios.html" %}
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                    {% comment %} <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Voltar</button>
+                    </div> {% endcomment %}
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
 </div>
-
-<table class="table table table-sm align-middle" style='font-size:small;' id="tabela-listar">
-  <thead>
-    <tr>
-      <th scope="col">Id</th>
-      <th scope="col">Obra</th>
-      <th scope="col">Local</th>
-      <th scope="col">Solicitante</th>
-      <th scope="col">Almoxarife</th>
-      <th scope="col">Data</th>
-      <th scope="col">Opções</th>
-    </tr>
-  </thead>
-<tbody>
-{% for item in objects_by %}
-    <tr>
-      <td>{{item.id}}</td>
-      <td>{{item.obra}}</td>
-      <td>{{item.local}}</td>
-      <td>{{item.solicitante}}</td>
-      <td>{{item.almoxarife}}</td>
-      <td>{{item.data | date:"d/m/Y"}}</td>
-      <td><button type="button" onclick="abrir_modal('{% url 'detalhar-itens' item.id %}')" class="btn btn-info btn-sm">Ver Itens</button></td>
-    </tr>
-{% endfor %}
-  </tbody>
-</table>
-
-<div class="modal fade" id="editar" role="dialog"></div>
 {% endblock %}
 
 {% block jquery %}
-<script src="../static/js/datatables.min.js"></script>
 
 <script type="text/javascript">
+    $(document).ready(function () {
 
-  var $ = jQuery.noConflict();
+        $('#modalItens').on('hidden.bs.modal', function () {
+            $(this).find('form').trigger('reset');
+        })
 
-  function abrir_modal(url){
-    $('#editar').load(url, function(){
-      $(this).modal('show');
-    });
-  };
 
-</script>
 
-<script>
-$('#tabela-listar').DataTable({
-        responsive: true,
-        // "bSort": false,
-        "oSearch": {"sSearch": '{% now "de/m/Y" %}'},
-        "aaSorting": [],
-        "pageLength": 10,
-        "language": {
 
-            "decimal": "",
-            "emptyTable": "Sem dados disponíveis",
-            "info": "Mostrando de _START_ até _END_ de _TOTAL_ registos",
-            "infoEmpty": "Mostrando de 0 até 0 de 0 registos",
-            "infoFiltered": "(filtrado de _MAX_ registos no total)",
-            "infoPostFix": "",
-            "thousands": ",",
-            "lengthMenu": "Mostrar _MENU_ registos",
-            "loadingRecords": "A carregar dados...",
-            "processing": "A processar...",
-            "search": "Procurar:",
-            "zeroRecords": "Não foram encontrados resultados",
-            "paginate": {
-                "first": "Primeiro",
-                "last": "Último",
-                "next": "Seguinte",
-                "previous": "Anterior"
-            },
-            "aria": {
-                "sortAscending": ": ordem crescente",
-                "sortDescending": ": ordem decrescente"
-            }
-        }
+
+
+
+
     });
 </script>
 
 {% endblock%}
-

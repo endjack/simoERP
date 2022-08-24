@@ -88,11 +88,6 @@ class DetalharCargoView(TemplateView):
 
 
 
-
-
-
-
-
 def autocompletefuncionario(request):
     query = request.GET.get('term')
     query_set = Funcionario.objects.filter(nome__icontains=query)

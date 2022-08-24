@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block breadcrumb %}
+  <div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="../ver-requisicoes">Requisições</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Gerar Requisição</li>
+      </ol>
+    </nav>
+  </div>
+{% endblock %}
+
+{% block conteudo %}
+
+<ul class="nav nav-tabs" id="myTab">
+  <li class="nav-item">
+      <a  href="#filtro-um" class="nav-link active" data-bs-toggle="tab">Inserir Dados</a>
+  </li>
+  <li class="nav-item">
+      <a id="tab-varios" href="#" class="nav-link">Inserir Itens</a>
+  </li>
+</ul>
+
+<div class="tab-content ">
+  
+  <div class="tab-pane fade show active" id="filtro-um">
+      <h5 class="mt-2">Requerente:</h5>
+      
+      <form method="post" style="line-height: normal; font-size:10pt">
+    
+         <!-- 3 column grid layout -->
+         <div class="form-group row">
+  
+          <div class="col-5">
+            <label for="input_funcionarios" class=""><i class="fas fa-search"></i> Buscar por Nome:</label>
+            <input type="text" id="input_funcionarios" name="busca" class="form-control"/>
+         </div>
+        
+         <div class="col-5 d-flex align-items-end" id="funcionario_adicionado_target">
+          {% if req %} 
+          <span style="color: green;font-size:12pt;"><i class="fas fa-check"></i> {{req.solicitante.nome}}</span> 
+          <button style="font-size:9pt; border:none !important; background:none !important;" type="button" title="Excluir" id="buttonDelFuncionario" value="">
+            <span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span> 
+          </button> 
+          {% endif %}
+        </div>
+      
+        </div> 
+      </form> 
+
+      <div class="row">
+        <div class="col-5" id="busca_funcionarios_target"> 
+        </div>
+       
+      </div>
+      
+
+      <h5 class="mt-2">Obra/Local</h5>
+
+
+      <form id="form_obra_local" style="line-height: normal; font-size:10pt">
+        {% csrf_token %}
+      
+        {% for hidden_field in form.hidden_fields %}
+        {{ hidden_field }}
+        {% endfor %}
+         
+        <div class="form-group row">
+          <div class="col-5">
+            <label for="input_obra" class=""><i class="fas fa-arrow-right"></i> Selecionar Obra:</label>
+            {% render_field form_obra.obra class="form-control" id="input_obra" name="obra" %}
+         </div>
+
+         <div class="form-group row mt-2">
+          <div class="col-5">
+            <label for="input_local" class=""><i class="fas fa-arrow-right"></i> Selecionar Local:</label>
+            {% render_field form_obra.local class="form-control" id="input_local" name="local" %}
+         </div>
+        </div> 
+
+        <div class="form-group row mt-2">
+          <div class="col-1">
+          <button type="button" class="btn btn-sm btn-success" id="bttObraLocal">Salvar</button>
+        </div>
+        </div> 
+
+      </form> 
+
+  </div>
+</div>
+
+      
+{% endblock %}
+
+{% block jquery %}
+<script src="../static/js/datatables.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function () { 
+
+  $("#input_funcionarios").on('input', function(){
+
+      $.ajax({
+        type: 'POST',
+        url: "{% url 'autocomplete-funcionarios-requisicao' %}",
+        data: {
+          'busca': $(this).val()
+        },
+        success: function (response) {
+          $('#busca_funcionarios_target').html(response);
+          
+        }
+      });
+  });
+
+
+  $("#buttonDelFuncionario").click(function () {
+                
+    $.ajax({
+        type: "POST",
+        url: "{% url 'remove-funcionario-requisicao' %}",
+        data:{
+          'id': $(this).val()
+        },
+        success: function(response)
+        {
+        location.reload(true)
+        }
+    })
+})
+
+
+$("#bttObraLocal").click(function () {
+
+  var data = $('#form_obra_local').serializeArray().reduce(function(obj, item) {
+    obj[item.name] = item.value;
+    return obj;
+  }, {});
+
+  $.ajax({
+    type: "POST",
+    url: "{% url 'add-obra-local-requisicao' %}",
+    data:{
+      'dados_form': data
+    },
+    success: function(response)
+    {
+    //location.reload(true)
+    }
+})
+})
+
+
+
+});
+
+</script>
+
+{% endblock%}
+
