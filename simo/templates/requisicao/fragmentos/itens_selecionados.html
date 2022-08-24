@@ -1,6 +1,6 @@
 <div class="col-12" style="border-color: #093637;" id="itens_selecionados_lista">
     Itens Adicionados: 
-    <table class="table table-sm table-bordered table-striped">
+    <table class="table table-sm table-bordered table-striped ">
         <thead class="text-white text-center" style="background: #0d6efd">
             <tr style="line-height: 12px;white-space: nowrap; font-size:10pt">
 
@@ -10,16 +10,18 @@
                 <th scope="col" style="text-align: left;">Marca</th>
                 <th scope="col">Categoria</th>
                 <th scope="col">Unidade</th>
-                <th scope="col">Quantidade</th>
+                <th scope="col">Qtd no Estoque</th>
+                <th scope="col">Qnt Retirada</th>
 
 
             </tr>
         </thead>
         <tbody>
+            {% if list_in_cache %}
             {% for item in list_in_cache %}
             <tr style="line-height: normal; font-size:9pt">
                 <td> 
-                    <button style="font-size:9pt; color:red;border:none!important;" hx-post="{% url 'excluir-item-lista-selecionada' item.item.pk %}" hx-trigger="click" hx-swap="innerHTML" hx-target="#itens_selecionados_lista" type="button" title="Excluir Item Selecionado" class="buttonDel">
+                    <button style="font-size:9pt; color:red;border:none!important;background:none!important;" hx-post="{% url 'excluir-item-lista-selecionada' item.item.pk %}" hx-trigger="click" hx-swap="innerHTML" hx-target="#itens_selecionados_lista" type="button" title="Excluir Item Selecionado" class="buttonDel">
                       <span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span>
                     </button>
                 </td>
@@ -38,9 +40,19 @@
                 <td>-</td>
                 {% endif %}
                 <td>{{item.item.unid_medida}}</td>
-                <td><input type="number" value="0"></td>
+                <td>{{item.quantidade}}</td>
+                <td>
+                    <input class="{{typeError}}" type="number" name="qnt{{item.pk}}" value="0" hx-post="{% url 'requisicao-verificar-qnt' item.pk %}" hx-trigger="keyup" hx-swap="innerHTML" hx-target="#qntError{{item.pk}}">
+                    <div id="qntError{{item.pk}}"></div>
+                </td>
             </tr>
             {% endfor %}
+            {% else %}
+            <tr style="line-height: normal; font-size:9pt">
+                <td colspan="7" style="color:gray;background:none!important;">Nenhum Item Adicionado!</td>
+            </tr>
+            {% endif %}
+          
         </tbody>
     </table>
 </div>

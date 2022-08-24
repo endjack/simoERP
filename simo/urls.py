@@ -142,6 +142,7 @@ htmlx_urlpatterns = [
     path('requisicao/add-local', requisicao_add_local, name='requisicao-add-local'),                 
     path('requisicao/add-itens-selecionados/<pk>', requisicao_add_itens_selecionados, name='requisicao-add-itens-selecionados'),                 
     path('requisicao/excluir-itens-selecionados/<pk>', requisicao_excluir_item_lista_selecionada, name='excluir-item-lista-selecionada'),                 
+    path('requisicao/verificar-qnt/<pk>', requisicao_verificar_qnt, name='requisicao-verificar-qnt'),                 
     path('estoque/busca-varios', estoque_busca_varios, name='buscar-estoque-varios'),
     
     #utils

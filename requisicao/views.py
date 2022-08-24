@@ -1,3 +1,4 @@
+from multiprocessing import context
 from time import sleep
 from django.views.generic.list import ListView
 from estoque.filters import EstoqueFilter
@@ -87,7 +88,6 @@ def requisicao_add_local(request):
 
   
     return render(request, template_name='requisicao/fragmentos/local_selecionado.html', context={'local': ""})
-    
        
 @csrf_exempt
 def requisicao_add_itens_selecionados(request, pk):
@@ -113,6 +113,18 @@ def requisicao_excluir_item_lista_selecionada(request, pk):
         
     return render(request, template_name='requisicao/fragmentos/itens_selecionados.html', context={'list_in_cache': cache.get('list_item_requisicao')})
 
+@csrf_exempt
+def requisicao_verificar_qnt(request, pk):
+    item = Estoque.objects.get(pk=pk)
+    input_qnt = request.POST.get('qnt'+ str(pk))
+    
+    if float(input_qnt) < 0:
+         return HttpResponse("<span style='color:red'>Somente valor positivo!</span>")
+ 
+    if item.quantidade < float(input_qnt):
+         return HttpResponse("<span style='color:red'>Quantidade maior que no Estoque!</span>")
+       
+    return HttpResponse("")
 
     
     
