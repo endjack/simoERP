@@ -124,6 +124,10 @@
       border-color: silver !important;
     }
    
+    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+      background-color: #4B8DFB;
+      color: white;
+    }
 
     </style>
     {% block styleHead %}{% endblock %}
@@ -154,9 +158,10 @@
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
               <li><a class="dropdown-item item-menu" href="{% url 'ver-estoque' %}">Ver Estoque</a></li>
               <li><a class="dropdown-item item-menu" href="{% url 'mov-estoque' %}">Movimentar Estoque</a></li>
+              <li><a class="dropdown-item item-menu" href="{% url 'gerar-requisicao' %}">Gerar Requisição</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item item-menu" href="{% url 'inserir-item' %}">Adicionar Item</a></li>
-              <li><a class="dropdown-item item-menu" href="{% url 'categorias-estoque' %}">Editar Categorias</a></li>
+              <li><a class="dropdown-item item-menu" href="{% url 'inserir-item' %}">Itens</a></li>
+              <li><a class="dropdown-item item-menu" href="{% url 'categorias-estoque' %}">Categorias</a></li>
             </ul>
           </li>
           {% endif %}
@@ -232,6 +237,7 @@
             <a class="nav-link" href="#">Link</a>
           </li> 
         -->
+        
         {% if request.user|has_group:"Administrador" %}  
           <li class="nav-item">
             <a class="nav-link titulo-menu" href="{% url 'admin:index' %}" tabindex="-1" aria-disabled="true">Admin</a>
@@ -245,6 +251,9 @@
         </ul>
 
         <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+          <li class="nav-item">
+            <a style="color:white" class="nav-link disabled" href="#">Hoje é <strong>{% now "j/F/Y" %} </strong></a>
+          </li> 
         
             {% if request.user.is_authenticated %}
             <li class="nav-item dropdown">
@@ -286,6 +295,7 @@
 
 
 <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/htmx.min.js' %}"></script>
 <script src="{% static 'js/jquery.formset.js' %}"></script>
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'js/scripts.js' %}"></script>

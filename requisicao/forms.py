@@ -4,12 +4,10 @@ from django.forms.models import inlineformset_factory
 from requisicao.models import ItemRequisicao, Requisicao
 from django.forms import ModelForm, HiddenInput, DateInput, forms
 
-class GerarRequisicaoForm(ModelForm):
-    #data = fields.DateField(input_formats=settings.DATE_INPUT_FORMATS)
+class ObraRequisicaoForm(ModelForm):
     class Meta:
         model = Requisicao
-        fields = ['obra','local','solicitante','almoxarife','data']
-        #widgets={'data': HiddenInput()}
+        fields = ['obra', 'local']
 
 class ItemRequisicaoForm(ModelForm):
     class Meta:

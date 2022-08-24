@@ -342,11 +342,9 @@ class ImprimirListaItensView(GroupRequiredMixin, LoginRequiredMixin, TemplateVie
         
         return context
 
-
-
 def autocompleteitens(request):
     query = request.GET.get('term')
-    query_set = Item.objects.filter(descricao__icontains=query) | Item.objects.filter(pk__icontains=query)
+    query_set = Item.objects.filter(descricao__icontains=query) | Item.objects.filter(pk__iexact=query)
     myList=[]
     myList += [x.descricao+' - '+x.unid_medida+' - COD: '+str(x.pk) for x in query_set]
     return JsonResponse(myList,safe=False)    
@@ -397,9 +395,7 @@ def estoque_filter(request):
 
 @csrf_exempt
 def add_filtro_varios(request):
-    
-    print("add_itens a Lista")
-    
+     
     carregar_itens = ItensSelecionados.objects.all()
     
     template_name = 'estoque/lista-itens-selecionados.html'
@@ -416,15 +412,13 @@ def add_filtro_varios(request):
             'itens_selecionados': carregar_itens.order_by('-pk')
         }
         
-        return render(request, template_name, context )
+        return render(request, template_name, context)
     else:
         return HttpResponse('Item Não Adicionado') #TODO FAZER UMA RESPOSTA EM HTML COM TABELA VAZIA
     
 @csrf_exempt
 def remover_filtro_varios(request):
-    
-    print("Remove_itens a Lista - " + request.POST.get('id'))
-    
+ 
     template_name = 'estoque/lista-itens-selecionados.html'
     
     try:
@@ -464,4 +458,11 @@ def log_item_updated(request, item, qnt, saldo, adicionado):
    
    novo_log = LogMovimentacao(usuario=usuario, item=item, quantidade=qnt, saldo=saldo, adicionado=adicionado, data_inclusao=current_time)
    novo_log.save()
+
+@csrf_exempt  
+def estoque_busca_varios(request):
+    objects = Estoque.objects.all()
+    filter_list = EstoqueFilter(request.POST, queryset = objects )
+    return render(request, template_name='estoque/fragmentos/itens_busca_varios.html', context={'filter_list': filter_list})
+
 

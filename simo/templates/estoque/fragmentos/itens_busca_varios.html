@@ -1,0 +1,79 @@
+
+<div class="texto-enfase " style=""> Resultados: </div>
+      <div class="p-2" style="border-color: #093637;">
+        <table class="table table-sm table-bordered table-striped table-hover">
+          <thead class="text-white text-center" style="background: #0d6efd">
+            <tr style="line-height: 12px;white-space: nowrap; font-size:10pt">
+
+              <th scope="col">Cód</th>
+              <th scope="col" style="text-align: left;">Item</th>
+              <th scope="col" style="text-align: left;">Marca</th>
+              <th scope="col">Quantidade</th>
+              <th scope="col">Unidade</th>
+              <th scope="col">Categoria</th>
+              <th scope="col">Peso</th>
+              <th scope="col">Selecionar</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            {% if filter_list.qs %}
+            {% for estoque in filter_list.qs %}
+            {% if estoque.quantidade %}
+            <tr style="line-height: normal; font-size:9pt">
+              {% else %}
+            <tr style="LINE-HEIGHT:normal; color:red; font-size:9pt">
+              {% endif %}
+              
+              <td>{{estoque.item.pk}}</td>
+              <td style="text-align: left; ">
+                <a style="text-decoration: none; color: inherit;" class="thumbnail"
+                  href="{% url 'detalhar-item' estoque.item.pk %}">{{estoque.item.descricao}}
+                  {% if estoque.item.imagem %}
+                  <span><img src="{{estoque.item.imagem.url}}" style="max-height:200px;max-width:240px" /></span></a>
+                {% endif %}</a>
+              </td>
+
+              {% if estoque.item.marca %}
+              <td style="text-align: left;">{{estoque.item.marca}}</td>
+              {% else %}
+              <td style="text-align: left;">-</td>
+              {% endif %}
+
+              {% if estoque.quantidade %}
+              <td>{{estoque.quantidade}}</td>
+              {% else %}
+              <td><span style="font-weight: bold;">0</span></td>
+              {% endif %}
+
+              <td>{{estoque.item.unid_medida}}</td>
+              {% if estoque.item.categoria %}
+              <td>{{estoque.item.categoria.categoria}}</td>
+              {% else %}
+              <td>-</td>
+              {% endif %}
+              <td>{{estoque.item.peso}}</td>
+              {% if estoque.quantidade > 0 %}
+              <td>
+                <div class="d-flex justify-content-center ">
+                <button class="btn btn-sm btn-success" style="font-size:9pt" hx-post="{% url 'requisicao-add-itens-selecionados' estoque.item.pk %}" hx-trigger="click" hx-swap="innerHTML" hx-target="#itens-selecionados" data-bs-dismiss="modal">Add</button>
+                </form>
+                </div>
+              </td>
+              {% else %}
+              <td>Sem Estoque</td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+              {% else %}
+              <tr style="line-height: normal; font-size:9pt">
+                <td colspan="8" style="color:gray;background:none!important;">Nenhum Item!</td>
+              </tr>
+              {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>

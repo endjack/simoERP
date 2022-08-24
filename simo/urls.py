@@ -1,3 +1,4 @@
+from simo.utils import limpar_cache
 from tarefas.views import *
 import debug_toolbar
 from recibos.views import *
@@ -48,12 +49,10 @@ urlpatterns = [
     
     #urls Requisição
     path('gerar-requisicao/', GerarRequisicaoView.as_view(), name='gerar-requisicao'),
-    path('detalhar-requisicao/', DetalharRequisicaoView.as_view(), name='detalhar-requisicao'),
-    path('listar-requisicoes/', ListarRequisicoesView.as_view(), name='listar-requisicoes'),
-    path('detalhar-itens/<pk>', DetalharItensDeRequisicaoView.as_view(), name='detalhar-itens'),
-    path('inserir-item-requisicao/<pk>', InserirRequisicaoView.as_view(), name='inserir-item-requisicao'),
-    path('buscar-requisicao/', BuscaRequisicaoView.as_view(), name='buscar-requisicao'),
-    path('gerar-pdf-requisicao/', GerarPdfRequisicao.as_view(), name='gerar-pdf-requisicao'),   
+#     path('gerar-requisicao/add-funcionario', add_funcionario_requisicao, name='add-funcionario-requisicao'),
+#     path('gerar-requisicao/remove-funcionario', remove_funcionario_requisicao, name='remove-funcionario-requisicao'),
+#     path('gerar-requisicao/add-obra-local', add_obra_local_requisicao, name='add-obra-local-requisicao'),
+ 
 
     #urls Obras
     path('inserir-obra/', InserirObraView.as_view(), name='inserir-obra'),
@@ -83,6 +82,7 @@ urlpatterns = [
 
     #auto-completes
     path('autocomplete-funcionarios/', autocompletefuncionario, name='autocomplete-funcionarios'),
+#    path('gerar-requisicao/busca_funcionarios', autocomplete_funcionarios, name='autocomplete-funcionarios-requisicao'),
     path('autocomplete-itens/', autocompleteitens, name='autocomplete-itens'),
     
     #urls Usuários 
@@ -135,6 +135,22 @@ urlpatterns = [
      path('faturamentos/imprimir', ImprimirFaturamentoView.as_view(), name='imprimir-faturamento'),
 ]
 
+htmlx_urlpatterns = [              
+    path('requisicao/requerente', requisicao_search_funcionario, name='requisicao-search-funcionario'),                 
+    path('requisicao/add-requerente/<pk>', requisicao_add_funcionario, name='requisicao-add-funcionario'),                 
+    path('requisicao/add-obra', requisicao_add_obra, name='requisicao-add-obra'),                 
+    path('requisicao/add-local', requisicao_add_local, name='requisicao-add-local'),                 
+    path('requisicao/add-itens-selecionados/<pk>', requisicao_add_itens_selecionados, name='requisicao-add-itens-selecionados'),                 
+    path('requisicao/excluir-itens-selecionados/<pk>', requisicao_excluir_item_lista_selecionada, name='excluir-item-lista-selecionada'),                 
+    path('requisicao/verificar-qnt/<pk>', requisicao_verificar_qnt, name='requisicao-verificar-qnt'),                 
+    path('estoque/busca-varios', estoque_busca_varios, name='buscar-estoque-varios'),
+    
+    #utils
+    path('hx/limpar', limpar_cache, name='limpar-cache'),                
+
+]
+
+urlpatterns += htmlx_urlpatterns
 
 
 if settings.DEBUG:
