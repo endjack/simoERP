@@ -1,0 +1,11 @@
+
+<div id="input{{item.pk}}">
+    {% if not itemTemp %}
+<input style="{{styleError}}" type="number" step="any" name="qnt{{item.pk}}" value="{% if item.quantidade %}{{item.quantidade}}{% else %}{{itemTemp.quantidade}}{% endif %}" hx-post="{% url 'requisicao-verificar-qnt' item.pk %}" hx-trigger="change" hx-target="#input{{item.pk}}" hx-swap="outerHTML">
+{% else %}
+    <input style="{{styleError}}" type="number" step="any" name="qnt{{itemTemp.pk}}" value="{{itemTemp.quantidade}}" hx-post="{% url 'requisicao-verificar-qnt' itemTemp.pk %}" hx-trigger="change" hx-target="#input{{item.pk}}" hx-swap="outerHTML">
+    {% endif %}
+<div class="">{{textError | safe}}</div>
+</div>
+
+

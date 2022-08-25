@@ -1,7 +1,7 @@
-from datetime import datetime
+from django.contrib.auth.models import User
 from funcionarios.models import Funcionario
-from django.db.models.deletion import CASCADE, SET_NULL
-from estoque.models import Item
+from django.db.models.deletion import PROTECT, SET_NULL
+from estoque.models import Estoque
 from obras.models import Local, Obra
 from django.db import models
 
@@ -9,27 +9,31 @@ from django.db import models
 
 class Requisicao(models.Model):
     obra = models.ForeignKey(Obra, on_delete=SET_NULL, null=True)
-    local = models.ForeignKey(Local, on_delete=CASCADE, null=True)
+    local = models.ForeignKey(Local, on_delete=SET_NULL, null=True)
     solicitante = models.ForeignKey(Funcionario, on_delete=SET_NULL, null=True, related_name="solicitante_req") 
-    almoxarife = models.ForeignKey(Funcionario, on_delete=SET_NULL, null=True, related_name="almoxarife_req") 
+    almoxarife = models.ForeignKey(User, on_delete=PROTECT, null=True)
     data = models.DateField(null=True)
 
     def __str__(self) -> str:
         return "Id: " + str(self.pk) +" - Solicitante: " + str(self.solicitante.nome)+ ' - Data: ' + str(self.data) 
 
 class RequisicaoTemp(models.Model):
-    obra = models.ForeignKey(Obra, on_delete=SET_NULL, null=True)
-    local = models.ForeignKey(Local, on_delete=CASCADE, null=True)
-    solicitante = models.ForeignKey(Funcionario, on_delete=SET_NULL, null=True, related_name="solicitante_req_temp") 
-    almoxarife = models.ForeignKey(Funcionario, on_delete=SET_NULL, null=True, related_name="almoxarife_req_temp") 
+    obra = models.ForeignKey(Obra, on_delete=SET_NULL, null=True, blank=True)
+    local = models.ForeignKey(Local, on_delete=SET_NULL, null=True, blank=True)
+    solicitante = models.ForeignKey(Funcionario, on_delete=SET_NULL, null=True, related_name="solicitante_req_temp", blank=True) 
+    almoxarife = models.ForeignKey(User, on_delete=PROTECT, null=True)
     data = models.DateField(null=True)
 
+
     def __str__(self) -> str:
+        if self.solicitante == None or self.data == None:
+            return "Id: " + str(self.pk) +" - Dados incomplentos"
+        
         return "Id: " + str(self.pk) +" - Solicitante: " + str(self.solicitante.nome)+ ' - Data: ' + str(self.data) 
 
 class ItemRequisicao(models.Model):
-    requisicao = models.ForeignKey(Requisicao, on_delete=CASCADE, null=True)
-    item = models.ManyToManyField(Item, blank=True)
+    requisicao = models.ForeignKey(Requisicao, on_delete=SET_NULL, null=True)
+    item = models.ForeignKey(Estoque, on_delete=SET_NULL, null=True)
     quantidade = models.FloatField(blank=True, null=True)
 
     
@@ -40,8 +44,8 @@ class ItemRequisicao(models.Model):
             return "RequisicaoID: " + str(self.requisicao.pk) +" - Item: " + str(item_req.descricao)+ ' - Qtd: ' + str(self.quantidade) 
 
 class ItemRequisicaoTemp(models.Model):
-    requisicao = models.ForeignKey(RequisicaoTemp, on_delete=CASCADE)
-    item = models.ManyToManyField(Item, blank=True)
+    requisicao = models.ForeignKey(RequisicaoTemp, on_delete=SET_NULL, null=True)
+    item = models.ForeignKey(Estoque, on_delete=SET_NULL, null=True)
     quantidade = models.FloatField(blank=True, null=True)
 
     

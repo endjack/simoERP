@@ -113,6 +113,7 @@ CACHES = {
     'default': {
         'BACKEND': config('BACKEND'),
         'LOCATION': config('LOCATION'),
+        'TIMEOUT': 3600  # 1 hora
     }
 }
 INTERNAL_IPS = [

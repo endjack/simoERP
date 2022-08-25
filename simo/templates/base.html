@@ -262,6 +262,7 @@
                     <li><a class="dropdown-item" href="#!">Configurações</a></li>
                     <li><a class="dropdown-item" href="#!">Log de Atividades</a></li>
                     <li><hr class="dropdown-divider" /></li>
+                    <li><a style="cursor:pointer;" class="dropdown-item" hx-post="{% url 'limpar-cache' %}" hx-swap="innerHTML" hx-trigger="click" hx-target="#limpou">Limpar Cache</a></li><div id="limpou"></div>
                     <li><a class="dropdown-item" href="{% url 'logout' %}">Sair</a></li>
                 </ul>
             </li>
