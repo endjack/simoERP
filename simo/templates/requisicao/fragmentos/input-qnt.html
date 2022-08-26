@@ -1,0 +1,7 @@
+{% load my_tags%}
+
+<div class="btt-disabled-qnd-salvar" id="input{{item.pk}}">
+    <input  style="{% if inpERROR %} color:red;border: 1px solid red;{% else %} color:green;border: 1px solid green; {% endif %}" type="number" step="any" name="qnt{{item.pk}}" value="{{item.quantidade | replace_input_dot}}" hx-post="../requisicao/verificar-qnt/{{item.pk}}" hx-trigger="change" hx-target="#input{{item.pk}}" hx-swap="outerHTML">
+<div style="{% if inpERROR %} color:red;{% else %} color:green; {% endif %}">{{textError | safe}}</div>
+</div>
+

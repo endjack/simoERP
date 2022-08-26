@@ -1,0 +1,7 @@
+{% if reqERROR %}
+<span style="color:red">{{reqERROR}}</span>
+{% else %}
+<span style="color:green"><i class="fas fa-check"></i></span></h6>
+<a href="{% url 'imprimir-requisicao' req.id %}" target="_blank" class="btn btn-sm btn-dark" >Imprimir</a>
+
+{% endif %}

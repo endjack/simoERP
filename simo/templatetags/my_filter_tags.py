@@ -24,7 +24,22 @@ def replace_dot(value):
     text = str(value)
     return text.replace(".","")
 
+@register.filter(name="replace_input_dot")
+def replace__input_dot(value):
+    text = str(value)
+    return text.replace(",",".")
 
+@register.filter(name="replace")
+def replace(value, arg):
+    """
+    Replacing filter
+    Use `{{ "aaa"|replace:"a|b" }}`
+    """
+    if len(arg.split('|')) != 2:
+        return value
+
+    what, to = arg.split('|')
+    return value.replace(what, to)
 
 
     

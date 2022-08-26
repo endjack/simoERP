@@ -262,6 +262,7 @@
                     <li><a class="dropdown-item" href="#!">Configurações</a></li>
                     <li><a class="dropdown-item" href="#!">Log de Atividades</a></li>
                     <li><hr class="dropdown-divider" /></li>
+                    <li><a style="cursor:pointer;" class="dropdown-item" hx-post="{% url 'limpar-cache' %}" hx-swap="innerHTML" hx-trigger="click" hx-target="#limpou">Limpar Cache</a></li><div id="limpou"></div>
                     <li><a class="dropdown-item" href="{% url 'logout' %}">Sair</a></li>
                 </ul>
             </li>
@@ -296,6 +297,7 @@
 
 <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
 <script src="{% static 'js/htmx.min.js' %}"></script>
+<script src="{% static 'js/_hyperscript.min.js' %}"></script>
 <script src="{% static 'js/jquery.formset.js' %}"></script>
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'js/scripts.js' %}"></script>

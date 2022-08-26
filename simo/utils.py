@@ -8,4 +8,4 @@ from django.shortcuts import render
 def limpar_cache(request):  
     cache.clear()
     print("------------> CACHE LIMPO <-------------")
-    return render(request, template_name='requisicao/fragmentos/itens_selecionados.html')
+    return HttpResponse()
