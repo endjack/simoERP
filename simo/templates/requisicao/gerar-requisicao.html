@@ -14,6 +14,7 @@
         background-color: #0066FF !important;
         color: white !important;
     }
+
 </style>
 {% endblock %}
 
@@ -34,7 +35,7 @@
 {% block conteudo %}
 
 
-<ul class="nav nav-tabs" id="myTab">
+<ul class="nav nav-tabs mb-2" id="myTab">
     <li class="nav-item">
         <a href="#filtro-um" class="nav-link active" data-bs-toggle="tab">Criar Requisição </a>
     </li>
@@ -123,11 +124,11 @@
 
             <div class="row mt-3">
                 <div class="col-3">
-                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                    <button type="button" class="btn btn-sm btn-primary btt-disabled-qnd-salvar" data-bs-toggle="modal"
                         data-bs-target="#exampleModal">
                         Adicionar Itens
                     </button>
-                    <button type="button" class="btn btn-sm btn-secondary" hx-swap="innerHTML"
+                    <button type="button" class="btn btn-sm btn-secondary btt-disabled-qnd-salvar" hx-swap="innerHTML"
                         hx-post="{% url 'limpar-itens' %}" hx-trigger="click" hx-target="#itens-selecionados">
                         Limpar Itens
                     </button>
@@ -211,14 +212,21 @@
                     </div>
                 </div>
 
-                <div class="row" id="criar-requisicao">
-                    <div class="">
-                    <button type="button" class="btn btn-sm btn-success" hx-post="{% url 'salvar-requisicao' %}"
-                        hx-trigger="click" hx-target="#resposta-requisicao" hx-swap="innerHTML">Salvar</button>
-                        <span class="m-1" id="resposta-requisicao"></span>
+                <div class="d-flex flex-row justify-content-end " id="criar-requisicao">
+                    <div class="m-1">
+                        <a class="btn btn-sm btn-secondary" href="{% url 'limpar-tudo-requisicao' %}">Limpar Tudo</a>
                     </div>
+                    
+                    <div class="m-1">
+                    <button _="on reqCriado add .disabled to .btt-disabled-qnd-salvar"
+                        type="button" class="btn btn-sm btn-success btt-disabled-qnd-salvar" hx-post="{% url 'salvar-requisicao' %}"
+                        hx-trigger="click" hx-target="#resposta-requisicao" hx-swap="innerHTML">Salvar Requisição</button></div>
 
-                </div>
+                        <div class="m-1" id="resposta-requisicao">
+                            {% comment %} {% include 'requisicao/fragmentos/status-requisicao.html' %} {% endcomment %}
+                        </div>
+                    
+                </div>   
             </div>
         </div>
     </div>
@@ -233,12 +241,6 @@
         $('#modalItens').on('hidden.bs.modal', function () {
             $(this).find('form').trigger('reset');
         })
-
-
-
-
-
-
 
 
     });

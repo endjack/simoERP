@@ -12,7 +12,7 @@ class Requisicao(models.Model):
     local = models.ForeignKey(Local, on_delete=SET_NULL, null=True)
     solicitante = models.ForeignKey(Funcionario, on_delete=SET_NULL, null=True, related_name="solicitante_req") 
     almoxarife = models.ForeignKey(User, on_delete=PROTECT, null=True)
-    data = models.DateField(null=True)
+    data = models.DateTimeField (null=True)
 
     def __str__(self) -> str:
         return "Id: " + str(self.pk) +" - Solicitante: " + str(self.solicitante.nome)+ ' - Data: ' + str(self.data) 
@@ -22,7 +22,7 @@ class RequisicaoTemp(models.Model):
     local = models.ForeignKey(Local, on_delete=SET_NULL, null=True, blank=True)
     solicitante = models.ForeignKey(Funcionario, on_delete=SET_NULL, null=True, related_name="solicitante_req_temp", blank=True) 
     almoxarife = models.ForeignKey(User, on_delete=PROTECT, null=True)
-    data = models.DateField(null=True)
+    data = models.DateTimeField (null=True)
 
 
     def __str__(self) -> str:
@@ -39,9 +39,8 @@ class ItemRequisicao(models.Model):
     
     def __str__(self) -> str:
         #Referenciando um ManyToMany no __str__
-        item_req = self.item.all().first()
-        if item_req:
-            return "RequisicaoID: " + str(self.requisicao.pk) +" - Item: " + str(item_req.descricao)+ ' - Qtd: ' + str(self.quantidade) 
+        #item_req = self.item.all().first()
+        return "ItemRequisicaoID: " + str(self.pk) +" - RequisicaoID: " + str(self.requisicao.pk) +" - Item: " + str(self.item.item.descricao)+ ' - Qtd: ' + str(self.quantidade) 
 
 class ItemRequisicaoTemp(models.Model):
     requisicao = models.ForeignKey(RequisicaoTemp, on_delete=SET_NULL, null=True)
@@ -50,7 +49,4 @@ class ItemRequisicaoTemp(models.Model):
 
     
     def __str__(self) -> str:
-        #Referenciando um ManyToMany no __str__
-        item_req = self.item.all().first()
-        if item_req:
-            return "RequisicaoID: " + str(self.requisicao.pk) +" - Item: " + str(item_req.descricao)+ ' - Qtd: ' + str(self.quantidade) 
+            return "ItemRequisicaoID: " + str(self.pk) +" - RequisicaoID: " + str(self.requisicao.pk) +" - Item: " + str(self.item.item.descricao)+ ' - Qtd: ' + str(self.quantidade) 
