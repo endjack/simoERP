@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('faturamento', '0019_alter_faturamento_data_inclusao'),
+        ('servicos', '0027_auto_20220826_1418'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='faturamento',
-            name='data_inclusao',
+            model_name='ordemservico',
+            name='data',
+            field=models.DateField(blank=True, default='29/08/2022', null=True),
+        ),
+        migrations.AlterField(
+            model_name='servico',
+            name='data_inicio',
             field=models.DateField(blank=True, default='29/08/2022', null=True),
         ),
     ]
