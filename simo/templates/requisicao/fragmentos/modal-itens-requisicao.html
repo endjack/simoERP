@@ -1,0 +1,89 @@
+{% block styleHead %}
+<style>
+td {
+    width: auto;
+}
+
+td.min {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.centralizar {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.wrapper {
+min-width: 10em; /* Will be AT LEAST 20em wide */
+}
+</style>
+{% endblock %}
+
+
+
+<div id="modal-backdrop" class="modal-backdrop fade show"></div>
+<div id="modal" class="modal fade show" tabindex="-1" style="display:block;">
+	 <div class="modal-dialog modal-dialog-scrollable modal-lg"> {% comment %}  TIPO DE MODAL  {% endcomment %}
+	  <div class="modal-content">
+		<div style="padding:20px 20px;">
+   
+        <h5 class="modal-title" id="exampleModalLabel">Itens Requisição nº {{req.pk}}</h5>
+        <p> Solicitante: {{req.solicitante.nome}}<br>
+         Data: {{req.data | date:"d/m/y"}}</p>
+      
+
+		</div>
+		<div style="" class=" modal-body">
+
+
+
+            <span style="font-size:10pt">Itens:</span>
+            <table class="table table-sm table-bordered table-striped" style="font-size:13px;">
+              <thead style="border-color:silver;background: #0d6efd; color: white;">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Cód</th>
+                        <th scope="col">Descricao</th>
+                        <th scope="col">Quantidade</th>
+                        <th scope="col">Unid</th>
+                        <th scope="col">Obs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in itens%}
+                    <tr>
+                        <td class="centralizar min">{{forloop.counter}}</td>
+                        <td class="centralizar min">{{item.item.item.pk}}</td>
+                        {% if item.item.item.descricao %} <td class="min">{{item.item.item.descricao}}</td>{%else%}<td>-</td>{%endif%}
+                        {% if item.quantidade > 0 %} <td class="centralizar min">{{item.quantidade}}</td>{%else%}<td style="color:red">0</td>{%endif%}
+                        <td class="min"> {{item.item.item.unid_medida}}</td>
+                        <td class="centralizar"> {{Obs}}</td>       
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+          
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+		</div>
+	  </div>
+	</div>
+  </div>
+
+  <script>
+    function closeModal() {
+      var container = document.getElementById("modals-here")
+      var backdrop = document.getElementById("modal-backdrop")
+      var modal = document.getElementById("modal")
+    
+      modal.classList.remove("show")
+      backdrop.classList.remove("show")
+    
+      setTimeout(function() {
+        container.removeChild(backdrop)
+        container.removeChild(modal)
+      }, 200)
+    }
+  </script>

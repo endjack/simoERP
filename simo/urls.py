@@ -50,10 +50,9 @@ urlpatterns = [
     #urls Requisição
     path('gerar-requisicao/', GerarRequisicaoView.as_view(), name='gerar-requisicao'),
     path('imprimir-requisicao/<int:pk>', imprimir_requisicao, name='imprimir-requisicao'),
-#     path('gerar-requisicao/add-funcionario', add_funcionario_requisicao, name='add-funcionario-requisicao'),
-#     path('gerar-requisicao/remove-funcionario', remove_funcionario_requisicao, name='remove-funcionario-requisicao'),
-#     path('gerar-requisicao/add-obra-local', add_obra_local_requisicao, name='add-obra-local-requisicao'),
- 
+    path('requisicoes/geradas', ver_requisicoes, name='ver-requisicoes'),
+    path('requisicoes/itens-requisicao/<int:pk>', ver_itens_requisicao, name='ver-itens-requisicao'),
+
 
     #urls Obras
     path('inserir-obra/', InserirObraView.as_view(), name='inserir-obra'),
@@ -136,18 +135,22 @@ urlpatterns = [
      path('faturamentos/imprimir', ImprimirFaturamentoView.as_view(), name='imprimir-faturamento'),
 ]
 
-htmlx_urlpatterns = [              
+htmlx_urlpatterns = [     
+    #REQUISIÇÕES         
     path('requisicao/requerente', requisicao_search_funcionario, name='requisicao-search-funcionario'),                 
     path('requisicao/add-requerente/<pk>', requisicao_add_funcionario, name='requisicao-add-funcionario'),                 
     path('requisicao/add-obra', requisicao_add_obra, name='requisicao-add-obra'),                 
     path('requisicao/add-local', requisicao_add_local, name='requisicao-add-local'),                 
     path('requisicao/add-itens-selecionados/<pk>', requisicao_add_itens_selecionados, name='requisicao-add-itens-selecionados'),                 
     path('requisicao/excluir-itens-selecionados/<pk>', requisicao_excluir_item_lista_selecionada, name='excluir-item-lista-selecionada'),                 
+    path('hx/limpar-itens_lista', limpar_itens_lista, name='limpar-lista-itens'),                 
     path('hx/limpar-itens_selecionados', limpar_itens_selecionados, name='limpar-itens'),                 
     path('hx/limpar-tudo-requisicao', limpar_tudo_requisicao, name='limpar-tudo-requisicao'),                 
     path('requisicao/verificar-qnt/<int:pk>', requisicao_verificar_qnt, name='requisicao-verificar-qnt'),                 
     path('requisicao/salvar', requisicao_salvar, name='salvar-requisicao'),                 
     path('estoque/busca-varios', estoque_busca_varios, name='buscar-estoque-varios'),
+    path('requisicao/buscar', buscar_requisicoes, name='buscar-requisicoes'),
+    path('requisicao/excluir/<int:pk>', excluir_requisicoes, name='excluir-requisicao'),
     
     #utils
     path('hx/limpar', limpar_cache, name='limpar-cache'),                

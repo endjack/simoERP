@@ -1,0 +1,60 @@
+<div style="font-size:10pt">
+    Resultados:
+    <table class="table table-sm table-bordered table-striped" style="font-size:13px;">
+    <thead style="border-color:silver;background: #0d6efd; color: white;">
+        <tr>
+            
+            <th class="text-center" scope="col">Cód</th>
+            <th class="text-center" scope="col">Data</th>
+            <th class="text-center" scope="col">Solicitante</th>
+            <th class="text-center" scope="col">Cargo</th>
+            <th class="text-center" scope="col">Liberado por</th>
+            <th class="text-center" scope="col">Ver Itens</th>
+            <th class="text-center" scope="col">Opções</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        {% comment %} {% firstof filter_list as filter %} {% endcomment %}
+            {% for item in filter_list.qs %}
+        <tr>
+                <td>{{item.pk}}</td>
+                <td>{{item.data}}</td>
+                <td class="" title="{{item.solicitante.nome}}">{{item.solicitante.nome}}</td>
+                <td class="" title="{{item.solicitante.cargo}}">{{item.solicitante.cargo}}</td>
+                <td class="" title="{{item.almoxarife.username}}">{{item.almoxarife.username}}</td>
+                <td class="" title="{{item.almoxarife.username}}">
+                    <a href="{% url 'ver-itens-requisicao' item.pk %}" title="Ver Itens"
+                    hx-get="{% url 'ver-itens-requisicao' item.pk %}" 
+	                hx-target="#modals-here" 
+	                hx-trigger="click"
+	                _="on htmx:afterOnLoad wait 10ms then add .show to #modal then add .show to #modal-backdrop"><span style="color: green;"><i class="fas fa-dolly-flatbed"></i></span></a> &nbsp;
+   
+                </td>
+                <td style="text-align: center;">
+                  
+                    
+                    {% comment %} <a href="#" title="Editar Requisicao"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a>&nbsp;  {% endcomment %}
+                    <a href="{% url 'imprimir-requisicao' item.pk %}"  target="_blank" title="Imprimir Requisicão"><span style="color: black;"><i class="fas fa-print fa-lg"></i></span></a>            
+                    <button  title="Excluir Requisicão" style="border-style:none" hx-trigger="click" hx-post="{% url 'excluir-requisicao' item.pk %}"
+                        hx-target='#tableRequisicoes'
+                        hx-confirm="Tem certerza que quer EXCLUIR a Requisição nº {{item.pk}}?">
+                       
+                    <span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span>
+                    </button> 
+                   
+                </td>
+        </tr>
+        {% empty %}
+             
+        <tr>
+            <td style="text-align: center; color: gray;" colspan="7">Nenhuma Requisição.</td>
+        </tr>
+  
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<div id="modals-here"></div>   
+

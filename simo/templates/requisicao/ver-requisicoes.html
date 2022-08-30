@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block styleHead %}
+<link href="{% static 'css/image_preview.css' %}" rel="stylesheet">
+<style>
+    .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .highlight-cell {
+        background-color: #0066FF !important;
+        color: white !important;
+    }
+
+</style>
+{% endblock %}
+
+
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="../ver-requisicoes">Requisições</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Gerar Requisição</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block conteudo %}
+
+
+<ul class="nav nav-tabs mb-2" id="myTab">
+    <li class="nav-item">
+        <a href="{% url 'gerar-requisicao' %}" class="nav-link" >Criar Requisição </a>
+    </li>
+    <li class="nav-item">
+        <a id="tab-varios" href="#filtro-um" class="nav-link active" data-bs-toggle="tab">Ver Requisições</a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane fade show active" id="filtro-um">
+
+        <form id="form_filtro" style="line-height: normal; font-size:10pt" hx-trigger="submit" hx-get="{% url 'buscar-requisicoes' %}" hx-target="#tableRequisicoes" hx-swap="innerHTML">
+            {% csrf_token %}
+      
+            {% for hidden_field in form.hidden_fields %}
+            {{ hidden_field }}
+            {% endfor %}
+      
+      
+            <div class="form-group row mb-2 ">
+              <div class="col-2">
+                <div class="col-12 ">
+                  <label for="inputData" class="">Data:</label>
+                  {% render_field filter.form.data class="form-control date" id="inputData" name="data" %}
+                </div>
+      
+              </div>
+              <div class="col-3">
+                <div class="col-12">
+                  <label for="inputSolicitante" class="">Solicitante:</label>
+                  {% render_field filter.form.solicitante class="form-control" id="inputSolicitante" name="solicitante"%}
+                </div>
+              </div>
+      
+              <div class="col-2">
+                <div class="col-12">
+                  <label for="inputLocal" class="">Local:</label>
+                  {% render_field filter.form.local  class="form-control" id="inputLocal" name="local"%}
+                </div>
+              </div>
+        
+              <input type="hidden" id="filteringId" name="filterStatus" value="1">
+      
+              <div class="col-2 d-flex align-items-end">
+                <input form="form_filtro" class="btn btn-sm btn-primary m-2" type="submit" value="Filtrar"/>
+                <a class="btn btn-sm btn-light m-2" href="{% url 'ver-requisicoes' %}">Limpar</a>
+              </div>
+              <span class="help-block">*Para ver todos as requisicoes: filtrar com os campos vazios.</span>
+            </div>
+      
+          </form>
+
+          <div class="mt-2 fade-me-out" id="tableRequisicoes">
+            {% include "requisicao/fragmentos/lista-requisicoes.html" %}
+          </div>
+
+
+     
+    </div>
+</div>
+{% endblock %}
+
+{% block jquery %}
+
+<script type="text/javascript">
+
+      //DatePicker
+      $(".date").datepicker({
+        format: "dd/mm/yyyy",
+        todayHighlight: true,
+        language: "pt-BR",
+      
+    }).datepicker("setDate", "0");; //Valor inicial HOJE
+  
+</script>
+
+{% endblock%}

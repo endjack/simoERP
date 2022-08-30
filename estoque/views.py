@@ -461,8 +461,14 @@ def log_item_updated(request, item, qnt, saldo, adicionado):
 
 @csrf_exempt  
 def estoque_busca_varios(request):
-    objects = Estoque.objects.all()
-    filter_list = EstoqueFilter(request.POST, queryset = objects )
+    if request.POST.get("descricao") == "":
+        return render(request, template_name='estoque/fragmentos/itens_busca_varios.html', context={'error': 'Campos Vazios'})
+    else:
+        objects = Estoque.objects.all()
+        filter_list = EstoqueFilter(request.POST, queryset = objects )
+    
     return render(request, template_name='estoque/fragmentos/itens_busca_varios.html', context={'filter_list': filter_list})
 
-
+@csrf_exempt 
+def limpar_itens_lista(request): 
+    return render(request, template_name='estoque/fragmentos/itens_busca_varios.html', context={'filter_list': ''})
