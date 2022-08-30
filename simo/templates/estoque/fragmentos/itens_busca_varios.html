@@ -66,8 +66,15 @@
             </tr>
             {% endfor %}
               {% else %}
-              <tr style="line-height: normal; font-size:9pt">
-                <td colspan="8" style="color:gray;background:none!important;">Nenhum Item!</td>
+              
+              <tr style="line-height: normal; ">
+                {% if error %}
+                <td colspan="8" style="font-size:16pt; color:red;background:none!important;">{{error}}</td>
+                  {% else %}
+                  <td colspan="8" style="font-size:16pt;color:gray;background:none!important;">Nenhum Item!</td>
+                {% endif %}
+
+              
               </tr>
               {% endif %}
           </tbody>

@@ -10,7 +10,7 @@ FASE = (
 
 class Faturamento(models.Model):
     obra = models.ForeignKey(Obra, on_delete=models.SET_NULL, null=True, blank=True)
-    data_inclusao = models.DateField(null=True, blank=True, default=datetime.now().strftime("%d/%m/%Y"))
+    data_inclusao = models.DateField(null=True, blank=True)
     num_medicao = models.IntegerField(blank=True, null=True)
     num_notafiscal = models.IntegerField(blank=True, null=True)
     protocolo = models.CharField(max_length=50, blank=True, null=True)

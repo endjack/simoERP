@@ -15,6 +15,15 @@
         color: white !important;
     }
 
+    .my-indicator{
+        display:none;
+    }
+    .htmx-request .my-indicator{
+        display:inline;
+    }
+    .htmx-request.my-indicator{
+        display:inline;
+    }
 </style>
 {% endblock %}
 
@@ -34,13 +43,12 @@
 
 {% block conteudo %}
 
-
 <ul class="nav nav-tabs mb-2" id="myTab">
     <li class="nav-item">
         <a href="#filtro-um" class="nav-link active" data-bs-toggle="tab">Criar Requisição </a>
     </li>
     <li class="nav-item">
-        <a id="tab-varios" href="#" class="nav-link">Ver Requisições</a>
+        <a id="tab-varios" href="{% url 'ver-requisicoes' %}" class="nav-link">Ver Requisições</a>
     </li>
 </ul>
 <div class="tab-content">
@@ -120,7 +128,8 @@
 
                 </form>
             </div>
-
+        
+        </div>
 
             <div class="row mt-3">
                 <div class="col-3">
@@ -133,15 +142,18 @@
                         Limpar Itens
                     </button>
                 </div>
-
-                <div class="row mt-2" id="itens-selecionados">
-                    {% include "requisicao/fragmentos/itens_selecionados.html" %}
+            </div>
+                
+            <div class="row">
+                <div class="mt-2 col-12" id="itens-selecionados">
+                        {% include "requisicao/fragmentos/itens_selecionados.html" %}
                 </div>
+            </div>
 
                 <!-- Modal -->
                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">
-                    <div class="modal-dialog modal-xl">
+                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header" id="modalItens">
                                 <h5 class="modal-title" id="exampleModalLabel">Filtrar Itens no Estoque</h5>
@@ -152,7 +164,9 @@
                                 <div class="">
                                     <form id="form_filtro" style="line-height: normal; font-size:10pt"
                                         hx-trigger="submit" hx-post="{% url 'buscar-estoque-varios' %}"
-                                        hx-swap="innerHTML" hx-target="#resultados">
+                                        hx-swap="innerHTML" hx-target="#resultados" hx-indicator="#spinner">
+
+                                        
 
                                         {% for hidden_field in form.hidden_fields %}
                                         {{ hidden_field }}
@@ -191,17 +205,22 @@
                                             <input type="hidden" id="filteringId" name="filterStatus" value="1">
 
                                             <div class="col-2 d-flex align-items-end">
-                                                <input form="form_filtro" class="btn btn-sm btn-primary m-2"
-                                                    type="submit" value="Filtrar" />
-                                                <button class="btn btn-sm btn-light m-2" id="bttLimpar">Limpar</button>
+                                                <div>
+                                                <button form="form_filtro" class="btn btn-sm btn-primary m-2" type="submit"> Filtrar                                                
+                                                 </button>
+                                                 
+                                                </div>
+                                                <button class="btn btn-sm btn-light m-2" id="bttLimpar" hx-swap="innerHTML"
+                                                hx-post="{% url 'limpar-lista-itens' %}" hx-trigger="click" hx-target="#resultados">Limpar</button>
                                             </div>
-                                            <span class="help-block">*Para ver todos os itens do estoque: filtrar
-                                                com os campos
-                                                vazios.</span>
+                                            <span class="help-block">*Preencha pelo menos 1 dos campos para filtrar.</span>
                                         </div>
                                     </form>
-                                    <div id="resultados">
-                                        {% include "estoque/fragmentos/itens_busca_varios.html" %}
+                                    
+                                    <div id="resultados" class="">
+                                        <div class="d-flex justify-content-center">
+                                            <img id="spinner" class="htmx-indicator" width="30px" height="30px" src="{% static 'imagens/bars.svg' %}"/>
+                                        </div> 
                                     </div>
                                 </div>
                             </div>
@@ -216,17 +235,18 @@
                     <div class="m-1">
                         <a class="btn btn-sm btn-secondary" href="{% url 'limpar-tudo-requisicao' %}">Limpar Tudo</a>
                     </div>
-                    
-                    <div class="m-1">
-                    <button _="on reqCriado add .disabled to .btt-disabled-qnd-salvar"
-                        type="button" class="btn btn-sm btn-success btt-disabled-qnd-salvar" hx-post="{% url 'salvar-requisicao' %}"
-                        hx-trigger="click" hx-target="#resposta-requisicao" hx-swap="innerHTML">Salvar Requisição</button></div>
 
-                        <div class="m-1" id="resposta-requisicao">
-                            {% comment %} {% include 'requisicao/fragmentos/status-requisicao.html' %} {% endcomment %}
-                        </div>
-                    
-                </div>   
+                    <div class="m-1">
+                        <button _="on reqCriado add .disabled to .btt-disabled-qnd-salvar" type="button"
+                            class="btn btn-sm btn-success btt-disabled-qnd-salvar"
+                            hx-post="{% url 'salvar-requisicao' %}" hx-trigger="click" hx-target="#resposta-requisicao"
+                            hx-swap="innerHTML">Salvar Requisição</button></div>
+
+                    <div class="m-1" id="resposta-requisicao">
+                        {% comment %} {% include 'requisicao/fragmentos/status-requisicao.html' %} {% endcomment %}
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>

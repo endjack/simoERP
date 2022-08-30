@@ -2,6 +2,7 @@ from estoque.filters import EstoqueFilter
 from estoque.models import *
 from simo.utils import limpar_cache
 from .models import *
+from .filters import *
 from requisicao.forms import ObraRequisicaoForm
 from django.urls.base import reverse_lazy
 from requisicao.models import ItemRequisicao, Requisicao
@@ -34,6 +35,55 @@ class GerarRequisicaoView(LoginRequiredMixin, TemplateView):
     
         print_requisicao_temp()
         return context
+    
+@csrf_exempt
+def ver_requisicoes(request):
+    filter = RequisicaoFilter()
+    reqs = Requisicao.objects.all()
+    
+    context = {
+        'reqs': reqs,
+        'filter': filter,
+    }
+    return render(request, template_name='requisicao/ver-requisicoes.html', context=context)
+
+@csrf_exempt
+def ver_itens_requisicao(request,pk):
+    req = Requisicao.objects.get(pk=pk)
+    itens = ItemRequisicao.objects.filter(requisicao__pk = pk)
+    
+    context = {
+        'itens': itens,
+        'req': req,
+    }
+    return render(request, template_name='requisicao/fragmentos/modal-itens-requisicao.html', context=context)
+
+
+
+@csrf_exempt
+def buscar_requisicoes(request):
+    reqs = Requisicao.objects.all()
+    filter_list = RequisicaoFilter(request.GET, reqs) 
+    
+    
+    context = {
+        'filter_list': filter_list,
+    }
+    return render(request, template_name='requisicao/fragmentos/lista-requisicoes.html', context=context)
+
+
+@csrf_exempt
+def excluir_requisicoes(request, pk):
+    Requisicao.objects.filter(pk=pk).delete()
+    reqs = Requisicao.objects.all()
+    filter_list = RequisicaoFilter(request.GET, reqs) 
+   
+    
+    print(filter_list)
+    context = {
+        'filter_list': filter_list,
+    }
+    return render(request, template_name='requisicao/fragmentos/lista-requisicoes.html', context=context)
 
 def get_requisicao_temp():
     requisicao_pk = cache.get('requisicao_cache')
@@ -281,6 +331,8 @@ def limpar_itens_selecionados(request):
     req = get_requisicao_temp()
     ItemRequisicaoTemp.objects.filter(requisicao = req).delete()
     return render(request, template_name='requisicao/fragmentos/itens_selecionados.html')
+
+
        
 @csrf_exempt 
 def limpar_tudo_requisicao(request): 
