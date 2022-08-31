@@ -6,4 +6,4 @@ class TarefasForm(forms.ModelForm):
     class Meta:
         model = Tarefa
         fields = '__all__'
-        exclude = ['usuario','data_conclusao','data_inclusao','feito']
+        exclude = ['usuario',]
