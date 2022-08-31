@@ -6,27 +6,20 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>SISTEMA ERP - BRASIL CONSTRUÇÃO</title>  
+  
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
-
-    <!-- CSS PARA O AUTOCOMPLETE IMPUTS -->
+    <!-- AUTOCOMPLETE IMPUTS -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <!-- CSS PARA O DATAPICKERS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
-    rel="stylesheet" />
-
-   <title>SISTEMA ERP - BRASIL CONSTRUÇÃO</title>  
-    
-    <!-- MDB -->
-     
+    <!-- DATAPICKERS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"  rel="stylesheet" >
+     <!-- TIMEPICKERS -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
     <!-- DATATABLES -->
-    <link
-      href="{% static 'css/datatables.min.css' %}"
-      rel="stylesheet"
-    />
+    <link href="{% static 'css/datatables.min.css' %}"  rel="stylesheet">
+    
     {% comment %} <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> {% endcomment %}
-
-    <title></title>
 
     <style>
     .glyphicon { margin-right:10px; }
@@ -133,6 +126,7 @@
     {% block styleHead %}{% endblock %}
 
 </head>
+
 <body class='sb-nav-fixed'>
 <!-- NavBar -->
 <nav class="navbar navbar-expand-lg bg-light" style="background: linear-gradient(to right, #0052D4, #0d6efd);z-index:6;">
@@ -304,6 +298,7 @@
 <script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
 <script src="{% static 'js/bootstrap-datepicker.pt-BR.min.js' %}"></script>
 <script src="https://kit.fontawesome.com/cafa0f6d95.js" crossorigin="anonymous"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
 
 <!-- MDB 
 <script  type="text/javascript"  src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.5.0/mdb.min.js"></script>-->

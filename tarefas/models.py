@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.deletion import CASCADE, PROTECT
+from django.db.models.deletion import PROTECT
 
 CORES = (
         ("#ffffff", "Branco"),("#ffebcd", "Creme" ),("#87cefa", "Azul Claro" ),
@@ -8,7 +8,8 @@ CORES = (
     )
 
 class Tarefa(models.Model):
-    titulo = models.CharField(max_length=255, null=True)
+    titulo = models.CharField(max_length=100, null=True)
+    descricao = models.CharField(max_length=255, null=True)
     cor = models.CharField(max_length=30, choices=CORES, default='#ffffff', blank=True)
     data_inclusao = models.DateTimeField(null=True, blank=True)
     data_conclusao = models.DateTimeField(null=True, blank=True)

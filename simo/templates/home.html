@@ -1,135 +1,35 @@
 {% extends "base.html" %}
 {% load widget_tweaks %}
+{% load static %}
+
+{% block styleHead %}
+{% endblock %}
 
 {% block conteudo %}
-
-Bem-vindo <strong>{% firstof request.user.get_full_name request.user.username %}</strong>
-<hr><br>
-{% comment %} Hoje é <strong>{% now "j/F/Y" %} </strong> {% endcomment %}
-
-<br>
-<br>
-
-<div class="col-6 mt-3">
-
-    <form method="post" autocomplete="off" action="" data-url="{% url 'dashboard' %}" id="formTarefa">
-        {% csrf_token %}
-
-        {% for hidden_field in form.hidden_fields %}
-        {{ hidden_field }}
-        {% endfor %}
-
-        <div class="row g-3 align-items-center">
-            <div class="col-auto">
-                <label for="titulo" class="col-form-label">Nova Tarefa:</label>
-            </div>
-            <div class="col-6">
-                {% render_field form.titulo class="form-control" id="titulo" name="titulo"%}
-            </div>
-            <div class="col-auto">
-                {% render_field form.cor class="form-control" id="titulo" name="cor"%}
-            </div>
-            <div class="col-auto">
-            {% if editar %}
-                <button type="submit"  class="btn btn-outline-primary">Salvar</button>
-            {% else %}
-                <button type="button" id="criarButton" class="btn btn-outline-success">Criar</button>
-            {% endif %}
-                
-                
-            </div>
-
-        </div>
-              
-    </form>
-</div>
-
-
-<br>
-Suas Tarefas:
-<br>
-
-<div class="col-6" id="listaTarefas">
-
-    {% for tarefa in tarefas %} 
-        <div class="card" style="border:1px solid gray;background-color:{{tarefa.cor}}">        
-            <div style="padding: 0px;font-size:11pt" data-bs-toggle="collapse" href="#collapseTarefa{{tarefa.pk}}" role="button" aria-expanded="false" aria-controls="collapseTarefa{{tarefa.pk}}">
-                <div class="d-flex bd-highlight mb-1" style="padding: 0px;">
-                    <div class="me-auto p-2 bd-highlight" style="padding: 0px;">{{tarefa.titulo}}</div>
-                    <div class="p-2 bd-highlight" style="padding: 0px;">{{tarefa.data_inclusao | date:"d/m/Y"}} {{tarefa.data_inclusao |time:"H:i"}}</div>
-                </div>
-            </div> 
-                <div class="card-body collapse" style="padding: 0px;margin-botton:0px;font-size:12pt" id="collapseTarefa{{tarefa.pk}}">
-                    <div class="d-flex flex-row-reverse">
-                        <div class="p-2 bd-highlight"><a href="{% url 'excluir-tarefa' tarefa.pk %}" title="Excluir"><span
-                    style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span></a></div>
-                        <div class="p-2 bd-highlight"><a href="{% url 'editar-tarefa' tarefa.pk %}" title="Editar"><span
-                    style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a></div>
-                    </div>
-                </div>
-        </div>      
-    {% endfor %}
-
+<div class="row">
+    <div class="col-2">
+        Bem-vindo <strong>{% firstof request.user.get_full_name request.user.username %}</strong>
+        <hr>
+        <button 
+        hx-get="{% url 'criar-tarefa' %}" 
+        hx-target="#modals-here1" 
+        hx-trigger="click"
+        class="btn btn-sm btn-primary"
+        _="on htmx:afterOnLoad wait 10ms then add .show to #modal1 then add .show to #modal-backdrop1">Novo Evento</button>
+    </div>
+    <div id="calendario-here" style="overflow:auto" class="container col-10">
+        {% include "tarefas/fragmentos/calendario-tarefas.html" %}
+    </div>
 </div>
 
 
 
+<div id="modals-here1">
+   
+</div>
 {% endblock %}
 
 
 
 {% block jquery %}
-<script>
-$(document).ready(function () {
-
-
-    $('#criarButton').click( function(e) {
-        e.preventDefault();
-        var serializeData =  $("#formTarefa").serialize();
-         console.log(serializeData);
-         
-        $.ajax({
-            url: $('#formTarefa').data('url'),
-            data: serializeData,
-            type: 'post',
-            success: function(response){
-
-                url_excluir = 'tarefa/excluir/'+ response.tarefa.id
-                url_editar = 'tarefa/editar/'+ response.tarefa.id
-                
-                var d = new Date(response.tarefa.data_inclusao);
-                var data = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(d);
-                
-                $('#listaTarefas').prepend('<div class="card"  style="border:1px solid gray;background-color:'+response.tarefa.cor+'">'+   
-                '<div style="padding: 0px;font-size:11pt" data-bs-toggle="collapse" '+ 
-                'href="#collapseTarefa'+response.tarefa.id+'" role="button" aria-expanded="false" aria-controls="collapseTarefa'+response.tarefa.id+'">'+
-                    '<div class="d-flex bd-highlight mb-1" style="padding: 0px;">'+
-                        '<div class="me-auto p-2 bd-highlight" style="padding: 0px;">'+response.tarefa.titulo+'</div>'+
-                        '<div class="p-2 bd-highlight" style="padding: 0px;">'+data+'</div>'+
-                    '</div>'+
-                '</div>'+ 
-                '<div class="card-body collapse" style="padding: 0px;margin-botton:0px;font-size:12pt" id="collapseTarefa'+response.tarefa.id+'"> '+
-                    '<div class="d-flex flex-row-reverse" >'+
-                        '<div class="p-2 bd-highlight"><a href="'+ url_excluir +'" title="Excluir">'+
-                    '<span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span></a></div> '+
-                        '<div class="p-2 bd-highlight"><a href="'+url_editar+'" title="Editar">'+
-                    '<span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a></div> '+
-                    '</div> '+
-                '</div> '+
-                '</div> '
-                );
-
-            },
-            error: function(xhr, textStatus) {
-                    alert("ERRO! NÃO FOI POSSÍVEL INSERIR A TAREFA!");
-                }
-
-         })
-
-    });
-
-
-
-});
-</script>
 {% endblock%}

@@ -24,9 +24,12 @@ urlpatterns = [
     path('__debug__/', include(debug_toolbar.urls)),
     
     #url DashBoard
-    path('', TarefasView.as_view(), name='dashboard'),
-    path('tarefa/excluir/<pk>', DeleteTarefaView.as_view(), name='excluir-tarefa'),
-    path('tarefa/editar/<pk>', EditarTarefaView.as_view(), name='editar-tarefa'),
+    path('', home_index, name='dashboard'),
+    path('tarefa/novo', criar_tarefas, name='criar-tarefa'),
+    path('tarefa/criar', salvar_tarefa, name='salvar-tarefa'),
+    path('tarefa/<int:pk>/detalhes', ver_tarefa, name='ver-tarefa'),
+    # path('tarefa/excluir/<pk>', DeleteTarefaView.as_view(), name='excluir-tarefa'),
+    # path('tarefa/editar/<pk>', EditarTarefaView.as_view(), name='editar-tarefa'),
    
     #urls Estoque
     path('ver-estoque', InicioEstoque.as_view(), name='ver-estoque'),

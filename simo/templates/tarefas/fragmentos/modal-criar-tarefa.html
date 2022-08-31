@@ -1,0 +1,123 @@
+{% load widget_tweaks %}
+{% block styleHead %}
+<style>
+td {
+    width: auto;
+}
+
+td.min {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.centralizar {
+    text-align: center;
+    vertical-align: middle;
+}
+.timepicker{
+  z-index: 99999;
+}
+
+
+
+.wrapper {
+min-width: 10em; /* Will be AT LEAST 20em wide */
+}
+</style>
+{% endblock %}
+
+
+
+<div id="modal-backdrop1" class="modal-backdrop fade show"></div>
+<div id="modal1" class="modal fade show" tabindex="-1" style="display:block;">
+	 <div class="modal-dialog modal-dialog-scrollable"> {% comment %}  TIPO DE MODAL  {% endcomment %}
+	  <div class="modal-content">
+		<div style="" class=" modal-body">
+      <h5 class="modal-title" id="exampleModalLabel">Criar Tarefa {{req.pk}}</h5>
+            <form  id="form_criar_tarefa" style="line-height: normal; font-size:10pt" hx-trigger="submit" hx-post="{% url 'salvar-tarefa' %}" hx-target="this" hx-swap="outerHTML">
+                {% for hidden_field in hidden_fields %}
+                {{ hidden_field }}
+                {% endfor %}
+          
+
+                <div class="form-group row mb-2 ">
+                  <div class="col-12">
+                      <label for="input1" class="">Titulo:</label>
+                      {% render_field form.titulo class="form-control" id="input1" name="titulo" required="required"%}
+                  </div>
+
+                  <div class="col-12">
+                        <label for="input2" class="">Descrição:</label>
+                        {% render_field form.descricao class="form-control" id="input2" name="descricao" %}
+                  </div>
+
+
+                  <div class="row">
+                      <div class="col-6">
+                        <label for="input3" class="">Data/Hora Início:</label>
+                        {% render_field form.data_inclusao class="form-control" type="datetime-local"  id="input3" name="data_inicio" required="required" autocomplete="off"%}
+                      </div>
+                      <div class="col-6">
+                        <label for="input6" class="">Data/Hora Fim:</label>
+                        {% render_field form.data_conclusao class="form-control" type="datetime-local"  id="input6" name="data_fim" autocomplete="off"%}
+                      </div>
+                      
+                   </div>
+          
+                                      
+               
+                           
+                
+                </div>
+          
+              </form>
+
+              <div class="d-flex justify-content-end">
+                  <span style="margin-right:10px; color:green">{{texto | safe}}</span>
+                  {% if criado %}
+                  <a style="margin-right:10px" type="button" class="btn btn-sm btn-secondary" href="/" onclick="closeModal()">Sair</a>
+                  {% else %}
+                  <button style="margin-right:10px" type="button" class="btn btn-sm btn-secondary " onclick="closeModal()">Fechar</button>
+                  {% endif %}
+                  <input form="form_criar_tarefa" class="btn btn-sm btn-primary" type="submit" value="Criar" />    
+              </div>
+          
+		</div>
+	  </div>
+	</div>
+  </div>
+
+  <script>
+    $(document).ready(function(){
+   
+      //DatePicker
+    $(".date").datepicker({
+      format: "dd/mm/yyyy",
+      todayHighlight: true,
+      language: "pt-BR",
+      container: '#modal1',
+    })
+  
+    });
+
+
+    function closeModal() {
+      var container = document.getElementById("modals-here1")
+      var backdrop = document.getElementById("modal-backdrop1")
+      var modal = document.getElementById("modal1")
+    
+      modal.classList.remove("show")
+      backdrop.classList.remove("show")
+    
+      setTimeout(function() {
+        container.removeChild(backdrop)
+        container.removeChild(modal)
+      }, 200)
+    }
+
+
+    
+
+    
+ 
+  </script>
