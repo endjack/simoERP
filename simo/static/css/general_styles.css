@@ -1,0 +1,215 @@
+.body-sm {
+  font-size: small !important;
+  line-height: normal !important;
+  background-color: whitesmoke !important; 
+}
+
+/*BUTTON PADRÃO*/
+.btn-p-cinza{
+  background-color: #2C3E50;
+  color:white;
+}
+
+.btn-p-cinza:hover{
+  background-color: #121e2b;
+  color:white;
+}
+
+.btn-p-cinza-claro{
+  background-color: #566777;
+  color:white;
+}
+
+.btn-p-cinza-claro:hover{
+  background-color: #2C3E50;
+  color:white;
+}
+
+.btn-p-sm{
+  padding: 0.25rem 0.5rem;
+  font-size: .675rem;
+  border-radius: 0.15rem;
+  
+}
+
+/*TEXTOS*/
+
+.titulo-p-suave{
+  color: #121e2b;
+  font-weight:600;
+}
+
+
+
+
+.glyphicon {
+  margin-right: 10px;
+}
+
+.panel-body {
+  padding: 0px;
+}
+
+.panel-body table tr td {
+  padding-left: 15px
+}
+
+.panel-body .table {
+  margin-bottom: 0px;
+}
+
+
+@media print {
+  .oculto {
+    display: none;
+  }
+}
+
+.datepicker {
+  z-index: 5 !important;
+}
+
+.alert-fixed {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  z-index: 9999;
+  border-radius: 0px
+}
+
+.limitar_td {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card {
+  background: white;
+  border-color: silver;
+}
+
+
+.limitar_forloop {
+  max-width: 2em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.loader {
+  position: absolute;
+  height: 100px;
+  width: 100px;
+  top: 50%;
+  left: 50%;
+  margin-left: -50px;
+  margin-top: -50px;
+  background-size: 100%;
+}
+
+.item-menu {
+  color: black;
+
+}
+
+.titulo-empresa {
+  color: #f7fad2;
+  font-weight: bold;
+}
+
+.titulo-empresa:hover {
+  color: white;
+  font-weight: bold;
+}
+
+.titulo-menu {
+  color: #dce0e6;
+  font-weight: bold;
+}
+
+.titulo-menu:focus {
+  color: #f7fad2;
+  font-weight: bold;
+}
+
+.titulo-menu:hover {
+  color: #f7fad2;
+  font-weight: bold;
+}
+
+.texto-enfase {
+  font-weight: bold;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(72, 113, 248, 0.04);
+}
+
+.table-bordered td,
+.table-bordered th {
+  border-color: silver !important;
+}
+
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th {
+  background-color: #4B8DFB;
+  color: white;
+}
+
+/*FULL CALENDAR*/
+.fc-button{
+  line-height: 1 !important; 
+  font-size: .675rem !important;
+}
+.fc-button-primary{
+  border-color: silver !important;
+}
+
+.fc th {
+  color: black !important;
+}
+.fc-icon {
+  font-size: 1em !important;;
+}
+
+.fc-toolbar-title {
+  font-size: 1.2em !important;
+}
+
+.fc table {
+  font-size: 10pt !important;
+  border-color: silver !important;
+}
+.fc .fc-timegrid-axis-cushion {
+  text-align: center !important;;
+}
+
+
+
+/*EVENTOS*/
+.event-green{
+  color:green;
+  
+}
+.sem-eventos{
+  font-style: italic;
+  background-color:rgb(230, 231, 231) !important; 
+}
+
+.com-eventos{
+  background-color: white !important; 
+  padding-top: 4px;
+}
+.texto-curto{
+  
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* number of lines to show */
+          line-clamp: 2; 
+  -webkit-box-orient: vertical;
+  max-width: 20ch;
+}
+

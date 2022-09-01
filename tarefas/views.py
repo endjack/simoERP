@@ -9,12 +9,18 @@ from django.shortcuts import redirect, render
 from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime, date
 
 @csrf_exempt
 def home_index(request):
+    today_date = datetime.now().date()
+    eventos_do_dia = Tarefa.objects.all().filter(usuario=request.user).filter(data_inclusao__date=today_date)
+    # print(today_date)
+    # print(eventos_do_dia)
     
     context = {
-             'tarefas': Tarefa.objects.all().filter(usuario=request.user)
+             'tarefas': Tarefa.objects.all().filter(usuario=request.user),
+             'eventos_do_dia': eventos_do_dia
          }
     
     template_name = 'home.html'
@@ -36,8 +42,10 @@ def salvar_tarefa(request):
     criado = False
         
     if form.is_valid():
-        form.instance.usuario = request.user      
-        from django.utils import timezone
+        form.instance.usuario = request.user
+        if not form.instance.data_conclusao:
+            form.instance.data_conclusao = form.instance.data_inclusao
+        
         novo = form.save()
         texto = f"<i class='fas fa-check'></i> Salvo com Sucesso (id: {novo.pk})"
         criado = True
@@ -60,6 +68,16 @@ def ver_tarefa(request, pk):
     
     context = {
              'tarefa': tarefa,
+             'tarefas': Tarefa.objects.all().filter(usuario=request.user).order_by('data_inclusao')[:10],
+         }
+    return render(request, template_name , context)
+
+@csrf_exempt
+def excluir_tarefa(request, pk):
+    tarefa = Tarefa.objects.filter(pk=pk).delete()
+    template_name = 'tarefas/fragmentos/ver-tarefa-detalhes.html'
+    
+    context = {
              'tarefas': Tarefa.objects.all().filter(usuario=request.user),
          }
     return render(request, template_name , context)

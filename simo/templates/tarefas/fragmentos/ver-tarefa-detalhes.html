@@ -1,0 +1,119 @@
+<div class="col-4 ">
+    {% if tarefa %}
+    <div class="text-center">   <h6> Cód: {{tarefa.pk}} - <span class="titulo-p-suave">{{tarefa.titulo}}</span></h6></div>
+    <ol class="list-group mb-2 ">
+       
+        <li class="list-group-item d-flex justify-content-between align-items-start  ">
+            <div class="ms-2 me-auto">
+                {% if tarefa.descricao %}
+                Descrição:
+                <div class="titulo-p-suave">{{tarefa.descricao}}</div>
+                {% else %}
+                Descrição:
+                <div class="titulo-p-suave"> - </div>   
+                {% endif %}
+            </div>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-start ">
+            <div class="ms-2 me-auto">
+                {% if tarefa.data_inclusao %}
+                Data Início:
+                <div class="titulo-p-suave">{{tarefa.data_inclusao}}</div>
+                {% else %}
+                Data Início:
+                <div class="titulo-p-suave"> - </div>   
+                {% endif %}
+            </div>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-start ">
+            <div class="ms-2 me-auto">
+                {% if tarefa.data_conclusao %}
+                Data Fim:
+                <div class="titulo-p-suave">{{tarefa.data_conclusao}}</div>
+                {% else %}
+                Data Fim:
+                <div class="titulo-p-suave"> - </div>   
+                {% endif %}
+            </div>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-start ">
+            <div class="ms-2 me-auto">
+                {% if tarefa.usuario.username %}
+                Usuário:
+                <div class="titulo-p-suave">{{tarefa.usuario.username}}</div>
+                {% else %}
+                Usuário:
+                <div class="titulo-p-suave"> - </div>   
+                {% endif %}
+            </div>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-start ">
+            <div class="ms-2 me-auto">
+            Opções:
+            <div class="titulo-p-suave"><a href="#"> Marcar como: Evento já Realizado!</a></div>
+            <div class="titulo-p-suave"> <a href="#">Editar</a></div>
+            <div class="titulo-p-suave"> <button type="button" class="btn btn-sm btn-danger" 
+                hx-post="{% url 'excluir-tarefa' tarefa.pk %}" 
+                hx-trigger="click" 
+                hx-target="#ver-tarefa-detalhes" 
+                hx-swap="innerHTML" 
+                hx-confirm="Tem certeza que deseja excluir o Evento: {{tarefa.titulo}}?"
+                >Excluir</button></div>
+            </div>
+        </li>
+        {% else %}
+        <li style="background-color:#eff0ed;font-style: italic;" class="list-group-item d-flex justify-content-center align-items-center border-gray">
+        
+                Sem evento
+        </li>
+        {% endif %}
+
+        </ol>
+
+</div>
+
+<div class="col-8">
+    <h6>Últimos Eventos <span class="titulo-p-suave">Cadastrados:</span></h6>
+    <p class="">Abaixo lista dos último itens cadastrados e não em ordem cronológica.</p>
+     <ol class="list-group mb-2">
+        <li class="list-group-item d-flex justify-content-between ">
+            <div class="ms-2 me-auto pt-2">
+            
+                <table class="table table-sm ">
+                    <thead style="border-color:silver;background-color:#0d6efd; color: white;">
+                        <tr>
+                            <th scope="col">Cód:</th>
+                            <th scope="col">Título</th>
+                            <th scope="col">Data Início</th>
+                            <th scope="col">Data Fim</th>
+                            <th scope="col">Opções</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in tarefas %}
+                        <tr>
+                            <td>{{item.pk}}</td>
+                            <td>{{item.titulo}}</td>
+                            {% if item.data_inclusao %}
+                            <td>{{item.data_inclusao}} 
+                            {% else %}
+                            <td> - </td>  
+                            {% endif %}
+                            {% if item.data_conclusao %}
+                            <td>{{item.data_conclusao}} 
+                            {% else %}
+                            <td> - </td>  
+                            {% endif %}
+                            <td> <a href='{% url "ver-tarefa" item.pk %}'>Ver</a> </td>  
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+             
+            </div>
+        </li>
+
+    </ol>
+    
+    
+</div>

@@ -1,0 +1,30 @@
+Lembretes de <span class="titulo-p-suave"> Hoje - {% now "d/F/Y" %}</span>
+<div class="pt-1">
+    <ol class="list-group">
+        {% if eventos_do_dia %}
+        {% for evento in eventos_do_dia %}
+        <li class="list-group-item d-flex align-items-start com-eventos">
+            <div class="col-4 " style="">
+                <i class="fas fa-square event-green"></i> <span class="titulo-p-suave">Lembrete: </span><br>
+                <a href="{% url 'ver-tarefa' evento.pk %}">{{evento.titulo}}</a> 
+            </div>
+            
+            <div class="col-4 ">
+                <i class="fas fa-bars"></i> <span class="titulo-p-suave">Descrição: </span><br>
+                <div class="texto-curto"> {{evento.descricao}} </div>    
+                 
+            </div>
+            <div class="col-4">
+                <i class="far fa-calendar-alt"></i> <span class="titulo-p-suave">Termina em: </span><br>
+                {{evento.data_conclusao | date:"d/m/Y"}} - {{evento.data_conclusao | time:"H:i"}}H
+            </div>
+        </li>
+        {% endfor %}
+        {% else %}
+        <li class="container list-group-item  sem-eventos text-center">
+            Sem Lembretes para hoje
+        </li>
+        {% endif %}     
+    </ol>
+
+</div>

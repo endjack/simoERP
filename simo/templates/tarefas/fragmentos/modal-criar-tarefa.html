@@ -33,7 +33,7 @@ min-width: 10em; /* Will be AT LEAST 20em wide */
 	 <div class="modal-dialog modal-dialog-scrollable"> {% comment %}  TIPO DE MODAL  {% endcomment %}
 	  <div class="modal-content">
 		<div style="" class=" modal-body">
-      <h5 class="modal-title" id="exampleModalLabel">Criar Tarefa {{req.pk}}</h5>
+      <h5 class="modal-title" id="exampleModalLabel">Criar Evento {{req.pk}}</h5>
             <form  id="form_criar_tarefa" style="line-height: normal; font-size:10pt" hx-trigger="submit" hx-post="{% url 'salvar-tarefa' %}" hx-target="this" hx-swap="outerHTML">
                 {% for hidden_field in hidden_fields %}
                 {{ hidden_field }}

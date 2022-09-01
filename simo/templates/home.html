@@ -3,30 +3,35 @@
 {% load static %}
 
 {% block styleHead %}
+
 {% endblock %}
 
 {% block conteudo %}
+<div class="">
 <div class="row">
-    <div class="col-2">
-        Bem-vindo <strong>{% firstof request.user.get_full_name request.user.username %}</strong>
+    <div class="col-6">
+        Bem-vindo <span class="titulo-p-suave">{% firstof request.user.get_full_name request.user.username %}</span>
         <hr>
-        <button 
-        hx-get="{% url 'criar-tarefa' %}" 
-        hx-target="#modals-here1" 
-        hx-trigger="click"
-        class="btn btn-sm btn-primary"
-        _="on htmx:afterOnLoad wait 10ms then add .show to #modal1 then add .show to #modal-backdrop1">Novo Evento</button>
+        <div id="eventos-dia">
+            {% include "tarefas/fragmentos/eventos-do-dia.html" %}
+        </div>
+
+        <div class="d-flex flex-row-reverse pt-2">
+            <button hx-get="{% url 'criar-tarefa' %}" hx-target="#modals-here1" hx-trigger="click"
+            class="btn btn-p-cinza btn-p-sm m-1"
+            _="on htmx:afterOnLoad wait 10ms then add .show to #modal1 then add .show to #modal-backdrop1">Novo
+            Evento</button>
+            <button class="btn btn-p-sm btn-p-cinza-claro m-1">Ver todos</button>
+        </div>
+        
     </div>
-    <div id="calendario-here" style="overflow:auto" class="container col-10">
+    <div id="calendario-here" style="overflow:auto" class="container col-6">
         {% include "tarefas/fragmentos/calendario-tarefas.html" %}
     </div>
 </div>
 
-
-
-<div id="modals-here1">
-   
 </div>
+<div id="modals-here1"></div>
 {% endblock %}
 
 
