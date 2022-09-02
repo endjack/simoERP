@@ -1,22 +1,19 @@
-from django.core.files.base import ContentFile
-from django.forms.models import model_to_dict
-from django.http.response import JsonResponse
-from django.urls.base import reverse, reverse_lazy
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from tarefas.models import Tarefa
 from tarefas.forms import TarefasForm
-from django.shortcuts import redirect, render
-from django.views.generic.base import TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime, date
+from datetime import datetime, timedelta
+from django.contrib.auth.decorators import login_required
 
+
+
+@login_required(login_url='login/')
 @csrf_exempt
 def home_index(request):
-    today_date = datetime.now().date()
-    eventos_do_dia = Tarefa.objects.all().filter(usuario=request.user).filter(data_inclusao__date=today_date)
-    # print(today_date)
-    # print(eventos_do_dia)
+
+    today_date = datetime.now()
+    eventos_do_dia = Tarefa.objects.all().filter(usuario=request.user).filter(data_inclusao__date__lte=today_date).filter(data_conclusao__date__gte=today_date)
+
     
     context = {
              'tarefas': Tarefa.objects.all().filter(usuario=request.user),
@@ -26,6 +23,7 @@ def home_index(request):
     template_name = 'home.html'
     return render(request, template_name , context)
 
+@login_required(login_url='login/')
 @csrf_exempt
 def criar_tarefas(request):
     
@@ -36,6 +34,7 @@ def criar_tarefas(request):
     template_name = 'tarefas/fragmentos/modal-criar-tarefa.html'
     return render(request, template_name , context)
 
+@login_required(login_url='login/')
 @csrf_exempt
 def salvar_tarefa(request):
     form = TarefasForm(request.POST)
@@ -43,8 +42,10 @@ def salvar_tarefa(request):
         
     if form.is_valid():
         form.instance.usuario = request.user
+        form.instance.cor = request.POST.get('bttColor')
         if not form.instance.data_conclusao:
             form.instance.data_conclusao = form.instance.data_inclusao
+            
         
         novo = form.save()
         texto = f"<i class='fas fa-check'></i> Salvo com Sucesso (id: {novo.pk})"
@@ -61,6 +62,7 @@ def salvar_tarefa(request):
     
     return render(request, template_name , context)
 
+@login_required(login_url='login/')
 @csrf_exempt
 def ver_tarefa(request, pk):
     tarefa = Tarefa.objects.get(pk=pk)
@@ -68,10 +70,11 @@ def ver_tarefa(request, pk):
     
     context = {
              'tarefa': tarefa,
-             'tarefas': Tarefa.objects.all().filter(usuario=request.user).order_by('data_inclusao')[:10],
+             'tarefas': Tarefa.objects.all().filter(usuario=request.user).order_by('-pk')[:10],
          }
     return render(request, template_name , context)
 
+@login_required(login_url='login/')
 @csrf_exempt
 def excluir_tarefa(request, pk):
     tarefa = Tarefa.objects.filter(pk=pk).delete()

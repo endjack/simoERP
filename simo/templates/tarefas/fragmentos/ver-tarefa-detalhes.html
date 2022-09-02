@@ -48,18 +48,17 @@
             </div>
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-start ">
-            <div class="ms-2 me-auto">
-            Opções:
-            <div class="titulo-p-suave"><a href="#"> Marcar como: Evento já Realizado!</a></div>
-            <div class="titulo-p-suave"> <a href="#">Editar</a></div>
-            <div class="titulo-p-suave"> <button type="button" class="btn btn-sm btn-danger" 
+        
+           
+            <button class="btn btn-p-sm btn-secondary disabled"> Editar (em processo)</button>
+            <div class="titulo-p-suave"> <button type="button" class="btn btn-p-sm btn-danger" 
                 hx-post="{% url 'excluir-tarefa' tarefa.pk %}" 
                 hx-trigger="click" 
                 hx-target="#ver-tarefa-detalhes" 
                 hx-swap="innerHTML" 
                 hx-confirm="Tem certeza que deseja excluir o Evento: {{tarefa.titulo}}?"
                 >Excluir</button></div>
-            </div>
+     
         </li>
         {% else %}
         <li style="background-color:#eff0ed;font-style: italic;" class="list-group-item d-flex justify-content-center align-items-center border-gray">

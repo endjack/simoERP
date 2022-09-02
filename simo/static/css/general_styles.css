@@ -193,6 +193,11 @@
   color:green;
   
 }
+
+.event-azul{
+  color:rgb(28, 110, 209);
+  font-size: 6;
+}
 .sem-eventos{
   font-style: italic;
   background-color:rgb(230, 231, 231) !important; 

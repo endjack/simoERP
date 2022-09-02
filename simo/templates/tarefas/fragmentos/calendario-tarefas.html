@@ -33,6 +33,7 @@
                   end: '{{tarefa.data_conclusao | date:"Y-m-d"}}T{{tarefa.data_conclusao | time:"H:i:s"}}',
                   url: '{% url "ver-tarefa" tarefa.pk %}',
                   allDay: false,
+                  color: '{{tarefa.cor}}',
                 },
                 {% endfor %}
               ]

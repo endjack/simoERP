@@ -5,7 +5,11 @@ Lembretes de <span class="titulo-p-suave"> Hoje - {% now "d/F/Y" %}</span>
         {% for evento in eventos_do_dia %}
         <li class="list-group-item d-flex align-items-start com-eventos">
             <div class="col-4 " style="">
-                <i class="fas fa-square event-green"></i> <span class="titulo-p-suave">Lembrete: </span><br>
+                {% if evento.data_inclusao != evento.data_conclusao %}
+                <span style="color:{{evento.cor}};"><i class="fas fa-square"></i></span><span class="titulo-p-suave">Lembrete: </span><br>
+                {% else %}
+                <span style="color:{{evento.cor}};"><i class="fas fa-circle"></i></span><span class="titulo-p-suave">Lembrete: </span><br>
+                {% endif %}
                 <a href="{% url 'ver-tarefa' evento.pk %}">{{evento.titulo}}</a> 
             </div>
             

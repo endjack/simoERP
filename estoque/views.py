@@ -21,7 +21,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from braces.views import GroupRequiredMixin
 from django.views.generic import TemplateView, CreateView
 from datetime import date, datetime, timedelta
-from django.core import serializers
+from django.contrib.auth.decorators import login_required
+from usuarios.permissoes import group_required
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -342,6 +343,9 @@ class ImprimirListaItensView(GroupRequiredMixin, LoginRequiredMixin, TemplateVie
         
         return context
 
+@group_required('Administrador', 'Estoque','Tecnico')
+@login_required(login_url='login/')
+@csrf_exempt
 def autocompleteitens(request):
     query = request.GET.get('term')
     query_set = Item.objects.filter(descricao__icontains=query) | Item.objects.filter(pk__iexact=query)
@@ -349,6 +353,9 @@ def autocompleteitens(request):
     myList += [x.descricao+' - '+x.unid_medida+' - COD: '+str(x.pk) for x in query_set]
     return JsonResponse(myList,safe=False)    
 
+@group_required('Administrador', 'Estoque','Tecnico')
+@login_required(login_url='login/')
+@csrf_exempt
 def gerar_qrcode(text):  
     code = pyqrcode.create(text)
     code.png(f"simo/media/qrcodes/{text}.png", scale=6,)
@@ -359,7 +366,10 @@ def gerar_qrcode(text):
     else:
         print(f"ERRO ao gerar QRCode - {text}!")
         return False
-    
+ 
+@group_required('Administrador', 'Estoque','Tecnico')
+@login_required(login_url='login/')
+@csrf_exempt 
 def estoque_filter(request):
     if request.method == 'POST': 
         objects = Estoque.objects.all()
@@ -393,6 +403,8 @@ def estoque_filter(request):
        
         return JsonResponse({'filter': lista_itens}, status=200)
 
+@group_required('Administrador', 'Estoque','Tecnico')
+@login_required(login_url='login/')
 @csrf_exempt
 def add_filtro_varios(request):
      
@@ -416,6 +428,8 @@ def add_filtro_varios(request):
     else:
         return HttpResponse('Item Não Adicionado') #TODO FAZER UMA RESPOSTA EM HTML COM TABELA VAZIA
     
+@group_required('Administrador', 'Estoque','Tecnico')
+@login_required(login_url='login/')
 @csrf_exempt
 def remover_filtro_varios(request):
  
@@ -434,7 +448,9 @@ def remover_filtro_varios(request):
         
       return HttpResponse('Item Não Encontrado ou Já excluído!') #TODO FAZER UMA RESPOSTA EM HTML COM TABELA VAZIA
 
-@csrf_exempt       
+@group_required('Administrador', 'Estoque','Tecnico')
+@login_required(login_url='login/')
+@csrf_exempt     
 def remover_lista_selecionada(request):
     template_name = 'estoque/lista-itens-selecionados.html'
     
@@ -446,7 +462,10 @@ def remover_lista_selecionada(request):
     except: 
         
       return HttpResponse('Lista Não encontrada ou já excluída!') #TODO FAZER UMA RESPOSTA EM HTML COM TABELA VAZIA       
-   
+
+@group_required('Administrador', 'Estoque','Tecnico')
+@login_required(login_url='login/')
+@csrf_exempt  
 def log_item_updated(request, item, qnt, saldo, adicionado):
 
    current_time = datetime.now()
@@ -459,7 +478,9 @@ def log_item_updated(request, item, qnt, saldo, adicionado):
    novo_log = LogMovimentacao(usuario=usuario, item=item, quantidade=qnt, saldo=saldo, adicionado=adicionado, data_inclusao=current_time)
    novo_log.save()
 
-@csrf_exempt  
+@group_required('Administrador', 'Estoque','Tecnico')
+@login_required(login_url='login/')
+@csrf_exempt
 def estoque_busca_varios(request):
     if request.POST.get("descricao") == "":
         return render(request, template_name='estoque/fragmentos/itens_busca_varios.html', context={'error': 'Campos Vazios'})
@@ -469,6 +490,8 @@ def estoque_busca_varios(request):
     
     return render(request, template_name='estoque/fragmentos/itens_busca_varios.html', context={'filter_list': filter_list})
 
-@csrf_exempt 
+@group_required('Administrador', 'Estoque','Tecnico')
+@login_required(login_url='login/')
+@csrf_exempt
 def limpar_itens_lista(request): 
     return render(request, template_name='estoque/fragmentos/itens_busca_varios.html', context={'filter_list': ''})
