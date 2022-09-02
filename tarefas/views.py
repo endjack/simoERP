@@ -2,9 +2,9 @@ from tarefas.models import Tarefa
 from tarefas.forms import TarefasForm
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime, timedelta
+from datetime import datetime
 from django.contrib.auth.decorators import login_required
-
+from django.http import Http404
 
 
 @login_required(login_url='login/')
@@ -12,16 +12,21 @@ from django.contrib.auth.decorators import login_required
 def home_index(request):
 
     today_date = datetime.now()
-    eventos_do_dia = Tarefa.objects.all().filter(usuario=request.user).filter(data_inclusao__date__lte=today_date).filter(data_conclusao__date__gte=today_date)
-
+    try:
+        eventos_do_dia = Tarefa.objects.all().filter(usuario=request.user).filter(data_inclusao__date__lte=today_date).filter(data_conclusao__date__gte=today_date)
+        tarefas = Tarefa.objects.all().filter(usuario=request.user)
     
-    context = {
-             'tarefas': Tarefa.objects.all().filter(usuario=request.user),
-             'eventos_do_dia': eventos_do_dia
-         }
+        context = {
+                'tarefas': tarefas,
+                'eventos_do_dia': eventos_do_dia
+            }
     
-    template_name = 'home.html'
-    return render(request, template_name , context)
+        template_name = 'home.html'
+        return render(request, template_name , context)
+    
+    except Tarefa.DoesNotExist:
+        raise Http404("ERRO: Evento não existe!")
+    
 
 @login_required(login_url='login/')
 @csrf_exempt
@@ -39,52 +44,59 @@ def criar_tarefas(request):
 def salvar_tarefa(request):
     form = TarefasForm(request.POST)
     criado = False
-        
-    if form.is_valid():
-        form.instance.usuario = request.user
-        form.instance.cor = request.POST.get('bttColor')
-        if not form.instance.data_conclusao:
-            form.instance.data_conclusao = form.instance.data_inclusao
+    
+    try:  
+        if form.is_valid():
+            form.instance.usuario = request.user
+            form.instance.cor = request.POST.get('bttColor')
+            if not form.instance.data_conclusao:
+                form.instance.data_conclusao = form.instance.data_inclusao
+                
             
+            novo = form.save()
+            texto = f"<i class='fas fa-check'></i> Salvo com Sucesso (id: {novo.pk})"
+            criado = True
         
-        novo = form.save()
-        texto = f"<i class='fas fa-check'></i> Salvo com Sucesso (id: {novo.pk})"
-        criado = True
-    
-    template_name = 'tarefas/fragmentos/modal-criar-tarefa.html'
-    
-    context = {
-             'tarefas': Tarefa.objects.all().filter(usuario=request.user),
-             'texto': texto,
-             'form': TarefasForm(),
-             'criado': criado
-         }
-    
-    return render(request, template_name , context)
+        template_name = 'tarefas/fragmentos/modal-criar-tarefa.html'
+        
+        context = {
+                'tarefas': Tarefa.objects.all().filter(usuario=request.user),
+                'texto': texto,
+                'form': TarefasForm(),
+                'criado': criado
+            }
+        
+        return render(request, template_name , context)
+    except Tarefa.DoesNotExist:
+        raise Http404("ERRO: Evento não pode ser salvo!")
 
 @login_required(login_url='login/')
 @csrf_exempt
 def ver_tarefa(request, pk):
-    tarefa = Tarefa.objects.get(pk=pk)
-    template_name = 'tarefas/ver-tarefa.html'
-    
-    context = {
-             'tarefa': tarefa,
-             'tarefas': Tarefa.objects.all().filter(usuario=request.user).order_by('-pk')[:10],
-         }
-    return render(request, template_name , context)
+    try:
+        tarefa = Tarefa.objects.get(pk=pk)
+        template_name = 'tarefas/ver-tarefa.html'
+        
+        context = {
+                'tarefa': tarefa,
+                'tarefas': Tarefa.objects.all().filter(usuario=request.user).order_by('-pk')[:10],
+            }
+        return render(request, template_name , context)
+    except Tarefa.DoesNotExist:
+        raise Http404("ERRO: Evento não existe!")
 
 @login_required(login_url='login/')
 @csrf_exempt
 def excluir_tarefa(request, pk):
-    tarefa = Tarefa.objects.filter(pk=pk).delete()
-    template_name = 'tarefas/fragmentos/ver-tarefa-detalhes.html'
-    
-    context = {
-             'tarefas': Tarefa.objects.all().filter(usuario=request.user),
-         }
-    return render(request, template_name , context)
-
+    try:
+        template_name = 'tarefas/fragmentos/ver-tarefa-detalhes.html'
+        
+        context = {
+                'tarefas': Tarefa.objects.all().filter(usuario=request.user),
+            }
+        return render(request, template_name , context)
+    except Tarefa.DoesNotExist:
+        raise Http404("ERRO: Evento não existe ou já foi excluído!")
 
 
 

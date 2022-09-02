@@ -1,16 +1,16 @@
 <div class="col-4 ">
     {% if tarefa %}
-    <div class="text-center">   <h6> Cód: {{tarefa.pk}} - <span class="titulo-p-suave">{{tarefa.titulo}}</span></h6></div>
+    <div class="text-center"><span style="color:{{tarefa.cor}};"><h6><i class="fas fa-square"></i></span>  Cód: {{tarefa.pk}} - <span class="titulo-p-forte">{{tarefa.titulo}}</span></h6></div>
     <ol class="list-group mb-2 ">
        
         <li class="list-group-item d-flex justify-content-between align-items-start  ">
             <div class="ms-2 me-auto">
                 {% if tarefa.descricao %}
                 Descrição:
-                <div class="titulo-p-suave">{{tarefa.descricao}}</div>
+                <div class="titulo-p-forte">{{tarefa.descricao}}</div>
                 {% else %}
                 Descrição:
-                <div class="titulo-p-suave"> - </div>   
+                <div class="titulo-p-forte"> - </div>   
                 {% endif %}
             </div>
         </li>
@@ -18,10 +18,10 @@
             <div class="ms-2 me-auto">
                 {% if tarefa.data_inclusao %}
                 Data Início:
-                <div class="titulo-p-suave">{{tarefa.data_inclusao}}</div>
+                <div class="titulo-p-forte">{{tarefa.data_inclusao}}</div>
                 {% else %}
                 Data Início:
-                <div class="titulo-p-suave"> - </div>   
+                <div class="titulo-p-forte"> - </div>   
                 {% endif %}
             </div>
         </li>
@@ -29,10 +29,10 @@
             <div class="ms-2 me-auto">
                 {% if tarefa.data_conclusao %}
                 Data Fim:
-                <div class="titulo-p-suave">{{tarefa.data_conclusao}}</div>
+                <div class="titulo-p-forte">{{tarefa.data_conclusao}}</div>
                 {% else %}
                 Data Fim:
-                <div class="titulo-p-suave"> - </div>   
+                <div class="titulo-p-forte"> - </div>   
                 {% endif %}
             </div>
         </li>
@@ -40,10 +40,10 @@
             <div class="ms-2 me-auto">
                 {% if tarefa.usuario.username %}
                 Usuário:
-                <div class="titulo-p-suave">{{tarefa.usuario.username}}</div>
+                <div class="titulo-p-forte">{{tarefa.usuario.username}}</div>
                 {% else %}
                 Usuário:
-                <div class="titulo-p-suave"> - </div>   
+                <div class="titulo-p-forte"> - </div>   
                 {% endif %}
             </div>
         </li>

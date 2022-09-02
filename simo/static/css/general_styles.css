@@ -35,8 +35,13 @@
 /*TEXTOS*/
 
 .titulo-p-suave{
-  color: #121e2b;
-  font-weight:600;
+  color: #777779;
+  font-weight:normal;
+}
+
+.titulo-p-forte{
+  color: #1c1c1e;
+  font-weight:500;
 }
 
 
@@ -201,6 +206,10 @@
 .sem-eventos{
   font-style: italic;
   background-color:rgb(230, 231, 231) !important; 
+}
+
+.com-eventos:hover{
+  background-color:rgb(225, 225, 224) !important; 
 }
 
 .com-eventos{
