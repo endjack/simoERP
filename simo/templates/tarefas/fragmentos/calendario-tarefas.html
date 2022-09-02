@@ -4,38 +4,6 @@
 
 
 {% block styleHead %}
-<style>
-.fc-button{
-    line-height: 1 !important; 
-    font-size: 10pt !important; 
-}
-.fc-button-primary{
-    background-color: green !important;
-    border-color: silver !important;
-}
-.fc-scrollgrid-sync-inner{
-   
-}
-.fc th {
-    color: black !important;
-}
-.fc-icon {
-    font-size: 1em !important;;
-}
-
-.fc-toolbar-title {
-    font-size: 1.2em !important;
-}
-
-.fc table {
-    font-size: 10pt !important;
-    border-color: silver !important;
-}
-.fc .fc-timegrid-axis-cushion {
-    text-align: center !important;;
-}
-
-</style>
 
 <!-- FULL CALENDAR -->
 <link rel='stylesheet' href="{% static 'fullcalendar5.11.3/main.css' %}">
@@ -47,7 +15,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendario-agenda');
         var calendar = new FullCalendar.Calendar(calendarEl, {
-           //height: window.innerHeight,
+            height: window.innerHeight,
            // aspectRatio:  2,
             initialView: 'dayGridMonth',
             locale: 'pt-br' ,
@@ -65,6 +33,7 @@
                   end: '{{tarefa.data_conclusao | date:"Y-m-d"}}T{{tarefa.data_conclusao | time:"H:i:s"}}',
                   url: '{% url "ver-tarefa" tarefa.pk %}',
                   allDay: false,
+                  color: '{{tarefa.cor}}',
                 },
                 {% endfor %}
               ]

@@ -9,7 +9,7 @@
     <title>SISTEMA ERP - BRASIL CONSTRUÇÃO</title>  
   
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <link href="{% static 'css/general_styles.css' %}" rel="stylesheet">
     <!-- AUTOCOMPLETE IMPUTS -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <!-- DATAPICKERS -->
@@ -21,113 +21,11 @@
     
     {% comment %} <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> {% endcomment %}
 
-    <style>
-    .glyphicon { margin-right:10px; }
-    .panel-body { padding:0px; }
-    .panel-body table tr td { padding-left: 15px }
-    .panel-body .table {margin-bottom: 0px; }
-
-
-    @media print {
-        .oculto{
-        display: none;
-        }
-      }
-
-    .datepicker{
-        z-index: 5 !important;
-        }
-    
-    .alert-fixed {
-            position:fixed; 
-            top: 0px; 
-            left: 0px; 
-            width: 100%;
-            z-index:9999; 
-            border-radius:0px
-        }
-    .limitar_td{
-        max-width:150px;
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-        white-space: nowrap;
-    }
-
-    .card{
-      background:white; 
-      border-color:silver; 
-    }
-
-
-    .limitar_forloop{
-        max-width: 2em;
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-        white-space: nowrap;
-    }
-    .loader{
-        position: absolute;
-        height: 100px;
-        width: 100px;
-        top: 50%;
-        left: 50%;
-        margin-left: -50px;
-        margin-top: -50px;
-        background-size: 100%;
-    }
-
-    .item-menu{
-        color: black;
-        
-    }
-
-    .titulo-empresa{
-        color: #f7fad2;
-        font-weight: bold;
-    }
-    .titulo-empresa:hover{
-        color: white;
-        font-weight: bold;
-    }
-
-    .titulo-menu{
-        color: #dce0e6;
-        font-weight: bold;
-    }
-
-    .titulo-menu:focus{
-        color: #f7fad2;
-        font-weight: bold;
-    }
-
-    .titulo-menu:hover{
-        color: #f7fad2;
-        font-weight: bold;
-    }
-
-    .texto-enfase{
-      font-weight: bold;
-    }
-
-    .table-striped tbody tr:nth-of-type(odd) {
-      background-color:  rgba(72, 113, 248, 0.04);
-    }
-
-    .table-bordered td, .table-bordered th{
-      border-color: silver !important;
-    }
-   
-    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
-      background-color: #4B8DFB;
-      color: white;
-    }
-
-    </style>
     {% block styleHead %}{% endblock %}
 
 </head>
 
-<body class='sb-nav-fixed'>
+<body class='sb-nav-fixed body-sm'>
 <!-- NavBar -->
 <nav class="navbar navbar-expand-lg bg-light" style="background: linear-gradient(to right, #0052D4, #0d6efd);z-index:6;">
     <div class="container-fluid" >
@@ -279,11 +177,10 @@
           {% block breadcrumb %}{% endblock %}
         </ol>
 
-        <div class="card">
-            <div class="card-body">
-                {% block conteudo %}{% endblock %}
-            </div>
-        </div>
+          <div class="pt-2">
+            {% block conteudo %}{% endblock %}
+          </div>
+
         {% comment %} <div style="height: 100vh"></div> {% endcomment %}
       </div>
 </main>

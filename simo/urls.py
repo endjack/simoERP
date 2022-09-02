@@ -28,7 +28,7 @@ urlpatterns = [
     path('tarefa/novo', criar_tarefas, name='criar-tarefa'),
     path('tarefa/criar', salvar_tarefa, name='salvar-tarefa'),
     path('tarefa/<int:pk>/detalhes', ver_tarefa, name='ver-tarefa'),
-    # path('tarefa/excluir/<pk>', DeleteTarefaView.as_view(), name='excluir-tarefa'),
+    path('tarefa/excluir/<int:pk>', excluir_tarefa, name='excluir-tarefa'),
     # path('tarefa/editar/<pk>', EditarTarefaView.as_view(), name='editar-tarefa'),
    
     #urls Estoque
