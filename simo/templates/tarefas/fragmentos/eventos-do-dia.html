@@ -1,26 +1,26 @@
-Lembretes de <span class="titulo-p-suave"> Hoje - {% now "d/F/Y" %}</span>
+Lembretes de <span class="titulo-p-forte"> Hoje - {% now "d/F/Y" %}</span>
 <div class="pt-1">
     <ol class="list-group">
         {% if eventos_do_dia %}
         {% for evento in eventos_do_dia %}
-        <li class="list-group-item d-flex align-items-start com-eventos">
+        <li style="cursor:pointer" class="list-group-item d-flex align-items-start com-eventos" hx-post="{% url 'ver-tarefa' evento.pk %}" hx-trigger="click" hx-target="body">
             <div class="col-4 " style="">
                 {% if evento.data_inclusao != evento.data_conclusao %}
-                <span style="color:{{evento.cor}};"><i class="fas fa-square"></i></span><span class="titulo-p-suave">Lembrete: </span><br>
+                <span style="color:{{evento.cor}};"><i class="fas fa-square"></i></span><span class="titulo-p-suave"> Lembrete: </span><br>
                 {% else %}
-                <span style="color:{{evento.cor}};"><i class="fas fa-circle"></i></span><span class="titulo-p-suave">Lembrete: </span><br>
+                <span style="color:{{evento.cor}};"><i class="fas fa-circle"></i></span><span class="titulo-p-suave"> Lembrete: </span><br>
                 {% endif %}
-                <a href="{% url 'ver-tarefa' evento.pk %}">{{evento.titulo}}</a> 
+                <span class="titulo-p-forte">{{evento.titulo}}</span>
             </div>
             
             <div class="col-4 ">
-                <i class="fas fa-bars"></i> <span class="titulo-p-suave">Descrição: </span><br>
-                <div class="texto-curto"> {{evento.descricao}} </div>    
+                <span style="color:{{evento.cor}};"><i class="fas fa-bars"></i></span><span class="titulo-p-suave"> Descrição: </span><br>
+                <div class="texto-curto titulo-p-forte"> {{evento.descricao}} </div>    
                  
             </div>
             <div class="col-4">
-                <i class="far fa-calendar-alt"></i> <span class="titulo-p-suave">Termina em: </span><br>
-                {{evento.data_conclusao | date:"d/m/Y"}} - {{evento.data_conclusao | time:"H:i"}}H
+                <span style="color:{{evento.cor}};"><i class="far fa-calendar-alt"></i> </span><span class="titulo-p-suave"> Termina em: </span><br>
+                <span class="titulo-p-forte">{{evento.data_conclusao | date:"d/m/Y"}} - {{evento.data_conclusao | time:"H:i"}}</span>
             </div>
         </li>
         {% endfor %}

@@ -18,6 +18,8 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from financeiro.ajax import *
 
+# handler404 = 'simo.utils.handler404'   
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,9 +29,13 @@ urlpatterns = [
     path('', home_index, name='dashboard'),
     path('tarefa/novo', criar_tarefas, name='criar-tarefa'),
     path('tarefa/criar', salvar_tarefa, name='salvar-tarefa'),
-    path('tarefa/<int:pk>/detalhes', ver_tarefa, name='ver-tarefa'),
+    path('tarefa/editar/salvar/<int:pk>', salvar_edicao_tarefa, name='salvar-edicao-tarefa'),
+    path('tarefa/<int:pk>', ver_tarefa, name='ver-tarefa'),
+    path('tarefa/<int:pk>/detalhes', ver_tarefa_detalhes, name='ver-tarefa-detalhes'),
     path('tarefa/excluir/<int:pk>', excluir_tarefa, name='excluir-tarefa'),
-    # path('tarefa/editar/<pk>', EditarTarefaView.as_view(), name='editar-tarefa'),
+    path('tarefa/editar/<pk>', editar_tarefa, name='editar-tarefa'),
+    path('tarefa/realizar/<pk>', marcar_realizar_tarefa, name='realizar-tarefa'),
+
    
     #urls Estoque
     path('ver-estoque', InicioEstoque.as_view(), name='ver-estoque'),
@@ -160,8 +166,11 @@ htmlx_urlpatterns = [
 
 ]
 
+
 urlpatterns += htmlx_urlpatterns
 
 
 if settings.DEBUG:
-     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+     
