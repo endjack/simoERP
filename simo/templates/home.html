@@ -10,7 +10,7 @@
 <div class="">
 <div class="row">
     <div class="col-6">
-        Bem-vindo <span class="titulo-p-suave">{% firstof request.user.get_full_name request.user.username %}</span>
+        Bem-vindo <span class="titulo-p-forte">{% firstof request.user.get_full_name request.user.username %}</span>
         <hr>
         <div id="eventos-dia">
             {% include "tarefas/fragmentos/eventos-do-dia.html" %}
@@ -21,7 +21,7 @@
             class="btn btn-p-cinza btn-p-sm m-1"
             _="on htmx:afterOnLoad wait 10ms then add .show to #modal1 then add .show to #modal-backdrop1">Novo
             Evento</button>
-            <button class="btn btn-p-sm btn-p-cinza-claro m-1 disabled">Ver todos</button>
+            <a href="{% url 'ver-tarefa' tarefa_exibir.pk %}" class="btn btn-p-sm btn-p-cinza-claro m-1 ">Ver todos</a>
         </div>
         
     </div>

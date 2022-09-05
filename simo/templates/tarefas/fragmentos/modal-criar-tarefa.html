@@ -33,7 +33,12 @@ min-width: 10em; /* Will be AT LEAST 20em wide */
 	 <div class="modal-dialog modal-dialog-scrollable"> {% comment %}  TIPO DE MODAL  {% endcomment %}
 	  <div class="modal-content">
 		<div style="" class=" modal-body">
-      <h5 class="modal-title" id="exampleModalLabel">Criar Evento {{req.pk}}</h5>
+      {% if not criado %}
+      <h5 class="modal-title" id="exampleModalLabel">Novo Evento</h5>
+      {% else %}
+      <h5 class="modal-title" id="exampleModalLabel">Evento Criado nº {{novo.pk}}</h5>
+      {% endif %}
+    
             <form  id="form_criar_tarefa" style="line-height: normal; font-size:10pt" hx-trigger="submit" hx-post="{% url 'salvar-tarefa' %}" hx-target="this" hx-swap="outerHTML">
                 {% for hidden_field in hidden_fields %}
                 {{ hidden_field }}
@@ -43,7 +48,11 @@ min-width: 10em; /* Will be AT LEAST 20em wide */
                 <div class="row mb-2 ">
                   <div class="col-10">
                       <label for="input1" class="">Titulo:</label>
-                      {% render_field form.titulo class="form-control" id="input1" name="titulo" required="required"%}
+                      {% if not criado %}
+                      {% render_field form.titulo class="form-control" id="input1" name="titulo" required="required" %}
+                      {% else %}
+                      {% render_field form.titulo class="form-control" id="input1" name="titulo" disabled="disabled" value=novo.titulo %}
+                      {% endif %}
                   </div>
                   <div class="col-2">
                     <label for="inputCOr" class="">Cor:</label>
@@ -54,7 +63,11 @@ min-width: 10em; /* Will be AT LEAST 20em wide */
                   <div class="row">
                     <div class="col-12">
                         <label for="input2" class="">Descrição:</label>
+                        {% if not criado %}
                         {% render_field form.descricao class="form-control" id="input2" name="descricao" %}
+                        {% else %}
+                        {% render_field form.descricao class="form-control" id="input2" name="descricao" disabled="disabled" value=novo.descricao %}
+                        {% endif %}
                       </div>
                   </div>
 
@@ -62,11 +75,19 @@ min-width: 10em; /* Will be AT LEAST 20em wide */
                   <div class="row">
                       <div class="col-6">
                         <label for="input3" class="">Data/Hora Início:</label>
+                        {% if not criado %}
                         {% render_field form.data_inclusao class="form-control" type="datetime-local"  id="input3" name="data_inicio" required="required" autocomplete="off"%}
+                        {% else %}
+                        {% render_field form.data_inclusao class="form-control" type="datetime-local"  id="input3" name="data_inicio" disabled="disabled" value=novo.data_inclusao%}
+                        {% endif %}
                       </div>
                       <div class="col-6">
                         <label for="input6" class="">Data/Hora Fim:</label>
+                        {% if not criado %}
                         {% render_field form.data_conclusao class="form-control" type="datetime-local"  id="input6" name="data_fim" autocomplete="off"%}
+                        {% else %}
+                        {% render_field form.data_conclusao class="form-control" type="datetime-local"  id="input6" name="data_fim" disabled="disabled" value=novo.data_conclusao%}
+                        {% endif %}
                       </div>
                       
                    </div>
@@ -77,11 +98,12 @@ min-width: 10em; /* Will be AT LEAST 20em wide */
               <div class="d-flex justify-content-end mt-2">
                   <span style="margin-right:10px; color:green">{{texto | safe}}</span>
                   {% if criado %}
-                  <a style="margin-right:10px" type="button" class="btn btn-sm btn-secondary" href="/" onclick="closeModal()">Sair</a>
+                  <a style="margin-right:10px" type="button" class="btn btn-sm btn-success" href="/" onclick="closeModal()"> Sair </a>
                   {% else %}
                   <button style="margin-right:10px" type="button" class="btn btn-sm btn-secondary " onclick="closeModal()">Fechar</button>
+                  <input form="form_criar_tarefa" class="btn btn-sm btn-primary" type="submit" value="Criar" /> 
                   {% endif %}
-                  <input form="form_criar_tarefa" class="btn btn-sm btn-primary" type="submit" value="Criar" />    
+                    
               </div>
           
 		</div>

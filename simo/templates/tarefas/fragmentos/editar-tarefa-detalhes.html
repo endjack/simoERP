@@ -1,0 +1,69 @@
+{% load widget_tweaks %}
+
+{% if tarefa_edit %}
+<div class="" id="mostar-detalhes-evento">
+<ol class="list-group mb-2 ">
+<form id="form-edit-evento" 
+    hx-post="{% url 'salvar-edicao-tarefa' tarefa_edit.pk %}" 
+    hx-trigger="submit" 
+    hx-target="#mostar-detalhes-evento" 
+    hx-swap="outerHTML" >
+
+    {% for hidden_field in hidden_fields %}
+    {{ hidden_field }}
+    {% endfor %}
+
+<div class="mb-2 d-flex align-items-start">
+    
+    <div class="m-1 col-10">Título:<br> {% render_field form.titulo class="form-control form-control-sm"  value=tarefa_edit.titulo required="required" %}</div>   
+    <div class="m-1 col-2">Cor:<br><input type="color" id="bttColor" name="btt_editColor"  value="{{tarefa_edit.cor}}"></div>
+</div>
+
+    <li class="list-group-item d-flex justify-content-between align-items-start  ">
+        <div class="ms-2 me-auto">
+            Descrição:
+            {% render_field form.descricao class="form-control form-control-sm" value=tarefa_edit.descricao %} 
+        </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start ">
+        <div class="ms-2 me-auto">
+            Data Início:
+            {% render_field form.data_inclusao class="form-control form-control-sm"  type="datetime-local"  value=tarefa_edit.data_inclusao required="required" autocomplete="off"%}
+        </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start ">
+        <div class="ms-2 me-auto">
+            Data Fim:
+            {% render_field form.data_conclusao class="form-control form-control-sm"  type="datetime-local"  value=tarefa_edit.data_conclusao required="required" autocomplete="off"%}
+        </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start ">
+        <div class="ms-2 me-auto">
+            Usuário:
+            <div class="titulo-p-forte">{{tarefa_edit.usuario.username}}</div>
+        </div>
+    </li>
+</form>
+    <li class="list-group-item d-flex justify-content-between align-items-start ">
+        
+           
+        <button class="btn btn-p-sm btn-secondary" hx-post="{% url 'ver-tarefa-detalhes' tarefa_edit.pk %}" hx-trigger="click" hx-target="#mostar-detalhes-evento" hx-swap="outerHTML"> Cancelar</button>
+        <div class="titulo-p-suave"> <input type="submit" form="form-edit-evento" class="btn btn-p-sm btn-success" value="Salvar Evento"></div>
+ 
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start ">
+    
+       
+        
+    </li>
+
+
+    {% else %}
+    <li style="background-color:#eff0ed;font-style: italic;" class="list-group-item d-flex justify-content-center align-items-center border-gray">
+    
+            Sem evento 
+    </li>
+    {% endif %}
+    </ol>
+</div>
+

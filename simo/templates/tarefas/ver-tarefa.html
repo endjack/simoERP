@@ -18,8 +18,107 @@
 {% block conteudo %}
 
 <div class="row" id="ver-tarefa-detalhes">
-    {% include "tarefas/fragmentos/ver-tarefa-detalhes.html" %}
+
+    <div class="col-4">
+        {% include "tarefas/fragmentos/ver-tarefa-detalhes.html" %}
+    </div>
+    <div class="col-8">
+        <h6>Eventos <span class="titulo-p-forte"> Não-Finalizados</span></h6>
+        <p class="">Abaixo lista dos último itens cadastrados em aberto.</p>
+         <ol class="list-group mb-2">
+            <li class="list-group-item d-flex justify-content-between ">
+                <div class="ms-2 me-auto pt-2">
+                
+                    <table class="table table-sm ">
+                        <thead style="border-color:silver;background-color:#0d6efd; color: white;">
+                            <tr>
+                                <th scope="col">Cód:</th>
+                                <th scope="col">Título</th>
+                                <th scope="col">Data Início</th>
+                                <th scope="col">Data Fim</th>
+                                <th scope="col">Opções</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in tarefas %}
+                            <tr>
+                                <td>{{item.pk}}</td>
+                                <td>{{item.titulo}}</td>
+                                {% if item.data_inclusao %}
+                                <td>{{item.data_inclusao}} 
+                                {% else %}
+                                <td> - </td>  
+                                {% endif %}
+                                {% if item.data_conclusao %}
+                                <td>{{item.data_conclusao}} 
+                                {% else %}
+                                <td> - </td>  
+                                {% endif %}
+                                <td> <a href='{% url "ver-tarefa" item.pk %}'>Ver</a> </td>  
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                 
+                </div>
+            </li>
     
+        </ol>
+        
+        
+    </div>
+    
+</div>
+
+<div class="row">
+    <div class="col-4"></div>
+    <div class="col-8">
+        <hr>
+        <h6>Eventos<span class="titulo-p-forte"> Finalizados:</span></h6>
+        <p class="">Abaixo lista dos eventos finalizados.</p>
+         <ol class="list-group mb-2">
+            <li class="list-group-item d-flex justify-content-between ">
+                <div class="ms-2 me-auto pt-2">
+                
+                    <table class="table table-sm ">
+                        <thead style="border-color:silver;background-color:green; color: white;">
+                            <tr>
+                                <th scope="col">Cód:</th>
+                                <th scope="col">Título</th>
+                                <th scope="col">Data Início</th>
+                                <th scope="col">Data Fim</th>
+                                <th scope="col">Opções</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in tarefas_finalizadas %}
+                            <tr>
+                                <td>{{item.pk}}</td>
+                                <td>{{item.titulo}}</td>
+                                {% if item.data_inclusao %}
+                                <td>{{item.data_inclusao}} 
+                                {% else %}
+                                <td> - </td>  
+                                {% endif %}
+                                {% if item.data_conclusao %}
+                                <td>{{item.data_conclusao}} 
+                                {% else %}
+                                <td> - </td>  
+                                {% endif %}
+                                <td> <a href='{% url "ver-tarefa" item.pk %}'>Ver</a> </td>  
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                 
+                </div>
+            </li>
+    
+        </ol>
+        
+        
+    </div>
+
 </div>
 
 {% endblock %}

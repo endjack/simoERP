@@ -1,8 +1,15 @@
-<div class="col-4 ">
+    {% load static %}
     {% if tarefa %}
+    <div class="" id="mostar-detalhes-evento">
+    
+    {% if not tarefa.feito %}
     <div class="text-center"><span style="color:{{tarefa.cor}};"><h6><i class="fas fa-square"></i></span>  Cód: {{tarefa.pk}} - <span class="titulo-p-forte">{{tarefa.titulo}}</span></h6></div>
     <ol class="list-group mb-2 ">
-       
+    {% else %}
+    <div class=""><span style="color:green;"><h6><i class="fas fa-square"></i></span>  Cód: {{tarefa.pk}} - <span class="titulo-p-forte">{{tarefa.titulo}}</span> - REALIZADO <span style="color:green"><i class="fas fa-check"></i></span></h6></div>
+    <ol class="list-group mb-2" style="border: 2px solid; color:green">
+    {% endif %}
+
         <li class="list-group-item d-flex justify-content-between align-items-start  ">
             <div class="ms-2 me-auto">
                 {% if tarefa.descricao %}
@@ -21,7 +28,7 @@
                 <div class="titulo-p-forte">{{tarefa.data_inclusao}}</div>
                 {% else %}
                 Data Início:
-                <div class="titulo-p-forte"> - </div>   
+                <div class="titulo-p-forte"> - </div>   ''
                 {% endif %}
             </div>
         </li>
@@ -49,8 +56,12 @@
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-start ">
         
-           
-            <button class="btn btn-p-sm btn-secondary disabled"> Editar (em processo)</button>
+            {% if not tarefa.feito %}
+            <button class="btn btn-p-sm btn-secondary" hx-post="{% url 'editar-tarefa' tarefa.pk %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#mostar-detalhes-evento"> Editar</button>
+            
+            
+            <button class="btn btn-p-sm btn-success" hx-post="{% url 'realizar-tarefa' tarefa.pk %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#mostar-detalhes-evento">Marcar Evento Realizado</button>
+
             <div class="titulo-p-suave"> <button type="button" class="btn btn-p-sm btn-danger" 
                 hx-post="{% url 'excluir-tarefa' tarefa.pk %}" 
                 hx-trigger="click" 
@@ -58,61 +69,22 @@
                 hx-swap="innerHTML" 
                 hx-confirm="Tem certeza que deseja excluir o Evento: {{tarefa.titulo}}?"
                 >Excluir</button></div>
-     
+            
+            {% else %}
+            <div class=""></div>
+            <button class="btn btn-p-sm btn-outline-secondary" hx-post="{% url 'realizar-tarefa' tarefa.pk %}" hx-trigger="click" hx-swap="outerHTML" hx-target="#mostar-detalhes-evento">Desmarcar Evento Realizado</button>
+            <div class=""></div>
+            {% endif %}
+
         </li>
         {% else %}
         <li style="background-color:#eff0ed;font-style: italic;" class="list-group-item d-flex justify-content-center align-items-center border-gray">
         
-                Sem evento
+                Sem evento  
+              
         </li>
+        <div class="text-center"><a href="/" class="">Voltar</a></div> 
         {% endif %}
-
         </ol>
+    </div>
 
-</div>
-
-<div class="col-8">
-    <h6>Últimos Eventos <span class="titulo-p-suave">Cadastrados:</span></h6>
-    <p class="">Abaixo lista dos último itens cadastrados e não em ordem cronológica.</p>
-     <ol class="list-group mb-2">
-        <li class="list-group-item d-flex justify-content-between ">
-            <div class="ms-2 me-auto pt-2">
-            
-                <table class="table table-sm ">
-                    <thead style="border-color:silver;background-color:#0d6efd; color: white;">
-                        <tr>
-                            <th scope="col">Cód:</th>
-                            <th scope="col">Título</th>
-                            <th scope="col">Data Início</th>
-                            <th scope="col">Data Fim</th>
-                            <th scope="col">Opções</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in tarefas %}
-                        <tr>
-                            <td>{{item.pk}}</td>
-                            <td>{{item.titulo}}</td>
-                            {% if item.data_inclusao %}
-                            <td>{{item.data_inclusao}} 
-                            {% else %}
-                            <td> - </td>  
-                            {% endif %}
-                            {% if item.data_conclusao %}
-                            <td>{{item.data_conclusao}} 
-                            {% else %}
-                            <td> - </td>  
-                            {% endif %}
-                            <td> <a href='{% url "ver-tarefa" item.pk %}'>Ver</a> </td>  
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-             
-            </div>
-        </li>
-
-    </ol>
-    
-    
-</div>
