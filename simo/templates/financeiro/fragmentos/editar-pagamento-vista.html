@@ -1,0 +1,61 @@
+<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
+	<div class="modal-underlay" _="on click trigger closeModal"></div>
+	<div class="modal-content" style="max-width:700px; overflow:auto;">
+		<h5>Editar Pagamento à Vista:</h5>
+		
+        <form id="form-editar-pagamento-vista" hx-post="{% url 'salvar-edicao-pagamento-vista' pagamento.pk nota_atual.pk %}" hx-trigger="submit" hx-target="body" hx-swap="outerHTML">
+
+            <li class="list-group-item d-flex justify-content-end ">
+                <div class="ms-2 flex-fill text-start">
+                    <div class="form-group row mb-2">
+                        <div class="col-3">
+                            <label for="" class="">Data:</label>
+                            <input class="form-control form-control-sm"  type="date" name="data_pagamento" value="{{pagamento.data_pagamento | date:'Y-m-d'}}">
+                            <small id="error_data"></small>
+                        </div>
+                        <div class="col-3">
+                            <label for="" class="">Valor:</label>
+                            <input type="text" class="form-control form-control-sm" name="valor_pago" value="{{pagamento.conta.valor_BR}}" disabled>
+                            <input type="hidden" value="{{pagamento.conta.valor}}" name="valor_">
+                        </div>
+                        <div class="col-3">
+                            <label for="" class="">Acréscimos R$:</label>
+                           <input class="form-control form-control-sm money"  type="text"  name="valor_acrescimo" value="{{pagamento.acrescimo}}" hx-get="{% url 'get-valor-total' %}" hx-trigger="keyup, change" hx-target="#valor-total" hx-swap="innerHTML" hx-include="this, [name='valor_']"> 
+                           <small id="error_valor"></small>
+                        </div>
+                    </div>
+                    <div class="form-group row mb-2">
+                        <div class="col-9">
+                            <label for="" class="">Observações:</label>
+                            <input class="form-control form-control-sm"  type="text" rows="2" name="obs" value="{{pagamento.obs}}">
+                        </div>
+                       
+                    </div>
+                <div class="ms-2 flex-fill text-end">
+                  Valor Total do Pagamento:
+                    <div style="font-size:14pt"><strong><span id="valor-total">{{pagamento.valor_total_BR}}</span></strong></div>
+                </div>
+                
+            </li>
+            
+            </form>
+            
+            
+            
+                <div class="d-flex flex-row-reverse mt-2">
+                    <button form="form-editar-pagamento-vista" class="btn btn-sm btn-success m-1">Salvar</button>    
+                    <button class="btn btn-sm btn-secondary m-1" _="on click trigger closeModal">Cancelar</button>
+                </div>
+	</div>
+</div>
+
+
+
+{% block jquery %}
+<script>
+    $('.money').mask('000.000.000,00', {
+        reverse: true
+    });
+</script>
+{% endblock%}
+

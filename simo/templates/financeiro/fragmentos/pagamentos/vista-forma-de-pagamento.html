@@ -1,0 +1,52 @@
+{% load widget_tweaks %}
+
+
+<form id="form-pagamento-vista" hx-post="{% url 'pagar-conta-vista' nota_atual.pk %}" hx-trigger="submit" hx-target="body" hx-swap="outerHTML">
+
+<li class="list-group-item d-flex justify-content-end ">
+    <div class="ms-2 flex-fill text-start">
+        <div class="form-group row mb-2">
+            <div class="col-3">
+                <label for="" class="">Data:</label>
+                {% render_field form.data_pagamento class="form-control form-control-sm"  type="date" %}
+            </div>
+            <div class="col-3">
+                <label for="" class="">Valor:</label>
+                <input type="text" class="form-control form-control-sm"  value="{{nota_atual.valor_BR}}" disabled>
+                <input type="hidden" value="{{nota_atual.valor}}" name="valor_">
+            </div>
+            <div class="col-3">
+                <label for="" class="">Acréscimos R$:</label>
+               <input class="form-control form-control-sm money"  type="text"  name="valor_acrescimo" hx-get="{% url 'get-valor-total' %}" hx-trigger="keyup, change" hx-target="#valor-total" hx-swap="innerHTML" hx-include="this, [name='valor_']"> 
+            </div>
+        </div>
+        <div class="form-group row mb-2">
+            <div class="col-9">
+                <label for="" class="">Observações:</label>
+                {% render_field form.obs class="form-control form-control-sm"  type="text" rows="2"%}
+            </div>
+           
+        </div>
+    <div class="ms-2 flex-fill text-end">
+      Valor Total do Pagamento:
+        <div style="font-size:14pt"><strong><span id="valor-total">{{nota_atual.valor_BR}}</span></strong></div>
+    </div>
+    
+</li>
+
+</form>
+
+
+    <div class="d-flex flex-row-reverse mt-2">
+        <button form="form-pagamento-vista" class="btn btn-sm btn-success m-1">Salvar</button>    
+        <button class="btn btn-sm btn-secondary m-1" _="on click trigger closeModal">Cancelar</button>
+    </div>
+
+{% block jquery %}
+<script>
+    $('.money').mask('000.000.000,00', {
+        reverse: true
+    });
+</script>
+{% endblock%}
+

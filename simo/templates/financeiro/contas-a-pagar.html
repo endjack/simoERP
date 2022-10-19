@@ -7,7 +7,7 @@
     <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Financeiro</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Contas à Pagar/Pagas</li>
+            <li class="breadcrumb-item active" aria-current="page">Contas-Atrasadas</li>
         </ol>
     </nav>
 </div>
@@ -15,236 +15,104 @@
 
 {% block styleHead %}
 <style>
-    .destaque-saida { 
-        color: red !important;
-        font-weight: bold; !important;
-     }
-     .destaque-entrada { 
-        color: green !important;
-        font-weight: bold; !important;
-     }
-    .table td {
-    text-align: center;
-    vertical-align: middle;   
-    }
+.htmx-indicator {
+    display:none;
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+.htmx-request {
+  display:block;
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+}
 
 </style>    
 {% endblock %}
 
 {% block conteudo %}
 
-<div class="d-flex flex-row bd-highlight">
+<ul class="nav nav-tabs mb-3" id="myTab">
+    <li class="nav-item">
+        <a href="{% url 'resumo-do-dia' %}" class="nav-link" >Resumo do Dia</a>
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'inserir-conta-a-pagar' %}" class="nav-link">Nova Conta</a>
+  </li>
+    <li class="nav-item">
+        <a href="#" class="nav-link active"data-bs-toggle="tab">Todas as Contas</a>
+    </li>
+    <li class="nav-item">
+        <a href="#" class="nav-link">Relatórios</a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane fade show active" id="tab-ativa" style="margin-left:2em; margin-right:2em;">
+
+      <form id="form_filtro_contas_atrasadas" style="font-size:9pt;" >
+    <div class="d-flex flex-row mb-3" style="font-size:12pt;">
+        <div class="m-1"><span class="mt-2"><strong>Filtrar Contas - Situação: </strong></span> </div>
+        <div class="form-check m-1">
+          <input class="form-check-input" type="checkbox" name="check_nao_pago" id="flexCheckDefault">
+          <label class="form-check-label" style="color:red" for="flexCheckDefault"> Não pagos </label>
+        </div>
+        <div class="form-check m-1">
+          <input class="form-check-input" type="checkbox" name="check_pago" id="flexCheckChecked">
+          <label class="form-check-label" style="color:green" for="flexCheckChecked"> Pagos </label>
+        </div>
+    </div>
+             
     <div class="">
-            <a href="{% url 'relatorios-contas-a-pagar' %}" class="btn btn-info m-2"><i class="fas fa-search"></i> Filtrar</a>
-            <a href="{% url 'inserir-conta-a-pagar' %}" class="btn btn-danger m-2"><i class="fas fa-plus"></i> Adicionar Conta</a>
+        <div class="form-group row mb-2 ">
+          <div class="col-3">
+            <div class="col-12 ">
+              <label for="input1" class="">Descrição/Doc/Nota Fiscal</label>
+              <input type="text" class="form-control form-control-sm" id="input1" name="descricao" hx-include="#form_filtro_contas_atrasadas" hx-indicator="#spinner" hx-swap="innerHTML" hx-target="#resultados-contas-atrasadas" hx-get="/contas-a-pagar/filtro" hx-trigger="keyup[target.value.length > 2] delay:1s throttle:1s">
+            </div>
+  
+          </div>
+          <div class="col-2">
+            <div class="col-12">
+              <label for="input2" class="">Vencimento/Data Inicial</label>
+              <input type="date" class="form-control form-control-sm" id="input2" name="data" hx-include="#form_filtro_contas_atrasadas" hx-indicator="#spinner" hx-swap="innerHTML" hx-target="#resultados-contas-atrasadas" hx-get="/contas-a-pagar/filtro" hx-trigger="change">
+            </div>
+          </div>
+  
+          <div class="col-2">
+            <div class="col-12">
+              <label for="input3" class="">Vencimento/Data Final</label>
+              <input type="date" class="form-control form-control-sm" id="input3" name="data_f" hx-include="#form_filtro_contas_atrasadas" hx-indicator="#spinner" hx-swap="innerHTML" hx-target="#resultados-contas-atrasadas" hx-get="/contas-a-pagar/filtro" hx-trigger="change">
+            </div>
+          </div>
+  
+          <div class="col-3">
+            <div class="col-12">
+              <label for="input4" class="">Fornecedor/Razão Social</label>
+              <input  type="text" class="form-control form-control-sm " id="input4" name="fornecedor" 
+                      hx-include="#form_filtro_contas_atrasadas" 
+                      hx-indicator="#spinner" 
+                      hx-swap="innerHTML" 
+                      hx-target="#resultados-contas-atrasadas" 
+                      hx-get="/contas-a-pagar/filtro" 
+                      hx-trigger="keyup[target.value.length > 2] delay:1s throttle:1s">
+            </div>
+          </div>
+
+          <div class="col-1 d-flex align-items-end">
+            <button class="btn btn-p-sm btn-secondary m-2" hx-post="{% url 'contas-a-pagar' %}" hx-trigger="click" hx-target="body" hx-swap="outerHTML" disabled>Limpar</button>
+          </div>
+          <span class="help-block">*Mínimo de 3 letras para buscar</span>
+        </div>
+  
+      </form>
+    </div>
+
     </div>
 </div>
-
-
-<div class="row"><span style="font-size:18px; color:purple;font-weight: bold;; margin-top: 10px">
-Contas À Pagar do Dia
-| TOTAL: {{ contas_do_dia_SUM }} 
-</span>
-
+<div class="row text-center">
+  <img id="spinner" class="htmx-indicator" width="30px" height="30px" src="{% static 'imagens/bars.svg' %}"/>
 </div>
-<table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:13px;">
-    <thead style="border:solid 2px;border-color:#cb356b;background:linear-gradient(to right, #642b73, #c6426e); color: white;">
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Documento</th>
-            <th scope="col">Emissão</th>
-            <th scope="col">Descrição</th>
-            <th scope="col">Fornecedor</th>
-            <th scope="col">Centro de Custo</th>
-            <th scope="col">Valor</th>
-            <th scope="col">Vencimento</th>
-            <th scope="col">Usuário</th>
-            <th scope="col">Pagar</th>
-            <th scope="col">Opções</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in contas_do_dia %}
-        <tr>
-            <td class="limitar_forloop">{{forloop.counter}}</td>
-            {% if item.documento %}
-            <td>{{item.documento}}</td>
-            {% else %}
-            <td> - </td>
-            {% endif %}
-            <td><span style="display:none;">{{item.data_inclusao | date:"Ymd"}}</span>{{item.data_inclusao | date:"d/m/Y"}}</td>
-            <td class="limitar_td" style="text-align: left; vertical-align:middle !important" title="{{item.descricao}}">{{item.descricao}}</td>
-            {% if item.fornecedor %}
-            <td class="limitar_td" style="text-align: left; vertical-align:middle !important" title="{{item.fornecedor}}"><a href="{% url 'detalhar-fornecedor' item.fornecedor.pk %}" title="Ver {{item.fornecedor}}">{{item.fornecedor}}</a>    </td>
-            {% else %}
-            <td> - </td>
-            {% endif %}
-            <td class="limitar_td" title="{{item.centro_de_custo}}">{{item.centro_de_custo}}</td>
-            <td class="destaque-saida">{{item.valor}}</td>
-            <td class="destaque-saida"><span style="display:none;">{{item.vencimento | date:"Ymd"}}</span>{{item.vencimento | date:"d/m/Y"}}</td>
-            <td>{{item.usuario.username}}</td>
-            <td><a href="{% url 'pagar-conta' item.pk %}" title="Pagar Conta: {{item.descricao}}"><span style="color: MediumSeaGreen;"><i class="fas fa-check-square fa-lg"></i></span></a></td>
-            <td>
-            <a href="{% url 'editar-conta-a-pagar' item.pk %}" title="Editar Conta: {{item.descricao}}"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a>
-            <a href="{% url 'excluir-conta-a-pagar' item.pk %}" title="Excluir Conta: {{item.descricao}}"><span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span></a>
-            </td>            
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<hr>
-<div class="row"><span style="font-size:18px; color:brown;font-weight: bold; margin-top: 10px">
-Contas à Pagar Atrasadas
-| TOTAL: {{ contas_atrasadas_SUM }}          
-</span>
-
-</div>
-<table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:13px;">
-    <thead style="border:solid 2px;border-color:#cb356b;background:linear-gradient(to left, #ed213a, #93291e); color: white;">
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Documento</th>
-            <th scope="col">Emissão</th>
-            <th scope="col">Descrição</th>
-            <th scope="col">Fornecedor</th>
-            <th scope="col">Centro de Custo</th>
-            <th scope="col">Valor</th>
-            <th scope="col">Vencimento</th>
-            <th scope="col">Usuário</th>
-            <th scope="col">Pagar</th>
-            <th scope="col">Opções</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in contas_atrasadas %}
-        <tr>
-            <td class="limitar_forloop">{{forloop.counter}}</td>
-            {% if item.documento %}
-            <td>{{item.documento}}</td>
-            {% else %}
-            <td> - </td>
-            {% endif %}
-            <td><span style="display:none;">{{item.data_inclusao | date:"Ymd"}}</span>{{item.data_inclusao | date:"d/m/Y"}}</td>
-            <td class="limitar_td" style="text-align: left; vertical-align:middle !important" title="{{item.descricao}}">{{item.descricao}}</td>
-            {% if item.fornecedor %}
-            <td class="limitar_td" style="text-align: left; vertical-align:middle !important" title="{{item.fornecedor}}"><a href="{% url 'detalhar-fornecedor' item.fornecedor.pk %}" title="Ver {{item.fornecedor}}">{{item.fornecedor}}</a>    </td>
-            {% else %}
-            <td> - </td>
-            {% endif %}
-            <td class="limitar_td" title="{{item.centro_de_custo}}">{{item.centro_de_custo}}</td>
-            <td class="destaque-saida">{{item.valor}}</td>
-            <td class="destaque-saida"><span style="display:none;">{{item.vencimento | date:"Ymd"}}</span>{{item.vencimento | date:"d/m/Y"}}</td>
-            <td>{{item.usuario.username}}</td>
-            <td><a href="{% url 'pagar-conta' item.pk %}" title="Pagar Conta: {{item.descricao}}"><span style="color: MediumSeaGreen;"><i class="fas fa-check-square fa-lg"></i></span></a></td>
-            <td>
-            <a href="{% url 'editar-conta-a-pagar' item.pk %}" title="Editar Conta: {{item.descricao}}"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a>
-            <a href="{% url 'excluir-conta-a-pagar' item.pk %}" title="Excluir Conta: {{item.descricao}}"><span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span></a>
-            </td>            
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<hr>
-<div class="row"><span style="font-size:18px; color:red;font-weight: bold; margin-top: 20px">
-Todas as Contas à Pagar 
-| TOTAL: {{ contas_SUM }}   
-</span>
-
+<div id="resultados-contas-atrasadas">
+  {% include "financeiro/fragmentos/resultados-contas-a-pagar.html" %}
 </div>
 
-<table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:13px;">
-    <thead style="border:solid 2px;border-color:#cb356b;background:linear-gradient(to right, #cb356b, #bd3f32); color: white;">
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Documento</th>
-            <th scope="col">Emissão</th>
-            <th scope="col">Descrição</th>
-            <th scope="col">Fornecedor</th>
-            <th scope="col">Centro de Custo</th>
-            <th scope="col">Valor</th>
-            <th scope="col">Vencimento</th>
-            <th scope="col">Usuário</th>
-            <th scope="col">Pagar</th>
-            <th scope="col">Opções</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in contas_list %}
-        <tr>
-            <td class="limitar_forloop">{{forloop.counter}}</td>
-            {% if item.documento %}
-            <td>{{item.documento}}</td>
-            {% else %}
-            <td> - </td>
-            {% endif %}
-            <td><span style="display:none;">{{item.data_inclusao | date:"Ymd"}}</span>{{item.data_inclusao | date:"d/m/Y"}}</td>
-            <td class="limitar_td" style="text-align: left; vertical-align:middle !important" title="{{item.descricao}}">{{item.descricao}}</td>
-            {% if item.fornecedor %}
-            <td class="limitar_td" style="text-align: left; vertical-align:middle !important" title="{{item.fornecedor}}"><a href="{% url 'detalhar-fornecedor' item.fornecedor.pk %}" title="Ver {{item.fornecedor}}">{{item.fornecedor}}</a>    </td>
-            {% else %}
-            <td> - </td>
-            {% endif %}
-            <td class="limitar_td" title="{{item.centro_de_custo}}">{{item.centro_de_custo}}</td>
-            <td class="destaque-saida">{{item.valor}}</td>
-            <td><span style="display:none;">{{item.vencimento | date:"Ymd"}}</span>{{item.vencimento | date:"d/m/Y"}}</td>
-            <td>{{item.usuario.username}}</td>
-            <td><a href="{% url 'pagar-conta' item.pk %}" title="Pagar Conta: {{item.descricao}}"><span style="color: MediumSeaGreen;"><i class="fas fa-check-square fa-lg"></i></span></a></td>
-            <td>
-            <a href="{% url 'editar-conta-a-pagar' item.pk %}" title="Editar Conta: {{item.descricao}}"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a>
-            <a href="{% url 'excluir-conta-a-pagar' item.pk %}" title="Excluir Conta: {{item.descricao}}"><span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span></a>
-            </td>            
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
 {% endblock%}
-
-{% block jquery %}
-<script src="{% static 'js/datatables.min.js' %}"></script>
-<script>
-
-
-    $(document).ready(function () {
-        
-        
-        $('.tabela-listar').DataTable({
-            responsive: true,
-            // "bSort": false,
-            "aaSorting": [],
-            "pageLength": 10,
-            "order": [[2, "desc"]],  //3º tabela em ordem decrescente
-            "language": {
-
-                "decimal": ",",
-                "emptyTable": "Sem dados disponíveis",
-                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
-                "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
-                "infoFiltered": "(filtrado de _MAX_ registros no total)",
-                "infoPostFix": "",
-                "thousands": ".",
-                "lengthMenu": "Mostrar _MENU_ registros",
-                "loadingRecords": "A carregar dados...",
-                "processing": "A processar...",
-                "search": "Procurar:",
-                "zeroRecords": "Não foram encontrados resultados",
-                "paginate": {
-                    "first": "Primeiro",
-                    "last": "Último",
-                    "next": "Seguinte",
-                    "previous": "Anterior"
-                },
-                "aria": {
-                    "sortAscending": ": ordem crescente",
-                    "sortDescending": ": ordem decrescente"
-                }
-            }
-        });
-
-
-
-    }); 
-    
-</script>
-{% endblock %}

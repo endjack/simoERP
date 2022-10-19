@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/resumo-do-dia/">Financeiro</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Detralhar Nota nº {{nota_atual.pk}}</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block styleHead %}
+<style>
+
+</style>
+{% endblock %}
+
+{% block conteudo %}
+<div class="d-flex flex-row bd-highlight" style="margin-left:2em;margin-right:2em;" id="detalhes-body">
+  <div class="bd-highlight">
+    
+  {% if nota_atual.forma_pagamento == 1 %}
+  <button class="m-1 btn btn-p-sm btn-danger" title="Excluir Pagamentos à vista"
+    hx-delete="{% url 'excluir-pagamento-vista' nota_atual.pk %}"
+    hx-trigger="click"
+    hx-target="body"
+    hx-swap="innerHTML"
+    hx-confirm="Tem certeza que deseja EXCLUIR o PAGAMENTO de valor {{nota_atual.valor_BR}}?"
+    >Excluir Pagamento</button>
+
+    <button class="m-1 btn btn-p-sm btn-primary" title="Excluir Pagamentos à vista"
+      hx-post="{% url 'editar-pagamento-vista' nota_atual.pk %}"
+      hx-trigger="click"
+      hx-target="body"
+      hx-swap="beforeend"
+      >Editar Pagamento</button>
+  
+  {% elif nota_atual.forma_pagamento == 2 %}
+    <button class="m-1 btn btn-p-sm btn-danger" title="Excluir Pagamentos por Boletos"
+      hx-delete="{% url 'excluir-pagamento-boletos' nota_atual.pk %}"
+      hx-trigger="click"
+      hx-target="body"
+      hx-swap="innerHTML"
+      hx-confirm="Tem certeza que deseja EXCLUIR o PAGAMENTO de valor {{nota_atual.valor_BR}}?"
+      >Excluir Pagamento (todos os Boletos) </button>
+
+  {% else %}
+  <a class="m-1 btn btn-p-sm btn-success" 
+            hx-get="{% url 'modal-ver-formas-pagamentos' nota_atual.pk %}"
+            hx-trigger="click"
+            hx-target="body"
+            hx-swap="beforeend">Realizar Pagamento</a>
+  
+    
+  {% endif %}
+    <a class="m-1 btn btn-p-sm btn-success" href="{% url 'inserir-conta-a-pagar' %}">Nova Nota</a>
+    </div>
+    
+    <div class="ms-auto bd-highlight">
+      {% if not nota_atual.pago %}
+      <a class="m-1 btn btn-p-sm btn-primary" href="{% url 'editar-saida' nota_atual.pk %}">Editar Dados da Nota</a>
+      {% else %}
+       <small><i>*Para qualquer alteração, é preciso excluir o pagamento primeiro.</i></small>
+      {% endif %}
+    </div>
+    
+  </div>
+<ol class="list-group" style="margin-left:2em; margin-right:2em;">
+    <li class="list-group-item d-flex justify-content-between  " >
+        <div class="ms-2 ml-auto">
+          Nota Fiscal nº:
+            <div class="titulo-p-forte"><span style="font-size:12pt"><strong>{{nota_atual.saida.nota_fiscal}}</strong></span></div>
+        </div>
+        <div class="ms-2 ml-auto">
+            Data de Emissão:
+              <div class="titulo-p-forte">{{nota_atual.saida.data_emissao}}</div>
+          </div>
+          <div class="ms-2 ml-auto text-end">
+            Situação:
+            {% if situacao == "pagoVista" %}
+                <div class="titulo-p-forte"><span style="color:green;font-size:12pt"><strong>PAGO À VISTA</strong></span></div>
+            {% elif situacao == "pagoBoletoFinalizado" %}
+                <div class="titulo-p-forte"><span style="color:green;font-size:12pt"><strong>PAGO por BOLETO(s) - Status: FINALIZADO</strong></span></div>
+            {% elif situacao == "pagoBoletoEmDia" %}
+                <div class="titulo-p-forte"><span style="color:blue;font-size:12pt"><strong>PAGO por BOLETO(s) - Status: EM DIA</strong></span></div>
+            {% elif situacao == "pagoBoletoAtrasado" %}
+                <div class="titulo-p-forte"><span style="color:red;font-size:12pt"><strong>PAGO por BOLETO(s) - Status: ATRASADO</strong></span></div>
+            {% else %}
+            <div class="titulo-p-forte"><span style="color:red;font-size:12pt"><strong>EM ABERTO</strong></span></div>
+            {% endif %}
+          </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start ">
+      <div class="ms-2 ml-auto">
+        Descrição::
+        {% if nota_atual.saida.descricao %}
+            <div class="titulo-p-forte"> {{nota_atual.saida.descricao|upper}} </div>
+        {% else %}
+            <div> <i>Sem descrição</i> </div>
+        {% endif %} 
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start ">
+        <div class="ms-2 ml-auto">
+          Fornecedor:
+            <div class="titulo-p-forte">{{nota_atual.saida.fornecedor.nome}}</div>
+        </div>
+        <div class="ms-2 ml-auto">
+            Razão Social:
+              <div class="titulo-p-forte">{{nota_atual.saida.fornecedor.razao_social}}</div>
+          </div>
+        <div class="ms-2 ml-auto text-end">
+            CPF/CNPJ:
+              <div class="titulo-p-forte">{{nota_atual.saida.fornecedor.doc}}</div>
+          </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start ">
+        <div class="ms-2 col-12">
+          Forma de Pagamento:
+          {% if nota_atual.forma_pagamento == 1 %}
+          
+              <div class="">
+              <strong><span style="color:green;">À VISTA</span></strong> | Data de Pagamento: <strong><span style="color:green;">{{pagamento.data_pagamento}}</span></strong>  | Usuario: <strong>{{pagamento.usuario.username}}</strong> 
+              </div>
+              <div class="">
+                {% if pagamento.obs %}
+                  <strong>{{pagamento.obs}}</strong>
+                {% endif %}
+              </div>
+          {% elif nota_atual.forma_pagamento == 2 %}
+                  <table class="table table-sm table-bordered table-striped ">
+                    <thead class="text-black text-center" style="background: #993939; color:white">
+                      <tr style="line-height: 12px;white-space: nowrap; font-size:10pt">
+                        <th scope="col" style="text-align: center;">Parcela</th>
+                        <th scope="col" style="text-align: center;">Documento</th>
+                        <th scope="col" style="text-align: center;">Data Vencimento</th>
+                        <th scope="col" style="text-align: center;">Situação</th>
+                        <th scope="col" style="text-align: center;">Valor Original</th>
+                        <th scope="col" style="text-align: center;">Juros/Multa (Se Pago)</th>
+                        <th scope="col" style="text-align: center;">Valor Total R$</th>
+                        <th scope="col" style="text-align: center;">Data Pagamento</th>
+                        <th scope="col" style="text-align: center;">Opções</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% if boletos %}
+                            {% for item in boletos %}
+                                {% if item.situacao_print == "Atrasado" %}
+                                  <tr style="line-height: normal; font-size:9pt;color:red; font-weight: bold">
+                                {% elif item.situacao_print == "Pago" %}
+                                  <tr style="line-height: normal; font-size:9pt;color:green; font-weight: bold">
+                                {% else %}
+                                  <tr style="line-height: normal; font-size:9pt">   
+                                {% endif %}
+                                <td style="text-align: center;">{{forloop.counter}}</td>
+                                <td style="text-align: center;">{{item.doc | upper}}</td>
+                                <td style="text-align: center;">{{item.data_vencimento | date:'d/m/Y'}}</td>
+                                <td style="text-align: center;">{{item.situacao_print}}</td>
+                                <td style="text-align: center;">{{item.valor_BR}}</td>
+                                <td style="text-align: center;">{% for pag in item.pagamentoboleto_set.all %} {{pag.acrescimo}}{% endfor %}</td> 
+                                <td style="text-align: center;">{% for pag in item.pagamentoboleto_set.all %} {{pag.valor_pago}}{% endfor %}</td> 
+                                <td style="text-align: center;">{% for pag in item.pagamentoboleto_set.all %} {{pag.data_pagamento | date:'d/m/Y'}}{% endfor %}</td> 
+                                
+                                <td style="text-align: center;"> 
+                                  {% if not item.pago %}
+                                  <span class="badge bg-primary" 
+                                  hx-post="{% url 'editar-pagamento-boleto' item.pk nota_atual.pk %}" 
+                                  hx-trigger="click" 
+                                  hx-target="body" 
+                                  hx-swap="beforeend">Editar</span>  
+                                  <span class="badge bg-success"
+                                  hx-post="{% url 'pagar-boleto-unico' item.pk nota_atual.pk %}" 
+                                  hx-trigger="click" 
+                                  hx-target="body" 
+                                  hx-swap="beforeend">Pagar</span> 
+                                  <span class="badge bg-danger" 
+                                  hx-delete="{% url 'excluir-boleto-unico' item.pk nota_atual.pk %}"
+                                  hx-trigger="click"
+                                  hx-target="body"
+                                  hx-swap="outerHTML"
+                                  hx-confirm="Tem certeza que deseja EXCLUIR o BOLETO de valor {{item.valor_BR}}?">Excluir</span>
+                                  {% else %}
+                                  <span class="badge bg-danger" 
+                                  hx-delete="{% url 'excluir-pagamento-boleto-unico' item.pk nota_atual.pk %}"
+                                  hx-trigger="click"
+                                  hx-target="body"
+                                  hx-swap="outerHTML"
+                                  hx-confirm="Tem certeza que deseja EXCLUIR o PAGAMENTO DO BOELTO de valor {{item.valor_BR}}?">Excluir Pagamento de Boleto</span>
+                                  {% endif %}
+                                </td>
+                               </tr>
+                            {% endfor %}
+                        {% else %}
+                              <tr>
+                                <td colspan="5" style="color:gray;text-align: center;">Nenhum Boleto !</td>
+                              </tr>
+                        {% endif %}
+                          
+                    </tbody>
+                    </table>
+          {% else %}
+            <div class=""> <span style="color:red;">Sem Pagamento</span></div>  
+          {% endif %} 
+        </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start ">
+        <div class="ms-2 col-12">
+          Itens/Serviços:
+          <table class="table table-sm table-bordered table-striped ">
+            <thead class="text-black text-center" style="background: silver;">
+              <tr style="line-height: 12px;white-space: nowrap; font-size:10pt">
+                <th scope="col" style="text-align: center;">#</th>
+                <th scope="col" style="text-align: left;">Descrição</th>
+                <th scope="col" style="text-align: center;">Quantidade</th>
+                <th scope="col" style="text-align: center;">Unidade</th>
+                <th scope="col" style="text-align: center;">Valor Unitário</th>
+                <th scope="col" style="text-align: center;">Valor Total</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% if nota_atual.itens %}
+                    {% for item in nota_atual.itens.all %}
+                      <tr style="line-height: normal; font-size:9pt">
+                        <td style="text-align: center;">{{forloop.counter}}</td>
+                        <td style="text-align: left;">{{item.descricao | upper}}</td>
+                        <td style="text-align: center;">{{item.qtd}}</td>
+                        <td style="text-align: center;">{{item.unid_medida}}</td>
+                        <td style="text-align: center;">{{item.valor_BR}}</td>
+                        <td style="text-align: center;">{{item.valor_total_BR}}</td>
+                      </tr>
+                    {% endfor %}
+                {% else %}
+                      <tr>
+                        <td colspan="6" style="color:gray;text-align: center;">Nenhum Item !</td>
+                      </tr>
+                {% endif %}
+                  
+            </tbody>
+            </table>
+        </div>
+        
+    </li>
+
+    <li class="list-group-item d-flex justify-content-end ">
+        <div class="ms-2 flex-fill text-start">
+            Centro de Custo:
+              <div class="titulo-p-forte" >{{nota_atual.saida.centro_de_custo}}</div>
+          </div>
+          {% if pagamento %}
+              <div class="ms-2 flex-fill text-end">
+                Valor Original:
+                  <div style="font-size:14pt">{{nota_atual.valor_BR}}</div>
+              </div>
+              <div class="ms-2 flex-fill text-end">
+                Acréscimos (+):
+                  <div style="font-size:14pt">{{pagamento.acrescimo_BR}}</div>
+              </div>
+              <div class="ms-2 flex-fill text-end">
+                Valor Total da Nota (=):
+                  <div style="font-size:14pt;color:green"><strong>{{pagamento.valor_pago_BR}}</strong></div>
+              </div>
+          {% else %}
+              <div class="ms-2 flex-fill text-end">
+                Valor Total da Nota (=):
+                  <div style="font-size:14pt"><strong>{{nota_atual.valor_BR}}</strong></div>
+              </div>
+          {% endif %}
+        
+    </li>
+    
+</ol>
+<div class="" style="margin-left:2em; margin-right:2em;"><i>Saida Cód.: {{nota_atual.pk}} | {% if pagamento %} Pagamento Cód.: {{pagamento.pk}} | {% else %}{% endif %}  Cadastrado por: {{nota_atual.usuario.username}}</i></div>
+
+{% endblock%}
+
+{% block jquery %}
+
+{% endblock %}
+
+
+
+
+
+
+

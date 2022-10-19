@@ -1,0 +1,92 @@
+{% if resumo %}
+
+<li class="list-group-item" style="background-color:#f5f7f5">
+<div class=""><strong>Resumo:</strong></div>
+<form id="form-salvar-boletos" hx-post="{% url 'salvar-boletos-mensal' nota_atual.pk %}" hx-trigger="submit" hx-target="body" hx-swap="outerHTML" hx-include="[name='num_parcelaA']">
+
+{% for boleto in resumo %}
+
+<div class="m-1"> Parcela nº: {{boleto.parcela}}   &nbsp;-&nbsp;  
+                    <input type="hidden" name="n_parcelaA" value="{{boleto.parcela}}"> 
+                    
+                    Número: <input type="text" class="col-2" name="doc_parcelaA" value="{{boleto.doc}}"> &nbsp;-&nbsp; 
+                    Valor R$: <input type="text" name="valor_parcelaA" class="money col-2" value="{{boleto.valor}}"
+                                hx-post="{% url 'atualizar-resumo-boleto-mensal' nota_atual.pk %}" 
+                                hx-trigger="change" 
+                                hx-target="#resumo-boletos" 
+                                hx-swap="innerHTML" 
+                                hx-include="[name='n_parcelaA'],[name='doc_parcelaA'],[name='data_parcelaA'], [name='num_parcelaA']">  &nbsp;-&nbsp;  
+                    
+                    Data: <input type="date" name="data_parcelaA" onkeydown="return false" value="{{boleto.data_vencimento | date:'Y-m-d' }}"
+                                hx-post="{% url 'atualizar-resumo-boleto-mensal' nota_atual.pk %}" 
+                                hx-trigger='change' 
+                                hx-target="#resumo-boletos" 
+                                hx-swap="innerHTML" 
+                                hx-include="[name='n_parcelaA'],[name='doc_parcelaA'],[name='data_parcelaA'], [name='num_parcelaA']"> <br>
+    
+    </div>
+
+{% endfor %}
+
+</form>
+
+    <input type="hidden" name="num_parcelaA" value="{{num_parcelas}}"> 
+    <div class="d-flex">
+        <div class="col-6 text-center" style="font-size:9pt">
+            <br>
+           <i></i>
+            
+        </div>
+        <div class="col-6 text-end">
+            Valor Total do Pagamento:
+            <div style="font-size:14pt"><strong><span id="valor-total">{{valor_total}}</span></strong></div>
+        </div>
+        
+    </div>
+</li>
+
+{% endif %}
+
+<div class="d-flex flex-row-reverse mt-2">  
+    <button id="btt-salvarBoletos" class="btn btn-sm btn-success m-1" form="form-salvar-boletos" >Salvar</button>
+    <button class="btn btn-sm btn-secondary m-1" _="on click trigger closeModal">Cancelar</button>
+</div>
+
+{% block jquery %}
+<script>
+
+    
+    //htmx.logAll();
+    $('.money').mask('000.000.000,00', {
+        reverse: true
+    });
+
+    
+    //eventos via response['HX-Trigger'] = "buttonSave" na view
+    document.body.addEventListener("buttonSave", function(evt){
+        $('#btt-salvarBoletos').prop('disabled', false);
+       
+    })
+    //evento via response['HX-Trigger'] = "buttonError" na view
+    document.body.addEventListener("buttonError", function(evt){
+        $('#btt-salvarBoletos').prop('disabled', true);
+       
+    })
+    
+
+    window.document.onkeydown = CheckEnter;
+
+    function CheckEnter(){
+  
+       if(event.keyCode == 13)
+  
+            return false;
+  
+       return true;
+  
+  }
+
+</script>
+{% endblock%}
+
+

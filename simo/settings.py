@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django_cleanup.apps.CleanupConfig',
     'multiselectfield',
+    'django_htmx',
+    'django_select2',
 
     #apps SIMO
     'estoque.apps.EstoqueConfig',
@@ -67,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = 'simo.urls'
@@ -116,6 +119,7 @@ CACHES = {
         'TIMEOUT': 3600  # 1 hora
     }
 }
+
 INTERNAL_IPS = [
     '127.0.0.1',
 ]

@@ -1,0 +1,201 @@
+{% load widget_tweaks %}
+<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
+	<div class="modal-underlay" _="on click trigger closeModal"></div>
+	<div class="modal-content">
+		<h5>Inserir Itens/Serviços:</h5>
+        <form id="addItensConta" 
+				{% if id_nota_atual %}  hx-post="{% url 'inserir-itens-conta' id_nota_atual %}" 
+				{% else %}  hx-post="{% url 'inserir-itens-conta' %}" 
+				{% endif %}
+				hx-trigger="submit" 
+				hx-target="#add_itens_table" 
+				hx-swap="innerHTML" >
+
+        
+            <div class="form-group row mb-2">
+                <div class="col-5">
+                    <label for="input1" class="">Descrição:</label>
+                       <input type="text" class="form-control form-control-sm" name="descricao" id="input1"
+							hx-post="{% url 'check-descricao-item-conta' %}" 
+							hx-trigger="keyup delay:300ms changed, change, click" 
+							hx-target="#error_descricao" 
+							hx-swap="innerHTML">
+					   <small class="small-error" id="error_descricao"></small>
+                </div>
+                <div class="col-2">
+                    <label for="input2" class="">Quant:</label>
+					<input class="form-control form-control-sm nodot" name="qtd" id="input2" type="number" min="0" step="any" autocomplete="off"
+							hx-post="{% url 'check-quantidade-item-conta' %}" 
+							hx-trigger="keyup delay:300ms changed, change, click" 
+							hx-target="#error_qtd" 
+							hx-swap="innerHTML">
+					   <small class="small-error" id="error_qtd"></small>
+                       
+                </div>
+                <div class="col-2">
+                    <label for="input3" class="">Und:</label>
+                        {% render_field form.unid_medida class="form-control form-control-sm"  id="input3"%}
+                </div>
+                <div class="col-3">
+                    <label for="input4" class="">Valor Unit R$:</label>
+					<input class="form-control form-control-sm money nodot" name="valor" id="input4" type="text" autocomplete="off"
+							hx-post="{% url 'check-valor-item-conta' %}" 
+							hx-trigger="keyup delay:300ms changed, change, click" 
+							hx-target="#error_valor" 
+							hx-swap="innerHTML"
+							>
+					   <small class="small-error" id="error_valor" >
+					   </small> 
+                       
+                </div>
+            </div>
+				{% for error in field.errors %}
+				<span class="help-block">{{ error }}</span>
+			{% endfor %}
+		</form>
+		<div class="">
+		</div>
+
+		<div class="d-flex flex-row-reverse">
+			
+			<button class="btn btn-p-sm btn-primary m-1" form="addItensConta"  id="btt-addItensConta"  _="on click trigger closeModal" disabled>Salvar</button>
+			<button class="btn btn-p-sm btn-light m-1" _="on click trigger closeModal" >Cancelar</button>
+		</div>
+	</div>
+</div>
+
+
+
+{% block styleHead %}
+<style>
+	
+
+
+
+
+/***** MODAL DIALOG ****/
+#modal {
+	/* Underlay covers entire screen. */
+	position: fixed;
+	top:0px;
+	bottom: 0px;
+	left:0px;
+	right:0px;
+	background-color:rgba(0,0,0,0.5);
+	z-index:1000;
+
+	/* Flexbox centers the .modal-content vertically and horizontally */
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+
+	/* Animate when opening */
+	animation-name: fadeIn;
+	animation-duration:150ms;
+	animation-timing-function: ease;
+}
+
+#modal > .modal-underlay {
+	/* underlay takes up the entire viewport. This is only
+	required if you want to click to dismiss the popup */
+	position: absolute;
+	z-index: -1;
+	top:0px;
+	bottom:0px;
+	left: 0px;
+	right: 0px;
+}
+
+#modal > .modal-content {
+	/* Position visible dialog near the top of the window */
+	margin-top:10vh;
+
+	/* Sizing for visible dialog */
+	width:80%;
+	max-width:800px;
+
+	/* Display properties for visible dialog*/
+	border:solid 1px #999;
+	border-radius:8px;
+	box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.3);
+	background-color:white;
+	padding:20px;
+
+	/* Animate when opening */
+	animation-name:zoomIn;
+	animation-duration:150ms;
+	animation-timing-function: ease;
+}
+
+#modal.closing {
+	/* Animate when closing */
+	animation-name: fadeOut;
+	animation-duration:150ms;
+	animation-timing-function: ease;
+}
+
+#modal.closing > .modal-content {
+	/* Aniate when closing */
+	animation-name: zoomOut;
+	animation-duration:150ms;
+	animation-timing-function: ease;
+}
+
+@keyframes fadeIn {
+	0% {opacity: 0;}
+	100% {opacity: 1;}
+} 
+
+@keyframes fadeOut {
+	0% {opacity: 1;}
+	100% {opacity: 0;}
+} 
+
+@keyframes zoomIn {
+	0% {transform: scale(0.9);}
+	100% {transform: scale(1);}
+} 
+
+@keyframes zoomOut {
+	0% {transform: scale(1);}
+	100% {transform: scale(0.9);}
+} 
+</style>
+{% endblock %}
+
+{% block jquery %}
+<script>
+	document.body.addEventListener("enableButton", function(evt){
+		$('#btt-addItensConta').prop('disabled', false);
+	})
+	document.body.addEventListener("disableButton", function(evt){
+		$('#btt-addItensConta').prop('disabled', true);
+	})
+	
+
+
+    $('.money').mask('000.000.000,00', {
+        reverse: true
+    });
+
+	//CANCELAR TECLA ENTER NO FORMULÁRIO
+    window.document.onkeydown = CheckEnter;
+    function CheckEnter(){
+       if(event.keyCode == 13)
+            return false;
+       return true;
+  
+  }
+
+
+	//DESATIVAR '.' (DOT) NOS INPUTS
+	$(".nodot").on("keypress", function(evt) {
+	 var keycode = evt.charCode || evt.keyCode;
+	 if (keycode == 46) {
+	 return false;
+	 }
+ });
+
+
+</script>
+{% endblock%}

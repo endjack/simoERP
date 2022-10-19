@@ -1,0 +1,20 @@
+    
+              <div class="d-flex flex-row col-6" style="">
+                <div class="m-1"><span class="" style="font-size:12pt;"><strong>Forma de Pagamento: </strong></span> </div>
+        
+                    <div class="col-6">   
+                        <select class="form-select form-select-sm" aria-label="Default select example" name="selectFPagamento"
+                            hx-get="{% url 'get-forma-de-pagamento' %}"
+                            hx-trigger="change"
+                            hx-target="#formaPagamento"
+                            hx-swap="innerHTML">
+                            <option value="1" selected>À VISTA</option>
+                            <option value="2">BOLETO</option>
+                            <option value="3">EM ABERTO</option>
+                        </select>
+                    </div> 
+                    
+            </div>
+            <div id="formaPagamento">
+                {% include 'financeiro/fragmentos/pagamentos/vista-forma-de_pagamento.html' %}
+            </div>

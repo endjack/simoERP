@@ -1,0 +1,9 @@
+<option value=""> ---------- </option>
+{% if fornecedores or fornecedores == "" %}
+    {% for f in fornecedores %}
+    <option value="{{f.pk}}" {% if f.pk == fornecedor_atual %}selected{% endif %} > {{f.template_options}}</option>
+
+    {% endfor %}
+{% else %}
+<option value="Não encontrado!"> 
+{% endif %}
