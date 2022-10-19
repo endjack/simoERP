@@ -7,6 +7,7 @@ from funcionarios.views import *
 from estoque.views import *
 from requisicao.views import *
 from financeiro.views import *
+from financeiro.validations import *
 from servicos.views import *
 from dashboard.views import *
 from obras.views import *
@@ -24,6 +25,7 @@ from financeiro.ajax import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('__debug__/', include(debug_toolbar.urls)),
+    path("select2/", include("django_select2.urls")),
     
     #url DashBoard
     path('', home_index, name='dashboard'),
@@ -99,24 +101,72 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     
     #urls Financeiro 
-    path('contas-a-pagar/', ContasAPagarView.as_view(), name='contas-a-pagar'),
-    path('contas-a-pagar/inserir', InserirContasAPagarView.as_view(), name='inserir-conta-a-pagar'),
-    path('contas-a-pagar/editar/<pk>', EditarContasAPagarView.as_view(), name='editar-conta-a-pagar'),
-    path('contas-a-pagar/excluir/<pk>', ExcluirContasAPagarView.as_view(), name='excluir-conta-a-pagar'),
-    path('pagamento/<pk>', PagamentoView.as_view(), name='pagar-conta'),
-    path('pagamento/editar/<pk>', EditarPagamentoView.as_view(), name='editar-pagamento'),
-    path('pagamento/excluir/<pk>', ExcluirPagamentoView.as_view(), name='excluir-pagamento'),
-    path('relatorios/financeiro/contas-a-pagar', RelatoriosCostasAPagarView.as_view(), name='relatorios-contas-a-pagar'),
-    path('relatorio-contas/imprimir', ImprimirRelatoriosCostasAPagarView.as_view(), name='imprimir-relatorio-contas'),
-    path('contas-a-receber/', ContasAReceberView.as_view(), name='contas-a-receber'),
-    path('contas-a-receber/editar/<pk>', EditarRecebimentoView.as_view(), name='editar-conta-a-receber'),
-    path('contas-a-receber/excluir/<pk>', ExcluirRecebimentoView.as_view(), name='excluir-conta-a-receber'),
-    path('recibos/', InserirReciboFornecedorView.as_view(), name='inserir-recibo'),
-    path('recibos/editar/<pk>', EditarReciboFornecedorView.as_view(), name='editar-recibo'),
-    path('recibos/excluir/<pk>', ExcluirReciboFornecedorView.as_view(), name='excluir-recibo'),
-    path('recibos/imprimir/<pk>',ImprimirReciboFornecedorView.as_view(), name='imprimir-recibo'),
-    path('contas-pagas/', ContasPagasView.as_view(), name='contas-pagas'),
-    path('ajax/fornecedor/contas-a-pagar', getContasAPagar, name = "ajax-fornecedor-contas-a-pagar"),
+    path('resumo-do-dia/', home_resumo_do_dia, name='resumo-do-dia'),
+    path('contas-a-pagar/', contas_a_pagar, name='contas-a-pagar'),
+    path('contas-a-pagar/filtro', filtro_contas_a_pagar, name='resultados-filtro-contas-a-pagar'),
+    path('contas-a-pagar/add-descricao', add_descricao_nota, name='add-descricao-nota'),          
+    path('contas-a-pagar/inserir', inserir_nova_conta_a_pagar, name='inserir-conta-a-pagar'),
+    path('contas-a-pagar/modal-itens/', modal_itens_conta_a_pagar, name='modal-item-conta'),
+    path('contas-a-pagar/modal-itens/<int:pk>', modal_itens_conta_a_pagar, name='modal-item-conta'),
+    path('contas-a-pagar/inserir-itens/', inserir_itens_conta_a_pagar, name='inserir-itens-conta'),
+    path('contas-a-pagar/inserir-itens/<int:pk>', inserir_itens_conta_a_pagar, name='inserir-itens-conta'),
+    path('contas-a-pagar/excluir-item/<int:pk>', excluir_item_conta_a_pagar, name='excluir-item-conta'),
+
+    
+    
+    #urls Financeiro v.2
+    path('contas-a-pagar/salvar-saida', salvar_nota_completa, name='salvar-saida'),
+    path('contas-a-pagar/nota/<int:pk>', ver_nota_completa, name='ver-nota-completa'),
+    path('contas-a-pagar/editar/saida/<int:pk>', editar_saida, name='editar-saida'),
+    path('contas-a-pagar/editar/saida/salvar/<int:pk>', salva_edicao_saida, name='salvar-edicao-saida'),
+    path('contas-a-pagar/excluir/saida/<int:pk>', excluir_saida, name='excluir-saida'),
+    path('contas-a-pagar/forma-pagamento/<int:pk>', selecionar_forma_de_pagamento, name='modal-ver-formas-pagamentos'),
+    path('contas-a-pagar/forma-pagamento-selecionada/<int:pk>', forma_de_pagamento_selecionada, name='forma-pagamento-selecionada'),
+    path('contas-a-pagar/get-valor-total', get_valor_total, name='get-valor-total'),
+    path('contas-a-pagar/pagar/nota/<int:pk>', pagar_nota_a_vista, name='pagar-conta-vista'),
+    path('contas-a-pagar/excluir-pagamento-vista/nota/<int:pk>', excluir_pagamento_a_vista, name='excluir-pagamento-vista'),
+    path('contas-a-pagar/<int:pk>/get-resumo-boleto-mensal', get_resumo_boleto_mensal, name='resumo-boleto-mensal'),
+    path('contas-a-pagar/<int:pk>/atualizar-resumo-boleto-mensal', atualizar_resumo_boleto_mensal, name='atualizar-resumo-boleto-mensal'),
+    path('contas-a-pagar/<int:pk>/salvar-boletos-mensal', salvar_boletos_mensal, name='salvar-boletos-mensal'),
+    path('contas-a-pagar/excluir-pagamento-boletos/nota/<int:pk>', excluir_pagamento_boletos, name='excluir-pagamento-boletos'),
+    path('contas-a-pagar/editar-pagamento-boletos/nota/<int:pk>', editar_pagamento_boletos, name='editar-pagamento-boletos'),
+    path('contas-a-pagar/editar-pagamento-vista/nota/<int:pk>', editar_pagamento_vista, name='editar-pagamento-vista'),
+    path('contas-a-pagar/salvar-editar-pagamento-vista/<int:pk>/nota/<int:nota>', salvar_editar_pagamento_vista, name='salvar-edicao-pagamento-vista'),
+    path('contas-a-pagar/editar-pagamento-boleto/<int:pk>/nota/<int:nota>', editar_pagamento_boleto, name='editar-pagamento-boleto'),
+    path('contas-a-pagar/salvar-editar-boleto/<int:pk>/nota/<int:nota>', salvar_editar_pagamento_boleto, name='salvar-editar-boleto-unico'),
+    path('contas-a-pagar/excluir-boleto-unico/<int:pk>/nota/<int:nota>', excluir_boleto_unico, name='excluir-boleto-unico'),
+    path('contas-a-pagar/pagar-boleto-unico/<int:pk>/nota/<int:nota>', pagar_boleto_unico, name='pagar-boleto-unico'),
+    path('contas-a-pagar/salvar-pagar-boleto-unico/<int:pk>/nota/<int:nota>', salvar_pagar_boleto_unico, name='salvar-pagamento-boleto-unico'),
+    path('contas-a-pagar/excluir-pagamento-boleto-unico/<int:pk>/nota/<int:nota>', excluir_pagamento_boleto_unico, name='excluir-pagamento-boleto-unico'),
+
+    
+    
+    #validações [financeiro]
+    path('contas-a-pagar/check-descricao-item-conta', check_descricao_item_conta, name='check-descricao-item-conta'),
+    path('contas-a-pagar/check-quantidade-item-conta', check_quantidade_item_conta, name='check-quantidade-item-conta'),
+    path('contas-a-pagar/check-valor-item-conta', check_valor_item_conta, name='check-valor-item-conta'),
+    path('contas-a-pagar/check-data-emissao', check_data_emissao, name='check-data-emissao'),
+    path('contas-a-pagar/check-centro-de-custo', check_centro_de_custo, name='check-centro-de-custo'),
+    path('contas-a-pagar/check-qtd-itens-conta', check_qtd_itens_conta, name='check-qtd-itens-conta'),
+    
+    
+    
+    # path('contas-a-pagar/editar/<pk>', EditarContasAPagarView.as_view(), name='editar-conta-a-pagar'),
+    # path('contas-a-pagar/excluir/<pk>', ExcluirContasAPagarView.as_view(), name='excluir-conta-a-pagar'),
+    # path('pagamento/<pk>', PagamentoView.as_view(), name='pagar-conta'),
+    # path('pagamento/editar/<pk>', EditarPagamentoView.as_view(), name='editar-pagamento'),
+    # path('pagamento/excluir/<pk>', ExcluirPagamentoView.as_view(), name='excluir-pagamento'),
+    # path('relatorios/financeiro/contas-a-pagar', RelatoriosCostasAPagarView.as_view(), name='relatorios-contas-a-pagar'),
+    # path('relatorio-contas/imprimir', ImprimirRelatoriosCostasAPagarView.as_view(), name='imprimir-relatorio-contas'),
+    # path('contas-a-receber/', ContasAReceberView.as_view(), name='contas-a-receber'),
+    # path('contas-a-receber/editar/<pk>', EditarRecebimentoView.as_view(), name='editar-conta-a-receber'),
+    # path('contas-a-receber/excluir/<pk>', ExcluirRecebimentoView.as_view(), name='excluir-conta-a-receber'),
+    # path('recibos/', InserirReciboFornecedorView.as_view(), name='inserir-recibo'),
+    # path('recibos/editar/<pk>', EditarReciboFornecedorView.as_view(), name='editar-recibo'),
+    # path('recibos/excluir/<pk>', ExcluirReciboFornecedorView.as_view(), name='excluir-recibo'),
+    # path('recibos/imprimir/<pk>',ImprimirReciboFornecedorView.as_view(), name='imprimir-recibo'),
+    # path('contas-pagas/', ContasPagasView.as_view(), name='contas-pagas'),
+    # path('ajax/fornecedor/contas-a-pagar', getContasAPagar, name = "ajax-fornecedor-contas-a-pagar"),
 
     
     #urls Fornecedores
@@ -125,6 +175,13 @@ urlpatterns = [
      path('fornecedores/inserir', InserirFornecedorView.as_view(), name='inserir-fornecedor'),
      path('fornecedores/<pk>/editar', EditarFornecedorView.as_view(), name='editar-fornecedor'),
      path('fornecedores/<pk>/excluir', ExcluirFornecedorView.as_view(), name='excluir-fornecedor'),
+     
+     
+    path('fornecedores/get', get_fornecedores, name='get-fornecedores'),
+    path('fornecedores/get/error', get_error, name='get-error'),
+    
+     
+     
 
      #urls Funcionários
      path('funcionarios/', InserirFuncionarioView.as_view(), name='inserir-funcionario'),

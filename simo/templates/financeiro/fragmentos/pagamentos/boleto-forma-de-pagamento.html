@@ -1,0 +1,55 @@
+{% load widget_tweaks %}
+
+<li class="list-group-item ">
+
+            
+            <div class=""><strong>Gerar Boletos Mensais:</strong></div>
+
+            <div class="d-flex justify-content-start ">
+                <form id="form-gerar-boleto-mensal" hx-post="{% url 'resumo-boleto-mensal' nota_atual.pk %}" hx-trigger="submit" hx-target="#resumo-boletos" hx-swap="innerHTML">
+                    <div class="form-group row m-2">
+                        <div class="col-md">
+                            <label for="" class="">Qtd Parcelas: </label>
+                            <input type="number" class="form-control form-control-sm" name="n_parcelas" value="1">
+                        </div>
+                        <div class="col-md">
+                            <label for="" class="">Número Doc: </label>
+                            <input type="text" class="form-control form-control-sm" name="doc_parcela" >
+                        </div>
+                        <div class="col-md">
+                            <label for="" class="">Valor R$: </label>
+                            <input type="text" class="form-control form-control-sm money" name="valor_parcelas" value="000">
+                        </div>
+                        <div class="col-md">
+                            <label for="" class="">Data 1ª Parcela: </label>
+                            <input type="date" class="form-control form-control-sm " name="data_1_parcela">
+                        </div>
+
+                        <div class="col-md">   <button form="form-gerar-boleto-mensal" class="" type="submit">Gerar</button></div>
+                    </div>
+                          
+            </form>
+        </div> 
+       
+        
+      
+</li>
+
+<div id="resumo-boletos" >
+    {% include 'financeiro/fragmentos/pagamentos/resumo-boletos-pagamento.html' %} 
+</div> 
+
+
+{% block jquery %}
+<script>
+
+
+    
+
+    $('.money').mask('000.000.000,00', {
+        reverse: true
+    });
+</script>
+{% endblock%}
+
+    

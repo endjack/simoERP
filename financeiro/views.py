@@ -1,357 +1,1081 @@
-from django.core.cache import cache
-from financeiro.filters import ContasFilter, ContasPagasFilter
-from datetime import datetime, date
-from django.views.generic.base import TemplateView
-from servicos.views import bcolors
+from re import I
+from xml.dom import ValidationErr
+
+from requests import delete
+from financeiro.filters import ContasFilter
 from financeiro.forms import *
-from django.shortcuts import render
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django.urls.base import reverse, reverse_lazy
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
-from django.db.models import Sum
-from django.conf import settings
-from django.template.loader import render_to_string
-import os
-from django.http.response import HttpResponse
-from weasyprint import HTML, CSS
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from braces.views import GroupRequiredMixin
+from django.urls.base import reverse
+from django.db.models import DecimalField, ExpressionWrapper, F, Sum
+from django.db.models import Q
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from datetime import datetime, timedelta
+from django.contrib.auth.decorators import login_required
+from django.http import Http404
+from django.core.cache import cache
+from django.http.response import HttpResponseRedirect, HttpResponse
+from django_htmx.http import trigger_client_event
+from .validations import validar_descricao_nota, validar_item_nota
+
+END_LOG = '\033[0;0m'
+LOG_DANGER= '\033[31m'
+
+#VARIÁVEIS GLOBAIS
+valor_total_pre_save_a_vista = None
+resumo_listagem_boletos = list()
+pode_salvar_boleto = False
+id_nota_em_processo = None
+
+ #TODO excluir boleto individual
+ #TODO excluir Nota Completa  <-----
+ #TODO Excluir itens salvar editar não atualiza os itens
+ #TODO página de editar os boletos antes de excluir
+ #TODO Editar (colocar o itens para serem add no final)
 
 
-class ContasAPagarView(GroupRequiredMixin, LoginRequiredMixin,TemplateView):
-    login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Financeiro',]
-
-    template_name = 'financeiro/contas-a-pagar.html'
- 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)      
-        
-
-        first_date = date(1, 1, 1)
-        today_date = datetime.today()
-        
-        contas = ContaPagamento.objects.filter(pago=False)
-        contas_do_dia = ContaPagamento.objects.filter(pago=False).filter(vencimento=today_date)
-        contas_atrasadas = ContaPagamento.objects.filter(pago=False).filter(vencimento__range=[first_date, today_date])
-        context["contas_do_dia"] = contas_do_dia
-        context["contas_atrasadas"] = contas_atrasadas
-        context["contas_list"] = contas
-        context["contas_do_dia_SUM"] = sum(contas_do_dia.values_list('valor', flat=True))
-        context["contas_atrasadas_SUM"] = sum(contas_atrasadas.values_list('valor', flat=True))
-        context["contas_SUM"] = sum(contas.values_list('valor', flat=True))
-        return context     
-
-class ContasPagasView(GroupRequiredMixin, LoginRequiredMixin,TemplateView):
-    login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Financeiro',]
-
-    template_name = 'financeiro/contas-pagas.html'
- 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)     
-        
-
-        #filtros
-        if not 'descricao' in self.request.GET:
-            contas_pagas = Pagamento.objects.order_by('-id')[:10] ##SELECT ••• FROM `financeiro_pagamento` ORDER BY `financeiro_pagamento`.`id` DESC LIMIT 10
-            label_results = "Últimos 10 pagamentos cadastrados"
-        else:
-            contas_pagas = Pagamento.objects.all()   
-            label_results = "Resultados | Mostrar _MENU_ registros"
-        
-        
-        filter_list = ContasPagasFilter(self.request.GET, queryset= contas_pagas)    
-        context["filter"] = filter_list 
-        context["label_results"] = label_results
-        context["contas_pagas_SUM"] = sum(filter_list.qs.values_list('valor', flat=True))
-        
-        return context  
-
-class InserirContasAPagarView(GroupRequiredMixin, LoginRequiredMixin,CreateView):
-    login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Financeiro',]
-
-    template_name = 'financeiro/inserir-conta.html'
-    model = ContaPagamento
-    form_class = ContaPagamentoForm
-    success_url = reverse_lazy('contas-a-pagar')
+#GET /resumo-do-dia/
+@login_required(login_url='login/')
+def home_resumo_do_dia(request):
+    """
+    Retorna a página inicial do financeiro
+    """
+    template_name = 'financeiro/resumo-do-dia.html'
+    today_date = datetime.now()
     
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["contas_list"] = ContaPagamento.objects.filter(pago=False)
-        context["contas_list_pagas"] = Pagamento.objects.all()
-        return context
-      
-    def form_valid(self, form):      
-        form.instance.usuario = self.request.user
-        form.instance.valor = 0
-        print(bcolors.OK + "VALORRRR - {}".format(self.request.POST.get('valor')) + bcolors.RESET) 
-        form.instance.valor = float(form.cleaned_data['valor'])
-        return super().form_valid(form)
-    
-    def get_success_url(self):
-        if self.request.POST.get('pagar') == 'True':
-            return reverse('pagar-conta', kwargs = {'pk': self.object.id})
-        else:
-            return super().get_success_url()  
-      
-      
-class EditarContasAPagarView(GroupRequiredMixin, LoginRequiredMixin,UpdateView):
-    login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Financeiro',]
-
-    template_name = 'financeiro/inserir-conta.html'
-    model = ContaPagamento
-    form_class = ContaPagamentoForm
-    success_url = reverse_lazy('contas-a-pagar')
-        
-class ExcluirContasAPagarView(GroupRequiredMixin, LoginRequiredMixin,DeleteView):
-    login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Financeiro',]
-
-    model = ContaPagamento
-    success_url = reverse_lazy('contas-a-pagar')
-
-class PagamentoView(GroupRequiredMixin, LoginRequiredMixin, CreateView):
-    login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Financeiro',]
-
-    template_name = 'financeiro/pagamento.html'
-    model = Pagamento
-    form_class = PagamentoForm
-    success_url = reverse_lazy('contas-a-pagar')
-
-    
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        conta_atual = ContaPagamento.objects.get(pk=self.kwargs.get('pk'))
-         
-        context["conta_atual"] = conta_atual
-        return context
-    
-    def form_valid(self, form):
-        conta_atual = ContaPagamento.objects.get(pk=self.kwargs.get('pk'))
-        form.instance.conta = conta_atual
-         
-        if self.request.POST.get('total') != None :  # o ckeckbox return 'on' ou None
-            form.instance.valor = conta_atual.valor 
-                   
-        if form.instance.valor >= form.instance.conta.valor: 
-            conta_atual.pago = True
-            conta_atual.save()
-                
-        return super().form_valid(form)
-
-class EditarPagamentoView(GroupRequiredMixin, LoginRequiredMixin,UpdateView):
-    login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Financeiro',]
-
-    template_name = 'financeiro/pagamento.html'
-    model = Pagamento
-    form_class = PagamentoForm
-    success_url = reverse_lazy('contas-pagas')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        pagamento_atual = Pagamento.objects.get(pk=self.kwargs.get('pk'))
-        conta_atual = pagamento_atual.conta
-        context["conta_atual"] = conta_atual
-    
-        
-        
-        # context['mostrar_conta'] = 'display: none;'
-        
-        if pagamento_atual.total:   
-            context['checked'] = 'checked'
-        
-        return context
-    
-    def form_valid(self, form):
-        pagamento_atual = Pagamento.objects.get(pk=self.kwargs.get('pk'))
-        form.instance.conta = pagamento_atual.conta
-        
-        if self.request.POST.get('total') != None :  # o ckeckbox return 'on' ou None
-            form.instance.valor = pagamento_atual.conta.valor
-                
-        if form.instance.valor >= pagamento_atual.conta.valor:  # o ckeckbox return 'on' ou None
-            pagamento_atual.conta.pago = True
-            pagamento_atual.conta.save()
-                           
-        return super().form_valid(form)
-
-class ExcluirPagamentoView(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
-    login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Financeiro',]
-
-    model = Pagamento
-    success_url = reverse_lazy('contas-pagas')
-    
-    def delete(self, *args, **kwargs):
-        # TODO conta do pagamento voltar para ser "à pagar"
-        object = self.get_object()
-        object.conta.pago = False
-        object.conta.save()
-        print(bcolors.WARNING + "CONTA EXCLUIDA - {}".format(object.conta.descricao) + bcolors.RESET)
-        return super(ExcluirPagamentoView, self).delete(*args, **kwargs)
-
-class RelatoriosCostasAPagarView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):  
-    login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Financeiro',]
-
-    template_name = 'financeiro/relatorios-contas-a-pagar.html'
-     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        objects = ContaPagamento.objects.filter(pago=False)
-
-        dados_form = self.request.GET
-        cache.set('dados_form_contas_a_pagar', dados_form, 600)  
-        
-        filter_list = ContasFilter(dados_form, queryset= objects )
-        cache.set('filter_contas_a_pagar', filter_list, 600)  
-
-        valor_total = sum(filter_list.qs.values_list('valor', flat=True))
-        cache.set('valor_total_contas_a_pagar', valor_total, 600) 
-
-        context["valor_total"] = valor_total
-        context["filter"] = filter_list
-
-                
-        if dados_form.get('fornecedor'):
-            context["form_fornecedor"] = Fornecedor.objects.get(pk = dados_form.get('fornecedor'))
-        else:
-            context["form_fornecedor"] = 'Todos os Fornecedores'
-
-        if dados_form.get('centro_de_custo'):
-            context["form_centro_custo"] = Obra.objects.get(pk = dados_form.get('centro_de_custo'))
-        else:
-            context["form_centro_custo"] = 'Todos os Centros de Custo'
-        
-        if dados_form.get('data_inicial'):
-            context["form_data_inicial"] = dados_form.get('data_inicial')
-        
-        if dados_form.get('data_final'):
-            context["form_data_final"] = dados_form.get('data_final')
-        return context       
-
-class ImprimirRelatoriosCostasAPagarView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
-    login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Financeiro',]
-
-    template_name = 'financeiro/imprimir-contas-a-pagar.html'
-       
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        filter_list = cache.get('filter_contas_a_pagar')
-        valor_total = cache.get('valor_total_contas_a_pagar')
-        dados_form = cache.get('dados_form_contas_a_pagar') 
-        
-        context["filter"] = filter_list
-        context["valor_total"] = valor_total
-        
-        
-        if dados_form.get('fornecedor'):
-            context["form_fornecedor"] = Fornecedor.objects.get(pk = dados_form.get('fornecedor'))
-        else:
-            context["form_fornecedor"] = 'Todos os Fornecedores'
-
-        if dados_form.get('centro_de_custo'):
-            context["form_centro_custo"] = Obra.objects.get(pk = dados_form.get('centro_de_custo'))
-        else:
-            context["form_centro_custo"] = 'Todos os Centros de Custo'
-        
-        if dados_form.get('data_inicial'):
-            context["form_data_inicial"] = dados_form.get('data_inicial')
-        
-        if dados_form.get('data_final'):
-            context["form_data_final"] = dados_form.get('data_final')
- 
-        return context
-
-
-
-class ContasAReceberView(GroupRequiredMixin, LoginRequiredMixin, CreateView):
-    login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Financeiro',]
-
-    template_name = 'financeiro/contas-a-receber.html'
-    model = Recebimento
-    form_class = RecebimentoForm
-    success_url = reverse_lazy('contas-a-receber')
- 
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_edit"] = False      
-        context["contas_a_receber_list"] = Recebimento.objects.all()
-        return context   
-
-class EditarRecebimentoView(GroupRequiredMixin, LoginRequiredMixin, UpdateView):
-    login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Financeiro',]
-
-    template_name = 'financeiro/contas-a-receber.html'
-    model = Recebimento
-    form_class = RecebimentoForm
-    success_url = reverse_lazy('contas-a-receber')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)     
-        context["is_edit"] = True   
-        return context
-
-class ExcluirRecebimentoView(GroupRequiredMixin, LoginRequiredMixin, DeleteView):
-    login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Financeiro',]
-
-    model = Recebimento
-    success_url = reverse_lazy('contas-a-receber')
-
-class GerarPDFContasView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
-    login_url = reverse_lazy('login')
-    group_required = [u'Administrador', u'Financeiro',]
-
-    login_url = reverse_lazy('login')  
-    contextPDF= {}
-       
-    def get(self, request):                 
+    if request.method == 'GET':
         try:
-            objects = ContaPagamento.objects.all()
-            filter_list = ContasFilter(self.request.GET, queryset= objects )
-            total = filter_list.qs.aggregate(Sum('valor'))['valor__sum']
+            contas_do_dia = ContaBoleto.objects.filter(data_vencimento=today_date).filter(pago=False)
+            boletos_em_atrazo = ContaBoleto.objects.filter(data_vencimento__range=[datetime.min, today_date - timedelta(days=1)]).filter(pago=False)
+
+            total_valor = contas_do_dia.aggregate(total_valor=Sum('valor'))['total_valor']
+            total_valor_em_atraso = boletos_em_atrazo.aggregate(total_valor=Sum('valor'))['total_valor']
+    
+            #VALIDAÇÃO 'total_valor'
+            if not total_valor:
+                total_valor = 0
+        
+            context = {
+                'contas_do_dia': contas_do_dia,
+                'boletos_em_atrazo': boletos_em_atrazo, 
+                'total': locale.currency(total_valor, grouping=True),
+                'total_valor_em_atraso': locale.currency(total_valor_em_atraso, grouping=True),
+                }
+        
+            return render(request, template_name , context)
+        
+        except ContaPagamento.DoesNotExist:
+            raise Http404("ERRO: Conta não existe!")
+
+
+#GET /contas-a-pagar/
+@login_required(login_url='login/')
+def contas_a_pagar(request): 
+    template_name = 'financeiro/contas-a-pagar.html'
+    
+    if request.method == 'GET':
+        try:
+            context = {
+                'filter': ContasFilter()
+                }
+        
+            return render(request, template_name , context)
+        
+        except ContaPagamento.DoesNotExist:
+            raise Http404("ERRO: Conta não existe!")
+
+    
+#GET /contas-a-pagar/inserir     
+@login_required(login_url='login/')
+def inserir_nova_conta_a_pagar(request):
+    global id_nota_em_processo
+ 
+    validar_descricao_nota['data_emissao'] = False 
+    validar_descricao_nota['centro_de_custo'] = False
+    
+    template_name = 'financeiro/fragmentos/inserir-conta-a-pagar.html'
+    
+    if request.method == 'GET':
+        form = DescricaoForm()
+        fornecedores = Fornecedor.objects.all()
+        nota = NotaCompleta.objects.none()
+        
+        try:   
+            if id_nota_em_processo:
+                nota = NotaCompleta.objects.get(pk = int(id_nota_em_processo))
+                nota.itens.all().delete()
+                nota.delete()
+                id_nota_em_processo = None
+                
+                print('\033[31m'+'------------------- DELETADA CONTA TEMPORÁRIA --------------------'+'\033[0;0m') 
+                    
             
-            total = real_br_money_mask(total)
+            context = {
+            'form':form,
+            'fornecedores': fornecedores,
+            'notacompleta': nota,
+            }
             
-            if self.request.GET.get('dados_banco') == '2':
-                self.contextPDF['dados_banco'] = True
+            return render(request, template_name , context)
+        
+        except ContaPagamento.DoesNotExist:
+            raise Http404("ERRO: Conta não existe!")
+
+
+#GET /contas-a-pagar/modal-itens    
+@login_required(login_url='login/')
+def modal_itens_conta_a_pagar(request, **kwargs):
+    template_name = 'financeiro/fragmentos/inserir-item.html'
+
+    validar_item_nota['descricao'] = False
+    validar_item_nota['qtd'] = False
+    validar_item_nota['valor'] = False
+    
+    
+    if request.method == 'GET':
+        form = ItensNotaForm()
+        
+        context = {
+            'form':form,
+            'id_nota_atual': kwargs.get('pk')
+        }
+            
+        return render(request, template_name , context)
+
+
+#POST /contas-a-pagar/inserir-itens
+@login_required(login_url='login/')
+def inserir_itens_conta_a_pagar(request, **kwargs):
+    global id_nota_em_processo
+    
+    pk = kwargs.get('pk')
+  
+
+    template_name = 'financeiro/fragmentos/itens-inseridos-tabela.html'
+    
+    if request.method == 'POST':
+        form = ItensNotaForm(request.POST)
+        
+        if pk:
+            id_nota = pk
+        else:    
+            id_nota = id_nota_em_processo
+        
+        
+        if form.is_valid():
+            form.instance.valor = request.POST.get('valor').replace(".","").replace(",",".")
+            item = form.save()
+            print('\033[32m'+f'------------------- ITEM CRIADO: {item.pk} --------------------'+'\033[0;0m') 
+        else:
+            template_name = 'financeiro/fragmentos/inserir-conta-a-pagar.html'
+            response = render(request, template_name , {'erroItem': 'Erro ao Inserir Item', 'form': DescricaoForm()}) 
+            response['HX-Retarget'] = 'body'
+            response['HX-Swap'] = 'outerHTML'
+            return response
+        
+        
+        if id_nota:
+            notacompleta = NotaCompleta.objects.get(pk = int(id_nota))
+            notacompleta.itens.add(item)
+        else:
+            notacompleta = NotaCompleta.objects.create()
+            print('\033[32m'+f'------------------- CONTA CRIADA {notacompleta.pk} --------------------'+'\033[0;0m') 
+            notacompleta.itens.add(item)
+        
+        print('\033[32m'+f'------------------- ITEM {item.pk} (VALOR: {item.valor }) ADICIONADO A CONTA: {notacompleta.pk} --------------------'+'\033[0;0m') 
+        print('\033[32m'+f'------------------- VALOR TOTAL ITENS: {notacompleta.itens.all().aggregate(total_itens = Sum(ExpressionWrapper(F("qtd") *  F("valor"),  output_field=DecimalField())))["total_itens"]} ADICIONADO A CONTA: {notacompleta.pk} --------------------'+'\033[0;0m') 
+    
+
+        id_nota_em_processo = notacompleta.pk
+    
+        context = {
+            'notacompleta': notacompleta,
+        }
+        response = render(request, template_name , context)
+        response['HX-Trigger'] = 'itemAddNota'                   
+        return response
+
+
+@login_required(login_url='login/')
+def excluir_item_conta_a_pagar(request, pk):
+    global id_nota_em_processo
+    template_name = 'financeiro/fragmentos/itens-inseridos-tabela.html'
+    
+    if request.method == 'POST':
+        try:
+            ItensNota.objects.filter(pk=pk).delete() 
+            print('\033[31m'+'------------------- ITEM DELETADO --------------------'+'\033[0;0m')
+            notacompleta = NotaCompleta.objects.get(pk = int(id_nota_em_processo))
+            
+            context = {
+                'notacompleta': notacompleta,
+            }
+                        
+            return render(request, template_name , context)
+        except (ValueError, TypeError):
+            HttpResponse("Erro ao Deletar Item")
+    else:          
+        HttpResponse("Erro ao Deletar Item")
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def add_descricao_nota(request):
+    template_name = 'financeiro/fragmentos/add-descricao-nota.html'
+    try:
+       
+    
+        context = {
+            
+            }
+    
+        return render(request, template_name , context)
+    
+    except ContaPagamento.DoesNotExist:
+        raise Http404("ERRO: Conta não existe!")
+
+   
+@login_required(login_url='login/')
+@csrf_exempt
+def filtro_contas_a_pagar(request):
+    template_name = 'financeiro/fragmentos/resultados-contas-a-pagar.html'
+    
+    try:
+        descricao = request.GET.get('descricao') or ''
+        fornecedor = request.GET.get('fornecedor') or ''
+        initial_date = request.GET.get('data') or datetime.min   # datetime.min is 1
+        end_date = request.GET.get('data_f') or datetime.max  # datetime.max is 9999
+        
+        if request.GET.get('check_pago') == 'on' and request.GET.get('check_nao_pago') != 'on':
+             objects = ContaBoleto.objects.all().filter(pago=True).filter(
+                Q(conta__saida__fornecedor__nome__icontains=fornecedor) | Q(conta__saida__fornecedor__razao_social__icontains=fornecedor),
+                Q(data_vencimento__range=[initial_date, end_date]),
+                Q(conta__saida__nota_fiscal__icontains=descricao) | Q(doc__icontains=descricao))
+        
+        elif request.GET.get('check_nao_pago') == 'on' and request.GET.get('check_pago') != 'on':
+            objects = ContaBoleto.objects.all().filter(pago=False).filter(
+                Q(conta__saida__fornecedor__nome__icontains=fornecedor) | Q(conta__saida__fornecedor__razao_social__icontains=fornecedor),
+                Q(data_vencimento__range=[initial_date, end_date]),
+                Q(conta__saida__nota_fiscal__icontains=descricao) | Q(doc__icontains=descricao))
+               
+        else:
+            objects = ContaBoleto.objects.all().filter(
+                Q(conta__saida__fornecedor__nome__icontains=fornecedor) | Q(conta__saida__fornecedor__razao_social__icontains=fornecedor),
+                Q(data_vencimento__range=[initial_date, end_date]),
+                Q(conta__saida__nota_fiscal__icontains=descricao) | Q(doc__icontains=descricao))
+                       
+     
+             
+        if objects:
+            total_valor = objects.aggregate(total_valor = Sum('valor'))['total_valor']
+            
+            context = {
+                'contas_atrasadas': objects,
+                'total_acresc': 0,
+                'total': total_valor,
+                }
+            
+        else:
+            context = {
+                'contas_atrasadas': objects,
+                'total_acresc': 0,
+                'total': 0,
+                }
+        
+    
+     
+        return render(request, template_name , context)
+    
+    except ContaBoleto.DoesNotExist:
+        raise Http404("ERRO: Conta não existe!")
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def get_fornecedores(request):
+    template_name = 'financeiro/fragmentos/options-select-fornecedores.html'
+    if request.method == 'GET':
+        query = request.GET.get('fornecedor')
+        fornecedores = Fornecedor.objects.filter(pk__icontains=query).only('nome').only('doc').only('pk') | Fornecedor.objects.filter(nome__icontains=query).only('nome').only('doc').only('pk') | Fornecedor.objects.filter(razao_social__icontains=query).only('nome').only('doc').only('pk')
+     
+        
+        if not fornecedores:
+            response = HttpResponse('Não encontrado Fornecedor/Razão Social')
+            response['HX-Trigger'] = 'errorFornecedores'   
+            response['HX-Retarget'] = '#error_fornecedor'
+            response['HX-Swap'] = 'innerHTML'
+            return response
+        
+        context = {
+               'fornecedores':fornecedores,
+           }
+        
+        response = render(request, template_name , context)
+        response['HX-Trigger'] = 'okFornecedores'            
+        return response
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def get_error(request):
+    template_name = 'errors/error-input.html'           
+    return render(request, template_name , {'ErrorMessage':'Error de Fornecedor'})
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def get_forma_de_pagamento(request):
+    formaPagamento = request.GET.get('selectFPagamento')
+    
+    if formaPagamento == '1':
+        template_name = 'financeiro/fragmentos/pagamentos/vista-forma-de_pagamento.html'
+        formPagamento = PagamentoVistaForm()
+    elif formaPagamento == '2':
+        template_name = 'financeiro/fragmentos/pagamentos/boleto-forma-de_pagamento.html'
+        formPagamento = PagamentoVistaForm()
+    else:
+        template_name = 'financeiro/fragmentos/pagamentos/aberto_forma-de_pagamento.html'
+        formPagamento = PagamentoVistaForm()
+  
+    
+    context = {
+       'formPagamento': formPagamento,
+    }
+    response = render(request, template_name , context)         
+    return response
+  
+
+@login_required(login_url='login/')
+@csrf_exempt
+def salvar_nota_completa(request):
+    global id_nota_em_processo
+    
+    if request.method == 'POST':
+        try:
+            # id_fornecedor = request.POST.get('fornecedor').split("· ID")[1]
+            id_fornecedor = request.POST.get('fornecedor')
+            fornecedor = Fornecedor.objects.get(id=int(id_fornecedor))
+            form = DescricaoForm(request.POST)
+            form.instance.fornecedor = fornecedor
+            
+            
+            if form.is_valid():
+                descricao_nota = form.save()
+                print('\033[32m'+f'------------------- DESCRIÇÃO DE NOTA CRIADO: {descricao_nota.pk} --------------------'+'\033[0;0m') 
             else:
-                self.contextPDF['dados_banco'] = False
-            self.contextPDF["filter"] = filter_list
-            self.contextPDF['total'] = total
-            self.contextPDF['usuario'] = self.request.user.get_username()
+                response = HttpResponse(f"Erro ao Criar Nota Completa. Dados do Form: {form.errors}")
+                response['HX-Retarget'] = 'body'
+                response['HX-Swap'] = 'outerHTML'
+                return response
+                    
+            id_nota = id_nota_em_processo
+           
+            if id_nota:
+                notacompleta = NotaCompleta.objects.get(pk = int(id_nota))
+                notacompleta.saida = descricao_nota
+                notacompleta.usuario = request.user
+                notacompleta.valor = notacompleta.itens.all().aggregate(total_itens = Sum(ExpressionWrapper(F("qtd") *  F("valor"),  output_field=DecimalField())))["total_itens"] #somando todos os valores dos itens desta nota
+                print('\033[32m'+f'------------------- VALOR TOTAL ITENS Nº {notacompleta.valor} ADD A NOTA: {notacompleta.pk} --------------------'+'\033[0;0m') 
+                notacompleta.save()
+                print('\033[32m'+f'------------------- DESCRIÇÃO Nº {descricao_nota.pk} ADD A NOTA: {notacompleta.pk} --------------------'+'\033[0;0m') 
+               
+               
+                id_nota_em_processo = None     
+                return HttpResponseRedirect(f'nota/{notacompleta.pk}')
+            else:
+                raise NotaCompleta.DoesNotExist()
+        
             
         except:
-            context = {"modo_aba": "",}
-            messages.warning(self.request, "ERRO: Não foi possível gerar o PDF")
-            return render(request, 'financeiro/pdf-relatorio.html', context) 
-        
+            response = HttpResponse(f"Erro no Formulário")
+            response['HX-Retarget'] = 'body'
+            response['HX-Swap'] = 'outerHTML'
+            return response
+          
+          
+@login_required(login_url='login/')
+@csrf_exempt
+def ver_nota_completa(request, pk):
+    global valor_total_pre_save_a_vista
+    global resumo_listagem_boletos
+    
+    resumo_listagem_boletos = list()
+    
+    template_name = 'financeiro/detalhes-saida.html'
+    nota_atual = NotaCompleta.objects.get(pk=pk)
+    valor_total_pre_save_a_vista = nota_atual.valor
+   
+    pagamento = None
+    boletos = None
+    situacao = ""
+    
+   
+    if nota_atual.forma_pagamento == 1: #a vista
+        pagamento = PagamentoVista.objects.get(conta=nota_atual)
+        situacao = 'pagoVista'
+    if nota_atual.forma_pagamento == 2: #por boleto
+        boletos = ContaBoleto.objects.filter(conta=nota_atual)
+        if boletos: 
+            boletos_em_atrazo = ContaBoleto.objects.filter(conta=nota_atual).filter(pago=False).filter(data_vencimento__range=[datetime.min, datetime.now() - timedelta(days=1)])
+            if boletos_em_atrazo:
+                situacao = 'pagoBoletoAtrasado'
+            else:
+                situacao = 'pagoBoletoEmDia'    
+        else:
+            situacao = 'pagoBoletoFinalizado'   #TODO RESOLVER QUANDO TODOS OS BOLETOS FICAREM PAGOS, DAR NOTA FISCAL PAGAMENTO FINALIZADO
             
-        html = render_to_string("financeiro/pdf-relatorio.html", self.contextPDF)
+    print(f'------------------------------- {situacao}')
+    context = {
+            'nota_atual': nota_atual,
+            'pagamento': pagamento,
+            'situacao': situacao,
+            'boletos': boletos
+        }                       
+    
+    
+    return render(request, template_name , context)
+
+
+@login_required(login_url='login/')
+def editar_saida(request, pk):
+ 
+    validar_descricao_nota['data_emissao'] = True 
+    validar_descricao_nota['centro_de_custo'] = True
+    validar_descricao_nota['itens_nota'] = True
+    
+    template_name = 'financeiro/fragmentos/inserir-conta-a-pagar.html'
+    
+    if request.method == 'GET':
+        nota = get_object_or_404(NotaCompleta, pk=pk)
+        fornecedores = Fornecedor.objects.all()
+        
+        initial_dict = {
+           'nota_fiscal': nota.saida.nota_fiscal,
+           'data_emissao': nota.saida.data_emissao,
+           'centro_de_custo': nota.saida.centro_de_custo,
+           'descricao': nota.saida.descricao,
+           
+        }
+        form = DescricaoForm(initial=initial_dict, instance=nota)
+        
+        
+   
+        context = {
+        'form':form,
+        'notacompleta' : nota,
+        'fornecedores' : fornecedores,
+        'fornecedor_atual' : nota.saida.fornecedor.pk,
+        'edit': True
+        
+        }
+        
+        return render(request, template_name , context)
+    
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def salva_edicao_saida(request, pk):
+ 
+    notacompleta = get_object_or_404(NotaCompleta, pk=pk)
+    id_fornecedor = request.POST.get('fornecedor')
+    fornecedor = Fornecedor.objects.get(id=int(id_fornecedor))
+
+    form = DescricaoForm(request.POST or None)   
+    form.instance.fornecedor = fornecedor 
+    
+    if form.is_valid():
+        descricao_nota = form.save()
+        notacompleta.saida = descricao_nota
+        notacompleta.valor = notacompleta.itens.all().aggregate(total_itens = Sum(ExpressionWrapper(F("qtd") *  F("valor"),  output_field=DecimalField())))["total_itens"] #somando todos os valores dos itens desta nota
+        notacompleta.save()
+        
+    return HttpResponseRedirect(f'/contas-a-pagar/nota/{notacompleta.pk}')
+        
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def get_valor_total(request):
+    global valor_total_pre_save_a_vista
+    valor_total_pre_save_a_vista = 0
+    #Retirando a máscara de moeda para deixar os valores em numeros possiveis para serem somados
+    valor_nota = request.GET.get('valor_').replace('.', '').replace(',', '.')
+    valor_acrescimo =  request.GET.get('valor_acrescimo').replace('.', '').replace(',', '.')
+    
+    if valor_acrescimo == "":
+        valor_acrescimo = 0
+    
+    locale.setlocale(locale.LC_MONETARY, 'pt_BR.UTF-8')  
+    valor_total =  float(valor_nota) + float(valor_acrescimo)
+    valor_total_pre_save_a_vista = valor_total
+    print(f'Valor Total = {valor_total_pre_save_a_vista}')
+
+    return HttpResponse(locale.currency(valor_total))
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def get_resumo_boleto_mensal(request, pk):
+    global resumo_listagem_boletos
+    global pode_salvar_boleto
+    
+    pode_salvar_boleto = False
+    template_name = 'financeiro/fragmentos/pagamentos/resumo-boletos-pagamento.html'
+    nota_atual = NotaCompleta.objects.get(pk=pk)
+    valor_total = 0
+    
+    #CRIANDO RESUMO ----------
+    resumo_listagem_boletos = list()
+    
+    #VALIDAÇÃO DO NUMERO DE PARCELAS
+    try: 
+        n_parcelas = request.POST.get('n_parcelas')
+        n_parcelas = int(n_parcelas)
+        if not n_parcelas >= 1 or n_parcelas == "":
+            template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
+            response = render(request, template_name=template_name, context={'errorMensagem': 'Número de Parcelas INVÁLIDO'})
+            response['HX-Trigger'] = "buttonError"
+            pode_salvar_boleto = False
+            return response       
+    except ValueError:
+        template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
+        response = render(request, template_name=template_name, context={'errorMensagem': 'Número de Parcelas INVÁLIDO'})
+        response['HX-Trigger'] = "buttonError"
+        pode_salvar_boleto = False
+        return response    
+    #VALIDÇÃO DO VALOR
+    try: 
+        valor_parcelas = float(request.POST.get('valor_parcelas').replace('.', '').replace(',', '.'))
+        if valor_parcelas <= 0:
+            template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
+            response = render(request, template_name=template_name, context={'errorMensagem': 'Valor INVÁLIDO'})
+            response['HX-Trigger'] = "buttonError"
+            pode_salvar_boleto = False
+            return response        
+    except ValueError:
+        template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
+        response = render(request, template_name=template_name, context={'errorMensagem': 'Valor INVÁLIDO'})
+        response['HX-Trigger'] = "buttonError"
+        pode_salvar_boleto = False
+        return response        
+    #VALIDÇÃO DA DATA
+    try: 
+        data_1_parcela = request.POST.get('data_1_parcela')
+        data_1_parcela = datetime.strptime(data_1_parcela, '%Y-%m-%d')
+        if data_1_parcela == "":
+            template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
+            response = render(request, template_name=template_name, context={'errorMensagem': 'Data INVÁLIDA'})
+            response['HX-Trigger'] = "buttonError"
+            pode_salvar_boleto = False
+            return response
+        
+    except ValueError:
+        template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
+        response = render(request, template_name=template_name, context={'errorMensagem': 'Data INVÁLIDA'})
+        response['HX-Trigger'] = "buttonError"
+        pode_salvar_boleto = False
+        return response
+    
+    #NUMERO DO DOCUMENTO
+    doc_parcelas = request.POST.get('doc_parcela')
+        
+
+    for n in range(int(n_parcelas)):
+        parcela = {'parcela':n+1, 'valor':locale.currency(valor_parcelas, grouping=True).replace('R$ ',""), 'data_vencimento':data_1_parcela + timedelta(days=n*30)}
+        
+        if not doc_parcelas == "":
+            parcela['doc']= f'{doc_parcelas}-{n+1}'
+        else:
+            parcela['doc']= ''
+            
+        resumo_listagem_boletos.append(parcela)
+        valor_total += valor_parcelas
 
     
-        css_url = os.path.join(settings.PROJECT_ROOT, 'static\\css\\bootstrap.min.css')
-        pdf = HTML(string=html,base_url=request.build_absolute_uri()).write_pdf(stylesheets=[CSS(css_url)])
+    context = {
+        'resumo': resumo_listagem_boletos,
+        'num_parcelas': n_parcelas,
+        'valor_total': locale.currency(valor_total, grouping=True),
+        'nota_atual': nota_atual
+    }   
+    response = render(request, template_name , context)
+    response['HX-Trigger'] = "buttonSave"
+    pode_salvar_boleto = True
+    return response
 
-        return HttpResponse(pdf, content_type='application/pdf')
-       
-def real_br_money_mask(my_value):
-    a = '{:,.2f}'.format(float(my_value))
-    b = a.replace(',','v')
-    c = b.replace('.',',')
-    return c.replace('v','.')
+
+@login_required(login_url='login/')
+@csrf_exempt
+def atualizar_resumo_boleto_mensal(request, pk):
+    global resumo_listagem_boletos
+    global pode_salvar_boleto
+    
+    
+    qnt_parcelas = int(request.POST.get('num_parcelaA'))
+    doc_parcelas = request.POST.getlist('doc_parcelaA')
+    
+    print(f'----------------{doc_parcelas}')
+    
+    
+    # #VALIDAÇÃO DO VALOR
+    try: 
+        valor_parcelas = request.POST.getlist('valor_parcelaA')
+        if len(valor_parcelas) < qnt_parcelas:
+            template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
+            response = render(request, template_name=template_name, context={'errorMensagem': 'Valor VAZIO'})
+            response['HX-Trigger'] = "buttonError"
+            pode_salvar_boleto = False
+            return response 
+        else:
+            for valor in valor_parcelas:
+                valor = float(valor.replace('.', '').replace(',', '.'))
+    
+                if valor <= 0:
+                    template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
+                    response = render(request, template_name=template_name, context={'errorMensagem': 'Valor INVÁLIDO'})
+                    response['HX-Trigger'] = "buttonError"
+                    pode_salvar_boleto = False
+                    return response        
+    except ValueError:
+        template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
+        response = render(request, template_name=template_name, context={'errorMensagem': 'Valor INVÁLIDO'})
+        pode_salvar_boleto = False
+        return response         
+    
+    #VALIDÇÃO DA DATA
+    try: 
+        datas_parcelas = request.POST.getlist('data_parcelaA')
+        if len(datas_parcelas) < qnt_parcelas:
+            template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
+            response = render(request, template_name=template_name, context={'errorMensagem': 'Data VAZIA'})
+            response['HX-Trigger'] = "buttonError"
+            pode_salvar_boleto = False
+            return response 
+        else:
+            for data in datas_parcelas:
+                if data == "":
+                    template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
+                    response = render(request, template_name=template_name, context={'errorMensagem': 'Data INVÁLIDA'})
+                    response['HX-Trigger'] = "buttonError"
+                    pode_salvar_boleto = False
+                    return response    
+        
+    except ValueError:
+        template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
+        response = render(request, template_name=template_name, context={'errorMensagem': 'Data INVÁLIDA'})
+        response['HX-Trigger'] = "buttonError"
+        pode_salvar_boleto = False
+        return response
+    
+    
+    #GUARDANDO E ENVIADO OS DADOS NOVAMENTE
+    template_name = 'financeiro/fragmentos/pagamentos/resumo-boletos-pagamento.html'
+    resumo_listagem_boletos = list()
+    valor_total = 0
+    nota_atual = NotaCompleta.objects.get(pk=pk)
+  
+    
+    for n in range(int(qnt_parcelas)):
+        valor = float(valor_parcelas[n].replace('.', '').replace(',', '.'))
+        data = datetime.strptime(datas_parcelas[n], '%Y-%m-%d')
+        parcela = {'parcela':n+1, 'valor':locale.currency(valor, grouping=True).replace('R$ ',""), 'data_vencimento':data}
+        
+        print(doc_parcelas[n])
+        
+        #TODO FIX resolver atualização de boletos no resumo, o doc vazio não entra na lista
+        # if len(doc_parcelas) > 0:
+        #     if doc_parcelas[n] != "":
+        #         parcela['doc']= doc_parcelas[n]
+        #     else:
+        #         parcela['doc']= ''
+        # else:
+        #     parcela['doc']= ''
+                
+        resumo_listagem_boletos.append(parcela)
+        valor_total += valor
+    
+    
+    context = {
+        'resumo': resumo_listagem_boletos,
+        'num_parcelas': qnt_parcelas,
+        'valor_total': locale.currency(valor_total, grouping=True),
+        'nota_atual': nota_atual
+    }   
+    
+    response = render(request, template_name , context)
+    response['HX-Trigger'] = "buttonSave"
+    pode_salvar_boleto = True
+    return response
+
+  
+@login_required(login_url='login/')
+@csrf_exempt
+def salvar_boletos_mensal(request, pk):
+    global pode_salvar_boleto
+    global resumo_listagem_boletos
+    
+    print(resumo_listagem_boletos)
+    
+    if not pode_salvar_boleto:
+        template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
+        response = render(request, template_name=template_name, context={'errorMensagem': 'Erro ao Salvar! Tentar novamente.'})
+        response['HX-Trigger'] = "buttonError"
+        pode_salvar_boleto = False
+        return response
+    
+    #SALVANDO BOLETOS NO BANCO
+    try:
+        qnt_parcelas = int(request.POST.get('num_parcelaA'))
+        nota_atual = NotaCompleta.objects.get(pk=pk)
+        
+        for n in range(qnt_parcelas):
+            ContaBoleto.objects.create(conta = nota_atual,
+                                    parcela =  n+1,
+                                    total_parcelas =  qnt_parcelas,
+                                    doc = resumo_listagem_boletos[n]['doc'],
+                                    valor = resumo_listagem_boletos[n]['valor'].replace(".","").replace(",","."),
+                                    data_vencimento = resumo_listagem_boletos[n]['data_vencimento'],
+                                    usuario = request.user,
+                                    obs = "")
+        
+        nota_atual.pago = True
+        nota_atual.forma_pagamento = 2 #por Boletos
+        nota_atual.save()
+        
+        pode_salvar_boleto = False #resetar variavel
+        return redirect(reverse('ver-nota-completa', kwargs={'pk':pk}))
+    
+    except (ValueError, ValidationErr):
+        template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
+        response = render(request, template_name=template_name, context={'errorMensagem': 'Erro ao Salvar! Tentar novamente.'})
+        response['HX-Trigger'] = "buttonError"
+        pode_salvar_boleto = False
+        return response    
+
+        
+@login_required(login_url='login/')
+@csrf_exempt
+def pagar_nota_a_vista(request, pk): 
+    global valor_total_pre_save_a_vista
+    print(f'Valor Total pago = {valor_total_pre_save_a_vista}')
+
+    nota_atual = NotaCompleta.objects.get(pk=pk)
+    form = PagamentoVistaForm(request.POST)
+    
+    if request.POST.get('valor_acrescimo'):
+        valor_acrescimo =  request.POST.get('valor_acrescimo').replace('.', '').replace(',', '.')
+    else:
+        valor_acrescimo = 0
+    
+    #realizar pagamento
+    if form.is_valid():
+        form.instance.usuario = request.user
+        form.instance.valor_pago = float(valor_total_pre_save_a_vista)
+        form.instance.acrescimo = float(valor_acrescimo)
+        nota_atual.pago = True
+        nota_atual.forma_pagamento = 1  #tipo pagamento == 1 (a vista)
+        nota_atual.save()
+        form.instance.conta = nota_atual
+        form.save()
+        # print(f"VALIDO - {request.POST}")
+        
+        
+    return redirect(reverse('ver-nota-completa', kwargs={'pk':nota_atual.pk}))
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def excluir_pagamento_a_vista(request, pk): 
+
+    nota_atual = NotaCompleta.objects.get(pk=pk)
+    pagamento_vista = PagamentoVista.objects.filter(conta=nota_atual)
+    
+    try:
+        pagamento_vista.delete()
+        nota_atual.pago = False
+        nota_atual.forma_pagamento = 0 #em aberto
+        nota_atual.save()
+    except:
+        print('erro ao Excluir')
+        
+    return redirect(reverse('ver-nota-completa', kwargs={'pk':nota_atual.pk}))
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def excluir_pagamento_boletos(request, pk):
+
+    nota_atual = NotaCompleta.objects.get(pk=pk)
+    pagamento_boletos = ContaBoleto.objects.filter(conta=nota_atual)
+    print(pagamento_boletos)
+    
+    try:
+        pagamento_boletos.delete()
+        nota_atual.pago = False
+        nota_atual.forma_pagamento = 0 #em aberto
+        nota_atual.save()
+    except:
+        print('erro ao Excluir')
+        
+    return redirect(reverse('ver-nota-completa', kwargs={'pk':nota_atual.pk}))
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def editar_pagamento_boletos(request, pk, template_name="financeiro/fragmentos/pagamentos/resumo-boletos-pagamento.html"):
+    global pode_salvar_boleto
+    
+    pode_salvar_boleto = True
+    
+    nota_atual = NotaCompleta.objects.get(pk=pk)
+    resumo = ContaBoleto.objects.filter(conta=nota_atual)
+    total_valor = resumo.aggregate(total_valor=Sum('valor'))['total_valor']
+   
+    context = {
+        'resumo': resumo,
+        'nota_atual': nota_atual,
+        'num_parcelas': resumo.count(),
+        'valor_total': locale.currency(total_valor, grouping=True),
+        'nota_atual': nota_atual
+    }     
+    
+    return render(request, template_name , context)
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def excluir_boleto_unico(request, pk, nota):
+
+    boleto = ContaBoleto.objects.get(pk=pk)
+    boleto.delete()
+    
+    
+    nota_atual = NotaCompleta.objects.get(pk=nota)
+    boletos = ContaBoleto.objects.filter(conta = nota_atual)
+    
+    if boletos:
+        #REORDENAR PARCELAS
+        num = 1
+        for item in boletos:
+            item.parcela = num
+            num=num+1
+            item.save()
+    else:   
+    #CASO CONTRARIO RETIRAR PAGAMENTO
+        nota_atual.pago = False
+        nota_atual.forma_pagamento = 0
+        nota_atual.save()
+    
+
+    return HttpResponseRedirect(f'/contas-a-pagar/nota/{nota}')
+
+@login_required(login_url='login/')
+@csrf_exempt
+def editar_pagamento_boleto(request, pk, nota, template_name="financeiro/fragmentos/editar-pagamento-boleto.html"):
+
+    boleto = ContaBoleto.objects.get(pk=pk)
+    nota_atual = NotaCompleta.objects.get(pk=nota)
+    context = {
+        'boleto': boleto,
+        'nota_atual': nota_atual
+    } 
+    return render(request, template_name , context)
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def salvar_editar_pagamento_boleto(request, pk, nota):
+
+    boleto = ContaBoleto.objects.get(pk=pk)
+   
+    
+    doc = request.POST.get('doc')
+    data = request.POST.get('data_vencimento')
+    valor = request.POST.get('valor').replace(".","").replace(",",".")
+  
+    if not data or data == "":
+        response = HttpResponse('<span style="color:red"><i>Data Inválida</i></span>')
+        response['HX-Retarget'] = '#error_data'
+        response['HX-Swap'] = 'innerHTML'
+        return response
+    else:
+        boleto.data_vencimento = datetime.strptime(data, '%Y-%m-%d') or boleto.data_vencimento
+    
+    if not valor or valor == "" or float(valor) <= 0:
+        response = HttpResponse('<span style="color:red"><i>Valor Inválido</i></span>')
+        response['HX-Retarget'] = '#error_valor'
+        response['HX-Swap'] = 'innerHTML'
+        return response
+    else:
+        boleto.valor = float(valor)
+        
+  
+    boleto.doc = doc
+    boleto.save()
+    return HttpResponseRedirect(f'/contas-a-pagar/nota/{nota}')
+    
+        
+@login_required(login_url='login/')
+@csrf_exempt
+def editar_pagamento_vista(request, pk, template_name="financeiro/fragmentos/editar-pagamento-vista.html"):
+
+    nota_atual = NotaCompleta.objects.get(pk=pk)
+    pagamento = PagamentoVista.objects.get(conta=nota_atual)
+
+    context = {
+        'pagamento': pagamento,
+        'nota_atual':nota_atual
+ 
+    }     
+    
+    return render(request, template_name , context)
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def salvar_editar_pagamento_vista(request, pk, nota):
+
+    pagamento = PagamentoVista.objects.get(pk=pk)
+    data = request.POST.get('data_pagamento')
+    acrescimo = request.POST.get('valor_acrescimo').replace(".","").replace(",",".")
+    
+    if not data or data == "":
+        response = HttpResponse('<span style="color:red"><i>Data Inválida</i></span>')
+        response['HX-Retarget'] = '#error_data'
+        response['HX-Swap'] = 'innerHTML'
+        return response
+    else:
+        pagamento.data_pagamento = datetime.strptime(data, '%Y-%m-%d') or pagamento.data_pagamento
+        
+    if not acrescimo or acrescimo == "":
+        pagamento.acrescimo = float(0)
+        pagamento.valor_pago = pagamento.conta.valor
+    else:
+        pagamento.acrescimo = float(acrescimo)
+        pagamento.valor_pago = float(pagamento.conta.valor) + pagamento.acrescimo
+        
+    
+    
+    pagamento.save()
+    return HttpResponseRedirect(f'/contas-a-pagar/nota/{nota}')
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def excluir_saida(request, pk):
+    if request.method == "DELETE":
+        nota_atual = NotaCompleta.objects.get(pk=pk)
+
+        try:
+            nota_atual.saida.delete()
+            nota_atual.itens.delete() #não funciona .clear()
+            nota_atual.delete()
+        except:
+            print('erro ao Excluir')
+            
+        return HttpResponse("excluir com Sucesso")
+    
+
+@login_required(login_url='login/')
+@csrf_exempt
+def selecionar_forma_de_pagamento(request, pk):
+    template_name = 'financeiro/fragmentos/pagamentos/modal-ver-formas-pagamentos.html'
+    nota_atual = NotaCompleta.objects.get(pk=pk)
+    form = PagamentoVistaForm()
+    
+    context = {
+        'nota_atual': nota_atual,
+        'form' : form
+    }     
+    
+    return render(request, template_name , context)
+
+  
+@login_required(login_url='login/')
+@csrf_exempt
+def forma_de_pagamento_selecionada(request, pk):
+    forma_escolhida = request.GET.get('select-forma-pagamento')
+    nota_atual = NotaCompleta.objects.get(pk=pk)
+
+    
+ 
+    if forma_escolhida == '0':
+        template_name = 'financeiro/fragmentos/pagamentos/vista-forma-de-pagamento.html'
+        form = PagamentoVistaForm()
+    elif forma_escolhida == '1':
+        template_name = 'financeiro/fragmentos/pagamentos/boleto-forma-de-pagamento.html'
+        form = PagamentoVistaForm()
+    else:
+        template_name = 'financeiro/fragmentos/pagamentos/aberto-forma-de-pagamento.html'
+        form = PagamentoVistaForm()
+        
+    
+    context = {
+        'nota_atual': nota_atual,
+        'form' : form, 
+    }     
+        
+    response = render(request, template_name , context)
+    response['HX-Trigger'] = "buttonError"
+    return response
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def pagar_boleto_unico(request, pk, nota, template_name="financeiro/fragmentos/pagamentos/pagar-boleto-unico.html"):
+    
+    nota_atual = NotaCompleta.objects.get(pk=nota)
+    boleto = ContaBoleto.objects.get(pk=pk)
+    
+    context = {
+        'nota_atual': nota_atual,
+        'boleto' : boleto
+    }     
+    
+    return render(request, template_name , context)
+
+@login_required(login_url='login/')
+@csrf_exempt
+def salvar_pagar_boleto_unico(request, pk, nota, template_name="financeiro/fragmentos/pagamentos/pagar-boleto-unico.html"):
+    
+    nota_atual = NotaCompleta.objects.get(pk=nota)
+    boleto = ContaBoleto.objects.get(pk=pk)  
+    
+    data = request.POST.get('data_pagamento')
+    obs = request.POST.get('obs')
+    acrescimo = request.POST.get('valor_acrescimo').replace(".","").replace(",",".")
+    
+    pagamento = PagamentoBoleto.objects.create(conta = nota_atual, boleto = boleto, usuario = request.user, obs = obs)
+    
+    if not data or data == "":
+        response = HttpResponse('<span style="color:red"><i>Data Inválida</i></span>')
+        response['HX-Retarget'] = '#error_data'
+        response['HX-Swap'] = 'innerHTML'
+        return response
+    else:
+        pagamento.data_pagamento = datetime.strptime(data, '%Y-%m-%d') or pagamento.data_pagamento
+    
+    if not acrescimo or acrescimo == "":
+        pagamento.acrescimo = float(0)
+        
+    else:
+        pagamento.acrescimo = float(acrescimo)
+        pagamento.valor_pago = float(boleto.valor) + pagamento.acrescimo
+    
+    pagamento.save()
+    
+    boleto.pago = True
+    boleto.save()
+    return HttpResponseRedirect(f'/contas-a-pagar/nota/{nota}')
+
+@login_required(login_url='login/')
+@csrf_exempt
+def excluir_pagamento_boleto_unico(request, pk, nota):
+    
+    boleto = ContaBoleto.objects.get(pk=pk)  
+    pagamento = PagamentoBoleto.objects.get(boleto = boleto)
+    
+    pagamento.delete()
+    
+    boleto.pago = False
+    boleto.save()
+    return HttpResponseRedirect(f'/contas-a-pagar/nota/{nota}')

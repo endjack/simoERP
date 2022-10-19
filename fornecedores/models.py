@@ -44,10 +44,13 @@ class Fornecedor(models.Model):
 
     
     def __str__(self):
-       return str(self.nome) + str(' - '+ self.doc if self.doc else '')
+       return str(self.nome) or "" + str(' - CNPJ: '+ self.doc if self.doc else '') or "" + str(' - Razão Social: ' + self.razao_social) or ""
    
     class Meta:
        ordering = [F('nome').asc(nulls_last=True)]
+       
+    def template_options(self):
+        return f'{self.nome} - {self.doc if self.doc else ""} · ID{self.pk}' #caracter · (alt + 250)
 
     
    

@@ -4,6 +4,12 @@
   background-color: whitesmoke !important; 
 }
 
+.small-error{
+  color: red;
+  font-style: italic;
+
+}
+
 /*BUTTON PADRÃO*/
 .btn-p-cinza{
   background-color: #2C3E50;
@@ -227,3 +233,9 @@
   max-width: 20ch;
 }
 
+.descricao-curta-contas{
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

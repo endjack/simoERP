@@ -1,0 +1,51 @@
+<div id="" class="p-2">
+    <table class="table table-sm table-bordered table-striped ">
+    <thead class="text-black text-center" style="background: silver;">
+      <tr style="line-height: 12px;white-space: nowrap; font-size:10pt">
+        <th scope="col" style="text-align: center;">#</th>
+        <th scope="col" class="col-5" style="text-align: left;">Descrição</th>
+        <th scope="col" style="text-align: center;">Quantidade</th>
+        <th scope="col" style="text-align: center;">Unidade</th>
+        <th scope="col" style="text-align: center;">Valor Unitário</th>
+        <th scope="col" style="text-align: center;">Valor Total</th>
+        <th scope="col" style="text-align: center;">Opções</th>
+    </tr>
+    </thead>
+    <tbody>
+        {% if notacompleta.itens.all|length > 0 %}  {% comment %} no spaces in |filter {% endcomment %}
+            {% for item in notacompleta.itens.all %}
+              <tr style="line-height: normal; font-size:9pt">
+                <td style="text-align: center;">{{forloop.counter}}</td>
+                <td >{{item.descricao| upper}}</td>
+                <td style="text-align: center;">{{item.qtd}}</td>
+                <td style="text-align: center;">{{item.unid_medida}}</td>
+                <td style="text-align: center;">{{item.valor_BR}}</td>
+                <td style="text-align: center;">{{item.valor_total_BR}}</td>
+                <td style="text-align: center;"> 
+                    <button style="font-size:9pt; color:red;border:none!important;background:none!important;" hx-post="{% url 'excluir-item-conta' item.pk %}" hx-trigger="click" hx-swap="innerHTML" hx-target="#add_itens_table"  hx-confirm="Deseja mesmo excluir item: {{item.descricao}}?"type="button" title="Excluir Item Selecionado" class="buttonDel">
+                      <span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span>
+                    </button>
+                </td>
+              </tr>
+            {% endfor %}
+        {% else %}
+              <tr>
+                <td colspan="7" style="color:gray;text-align: center;">Nenhum Item Adicionado!</td>
+              </tr>
+        {% endif %}
+          
+    </tbody>
+    </table>
+
+                 
+    <ol class="list-group ">
+      <li class="list-group-item d-flex  justify-content-end mt-1 ">
+        <div class="col-4 text-end">
+          Qtd de Itens: <h6 class=""><strong>{{notacompleta.itens.all|length}}</strong></h6>
+      </div>
+          <div class="col-4 text-end">
+              Valor Total: <h6 class=""><strong>{{notacompleta.valor_Total_itens_BR}}</strong></h6>
+          </div>
+      </li>
+  </ol>
+</div>

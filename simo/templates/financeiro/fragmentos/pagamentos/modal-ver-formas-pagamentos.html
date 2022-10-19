@@ -1,0 +1,37 @@
+
+
+<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
+	<div class="modal-underlay"></div>
+	<div class="modal-content" style="max-width:700px; overflow:auto;">
+
+        <div class="d-flex flex-row justify-content-center">
+            <div class="m-2"> <h5>Selecione Forma de Pagamento:</h5></div>
+            <div class="m-2">
+                <select class="form-select form-select-sm" name="select-forma-pagamento" aria-label=".form-select-sm example" 
+                        hx-get="{% url 'forma-pagamento-selecionada' nota_atual.pk %}"
+                        hx-trigger="change"
+                        hx-target="#forma-pagamento-selecionada"
+                        hx-swap="innerHTML">
+                    <option value="0" selected>À VISTA</option>
+                    <option value="1">BOLETO</option>
+                    {% comment %} <option value="2">EM ABERTO</option> {% endcomment %}
+                </select>
+            </div>
+        </div>
+	
+        <div id="forma-pagamento-selecionada">
+            {% include 'financeiro/fragmentos/pagamentos/vista-forma-de-pagamento.html' %}
+        </div>
+
+
+
+
+	</div>
+</div>
+
+
+
+
+
+
+

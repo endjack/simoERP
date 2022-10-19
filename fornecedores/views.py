@@ -1,11 +1,12 @@
-from servicos.views import bcolors
 from django.urls.base import reverse_lazy
 from fornecedores.forms import FornecedorForm
 from financeiro.models import Pagamento
-from django.shortcuts import redirect, render
-from django.views.generic import TemplateView, ListView, CreateView
+from django.shortcuts import render
+from django.views.generic import TemplateView, CreateView
 from django.views.generic.edit import DeleteView, UpdateView
 from .models import *
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
@@ -71,3 +72,5 @@ class EditarFornecedorView(UpdateView):
 class ExcluirFornecedorView(DeleteView):
     model = Fornecedor
     success_url = reverse_lazy('listar-fornecedores')
+    
+

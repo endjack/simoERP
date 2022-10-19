@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block breadcrumb %}
+<div class="row">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Financeiro</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Contas à Pagar/Pagas</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
+{% block styleHead %}
+<style>
+</style>    
+{% endblock %}
+
+{% block conteudo %}
+<ul class="nav nav-tabs mb-3" id="myTab">
+    <li class="nav-item">
+        <a href="#tab-ativa" class="nav-link active" data-bs-toggle="tab">Resumo do Dia</a>
+    </li>
+    <li class="nav-item">
+        <a href="{% url 'inserir-conta-a-pagar' %}" class="nav-link">Nova Conta</a>
+    </li>
+    <li class="nav-item">
+        <a href="{% url 'contas-a-pagar' %}" class="nav-link">Todas as Contas</a>
+    </li>
+    <li class="nav-item">
+        <a href="#" class="nav-link">Relatórios</a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div class="tab-pane fade show active" id="tab-ativa" style="margin-left:2em; margin-right:2em;">
+    <div class="cabecalho-contas mb-2">
+
+                <ol class="list-group ">
+                    <li class="list-group-item d-flex  justify-content-end mt-1 ">
+                        <div class="col-4">
+                            Vencimentos de Hoje: <h6> {% now "d/F/Y" %}</h6>
+                        </div>
+                        
+                        <div class="col-4 text-end">
+                            Total de Contas: <h6 class="">{{contas_do_dia.count}}</h6>
+                        </div>
+                        {% comment %} <div class="col-3 text-end">
+                            Total Acréscimos: <h6 class="">R$ {{total_acresc}}</h6>
+                        </div> {% endcomment %}
+                        <div class="col-4 text-end">
+                            Total: <h6 class="">{{total}}</h6>
+                        </div>
+            
+            
+                    </li>
+                </ol>
+            </div>
+        Forma de Pagamento: Boleto (s):            
+        <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px;">
+                <thead style="border:solid 1px;border-color:silver;background:#0d6efd; color: white;">
+                    <tr>
+                        <th scope="col" class="text-center">#</th>
+                        <th scope="col">Fornecedor</th>
+                        <th scope="col" class="text-center">CPF/CNPJ</th>
+                        <th scope="col" class="text-center">Nota Fiscal</th>
+                        <th scope="col" class="text-center">Documento</th>
+                        <th scope="col" class="text-center">Parcela</th>
+                        <th scope="col" class="text-center">Data Vencimento</th>
+                        <th scope="col" class="text-center">Valor</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if contas_do_dia %}
+                    {% for item in contas_do_dia %}
+                    <tr>
+                        <td class="limitar_forloop text-center">{{forloop.counter}}</td>
+                        {% if item.conta.saida.fornecedor %}<td class="limitar_td"
+                            style="text-align: left; vertical-align:middle !important" title="{{item.fornecedor}}"><a
+                                href="{% url 'detalhar-fornecedor' item.conta.saida.fornecedor.pk %}"
+                                title="Ver {{item.conta.saida.fornecedor}} ">{{item.conta.saida.fornecedor}}</a></td>{% else %}<td> - </td>
+                        {% endif %}
+                        <td class="text-center">{{item.conta.saida.fornecedor.doc}}</td>
+                        {% if item.conta.saida.nota_fiscal %}<td class="text-center"><a href="{% url 'ver-nota-completa' item.conta.pk %}" class="">{{item.conta.saida.nota_fiscal}}</a></td>{% else %}<td class="text-center"> - </td>{% endif %}
+                        {% if item.doc %}<td class="text-center">{{item.doc }}</td>{% else %}<td class="text-center"> - </td>{% endif %}
+                        <td class="text-center">{{item.parcela}}/{{item.total_parcelas}}</td>
+                        <td class="text-center">{{item.data_vencimento | date:"d/m/Y"}}</td>
+                        <td class="text-center">{{item.valor_BR}}</td>
+                        
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td style="text-align: center; color: gray;" colspan="7">Nenhum registro</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+                <br>
+
+            <div class="cabecalho-contas mb-2">
+            <ol class="list-group ">
+                <li class="list-group-item d-flex  justify-content-end mt-1 ">
+                    <div class="col-4">
+                        Contas em Atraso <h6> Boletos/Notas à Prazo</h6>
+                    </div>
+                    
+                    <div class="col-4 text-end">
+                        Total de Contas: <h6 class="">{{boletos_em_atrazo.count}}</h6>
+                    </div>
+                    {% comment %} <div class="col-3 text-end">
+                        Total Acréscimos: <h6 class="">R$ {{total_acresc}}</h6>
+                    </div> {% endcomment %}
+                    <div class="col-4 text-end">
+                        Total: <h6 class="">{{total_valor_em_atraso}}</h6>
+                    </div>
+        
+        
+                </li>
+            </ol>
+        </div>
+    Forma de Pagamento: Boleto (s):            
+    <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px;">
+            <thead style="border:solid 1px;border-color:silver;background:#0d6efd; color: white;">
+                <tr>
+                    <th scope="col" class="text-center">#</th>
+                    <th scope="col">Fornecedor</th>
+                    <th scope="col">Nota Fiscal</th>
+                    <th scope="col" class="text-center">Documento</th>
+                    <th scope="col" class="text-center">Parcela</th>
+                    <th scope="col" class="text-center">Data Vencimento</th>
+                    <th scope="col" class="text-center">Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if contas_do_dia %}
+                {% for item in boletos_em_atrazo %}
+                <tr>
+                    <td class="limitar_forloop text-center">{{forloop.counter}}</td>
+                    {% if item.conta.saida.fornecedor %}<td class="limitar_td"
+                        style="text-align: left; vertical-align:middle !important" title="{{item.fornecedor}}"><a
+                            href="{% url 'detalhar-fornecedor' item.conta.saida.fornecedor.pk %}"
+                            title="Ver {{item.conta.saida.fornecedor}} ">{{item.conta.saida.fornecedor}}</a></td>{% else %}<td> - </td>
+                    {% endif %}
+
+                    {% if item.conta.saida.nota_fiscal %}<td class="text-center"><a target="_blank" href="{% url 'ver-nota-completa' item.conta.pk %}" class="">{{item.conta.saida.nota_fiscal}}</a></td>{% else %}<td class="text-center"> - </td>{% endif %}
+                    {% if item.doc %}<td class="text-center">{{item.doc }}</td>{% else %}<td class="text-center"> - </td>{% endif %}
+                    <td class="text-center">{{item.parcela}}/{{item.total_parcelas}}</td>
+                    <td class="text-center">{{item.data_vencimento | date:"d/m/Y"}}</td>
+                    <td class="text-center">{{item.valor_BR}}</td>
+
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td style="text-align: center; color: gray;" colspan="7">Nenhum registro</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+       
+
+    </div>
+</div>
+
+
+
+
+{% endblock%}
+
+{% block jquery %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script>
+
+
+    $(document).ready(function () {
+        
+        
+        $('.tabela-listar').DataTable({
+            responsive: true,
+            // "bSort": false,
+            "aaSorting": [],
+            "pageLength": 10,
+            "order": [[2, "desc"]],  //3º tabela em ordem decrescente
+            "language": {
+
+                "decimal": ",",
+                "emptyTable": "Sem dados disponíveis",
+                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+                "infoFiltered": "(filtrado de _MAX_ registros no total)",
+                "infoPostFix": "",
+                "thousands": ".",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "loadingRecords": "A carregar dados...",
+                "processing": "A processar...",
+                "search": "Procurar:",
+                "zeroRecords": "Não foram encontrados resultados",
+                "paginate": {
+                    "first": "Primeiro",
+                    "last": "Último",
+                    "next": "Seguinte",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": ordem crescente",
+                    "sortDescending": ": ordem decrescente"
+                }
+            }
+        });
+
+
+
+    }); 
+    
+</script>
+{% endblock %}
