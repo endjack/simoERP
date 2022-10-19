@@ -1,6 +1,5 @@
 from re import I
 from xml.dom import ValidationErr
-
 from requests import delete
 from financeiro.filters import ContasFilter
 from financeiro.forms import *
@@ -54,6 +53,9 @@ def home_resumo_do_dia(request):
             #VALIDAÇÃO 'total_valor'
             if not total_valor:
                 total_valor = 0
+                
+            if not total_valor_em_atraso:
+                total_valor_em_atraso = 0
         
             context = {
                 'contas_do_dia': contas_do_dia,
