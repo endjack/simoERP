@@ -1,0 +1,69 @@
+<ol class="list-group" style="margin-left:2em; margin-right:2em;">
+
+  {% if nota_atual %}
+    <div class=""><strong>Itens/Serviços da Nota: </strong><span class="badge bg-primary" style="cursor: pointer;font-size: 10pt;"
+        hx-get="{% url 'inserir-itens-saida' nota_atual.pk %}"
+        hx-trigger="click"
+        hx-target="body"
+        hx-swap="beforeend">+</span>   
+    </div> 
+    {% else %}
+    <div class=""><strong>Itens/Serviços da Nota: </strong></div>
+    <small class="">Adione primeiro a descricao para inserir itens a nota</small>
+    {% endif %}  
+    <li class="list-group-item d-flex justify-content-between align-items-start " {% if  nota_atual.itens.count > 0 %} style="opacity: 0.5;"  {% endif %}  >
+        <div class="ms-2 col-12">
+          Itens/Serviços:
+
+          <table class="table table-sm table-bordered table-striped ">
+            <thead class="text-black text-center" style="background: silver;">
+              <tr style="line-height: 12px;white-space: nowrap; font-size:10pt">
+                <th scope="col" style="text-align: center;">#</th>
+                <th scope="col" style="text-align: left;">Descrição</th>
+                <th scope="col" style="text-align: center;">Quantidade</th>
+                <th scope="col" style="text-align: center;">Unidade</th>
+                <th scope="col" style="text-align: center;">Valor Unitário</th>
+                <th scope="col" style="text-align: center;">Valor Total</th>
+                <th scope="col" style="text-align: center;">Opções</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% if nota_atual.itens %}
+                    {% for item in nota_atual.itens.all %}
+                      <tr style="line-height: normal; font-size:9pt">
+                        <td style="text-align: center;">{{forloop.counter}}</td>
+                        <td style="text-align: left;">{{item.descricao | upper}}</td>
+                        <td style="text-align: center;">{{item.qtd}}</td>
+                        <td style="text-align: center;">{{item.unid_medida}}</td>
+                        <td style="text-align: center;">{{item.valor_BR}}</td>
+                        <td style="text-align: center;">{{item.valor_total_BR}}</td>
+                        <td style="text-align: center;"><span class="badge bg-danger" style="cursor: pointer;" title="Excluir Item"
+                          hx-get="{% url 'excluir-iten-saida' item.pk nota_atual.pk %}"
+                          hx-trigger="click"
+                          hx-target="#itens-nota"
+                          hx-swap="innerHTML">X</span></td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                      <tr>
+                        <td colspan="7" style="color:gray;text-align: center;">Nenhum Item !</td>
+                      </tr>
+                {% endif %}
+                  
+            </tbody>
+            </table>
+        </div>
+        
+    </li>
+
+    <li class="list-group-item d-flex justify-content-end " style="opacity: 0.5;">
+    
+              <div class="ms-2 flex-fill text-end">
+                Valor Total da Nota (=):
+                  <div style="font-size:14pt"><strong>{{nota_atual.valor_Total_itens_BR}}</strong></div>
+              </div>
+
+        
+    </li>
+    
+</ol>

@@ -26,10 +26,10 @@ resumo_listagem_boletos = list()
 pode_salvar_boleto = False
 id_nota_em_processo = None
 
- #TODO excluir boleto individual
+ 
  #TODO excluir Nota Completa  <-----
  #TODO Excluir itens salvar editar não atualiza os itens
- #TODO página de editar os boletos antes de excluir
+
  #TODO Editar (colocar o itens para serem add no final)
 
 
@@ -89,39 +89,11 @@ def contas_a_pagar(request):
     
 #GET /contas-a-pagar/inserir     
 @login_required(login_url='login/')
-def inserir_nova_conta_a_pagar(request):
-    global id_nota_em_processo
- 
-    validar_descricao_nota['data_emissao'] = False 
-    validar_descricao_nota['centro_de_custo'] = False
+def inserir_nova_conta_a_pagar(request, template_name = 'financeiro/fragmentos/inserir-conta-a-pagar.html'):
     
-    template_name = 'financeiro/fragmentos/inserir-conta-a-pagar.html'
-    
-    if request.method == 'GET':
-        form = DescricaoForm()
-        fornecedores = Fornecedor.objects.all()
-        nota = NotaCompleta.objects.none()
+    if request.method == 'GET':        
+        return render(request, template_name , {})
         
-        try:   
-            if id_nota_em_processo:
-                nota = NotaCompleta.objects.get(pk = int(id_nota_em_processo))
-                nota.itens.all().delete()
-                nota.delete()
-                id_nota_em_processo = None
-                
-                print('\033[31m'+'------------------- DELETADA CONTA TEMPORÁRIA --------------------'+'\033[0;0m') 
-                    
-            
-            context = {
-            'form':form,
-            'fornecedores': fornecedores,
-            'notacompleta': nota,
-            }
-            
-            return render(request, template_name , context)
-        
-        except ContaPagamento.DoesNotExist:
-            raise Http404("ERRO: Conta não existe!")
 
 
 #GET /contas-a-pagar/modal-itens    
@@ -434,39 +406,20 @@ def ver_nota_completa(request, pk):
             'boletos': boletos
         }                       
     
-    
-    return render(request, template_name , context)
+    response = render(request, template_name , context)
+    response['HX-Push-Url'] = reverse('ver-nota-completa',kwargs={'pk':nota_atual.pk})
+    return response
 
 
 @login_required(login_url='login/')
-def editar_saida(request, pk):
- 
-    validar_descricao_nota['data_emissao'] = True 
-    validar_descricao_nota['centro_de_custo'] = True
-    validar_descricao_nota['itens_nota'] = True
-    
-    template_name = 'financeiro/fragmentos/inserir-conta-a-pagar.html'
+def editar_saida(request, pk, template_name = 'financeiro/fragmentos/inserir-conta-a-pagar.html'):
     
     if request.method == 'GET':
         nota = get_object_or_404(NotaCompleta, pk=pk)
-        fornecedores = Fornecedor.objects.all()
         
-        initial_dict = {
-           'nota_fiscal': nota.saida.nota_fiscal,
-           'data_emissao': nota.saida.data_emissao,
-           'centro_de_custo': nota.saida.centro_de_custo,
-           'descricao': nota.saida.descricao,
-           
-        }
-        form = DescricaoForm(initial=initial_dict, instance=nota)
-        
-        
-   
+       
         context = {
-        'form':form,
-        'notacompleta' : nota,
-        'fornecedores' : fornecedores,
-        'fornecedor_atual' : nota.saida.fornecedor.pk,
+        'nota_atual' : nota,
         'edit': True
         
         }
@@ -1081,3 +1034,232 @@ def excluir_pagamento_boleto_unico(request, pk, nota):
     boleto.pago = False
     boleto.save()
     return HttpResponseRedirect(f'/contas-a-pagar/nota/{nota}')
+
+@login_required(login_url='login/')
+@csrf_exempt
+def inserir_descricao_saida(request, template_name='financeiro/fragmentos/modal-inserir-descricao-nota.html'):
+    
+    if request.method == 'GET':
+        fornecedores = Fornecedor.objects.all()     
+        centros_custo = Obra.objects.all()
+        
+        context = {
+            'fornecedores': fornecedores,
+            'centros_custo': centros_custo
+            }
+        return render(request, template_name, context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def editar_descricao_saida(request, pk, nota, template_name='financeiro/fragmentos/modal-inserir-descricao-nota.html'):
+    
+    if request.method == 'GET':
+        fornecedores = Fornecedor.objects.all()     
+        centros_custo = Obra.objects.all()
+        descricao = DescricaoNota.objects.get(pk=pk)
+        nota_atual = NotaCompleta.objects.get(pk=nota)
+        
+        context = {
+            'fornecedores': fornecedores,
+            'centros_custo': centros_custo,
+            'descricao': descricao,
+            'nota_atual': nota_atual,
+            }
+        return render(request, template_name, context)
+
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def salvar_descricao_saida(request, template_name='financeiro/fragmentos/inserir-conta-a-pagar.html'):
+    
+    fornecedor = request.POST.get('fornecedor')
+    print(fornecedor)
+    #validação fornecedor
+    if not fornecedor or fornecedor == "":
+        response = HttpResponse(f"<span style='color:red'><i>Fornecedor Inválido</i></span>")
+        response['HX-Retarget'] = '#error_fornecedor'
+        response['HX-Swap'] = 'innerHTML'
+        return response
+    else:
+        fornecedor = Fornecedor.objects.get(pk = int(fornecedor))
+   
+    data_emissao = request.POST.get('data_emissao')
+    print(data_emissao)
+    
+    #validação data_emissao
+    if not data_emissao or data_emissao == "":
+        response = HttpResponse(f"<span style='color:red'><i>Data Inválida</i></span>")
+        response['HX-Retarget'] = '#error_data_emissao'
+        response['HX-Swap'] = 'innerHTML'
+        return response
+    else:
+        data_emissao = datetime.strptime(data_emissao, '%Y-%m-%d')
+    
+    centro_de_custo = Obra.objects.get(pk = int(request.POST.get('centro-de-custo')))
+    descricao = request.POST.get('descricao')
+    nota_fiscal = request.POST.get('nota_fiscal')
+    
+    nova_descricao = DescricaoNota.objects.create(
+        descricao = descricao,
+        nota_fiscal = nota_fiscal,
+        fornecedor = fornecedor,
+        data_emissao = data_emissao,
+        centro_de_custo = centro_de_custo
+    )
+    nota_atual = NotaCompleta.objects.create(
+        usuario = request.user,
+        saida = nova_descricao
+    )
+    
+    context = {
+        'descricao' : nova_descricao,
+        'nota_atual' : nota_atual,
+    }
+    response = render(request, template_name, context)
+    response['HX-Trigger'] = 'closeModalDescricao'
+    response['HX-Push-Url'] = reverse('editar-saida',kwargs={'pk':nota_atual.pk})
+    return response
+
+
+@login_required(login_url='login/')
+@csrf_exempt    
+def salvar_editar_descricao_saida(request, pk, nota, template_name='financeiro/fragmentos/descricao-nota-inserir.html'):
+    
+    fornecedor = request.POST.get('fornecedor')
+    
+    #validação fornecedor
+    if not fornecedor or fornecedor == "":
+        response = HttpResponse(f"<span style='color:red'><i>Fornecedor Inválido</i></span>")
+        response['HX-Retarget'] = '#error_fornecedor'
+        response['HX-Swap'] = 'innerHTML'
+        return response
+    else:
+        fornecedor = Fornecedor.objects.get(pk = int(fornecedor))
+        print(fornecedor)
+   
+    data_emissao = request.POST.get('data_emissao')
+    print(data_emissao)
+    
+    #validação data_emissao
+    if not data_emissao or data_emissao == "":
+        response = HttpResponse(f"<span style='color:red'><i>Data Inválida</i></span>")
+        response['HX-Retarget'] = '#error_data_emissao'
+        response['HX-Swap'] = 'innerHTML'
+        return response
+    else:
+        data_emissao = datetime.strptime(data_emissao, '%Y-%m-%d')
+    
+    centro_de_custo = Obra.objects.get(pk = int(request.POST.get('centro-de-custo')))
+    descricao_ = request.POST.get('descricao')
+    nota_fiscal = request.POST.get('nota_fiscal')
+    
+    descricao = DescricaoNota.objects.get(pk=pk)
+    descricao.descricao = descricao_
+    descricao.nota_fiscal = nota_fiscal
+    descricao.data_emissao = data_emissao
+    descricao.centro_de_custo = centro_de_custo
+    descricao.fornecedor = fornecedor
+
+    descricao.save()
+    nota_atual =  NotaCompleta.objects.get(pk=nota)
+    
+    context = {
+        'descricao' : descricao,
+        'nota_atual' : nota_atual
+    }
+    response = render(request, template_name, context)
+    response['HX-Trigger'] = 'closeModalDescricao'
+    response['HX-Push-Url'] = reverse('editar-saida',kwargs={'pk':nota_atual.pk})
+    return response
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def inserir_itens_saida(request, pk, template_name='financeiro/fragmentos/modal-inserir-itens.html'):
+    
+    if request.method == 'GET':
+
+        nota_atual = NotaCompleta.objects.get(pk=pk)
+        unid_medidas = UNIDADES
+        
+        context = {
+            'nota_atual': nota_atual,
+            'unid_medidas' : unid_medidas
+            }
+        return render(request, template_name, context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def salvar_itens_saida(request, pk, template_name='financeiro/fragmentos/itens-nota-inserir.html'):
+    
+    if request.method == 'POST':
+        nota_atual = NotaCompleta.objects.get(pk=pk)
+        
+        descricao = request.POST.get('descricao')
+        qtd = request.POST.get('qtd')
+        unid_medida = request.POST.get('unidade')
+        valor = request.POST.get('valor').replace(".","").replace(",",".")
+        
+        #VALIDANDO QUANTIDADE
+        if not qtd or float(qtd) <=0:
+            response = HttpResponse(f"<span style='color:red'><i>Qtd Inválida</i></span>")
+            response['HX-Retarget'] = '#error_qtd'
+            response['HX-Swap'] = 'innerHTML'
+            return response
+        else:
+            qtd = float(qtd)
+            
+        #VALIDANDO QUANTIDADE
+        if not valor or float(valor) <=0:
+            response = HttpResponse(f"<span style='color:red'><i>Valor Inválido</i></span>")
+            response['HX-Retarget'] = '#error_valor'
+            response['HX-Swap'] = 'innerHTML'
+            return response
+        else:
+            valor = float(valor)
+            
+        
+        novo_item = ItensNota.objects.create(
+            descricao = descricao,
+            unid_medida = unid_medida,
+            qtd = qtd,
+            valor = valor
+            
+        ) 
+        nota_atual.itens.add(novo_item)
+        nota_atual.valor = nota_atual.itens.all().aggregate(total_itens = Sum(ExpressionWrapper(F("qtd") *  F("valor"),  output_field=DecimalField())))["total_itens"]
+        nota_atual.save()
+              
+        print(F'------------------ ITEM {novo_item.pk} SALVO COM SUCESSO NA NOTA {nota_atual.pk}')
+        
+                 
+        context = {
+            'nota_atual': nota_atual,
+            }
+        
+        
+        response = render(request, template_name, context)
+        response['HX-Trigger'] = 'closeModalItens'
+        return response
+    else:
+        HttpResponse(f"Erro ao Salvar")     
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def excluir_iten_saida(request, pk, nota, template_name='financeiro/fragmentos/itens-nota-inserir.html'):
+    
+    item = ItensNota.objects.get(pk=pk)
+    item.delete()
+    nota_atual = NotaCompleta.objects.get(pk = nota)
+    nota_atual.valor = nota_atual.itens.all().aggregate(total_itens = Sum(ExpressionWrapper(F("qtd") *  F("valor"),  output_field=DecimalField())))["total_itens"]
+    nota_atual.save()
+    
+    context = {
+        'nota_atual': nota_atual
+    }
+    
+    response = render(request, template_name, context)
+    response['HX-Trigger'] = 'itemNotaExcluido'
+    return response
+   
