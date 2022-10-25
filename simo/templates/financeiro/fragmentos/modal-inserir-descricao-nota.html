@@ -1,0 +1,112 @@
+<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
+	<div class="modal-underlay" _="on click trigger closeModal"></div>
+	<div class="modal-content" style="max-width:900px; overflow:auto;">
+
+        {% if descricao %}
+<h5>Inserir Descrição: (ID: {{descricao.pk}})</h5>
+
+<form id="formInserirDescricaoSaida" style="font-size:9pt;" hx-post="{% url 'salvar-editar-descricao-saida' descricao.pk nota_atual.pk %}"
+    hx-trigger="submit"
+    hx-target="#descricao-nota"
+    hx-swap="innerHTML"
+    _="on closeModalDescricao trigger closeModal">      
+    <div class="form-group row mb-2 ">
+        <div class="col-6 ">
+                <label for="input-fornecedores" class="">Fornecedor: </label>
+                <select id="input-fornecedores" class="form-control js-example-basic-single"  name="fornecedor" required=required>
+                    {% for f in fornecedores %}
+                        
+                    <option value="{{f.pk}}" {% if f == descricao.fornecedor %}selected {% endif %}> {{f.template_options}}</option>
+                
+                    {% endfor %}
+                 </select>
+                <small class="small-error" id="error_fornecedor"></small> 
+        </div>
+        <div class="col-3">
+                <label for="input2" class="">Nota Fiscal nº:</label>
+                <input class="form-control form-control-sm"  id="input2" name="nota_fiscal" value="{{descricao.nota_fiscal}}">
+        </div>
+        <div class="col-3">
+                <label for="input3DataEmissao" class="">Emissão:</label>
+                <input type="date" class="form-control form-control-sm" id="input3DataEmissao" name="data_emissao" value="{{descricao.data_emissao | date:'Y-m-d'}}">
+            <small class="small-error" id="error_data_emissao"></small>
+        </div>
+    </div>
+    <div class="row mb-3" style="font-size:9pt;">
+        <div class="col-5">
+                <label for="input4centroDeCusto" class="">Centro de Custo:</label>
+                <select id="input-centro-de-custo" class="form-control js-example-basic-single"  name="centro-de-custo" required=required>
+                    {% for f in centros_custo %}
+                        
+                    <option value="{{f.pk}}" {% if f == descricao.centro_de_custo %}selected {% endif %}> {{f.nome}}</option>
+                
+                    {% endfor %}
+                </select>
+            <small class="small-error" id="error_centro_custo"></small>
+        </div>
+        <div class="col-7">
+            <label for="input5" class="">Descricao:</label>
+            <input type="text" class="form-control form-control-sm" id="input5" name="descricao" value="{{descricao.descricao}}">
+        </div>
+    </div>
+</form>  
+{% else %}
+<h5>Inserir Descrição:</h5>
+<form id="formInserirDescricaoSaida" style="font-size:9pt;" hx-post="{% url 'salvar-descricao-saida' %}"
+    hx-trigger="submit"
+    hx-target="body"
+    hx-swap="outerHTML"
+    _="on closeModalDescricao trigger closeModal">      
+    <div class="form-group row mb-2 ">
+        <div class="col-6 ">
+                <label for="input-fornecedores" class="">Fornecedor: </label>
+                <select id="input-fornecedores" class="form-control js-example-basic-single"  name="fornecedor" required=required>
+                        {% include 'financeiro/fragmentos/options-select-fornecedores.html' %}
+                 </select>
+                <small class="small-error" id="error_fornecedor"></small> 
+        </div>
+        <div class="col-3">
+                <label for="input2" class="">Nota Fiscal nº:</label>
+                <input class="form-control form-control-sm"  id="input2" name="nota_fiscal">
+        </div>
+        <div class="col-3">
+                <label for="input3DataEmissao" class="">Emissão:</label>
+                <input type="date" class="form-control form-control-sm" id="input3DataEmissao" name="data_emissao">
+            <small class="small-error" id="error_data_emissao"></small>
+        </div>
+    </div>
+    <div class="row mb-3" style="font-size:9pt;">
+        <div class="col-5">
+                <label for="input4centroDeCusto" class="">Centro de Custo:</label>
+                <select id="input-centro-de-custo" class="form-control js-example-basic-single"  name="centro-de-custo" required=required>
+                    {% for f in centros_custo %}
+                    <option value="{{f.pk}}"> {{f.nome}}</option>
+                
+                    {% endfor %}
+                </select>
+            <small class="small-error" id="error_centro_custo"></small>
+        </div>
+        <div class="col-7">
+            <label for="input5" class="">Descricao:</label>
+            <input type="text" class="form-control form-control-sm" id="input5" name="descricao">
+        </div>
+    </div>
+</form>  
+{% endif %}
+
+<div class="d-flex flex-row-reverse">
+    <button class="btn btn-p-sm btn-primary m-1" form="formInserirDescricaoSaida">Salvar</button>
+    <button class="btn btn-p-sm btn-light m-1" _="on click trigger closeModal">Cancelar</button>
+    </div>
+</div>
+</div>
+
+{% block jquery %}
+<script>
+   //htmx.logAll();
+
+   
+    $('.js-example-basic-single').select2();
+
+</script>
+{% endblock %}

@@ -1,0 +1,96 @@
+<form id="formInserirSaida" style="font-size:9pt;" >
+                     
+    
+    <div class="form-group row mb-2 ">
+      
+        <div class="col-5 ">
+       
+                <label for="input-fornecedores" class="">Fornecedor: </label>
+
+                <select id="input-fornecedores" class="form-control js-example-basic-single"  name="fornecedor" required=required>
+                        {% include 'financeiro/fragmentos/options-select-fornecedores.html' %}
+                 </select>
+                <small class="small-error" id="error_fornecedor"></small> 
+        </div>
+    
+        <div class="col-4">
+                <label for="input2" class="">Nota Fiscal nº:</label>
+                <input class="form-control form-control-sm"  id="input2" name="nota_fiscal">
+        </div>
+
+        <div class="col-3">
+                <label for="input3DataEmissao" class="">Emissão:</label>
+                <input type="date" class="form-control form-control-sm" id="input3DataEmissao" name="data_emissao">
+            <small class="small-error" id="error_data_emissao"></small>
+        </div>
+
+        
+    </div>
+
+    <div class="row mb-3" style="font-size:9pt;">
+        <div class="col-5">
+                <label for="input4centroDeCusto" class="">Centro de Custo:</label>
+                <select id="input-centro-de-custo" class="form-control js-example-basic-single"  name="centro-de-custo" required=required>
+                    {% for f in centros_custo %}
+                    <option value="{{f.pk}}"> {{f.nome}}</option>
+                
+                    {% endfor %}
+                </select>
+            <small class="small-error" id="error_centro_custo"></small>
+        </div>
+        <div class="col-7">
+            <label for="input5" class="">Descricao:</label>
+            <input type="text" class="form-control form-control-sm" id="input5" name="descricao">
+        </div>
+    </div>
+
+    <div class="col-4 d-flex align-items-start">
+        <button class="btn btn-p-sm btn-primary m-2"
+            hx-post="{% url 'salvar-descricao-saida' %}"
+            hx-trigger="click"
+            hx-target="body"
+            hx-swap="outerHTML"
+            >Adiionar Descrição Nota</button>
+    
+      </div>
+     
+
+  <div class="col-4 d-flex align-items-start">
+    <button class="btn btn-p-sm btn-primary m-2"
+    {% if notacompleta %} hx-get=" {% url 'modal-item-conta' notacompleta.pk %}"
+    {% else %} hx-get=" {% url 'modal-item-conta'  %}"
+    {% endif %} 
+        hx-trigger="click"
+        hx-swap="beforeend"
+        hx-target="body"
+        disabled>Adicionar Itens/Serviços</button>
+        <div class="small-error" id="error_itens_add">{% firstof  erroItem  '' %}</div>
+  </div>
+
+  <div class="row">
+       <div id="add_itens_table" 
+        hx-get="{% url 'check-qtd-itens-conta' %}"
+        hx-trigger="htmx:afterSettle"
+        hx-swap="innerHTML"
+        hx-target="#error_itens_add"
+        >
+            {% include 'financeiro/fragmentos/itens-inseridos-tabela.html' %}
+       </div> 
+  </div> 
+  
+
+  <div class="d-flex flex-row-reverse m-2">
+    {% if notacompleta %}
+     <button class="btn btn-sm btn-primary m-1" type="submit" id="btt-addContaCompleta">Salvar Edição</button>
+     <button class="btn btn-sm btn-danger m-1" id="excluirNotaCompleta"
+            hx-delete="{% url 'excluir-saida' notacompleta.pk %}"
+            hx-trigger="click"
+            hx-target="body"
+            hx-swap="outerHTML"
+            >Excluir</button>
+     {% else %}
+     <button class="btn btn-sm btn-danger" type="submit" id="btt-addContaCompleta" disabled>Salvar Conta</button>
+     {% endif %}
+  </div>
+
+</form>  

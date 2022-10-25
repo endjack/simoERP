@@ -1,0 +1,104 @@
+{% if nota_atual.saida %}
+   
+<ol class="list-group" style="margin-left:2em; margin-right:2em;">
+    <div class="d-flex bd-highlight">
+      <div class="bd-highlight">
+        {% comment %} o modal 'simo/templates/financeiro/fragmentos/modal-inserir-descricao-nota.html' será chamado {% endcomment %}
+      <strong> Descrição da Nota:  </strong> <span class="badge bg-success" style="cursor: pointer;font-size: 10pt;"
+        hx-get="{% url 'editar-descricao-saida' nota_atual.saida.pk nota_atual.pk %}"  
+        hx-trigger="click"
+        hx-target="body"
+        hx-swap="beforeend"
+        >editar</span>
+      </div>
+      <div class="ms-auto bd-highlight">Nota Completa ID: {{nota_atual.pk}} | Descrição ID: {{nota_atual.saida.pk}} </div>
+      </div>
+    <li class="list-group-item d-flex justify-content-between align-items-start" style="opacity: 1;">
+        <div class="ms-2 ml-auto">
+          Nota Fiscal:
+              <div class="titulo-p-forte"> {{nota_atual.saida.nota_fiscal}}</div>
+        </div>
+        <div class="ms-2 ml-auto">
+          Data de Emissão:
+          <div class="titulo-p-forte"> {{nota_atual.saida.data_emissao | date:'d/m/Y'}} </div>
+        </div>
+        <div class="ms-2 ml-auto">
+   
+        </div>
+      </li>
+    <li class="list-group-item d-flex justify-content-between" style="opacity: 1;" >
+        <div class="ms-2 ml-auto">
+          Fornecedor:
+            <div class="titulo-p-forte">{{nota_atual.saida.fornecedor.nome}}</div>
+        </div>
+        <div class="ms-2 ml-auto">
+            Razão Social:
+              <div class="titulo-p-forte">{% firstof nota_atual.saida.fornecedor.razao_social  '-' %}</div>
+        </div>
+        <div class="ms-2 ml-auto">
+            CPF/CNPJ:
+              <div class="titulo-p-forte">{% firstof nota_atual.saida.fornecedor.doc  '-' %}</div>
+          </div>
+          
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start" style="opacity: 1;">
+      <div class="ms-2 ml-auto">
+        Centro de Custo:
+            <div class="titulo-p-forte"> {{nota_atual.saida.centro_de_custo.nome}} </div>
+      </div>
+      <div class="ms-2 ml-auto">
+        Descrição:
+            <div class="titulo-p-forte"> {{nota_atual.saida.descricao}} </div>
+      </div>
+      
+    </li>
+</ol>
+{% else %}
+<ol class="list-group" style="margin-left:2em; margin-right:2em;">
+    <div class=""> <strong>Descrição da Nota:  </strong><span class="badge bg-primary" style="cursor: pointer;font-size: 10pt;"
+        hx-get="{% url 'inserir-descricao-saida' %}"
+        hx-trigger="click"
+        hx-target="body"
+        hx-swap="beforeend">      
+        +</span></div>
+    <li class="list-group-item d-flex justify-content-between align-items-start" style="opacity: 0.5;">
+        <div class="ms-2 ml-auto">
+          Nota Fiscal:
+              <div class="titulo-p-forte"> - </div>
+        </div>
+        <div class="ms-2 ml-auto">
+          Data de Emissão:
+          <div class="titulo-p-forte"> - </div>
+        </div>
+        <div class="ms-2 ml-auto">
+   
+        </div>
+      </li>
+    <li class="list-group-item d-flex justify-content-between" style="opacity: 0.5;" >
+        <div class="ms-2 ml-auto">
+          Fornecedor:
+            <div class="titulo-p-forte">-</div>
+        </div>
+        <div class="ms-2 ml-auto">
+            Razão Social:
+              <div class="titulo-p-forte">-</div>
+        </div>
+        <div class="ms-2 ml-auto">
+            CPF/CNPJ:
+              <div class="titulo-p-forte">-</div>
+          </div>
+          
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start" style="opacity: 0.5;">
+      <div class="ms-2 ml-auto">
+        Centro de Custo:
+            <div class="titulo-p-forte"> - </div>
+      </div>
+      <div class="ms-2 ml-auto">
+        Descrição:
+            <div class="titulo-p-forte"> - </div>
+      </div>
+      
+    </li>
+</ol>
+{% endif %}

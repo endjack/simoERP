@@ -1,0 +1,61 @@
+<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
+	<div class="modal-underlay" _="on click trigger closeModal"></div>
+	<div class="modal-content" style="max-width:900px; overflow:auto;">
+		<h5>Inserir Itens:</h5>
+
+<form id="formInserirItensNota" style="font-size:9pt;" hx-post="{% url 'salvar-itens-saida'  nota_atual.pk %}"    
+    hx-trigger="submit"
+    hx-target="#itens-nota"
+    hx-swap="innerHTML"
+    _="on closeModalItens trigger closeModal">
+    
+    <div class="form-group row mb-2">
+        <div class="col-5">
+            <label for="input1" class="">Descrição:</label>
+               <input type="text" class="form-control form-control-sm" name="descricao" id="input1" required=required>
+               <small class="small-error" id="error_descricao"></small>
+        </div>
+        <div class="col-2">
+            <label for="input2" class="">Quant:</label>
+            <input class="form-control form-control-sm nodot" name="qtd" id="input2" type="number" min="0" step="any" autocomplete="off" >
+               <small class="small-error" id="error_qtd"></small>
+               
+        </div>
+        <div class="col-2">
+            <label for="input3" class="">Und:</label>
+            <select id="input3" class="form-control form-control-sm"  name="unidade" >
+                {% for f in unid_medidas %}
+                <option value="{{f.1}}"> {{f.1}}</option>
+            
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-3">
+            <label for="input4" class="">Valor Unit R$:</label>
+            <input class="form-control form-control-sm money nodot" name="valor" id="input4" type="text" autocomplete="off" >
+               <small class="small-error" id="error_valor" >
+               </small> 
+               
+        </div>
+    </div>
+          <span class="help-block">{{ error }}</span>
+</form>  
+
+
+<div class="d-flex flex-row-reverse">
+    <button class="btn btn-p-sm btn-primary m-1" form="formInserirItensNota">Salvar</button>
+    <button class="btn btn-p-sm btn-light m-1" _="on click trigger closeModal">Cancelar</button>
+    </div>
+</div>
+</div>
+
+{% block jquery %}
+<script>
+   //htmx.logAll();
+
+   $('.money').mask('000.000.000,00', {
+    reverse: true
+});
+
+</script>
+{% endblock %}
