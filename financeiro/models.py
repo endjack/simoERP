@@ -111,6 +111,9 @@ class PagamentoBoleto(models.Model):
     
     def valor_pago_BR(self):
         return locale.currency(self.valor_pago, grouping=True)
+    
+    def valor_total_BR(self):
+        return locale.currency(self.conta.valor + self.acrescimo, grouping=True)
 
       
 

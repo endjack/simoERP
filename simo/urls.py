@@ -103,6 +103,7 @@ urlpatterns = [
     #urls Financeiro 
     path('resumo-do-dia/', home_resumo_do_dia, name='resumo-do-dia'),
     path('contas-a-pagar/', contas_a_pagar, name='contas-a-pagar'),
+    path('contas-atrasadas/', contas_atrasadas, name='contas-atrasadas'),
     path('contas-a-pagar/filtro', filtro_contas_a_pagar, name='resultados-filtro-contas-a-pagar'),
     path('contas-a-pagar/add-descricao', add_descricao_nota, name='add-descricao-nota'),          
     path('contas-a-pagar/inserir', inserir_nova_conta_a_pagar, name='inserir-conta-a-pagar'),
