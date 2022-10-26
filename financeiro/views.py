@@ -1,3 +1,4 @@
+from types import MethodType
 from xml.dom import ValidationErr
 from requests import delete
 from financeiro.filters import ContasFilter
@@ -69,7 +70,11 @@ def home_resumo_do_dia(request, template_name = 'financeiro/resumo-do-dia.html')
         
         except ContaPagamento.DoesNotExist:
             raise Http404("ERRO: Conta não existe!")
-
+    else:
+      return HttpResponse(f'Metodo Errado!') 
+    
+    
+    
 #GET /contas-a-pagar/
 @login_required(login_url='login/')
 def contas_a_pagar(request): 
@@ -446,7 +451,7 @@ def ver_nota_completa(request, pk):
         else:
             situacao = 'pagoBoletoFinalizado'   #TODO RESOLVER QUANDO TODOS OS BOLETOS FICAREM PAGOS, DAR NOTA FISCAL PAGAMENTO FINALIZADO
             
-    print(f'------------------------------- {situacao}')
+    # print(f'------------------------------- {situacao}')
     context = {
             'nota_atual': nota_atual,
             'pagamento': pagamento,
@@ -678,7 +683,7 @@ def atualizar_resumo_boleto_mensal(request, pk):
         pode_salvar_boleto = False
         return response
     
-    
+    print(f'DATAS PARCELAS ---------------> {datas_parcelas}')
     #GUARDANDO E ENVIADO OS DADOS NOVAMENTE
     template_name = 'financeiro/fragmentos/pagamentos/resumo-boletos-pagamento.html'
     resumo_listagem_boletos = list()
@@ -969,17 +974,31 @@ def salvar_editar_pagamento_vista(request, pk, nota):
 @login_required(login_url='login/')
 @csrf_exempt
 def excluir_saida(request, pk):
+    
     if request.method == "DELETE":
+        print(f"DELETADO - DETALHES DA NOTA")
         nota_atual = NotaCompleta.objects.get(pk=pk)
 
         try:
+            itens = nota_atual.itens.all()
+            for item in itens:
+               n = item.pk
+               ItensNota.delete(item)
+               print(f'DELETADO ITEM -------------> {n}')
+               
+            n = nota_atual.saida.pk
             nota_atual.saida.delete()
-            nota_atual.itens.delete() #não funciona .clear()
+            print(f'DELETADO DESCRIÇÃO DA NOTA -------------> {n}')
+            n = nota_atual.pk
             nota_atual.delete()
+            print(f'DELETADO NOTA -------------> {n}')
+            return render(request, template_name = 'financeiro/resumo-do-dia.html', context={})
+            
         except:
             print('erro ao Excluir')
-            
-        return HttpResponse("excluir com Sucesso")
+            return HttpResponse(f'Erro ao Excluir ----> Nota Cód: {nota_atual.pk}')
+    else:
+      return HttpResponse(f'Metodo Errado!')      
     
 
 @login_required(login_url='login/')
