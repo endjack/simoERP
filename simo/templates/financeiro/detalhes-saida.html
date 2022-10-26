@@ -61,6 +61,12 @@
     <div class="ms-auto bd-highlight">
       {% if not nota_atual.pago %}
       <a class="m-1 btn btn-p-sm btn-primary" href="{% url 'editar-saida' nota_atual.pk %}">Editar Dados da Nota</a>
+      <a class="m-1 btn btn-p-sm btn-danger" 
+      hx-delete="{% url 'excluir-saida' nota_atual.pk %}"
+      hx-trigger="click"
+      hx-target="body"
+      hx-swap="innerHTML"
+      hx-confirm="Tem certeza que deseja EXCLUIR Nota nº {{nota_atual.pk}} de valor {{nota_atual.valor_BR}}?">Excluir Nota</a>
       {% else %}
        <small><i>*Para qualquer alteração, é preciso excluir o pagamento primeiro.</i></small>
       {% endif %}
