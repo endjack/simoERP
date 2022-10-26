@@ -1,4 +1,3 @@
-from re import I
 from xml.dom import ValidationErr
 from requests import delete
 from financeiro.filters import ContasFilter
@@ -12,10 +11,9 @@ from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
-from django.core.cache import cache
 from django.http.response import HttpResponseRedirect, HttpResponse
 from django_htmx.http import trigger_client_event
-from .validations import validar_descricao_nota, validar_item_nota
+from .validations import validar_item_nota
 
 END_LOG = '\033[0;0m'
 LOG_DANGER= '\033[31m'
@@ -35,40 +33,42 @@ id_nota_em_processo = None
 
 #GET /resumo-do-dia/
 @login_required(login_url='login/')
-def home_resumo_do_dia(request):
+def home_resumo_do_dia(request, template_name = 'financeiro/resumo-do-dia.html'):
     """
     Retorna a página inicial do financeiro
     """
-    template_name = 'financeiro/resumo-do-dia.html'
     today_date = datetime.now()
     
     if request.method == 'GET':
         try:
-            contas_do_dia = ContaBoleto.objects.filter(data_vencimento=today_date).filter(pago=False)
-            boletos_em_atrazo = ContaBoleto.objects.filter(data_vencimento__range=[datetime.min, today_date - timedelta(days=1)]).filter(pago=False)
+            contas_do_dia_boleto = ContaBoleto.objects.filter(data_vencimento=today_date).filter(pago=False).order_by('data_vencimento')
+            contas_do_dia_nota = NotaCompleta.objects.filter(saida__data_emissao=today_date).filter(pago=False).order_by('saida__data_emissao')
 
-            total_valor = contas_do_dia.aggregate(total_valor=Sum('valor'))['total_valor']
-            total_valor_em_atraso = boletos_em_atrazo.aggregate(total_valor=Sum('valor'))['total_valor']
+
+            total_valor = contas_do_dia_boleto.aggregate(total_valor=Sum('valor'))['total_valor']
+            total_valor_nota = contas_do_dia_nota.aggregate(total_valor=Sum('valor'))['total_valor']
     
             #VALIDAÇÃO 'total_valor'
             if not total_valor:
-                total_valor = 0
+                total_valor = 0         
                 
-            if not total_valor_em_atraso:
-                total_valor_em_atraso = 0
+            if not total_valor_nota:
+                total_valor_nota = 0
+                
+            
         
             context = {
-                'contas_do_dia': contas_do_dia,
-                'boletos_em_atrazo': boletos_em_atrazo, 
-                'total': locale.currency(total_valor, grouping=True),
-                'total_valor_em_atraso': locale.currency(total_valor_em_atraso, grouping=True),
+                'contas_do_dia': contas_do_dia_boleto,
+                'total_boletos': locale.currency(total_valor, grouping=True),
+                'contas_do_dia_nota': contas_do_dia_nota,
+                'total_valor_nota': locale.currency(total_valor_nota, grouping=True),
+                'total_dia': locale.currency(total_valor+total_valor_nota, grouping=True),
                 }
         
             return render(request, template_name , context)
         
         except ContaPagamento.DoesNotExist:
             raise Http404("ERRO: Conta não existe!")
-
 
 #GET /contas-a-pagar/
 @login_required(login_url='login/')
@@ -85,6 +85,38 @@ def contas_a_pagar(request):
         
         except ContaPagamento.DoesNotExist:
             raise Http404("ERRO: Conta não existe!")
+        
+#GET /contas-a-pagar/
+@login_required(login_url='login/')
+def contas_atrasadas(request, template_name = 'financeiro/resumo-atrasados.html'): 
+    
+    if request.method == 'GET': 
+        today_date = datetime.now()  
+        
+        notas_em_atrazo = NotaCompleta.objects.filter(saida__data_emissao__range=[datetime.min, today_date - timedelta(days=1)]).filter(pago=False).order_by('saida__data_emissao')
+        boletos_em_atrazo = ContaBoleto.objects.filter(data_vencimento__range=[datetime.min, today_date - timedelta(days=1)]).filter(pago=False).order_by('data_vencimento')
+
+       
+        total_valor_em_atraso_nota = notas_em_atrazo.aggregate(total_valor=Sum('valor'))['total_valor']
+        total_valor_em_atraso = boletos_em_atrazo.aggregate(total_valor=Sum('valor'))['total_valor']
+
+
+        if not total_valor_em_atraso:
+            total_valor_em_atraso = 0
+        
+        if not total_valor_em_atraso_nota:
+            total_valor_em_atraso_nota = 0
+        
+        context = {
+                'boletos_em_atrazo': boletos_em_atrazo, 
+                'total_valor_em_atraso': locale.currency(total_valor_em_atraso, grouping=True),
+                'notas_em_atrazo': notas_em_atrazo, 
+                'total_valor_em_atraso_nota': locale.currency(total_valor_em_atraso_nota, grouping=True),
+                'total_atrazo': locale.currency(total_valor_em_atraso+total_valor_em_atraso_nota, grouping=True),
+                }
+        
+        
+        return render(request, template_name , context)       
 
     
 #GET /contas-a-pagar/inserir     
@@ -211,52 +243,69 @@ def add_descricao_nota(request):
    
 @login_required(login_url='login/')
 @csrf_exempt
-def filtro_contas_a_pagar(request):
-    template_name = 'financeiro/fragmentos/resultados-contas-a-pagar.html'
-    
+def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resultados-contas-a-pagar.html'):
+   
     try:
         descricao = request.GET.get('descricao') or ''
         fornecedor = request.GET.get('fornecedor') or ''
         initial_date = request.GET.get('data') or datetime.min   # datetime.min is 1
         end_date = request.GET.get('data_f') or datetime.max  # datetime.max is 9999
         
+        
+        #BOLETOS
         if request.GET.get('check_pago') == 'on' and request.GET.get('check_nao_pago') != 'on':
              objects = ContaBoleto.objects.all().filter(pago=True).filter(
                 Q(conta__saida__fornecedor__nome__icontains=fornecedor) | Q(conta__saida__fornecedor__razao_social__icontains=fornecedor),
                 Q(data_vencimento__range=[initial_date, end_date]),
-                Q(conta__saida__nota_fiscal__icontains=descricao) | Q(doc__icontains=descricao))
+                Q(conta__saida__nota_fiscal__icontains=descricao) | Q(doc__icontains=descricao)).order_by('data_vencimento')
+             
+             objects2 = NotaCompleta.objects.all().filter(pago=True).filter(
+                Q(saida__fornecedor__nome__icontains=fornecedor) | Q(saida__fornecedor__razao_social__icontains=fornecedor),
+                Q(saida__data_emissao__range=[initial_date, end_date]),
+                Q(saida__nota_fiscal__icontains=descricao)).order_by('saida__data_emissao')
         
         elif request.GET.get('check_nao_pago') == 'on' and request.GET.get('check_pago') != 'on':
             objects = ContaBoleto.objects.all().filter(pago=False).filter(
                 Q(conta__saida__fornecedor__nome__icontains=fornecedor) | Q(conta__saida__fornecedor__razao_social__icontains=fornecedor),
                 Q(data_vencimento__range=[initial_date, end_date]),
-                Q(conta__saida__nota_fiscal__icontains=descricao) | Q(doc__icontains=descricao))
+                Q(conta__saida__nota_fiscal__icontains=descricao) | Q(doc__icontains=descricao)).order_by('data_vencimento')
+            
+            objects2 = NotaCompleta.objects.all().filter(pago=False).filter(
+                Q(saida__fornecedor__nome__icontains=fornecedor) | Q(saida__fornecedor__razao_social__icontains=fornecedor),
+                Q(saida__data_emissao__range=[initial_date, end_date]),
+                Q(saida__nota_fiscal__icontains=descricao)).order_by('saida__data_emissao')
                
         else:
             objects = ContaBoleto.objects.all().filter(
                 Q(conta__saida__fornecedor__nome__icontains=fornecedor) | Q(conta__saida__fornecedor__razao_social__icontains=fornecedor),
                 Q(data_vencimento__range=[initial_date, end_date]),
-                Q(conta__saida__nota_fiscal__icontains=descricao) | Q(doc__icontains=descricao))
+                Q(conta__saida__nota_fiscal__icontains=descricao) | Q(doc__icontains=descricao)).order_by('data_vencimento')
+            
+            objects2 = NotaCompleta.objects.all().filter(
+                Q(saida__fornecedor__nome__icontains=fornecedor) | Q(saida__fornecedor__razao_social__icontains=fornecedor),
+                Q(saida__data_emissao__range=[initial_date, end_date]),
+                Q(saida__nota_fiscal__icontains=descricao)).order_by('saida__data_emissao')
                        
-     
-             
+        total_valor_boletos = 0             
         if objects:
-            total_valor = objects.aggregate(total_valor = Sum('valor'))['total_valor']
-            
-            context = {
-                'contas_atrasadas': objects,
-                'total_acresc': 0,
-                'total': total_valor,
-                }
-            
-        else:
-            context = {
-                'contas_atrasadas': objects,
-                'total_acresc': 0,
-                'total': 0,
-                }
+            total_valor_boletos = objects.aggregate(total_valor = Sum('valor'))['total_valor']
         
-    
+        total_valor_notas = 0    
+        if objects2:
+            total_valor_notas = objects2.aggregate(total_valor = Sum('valor'))['total_valor']
+              
+         
+         
+        context = {
+                'boletos': objects,
+                'contas': objects2,
+                'total_acresc': locale.currency(0, grouping=True), # fazer a Logica depois
+                'total_valor_boletos': total_valor_boletos,
+                'total_valor_notas': total_valor_notas,
+                'total_geral': locale.currency((total_valor_boletos or 0 )+(total_valor_notas or 0), grouping=True),
+                }
+          
+  
      
         return render(request, template_name , context)
     

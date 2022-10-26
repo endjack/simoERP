@@ -34,7 +34,7 @@
 <!-- NavBar -->
 <nav class="navbar navbar-expand-lg bg-light" style="background: linear-gradient(to right, #0052D4, #0d6efd);z-index:6;">
     <div class="container-fluid" >
-      <a class="navbar-brand titulo-empresa" href="#">Brasil Construção</a>
+      <a class="navbar-brand titulo-empresa" href="{% url 'dashboard' %}">Brasil Construção</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -71,9 +71,10 @@
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
               <li><a class="dropdown-item" href="{% url 'resumo-do-dia' %}">Contas à Pagar</a></li>
+              <li><hr class="dropdown-divider"></li> 
+              <li><a class="dropdown-item" href="{% url 'inserir-recibo' %}">Recibos</a></li>
               <!-- <li><a class="dropdown-item" href="#">Contas Pagas</a></li>
               <li><a class="dropdown-item" href="#">Recebimentos</a></li>
-              <li><hr class="dropdown-divider"></li>  
               <li><a class="dropdown-item" href="#">Fornecedor</a></li>
               <li><a class="dropdown-item" href="#">Recibos</a></li>
               <li><a class="dropdown-item" href="#">Faturamento</a></li> -->
@@ -115,7 +116,7 @@
           
 
           {% comment %} RECURSOS HUMAMOS {% endcomment %}
-          {% if request.user|has_group:"RecursosHumanos" or  request.user|has_group:"Administrador" %}
+          {% if request.user|has_group:"RecursosHumanos" or request.user|has_group:"Financeiro" or  request.user|has_group:"Administrador" %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle titulo-menu" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Pessoal
@@ -124,6 +125,18 @@
               <li><a class="dropdown-item" href="{% url 'inserir-funcionario' %}">Funcionários</a></li>
               <li><a class="dropdown-item" href="{% url 'inserir-cargo' %}">Cargos</a></li>
 
+            </ul>
+          </li>
+          {% endif %}
+
+          {% comment %} FINANCEIRO {% endcomment %}
+          {% if request.user|has_group:"Financeiro" or  request.user|has_group:"Administrador" %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle titulo-menu" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Cadastrar
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="{% url 'listar-fornecedores' %}">Fornecedor</a></li>
             </ul>
           </li>
           {% endif %}

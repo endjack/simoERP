@@ -103,6 +103,7 @@ urlpatterns = [
     #urls Financeiro 
     path('resumo-do-dia/', home_resumo_do_dia, name='resumo-do-dia'),
     path('contas-a-pagar/', contas_a_pagar, name='contas-a-pagar'),
+    path('contas-atrasadas/', contas_atrasadas, name='contas-atrasadas'),
     path('contas-a-pagar/filtro', filtro_contas_a_pagar, name='resultados-filtro-contas-a-pagar'),
     path('contas-a-pagar/add-descricao', add_descricao_nota, name='add-descricao-nota'),          
     path('contas-a-pagar/inserir', inserir_nova_conta_a_pagar, name='inserir-conta-a-pagar'),
@@ -168,10 +169,10 @@ urlpatterns = [
     # path('contas-a-receber/', ContasAReceberView.as_view(), name='contas-a-receber'),
     # path('contas-a-receber/editar/<pk>', EditarRecebimentoView.as_view(), name='editar-conta-a-receber'),
     # path('contas-a-receber/excluir/<pk>', ExcluirRecebimentoView.as_view(), name='excluir-conta-a-receber'),
-    # path('recibos/', InserirReciboFornecedorView.as_view(), name='inserir-recibo'),
-    # path('recibos/editar/<pk>', EditarReciboFornecedorView.as_view(), name='editar-recibo'),
-    # path('recibos/excluir/<pk>', ExcluirReciboFornecedorView.as_view(), name='excluir-recibo'),
-    # path('recibos/imprimir/<pk>',ImprimirReciboFornecedorView.as_view(), name='imprimir-recibo'),
+    path('recibos/', InserirReciboFornecedorView.as_view(), name='inserir-recibo'),
+    path('recibos/editar/<pk>', EditarReciboFornecedorView.as_view(), name='editar-recibo'),
+    path('recibos/excluir/<pk>', ExcluirReciboFornecedorView.as_view(), name='excluir-recibo'),
+    path('recibos/imprimir/<pk>',ImprimirReciboFornecedorView.as_view(), name='imprimir-recibo'),
     # path('contas-pagas/', ContasPagasView.as_view(), name='contas-pagas'),
     # path('ajax/fornecedor/contas-a-pagar', getContasAPagar, name = "ajax-fornecedor-contas-a-pagar"),
 

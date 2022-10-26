@@ -21,10 +21,10 @@
 {% block conteudo %}
 <ul class="nav nav-tabs mb-3" id="myTab">
     <li class="nav-item">
-        <a href="#tab-ativa" class="nav-link active" data-bs-toggle="tab">Resumo do Dia</a>
+        <a href="{% url 'resumo-do-dia' %}" class="nav-link ">Resumo do Dia</a>
     </li>
     <li class="nav-item">
-        <a href="{% url 'contas-atrasadas' %}" class="nav-link">Contas Atrasadas</a>
+        <a href="#tab-ativa" class="nav-link active" data-bs-toggle="tab">Contas Atrasadas</a>
     </li>
     <li class="nav-item">
         <a href="{% url 'inserir-conta-a-pagar' %}" class="nav-link">Nova Conta</a>
@@ -38,76 +38,88 @@
 </ul>
 <div class="tab-content">
     <div class="tab-pane fade show active" id="tab-ativa" style="margin-left:2em; margin-right:2em;">
-    <div class="cabecalho-contas mb-2">
-
-                <ol class="list-group ">
-                    <li class="list-group-item d-flex  justify-content-end mt-1 ">
-                        <div class="col-md">
-                           <span style="font-size:14pt; color:red"> Vencimentos de Hoje:</span> <h6> {% now "d/F/Y" %}</h6>
-                        </div>
-                        <div class="col-md text-end">
-                            Nº de Boletos: <h6 class="">{{contas_do_dia.count}}</h6>
-                        </div>
-                        <div class="col-md text-end">
-                            Total R$ Boletos: <h6 class="">{{total_boletos}}</h6>
-                        </div>
-                        <div class="col-md text-end">
-                            Nº de Notas: <h6 class="">{{contas_do_dia_nota.count}}</h6>
-                        </div>
-                        <div class="col-md text-end">
-                            Total R$ Notas: <h6 class="">{{total_valor_nota}}</h6>
-                        </div>
-                        <div class="col-md text-end">
-                            Total Débito: <h6 class="">{{total_dia}}</h6>
-                        </div>
-            
-            
-                    </li>
-                </ol>
-            </div>
-            <strong>Boleto(s):   </strong>     
-        <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px;">
+        <div class="cabecalho-contas mb-2">
+            <ol class="list-group ">
+                <li class="list-group-item d-flex  justify-content-end mt-1 ">
+                    <div class="col-4">
+                        
+                    <span style="font-size:14pt; color:red">  Contas em Atraso </span> <h6> Boletos/Notas à Prazo</h6>
+                    </div>
+                    
+                    <div class="col-md text-end">
+                        Nº de Boletos: <h6 class="">{{boletos_em_atrazo.count}}</h6>
+                    </div>
+                    <div class="col-md text-end">
+                        Total R$ Boletos: <h6 class="">{{total_valor_em_atraso}}</h6>
+                    </div>
+                    <div class="col-md text-end">
+                        Nº de Notas: <h6 class="">{{notas_em_atrazo.count}}</h6>
+                    </div>
+                    <div class="col-md text-end">
+                        Total R$ Notas: <h6 class="">{{total_valor_em_atraso_nota}}</h6>
+                    </div>
+                    <div class="col-md text-end">
+                        Total Débito: <h6 class="">{{total_atrazo}}</h6>
+                    </div>
+        
+                </li>
+            </ol>
+        </div>
+        
+        <strong>Boleto(s):   </strong> 
+        <div class="">      
+            <table id="table-boletos" class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px;">
                 <thead style="border:solid 1px;border-color:silver;background:#0d6efd; color: white;">
-                    <tr>
-                        <th scope="col" class="text-center">#</th>
-                        <th scope="col">Fornecedor</th>
-                        <th scope="col" class="text-center">CPF/CNPJ</th>
-                        <th scope="col" class="text-center">Nota Fiscal</th>
-                        <th scope="col" class="text-center">Documento</th>
-                        <th scope="col" class="text-center">Parcela</th>
-                        <th scope="col" class="text-center">Data Vencimento</th>
-                        <th scope="col" class="text-center">Valor</th>
-                        
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if contas_do_dia %}
-                    {% for boleto in contas_do_dia %}
-                    <tr>
-                        <td class="limitar_forloop text-center">{{forloop.counter}}</td>
-                        {% if boleto.conta.saida.fornecedor %}<td class="limitar_td"
-                            style="text-align: left; vertical-align:middle !important" title="{{boleto.conta.saida.fornecedor}}"><a
-                                href="{% url 'detalhar-fornecedor' boleto.conta.saida.fornecedor.pk %}" target="_blank" title="Ver {{boleto.conta.saida.fornecedor}} ">{{boleto.conta.saida.fornecedor}}</a></td>{% else %}<td> - </td>
-                        {% endif %}
-                        <td class="text-center">{{boleto.conta.saida.fornecedor.doc}}</td>
-                        {% if boleto.conta.saida.nota_fiscal %}<td class="text-center"><a target="_blank" href="{% url 'ver-nota-completa' boleto.conta.pk %}" class="">{{boleto.conta.saida.nota_fiscal}}</a></td>{% else %}<td class="text-center"> - </td>{% endif %}
-                        {% if boleto.doc %}<td class="text-center">{{boleto.doc }}</td>{% else %}<td class="text-center"> - </td>{% endif %}
-                        <td class="text-center">{{boleto.parcela}}/{{boleto.total_parcelas}}</td>
-                        <td class="text-center">{{boleto.data_vencimento | date:"d/m/Y"}}</td>
-                        <td class="text-center">{{boleto.valor_BR}}</td>
-                        
-                    </tr>
-                    {% endfor %}
+                <tr>
+                    <th scope="col" class="text-center">#</th>
+                    <th scope="col" class="text-center">Fornecedor</th>
+                    <th scope="col" class="text-center">CPF/CNPJ</th>
+                    <th scope="col" class="text-center">Nota Fiscal</th>
+                    <th scope="col" class="text-center">Documento</th>
+                    <th scope="col" class="text-center">Parcela</th>
+                    <th scope="col" class="text-center">Data Vencimento</th>
+                    <th scope="col" class="text-center">Valor</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {% if boletos_em_atrazo %}
+                {% for boleto in boletos_em_atrazo %}
+                <tr>
+                    <td class="limitar_forloop text-center">{{forloop.counter}}</td>
+                    {% if boleto.conta.saida.fornecedor %}
+                    <td class="limitar_td" style="text-align: left; vertical-align:middle !important" title="{{boleto.conta.saida.fornecedor}}">
+                        <a href="{% url 'detalhar-fornecedor' boleto.conta.saida.fornecedor.pk %}"  target="_blank" title="Ver {{boleto.conta.saida.fornecedor}} "> {{boleto.conta.saida.fornecedor}}</a></td>
                     {% else %}
-                    <tr>
-                        <td style="text-align: center; color: gray;" colspan="8">Nenhum registro</td>
-                    </tr>
+                    <td> - </td>
                     {% endif %}
-                </tbody>
-            </table>
+                    <td class="text-center">{{boleto.conta.saida.fornecedor.doc}}</td>
+                    {% if boleto.conta.saida.nota_fiscal %}
+                    <td class="text-center"><a target="_blank" href="{% url 'ver-nota-completa' boleto.conta.pk %}" class="">{{boleto.conta.saida.nota_fiscal}}</a></td>
+                    {% else %}
+                    <td class="text-center"> - </td>
+                    {% endif %}
+                    {% if boleto.doc %}
+                    <td class="text-center">{{boleto.doc }}</td>
+                    {% else %}
+                    <td class="text-center"> - </td>
+                    {% endif %}
+                    <td class="text-center">{{boleto.parcela}}/{{boleto.total_parcelas}}</td>
+                    <td class="text-center">{{boleto.data_vencimento | date:"d/m/Y"}}</td>
+                    <td class="text-center">{{boleto.valor_BR}}</td>
+                    
+                </tr>
+                {% endfor %}
+                {% else %}
+                
+                {% endif %}
+            </tbody>
+        </table>    
+        </div>
+        <div class="">
             <strong>Notas não Pagas:  </strong>       
-            <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px;">
-                    <thead style="border:solid 1px;border-color:silver;background:#0d6efd; color: white;">
+            <table id="table-notas" class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px;">
+                <thead style="border:solid 1px;border-color:silver;background:#0d6efd; color: white;">
                         <tr>
                             <th scope="col" class="text-center">#</th>
                             <th scope="col">Fornecedor</th>
@@ -121,8 +133,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% if contas_do_dia_nota %}
-                        {% for nota in contas_do_dia_nota %}
+                        {% if notas_em_atrazo %}
+                        {% for nota in notas_em_atrazo %}
                         <tr>
                             <td class="limitar_forloop text-center">{{forloop.counter}}</td>
                             {% if nota.saida.fornecedor %}<td class="limitar_td"
@@ -139,18 +151,11 @@
                         </tr>
                         {% endfor %}
                         {% else %}
-                        <tr>
-                            <td style="text-align: center; color: gray;" colspan="8">Nenhum registro</td>
-                        </tr>
+                        
                         {% endif %}
                     </tbody>
                 </table>
-
-                <br>
-
-            
-
-    </div>
+            </div>
 </div>
 
 
@@ -161,10 +166,7 @@
 {% block jquery %}
 <script src="{% static 'js/datatables.min.js' %}"></script>
 <script>
-
-
     $(document).ready(function () {
-
 
         $('.tabela-listar').DataTable({
             responsive: true,

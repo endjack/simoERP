@@ -1,11 +1,13 @@
 {% load static %}
 <div class="row" ><span class="text-center">Resultados:</span></div>
 <div class="" style="margin-left:2em; margin-right:2em;">
+Filtro: Boleto(s):
 <table class="table table-sm table-bordered dt-responsive tabela-listar" >
     <thead style="border:solid 1px;border-color:silver;background:#0d6efd; color: white;">
         <tr>
             <th scope="col" class="text-center">#</th>
             <th scope="col" class="text-center">Documento</th>
+            <th scope="col" class="text-center">Parcela</th>
             <th scope="col">Fornecedor</th>
             <th scope="col">CPF/CNPJ</th>
             <th scope="col" class="text-center">NF nº</th>
@@ -17,11 +19,12 @@
         </tr>
     </thead>
     <tbody>
-        {% if contas_atrasadas and contas_atrasadas.count > 0  %}
-        {% for item in contas_atrasadas %}
+        {% if boletos and boletos.count > 0  %}
+        {% for item in boletos %}
         <tr>
             <td class="limitar_forloop text-center">{{forloop.counter}}</td>
             {% if item.doc %}<td class="text-center">{{item.doc}}</td>{% else %}<td class="text-center"> - </td>{% endif %}
+           <td class="text-center">{{item.parcela}}/{{item.total_parcelas}}</td>
             {% if item.conta.saida.fornecedor %}<td class="limitar_td"
                 style="text-align: left; vertical-align:middle !important" title=""><a
                     href="{% url 'detalhar-fornecedor' item.conta.saida.fornecedor.pk %}"
@@ -32,10 +35,69 @@
 
             <td class="destaque-saida text-center">{{item.data_vencimento | date:"d/m/Y"}}
             </td>
-            <td class="destaque-saida text-center">{{item.valor}}</td>
-            {% if item.acrescimos %}<td class="text-center">{{item.acrescimos}}</td>{% else %}<td class="text-center"> 0,00 </td>{% endif %}
-            {% if item.total %}<td class="destaque-saida text-center">{{item.total}}</td>{% else %}<td class="text-center"> {{item.valor}} </td>{% endif %}
-            {% if item.pago %}<td class="text-center"> Pago </td>{% else %}<td class="text-center"> Aberto </td>{% endif %}
+            <td class="destaque-saida text-center">{{item.valor_BR}}</td>
+            {% if item.pagamentoboleto_set.all.count > 0%}
+                {% for pagamento in item.pagamentoboleto_set.all %}
+                <td class="text-center">R$ {{pagamento.acrescimo}}</td>
+                <td class="text-center">{{pagamento.valor_total_BR}}</td>
+                <td class="text-center"> Pago em {{pagamento.data_pagamento | date:'d/m/Y'}} </td>
+                {% endfor %}
+            {% else %}
+            <td class="text-center"> - </td>
+            <td class="text-center">{{item.valor_BR}}</td>
+            <td class="text-center"> Aberto </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td style="text-align: center; color: gray;" colspan="9">Nenhum registro</td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>
+Filtro: Nota (s):
+<table class="table table-sm table-bordered dt-responsive tabela-listar" >
+    <thead style="border:solid 1px;border-color:silver;background:#0d6efd; color: white;">
+        <tr>
+            <th scope="col" class="text-center">#</th>
+            <th scope="col">Fornecedor</th>
+            <th scope="col">CPF/CNPJ</th>
+            <th scope="col" class="text-center">NF nº</th>
+            <th scope="col" class="text-center">Emissão</th>
+            <th scope="col" class="text-center">Valor</th>
+            <th scope="col" class="text-center">Acrésc.</th>
+            <th scope="col" class="text-center">Total</th>
+            <th scope="col" class="text-center">Pago em</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if contas and contas.count > 0  %}
+        {% for item in contas %}
+        <tr>
+            <td class="limitar_forloop text-center">{{forloop.counter}}</td>
+            {% if item.saida.fornecedor %}<td class="limitar_td"
+                style="text-align: left; vertical-align:middle !important" title=""><a
+                    href="{% url 'detalhar-fornecedor' item.saida.fornecedor.pk %}"
+                    title="">{{item.saida.fornecedor}}</a></td>{% else %}<td> - </td>
+            {% endif %}
+            {% if item.saida.fornecedor %}<td class="limitar_td" title="">{{item.saida.fornecedor.doc}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.saida.nota_fiscal %}<td class="text-center limitar_td"><a href="{% url 'ver-nota-completa' item.pk %}" target="_blank" class="">{{item.saida.nota_fiscal}}</a></td>{% else %}<td class="text-center"> - </td>{% endif %}
+
+            <td class="destaque-saida text-center">{{item.saida.data_emissao | date:"d/m/Y"}}
+            </td>
+            <td class="destaque-saida text-center">{{item.valor_BR}}</td>
+            {% if item.pagamentovista_set.all.count > 0%}
+                {% for pagamento in item.pagamentovista_set.all %}
+                <td class="text-center">R$ {{pagamento.acrescimo}}</td>
+                <td class="text-center">{{pagamento.valor_total_BR}}</td>
+                <td class="text-center"> Pago em {{pagamento.data_pagamento | date:'d/m/Y'}} </td>
+                {% endfor %}
+            {% else %}
+            <td class="text-center"> - </td>
+            <td class="text-center">{{item.valor_BR}}</td>
+            <td class="text-center"> Aberto </td>
+            {% endif %}
         </tr>
         {% endfor %}
         {% else %}
@@ -46,27 +108,36 @@
     </tbody>
 </table>
 </div>
-{% if contas_atrasadas and contas_atrasadas.count > 0  %}
     <ol class="list-group ">
         <li class="list-group-item d-flex  justify-content-end mt-1 ">
             <div class="col-3">
                 Resumo dos resultados:
             </div>
             
-            <div class="col-3 text-end">
-                Total de Contas: <h6 class="">{{contas_atrasadas.count}}</h6>
+            <div class="col-md text-end">
+                Total de Boletos: <h6 class="">{{boletos.count}}</h6>
             </div>
-            <div class="col-3 text-end">
-                Total Acréscimos: <h6 class="">R$ {{total_acresc}}</h6>
+            <div class="col-md text-end">
+                Total R$ Boleto: <h6 class="">R$ {{total_valor_boletos}}</h6>
             </div>
-            <div class="col-3 text-end">
-                Total: <h6 class="">R$ {{total}}</h6>
+
+            <div class="col-md text-end">
+                Total de Notas: <h6 class="">{{contas.count}}</h6>
+            </div>
+            <div class="col-md text-end">
+                Total R$ Notas: <h6 class="">R$ {{total_valor_notas}}</h6>
+            </div>
+            <div class="col-md text-end">
+                Total Acréscimos: <h6 class="">{{total_acresc}}</h6>
+            </div>
+            <div class="col-md text-end">
+                Total: <h6 class="">{{total_geral}}</h6>
             </div>
 
 
         </li>
     </ol>
-    {% endif %}
+
 
 
 <script src="{% static 'js/datatables.min.js' %}"></script>
@@ -80,7 +151,7 @@
             "aaSorting": [],
             "pageLength": 10,
             "order": [
-                [2, "desc"]
+                [0, "asc"]
             ], //3º tabela em ordem decrescente
             "language": {
 

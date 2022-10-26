@@ -11,7 +11,7 @@
     <div class=""><strong>Itens/Serviços da Nota: </strong></div>
     <small class="">Adione primeiro a descricao para inserir itens a nota</small>
     {% endif %}  
-    <li class="list-group-item d-flex justify-content-between align-items-start " {% if  nota_atual.itens.count > 0 %} style="opacity: 0.5;"  {% endif %}  >
+    <li class="list-group-item d-flex justify-content-between align-items-start " {% if not nota_atual.itens %} style="opacity: 0.5;"  {% endif %}  >
         <div class="ms-2 col-12">
           Itens/Serviços:
 
