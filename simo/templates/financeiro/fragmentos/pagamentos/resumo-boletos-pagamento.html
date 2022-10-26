@@ -9,7 +9,7 @@
 <div class="m-1"> Parcela nº: {{boleto.parcela}}   &nbsp;-&nbsp;  
                     <input type="hidden" name="n_parcelaA" value="{{boleto.parcela}}"> 
                     
-                    Número: <input type="text" class="col-2" name="doc_parcelaA" value="{{boleto.doc}}"> &nbsp;-&nbsp; 
+                    Número: <input type="text" class="col-2" name="doc_parcelaA" value="{% if boleto.doc == '' %}-{% else %}{{boleto.doc}}{% endif %}"> &nbsp;-&nbsp; 
                     Valor R$: <input type="text" name="valor_parcelaA" class="money col-2" value="{{boleto.valor}}"
                                 hx-post="{% url 'atualizar-resumo-boleto-mensal' nota_atual.pk %}" 
                                 hx-trigger="change" 

@@ -127,7 +127,6 @@ def inserir_nova_conta_a_pagar(request, template_name = 'financeiro/fragmentos/i
         return render(request, template_name , {})
         
 
-
 #GET /contas-a-pagar/modal-itens    
 @login_required(login_url='login/')
 def modal_itens_conta_a_pagar(request, **kwargs):
@@ -601,9 +600,9 @@ def get_resumo_boleto_mensal(request, pk):
         'valor_total': locale.currency(valor_total, grouping=True),
         'nota_atual': nota_atual
     }   
+    pode_salvar_boleto = True
     response = render(request, template_name , context)
     response['HX-Trigger'] = "buttonSave"
-    pode_salvar_boleto = True
     return response
 
 
@@ -615,11 +614,19 @@ def atualizar_resumo_boleto_mensal(request, pk):
     
     
     qnt_parcelas = int(request.POST.get('num_parcelaA'))
+    
+    
+    print(f'QUANTIDADE DE PARCELAS ----------------> {qnt_parcelas}')
+    
+    
+    # #VALIDAÇÃO DO DOC
     doc_parcelas = request.POST.getlist('doc_parcelaA')
-    
-    print(f'----------------{doc_parcelas}')
-    
-    
+    if len(doc_parcelas) < qnt_parcelas:
+        dif = int(qnt_parcelas) - len(doc_parcelas)
+        for x in range(dif):
+            doc_parcelas.append('-')
+        
+    print(f'DOC PARCELAS ---------------> {doc_parcelas}')
     # #VALIDAÇÃO DO VALOR
     try: 
         valor_parcelas = request.POST.getlist('valor_parcelaA')
@@ -645,6 +652,7 @@ def atualizar_resumo_boleto_mensal(request, pk):
         pode_salvar_boleto = False
         return response         
     
+    print(f'VALOR PARCELAS ---------------> {valor_parcelas}')
     #VALIDÇÃO DA DATA
     try: 
         datas_parcelas = request.POST.getlist('data_parcelaA')
@@ -680,19 +688,12 @@ def atualizar_resumo_boleto_mensal(request, pk):
     
     for n in range(int(qnt_parcelas)):
         valor = float(valor_parcelas[n].replace('.', '').replace(',', '.'))
+        doc = doc_parcelas[n]
+        if not doc or doc == "" :
+            doc = '-'
         data = datetime.strptime(datas_parcelas[n], '%Y-%m-%d')
-        parcela = {'parcela':n+1, 'valor':locale.currency(valor, grouping=True).replace('R$ ',""), 'data_vencimento':data}
+        parcela = {'parcela':n+1, 'doc': doc,'valor':locale.currency(valor, grouping=True).replace('R$ ',""), 'data_vencimento':data}
         
-        print(doc_parcelas[n])
-        
-        #TODO FIX resolver atualização de boletos no resumo, o doc vazio não entra na lista
-        # if len(doc_parcelas) > 0:
-        #     if doc_parcelas[n] != "":
-        #         parcela['doc']= doc_parcelas[n]
-        #     else:
-        #         parcela['doc']= ''
-        # else:
-        #     parcela['doc']= ''
                 
         resumo_listagem_boletos.append(parcela)
         valor_total += valor
@@ -717,7 +718,6 @@ def salvar_boletos_mensal(request, pk):
     global pode_salvar_boleto
     global resumo_listagem_boletos
     
-    print(resumo_listagem_boletos)
     
     if not pode_salvar_boleto:
         template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
@@ -732,10 +732,13 @@ def salvar_boletos_mensal(request, pk):
         nota_atual = NotaCompleta.objects.get(pk=pk)
         
         for n in range(qnt_parcelas):
+            n_doc = resumo_listagem_boletos[n]['doc']
+            if not n_doc or n_doc == '':
+                n_doc = '-'
             ContaBoleto.objects.create(conta = nota_atual,
                                     parcela =  n+1,
                                     total_parcelas =  qnt_parcelas,
-                                    doc = resumo_listagem_boletos[n]['doc'],
+                                    doc = n_doc,
                                     valor = resumo_listagem_boletos[n]['valor'].replace(".","").replace(",","."),
                                     data_vencimento = resumo_listagem_boletos[n]['data_vencimento'],
                                     usuario = request.user,
