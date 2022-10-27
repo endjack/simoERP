@@ -506,10 +506,9 @@ def get_valor_total(request):
 @login_required(login_url='login/')
 @csrf_exempt
 def get_resumo_boleto_mensal(request, pk):
-    global resumo_listagem_boletos
-    global pode_salvar_boleto
+    # global resumo_listagem_boletos
+    # global pode_salvar_boleto
     
-    pode_salvar_boleto = False
     cache.set('pode_salvar_boleto', False) # salvo por 3 horas
     
     template_name = 'financeiro/fragmentos/pagamentos/resumo-boletos-pagamento.html'
@@ -518,6 +517,7 @@ def get_resumo_boleto_mensal(request, pk):
     
     #CRIANDO RESUMO ----------
     resumo_listagem_boletos = list()
+    cache.set('resumo_listagem_boletos', resumo_listagem_boletos)
     
     #VALIDAÇÃO DO NUMERO DE PARCELAS
     try: 
@@ -585,8 +585,11 @@ def get_resumo_boleto_mensal(request, pk):
             parcela['doc']= f'{doc_parcelas}-{n+1}'
         else:
             parcela['doc']= ''
-            
+        
+        resumo_listagem_boletos = list(cache.get('resumo_listagem_boletos'))
         resumo_listagem_boletos.append(parcela)
+        cache.set('resumo_listagem_boletos', resumo_listagem_boletos)
+        
         valor_total += valor_parcelas
 
     pode_salvar_boleto = True
@@ -610,8 +613,8 @@ def get_resumo_boleto_mensal(request, pk):
 @login_required(login_url='login/')
 @csrf_exempt
 def atualizar_resumo_boleto_mensal(request, pk):
-    global resumo_listagem_boletos
-    global pode_salvar_boleto
+    # global resumo_listagem_boletos
+    # global pode_salvar_boleto
     
     print(f'STATUS (pré atualizar) - PODE SALVAR BOLETOS? -------------> {cache.get("pode_salvar_boleto")}')
     
@@ -689,7 +692,8 @@ def atualizar_resumo_boleto_mensal(request, pk):
     print(f'DATAS PARCELAS ---------------> {datas_parcelas}')
     #GUARDANDO E ENVIADO OS DADOS NOVAMENTE
     template_name = 'financeiro/fragmentos/pagamentos/resumo-boletos-pagamento.html'
-    resumo_listagem_boletos = list()
+    resumo_listagem_boletos_atualizado = list()
+    
     valor_total = 0
     nota_atual = NotaCompleta.objects.get(pk=pk)
   
@@ -703,14 +707,16 @@ def atualizar_resumo_boleto_mensal(request, pk):
         parcela = {'parcela':n+1, 'doc': doc,'valor':locale.currency(valor, grouping=True).replace('R$ ',""), 'data_vencimento':data}
         
                 
-        resumo_listagem_boletos.append(parcela)
+        resumo_listagem_boletos_atualizado.append(parcela)
         valor_total += valor
+   
+    cache.set('resumo_listagem_boletos', resumo_listagem_boletos_atualizado)
     
     pode_salvar_boleto = True
     cache.set('pode_salvar_boleto', True)
     
     context = {
-        'resumo': resumo_listagem_boletos,
+        'resumo': resumo_listagem_boletos_atualizado,
         'num_parcelas': qnt_parcelas,
         'valor_total': locale.currency(valor_total, grouping=True),
         'nota_atual': nota_atual
@@ -726,8 +732,8 @@ def atualizar_resumo_boleto_mensal(request, pk):
 @login_required(login_url='login/')
 @csrf_exempt
 def salvar_boletos_mensal(request, pk):
-    global pode_salvar_boleto
-    global resumo_listagem_boletos
+    # global pode_salvar_boleto
+    # global resumo_listagem_boletos
     status_salvar = cache.get('pode_salvar_boleto')
     
     print(f'STATUS (pré salvar) - PODE SALVAR BOLETOS? -------------> {status_salvar}')
@@ -742,6 +748,7 @@ def salvar_boletos_mensal(request, pk):
     
     #SALVANDO BOLETOS NO BANCO
     try:
+        resumo_listagem_boletos = list(cache.get('resumo_listagem_boletos'))
         qnt_parcelas = int(request.POST.get('num_parcelaA'))
         nota_atual = NotaCompleta.objects.get(pk=pk)
         
