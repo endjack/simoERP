@@ -1,7 +1,11 @@
 {% load widget_tweaks %}
 
 
-<form id="form-pagamento-vista" hx-post="{% url 'pagar-conta-vista' nota_atual.pk %}" hx-trigger="submit" hx-target="body" hx-swap="outerHTML">
+<form id="form-pagamento-vista" 
+    hx-post="{% url 'pagar-conta-vista' nota_atual.pk %}" 
+    hx-trigger="submit" 
+    hx-target="body" 
+    hx-swap="outerHTML">
 
 <li class="list-group-item d-flex justify-content-end ">
     <div class="ms-2 flex-fill text-start">
@@ -24,8 +28,7 @@
             <div class="col-9">
                 <label for="" class="">Observações:</label>
                 {% render_field form.obs class="form-control form-control-sm"  type="text" rows="2"%}
-            </div>
-           
+            </div>     
         </div>
     <div class="ms-2 flex-fill text-end">
       Valor Total do Pagamento:
