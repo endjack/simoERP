@@ -16,6 +16,7 @@ Filtro: Boleto(s):
             <th scope="col" class="text-center">Acrésc.</th>
             <th scope="col" class="text-center">Total</th>
             <th scope="col" class="text-center">Pago em</th>
+            <th scope="col" class="text-center">Opções</th>
         </tr>
     </thead>
     <tbody>
@@ -47,11 +48,12 @@ Filtro: Boleto(s):
             <td class="text-center">{{item.valor_BR}}</td>
             <td class="text-center"> Aberto </td>
             {% endif %}
+            <td class="text-center"> <a href="{% url 'ver-nota-completa' item.conta.pk %}" target="_blank" class=""><i class="fas fa-chevron-circle-right"></i></a> </td>
         </tr>
         {% endfor %}
         {% else %}
         <tr>
-            <td style="text-align: center; color: gray;" colspan="9">Nenhum registro</td>
+            <td style="text-align: center; color: gray;" colspan="12">Nenhum registro</td>
         </tr>
         {% endif %}
     </tbody>
@@ -69,6 +71,7 @@ Filtro: Nota (s):
             <th scope="col" class="text-center">Acrésc.</th>
             <th scope="col" class="text-center">Total</th>
             <th scope="col" class="text-center">Pago em</th>
+            <th scope="col" class="text-center">Opções</th>
         </tr>
     </thead>
     <tbody>
@@ -98,11 +101,13 @@ Filtro: Nota (s):
             <td class="text-center">{{item.valor_BR}}</td>
             <td class="text-center"> Aberto </td>
             {% endif %}
+            <td class="text-center"> <a href="{% url 'ver-nota-completa' item.pk %}" target="_blank" class=""><i class="fas fa-chevron-circle-right"></i></a> </td>
+
         </tr>
         {% endfor %}
         {% else %}
         <tr>
-            <td style="text-align: center; color: gray;" colspan="9">Nenhum registro</td>
+            <td style="text-align: center; color: gray;" colspan="10">Nenhum registro</td>
         </tr>
         {% endif %}
     </tbody>
