@@ -1,4 +1,4 @@
-from types import MethodType
+from django.core.cache import cache
 from xml.dom import ValidationErr
 from requests import delete
 from financeiro.filters import ContasFilter
@@ -73,8 +73,6 @@ def home_resumo_do_dia(request, template_name = 'financeiro/resumo-do-dia.html')
     else:
       return HttpResponse(f'Metodo Errado!') 
     
-    
-    
 #GET /contas-a-pagar/
 @login_required(login_url='login/')
 def contas_a_pagar(request): 
@@ -122,8 +120,7 @@ def contas_atrasadas(request, template_name = 'financeiro/resumo-atrasados.html'
         
         
         return render(request, template_name , context)       
-
-    
+  
 #GET /contas-a-pagar/inserir     
 @login_required(login_url='login/')
 def inserir_nova_conta_a_pagar(request, template_name = 'financeiro/fragmentos/inserir-conta-a-pagar.html'):
@@ -131,7 +128,6 @@ def inserir_nova_conta_a_pagar(request, template_name = 'financeiro/fragmentos/i
     if request.method == 'GET':        
         return render(request, template_name , {})
         
-
 #GET /contas-a-pagar/modal-itens    
 @login_required(login_url='login/')
 def modal_itens_conta_a_pagar(request, **kwargs):
@@ -151,7 +147,6 @@ def modal_itens_conta_a_pagar(request, **kwargs):
         }
             
         return render(request, template_name , context)
-
 
 #POST /contas-a-pagar/inserir-itens
 @login_required(login_url='login/')
@@ -205,7 +200,6 @@ def inserir_itens_conta_a_pagar(request, **kwargs):
         response['HX-Trigger'] = 'itemAddNota'                   
         return response
 
-
 @login_required(login_url='login/')
 def excluir_item_conta_a_pagar(request, pk):
     global id_nota_em_processo
@@ -227,7 +221,6 @@ def excluir_item_conta_a_pagar(request, pk):
     else:          
         HttpResponse("Erro ao Deletar Item")
 
-
 @login_required(login_url='login/')
 @csrf_exempt
 def add_descricao_nota(request):
@@ -243,7 +236,6 @@ def add_descricao_nota(request):
     
     except ContaPagamento.DoesNotExist:
         raise Http404("ERRO: Conta não existe!")
-
    
 @login_required(login_url='login/')
 @csrf_exempt
@@ -316,7 +308,6 @@ def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resul
     except ContaBoleto.DoesNotExist:
         raise Http404("ERRO: Conta não existe!")
 
-
 @login_required(login_url='login/')
 @csrf_exempt
 def get_fornecedores(request):
@@ -341,13 +332,11 @@ def get_fornecedores(request):
         response['HX-Trigger'] = 'okFornecedores'            
         return response
 
-
 @login_required(login_url='login/')
 @csrf_exempt
 def get_error(request):
     template_name = 'errors/error-input.html'           
     return render(request, template_name , {'ErrorMessage':'Error de Fornecedor'})
-
 
 @login_required(login_url='login/')
 @csrf_exempt
@@ -371,7 +360,6 @@ def get_forma_de_pagamento(request):
     response = render(request, template_name , context)         
     return response
   
-
 @login_required(login_url='login/')
 @csrf_exempt
 def salvar_nota_completa(request):
@@ -418,8 +406,7 @@ def salvar_nota_completa(request):
             response['HX-Retarget'] = 'body'
             response['HX-Swap'] = 'outerHTML'
             return response
-          
-          
+                
 @login_required(login_url='login/')
 @csrf_exempt
 def ver_nota_completa(request, pk):
@@ -463,7 +450,6 @@ def ver_nota_completa(request, pk):
     response['HX-Push-Url'] = reverse('ver-nota-completa',kwargs={'pk':nota_atual.pk})
     return response
 
-
 @login_required(login_url='login/')
 def editar_saida(request, pk, template_name = 'financeiro/fragmentos/inserir-conta-a-pagar.html'):
     
@@ -478,8 +464,7 @@ def editar_saida(request, pk, template_name = 'financeiro/fragmentos/inserir-con
         }
         
         return render(request, template_name , context)
-    
-    
+      
 @login_required(login_url='login/')
 @csrf_exempt
 def salva_edicao_saida(request, pk):
@@ -498,8 +483,7 @@ def salva_edicao_saida(request, pk):
         notacompleta.save()
         
     return HttpResponseRedirect(f'/contas-a-pagar/nota/{notacompleta.pk}')
-        
-    
+         
 @login_required(login_url='login/')
 @csrf_exempt
 def get_valor_total(request):
@@ -519,7 +503,6 @@ def get_valor_total(request):
 
     return HttpResponse(locale.currency(valor_total))
 
-
 @login_required(login_url='login/')
 @csrf_exempt
 def get_resumo_boleto_mensal(request, pk):
@@ -527,6 +510,8 @@ def get_resumo_boleto_mensal(request, pk):
     global pode_salvar_boleto
     
     pode_salvar_boleto = False
+    cache.set('pode_salvar_boleto', False) # salvo por 3 horas
+    
     template_name = 'financeiro/fragmentos/pagamentos/resumo-boletos-pagamento.html'
     nota_atual = NotaCompleta.objects.get(pk=pk)
     valor_total = 0
@@ -543,12 +528,14 @@ def get_resumo_boleto_mensal(request, pk):
             response = render(request, template_name=template_name, context={'errorMensagem': 'Número de Parcelas INVÁLIDO'})
             response['HX-Trigger'] = "buttonError"
             pode_salvar_boleto = False
+            cache.set('pode_salvar_boleto', False)
             return response       
     except ValueError:
         template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
         response = render(request, template_name=template_name, context={'errorMensagem': 'Número de Parcelas INVÁLIDO'})
         response['HX-Trigger'] = "buttonError"
         pode_salvar_boleto = False
+        cache.set('pode_salvar_boleto', False)
         return response    
     #VALIDÇÃO DO VALOR
     try: 
@@ -558,12 +545,14 @@ def get_resumo_boleto_mensal(request, pk):
             response = render(request, template_name=template_name, context={'errorMensagem': 'Valor INVÁLIDO'})
             response['HX-Trigger'] = "buttonError"
             pode_salvar_boleto = False
+            cache.set('pode_salvar_boleto', False)
             return response        
     except ValueError:
         template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
         response = render(request, template_name=template_name, context={'errorMensagem': 'Valor INVÁLIDO'})
         response['HX-Trigger'] = "buttonError"
         pode_salvar_boleto = False
+        cache.set('pode_salvar_boleto', False)
         return response        
     #VALIDÇÃO DA DATA
     try: 
@@ -574,6 +563,7 @@ def get_resumo_boleto_mensal(request, pk):
             response = render(request, template_name=template_name, context={'errorMensagem': 'Data INVÁLIDA'})
             response['HX-Trigger'] = "buttonError"
             pode_salvar_boleto = False
+            cache.set('pode_salvar_boleto', False)
             return response
         
     except ValueError:
@@ -581,6 +571,7 @@ def get_resumo_boleto_mensal(request, pk):
         response = render(request, template_name=template_name, context={'errorMensagem': 'Data INVÁLIDA'})
         response['HX-Trigger'] = "buttonError"
         pode_salvar_boleto = False
+        cache.set('pode_salvar_boleto', False)
         return response
     
     #NUMERO DO DOCUMENTO
@@ -598,6 +589,8 @@ def get_resumo_boleto_mensal(request, pk):
         resumo_listagem_boletos.append(parcela)
         valor_total += valor_parcelas
 
+    pode_salvar_boleto = True
+    cache.set('pode_salvar_boleto', True)
     
     context = {
         'resumo': resumo_listagem_boletos,
@@ -605,9 +598,12 @@ def get_resumo_boleto_mensal(request, pk):
         'valor_total': locale.currency(valor_total, grouping=True),
         'nota_atual': nota_atual
     }   
-    pode_salvar_boleto = True
+    
     response = render(request, template_name , context)
     response['HX-Trigger'] = "buttonSave"
+    
+    print(f'STATUS (pós get Resumo) - PODE SALVAR BOLETOS? -------------> {cache.get("pode_salvar_boleto")}')
+    
     return response
 
 
@@ -617,6 +613,7 @@ def atualizar_resumo_boleto_mensal(request, pk):
     global resumo_listagem_boletos
     global pode_salvar_boleto
     
+    print(f'STATUS (pré atualizar) - PODE SALVAR BOLETOS? -------------> {cache.get("pode_salvar_boleto")}')
     
     qnt_parcelas = int(request.POST.get('num_parcelaA'))
     
@@ -640,6 +637,7 @@ def atualizar_resumo_boleto_mensal(request, pk):
             response = render(request, template_name=template_name, context={'errorMensagem': 'Valor VAZIO'})
             response['HX-Trigger'] = "buttonError"
             pode_salvar_boleto = False
+            cache.set('pode_salvar_boleto', False)
             return response 
         else:
             for valor in valor_parcelas:
@@ -650,11 +648,13 @@ def atualizar_resumo_boleto_mensal(request, pk):
                     response = render(request, template_name=template_name, context={'errorMensagem': 'Valor INVÁLIDO'})
                     response['HX-Trigger'] = "buttonError"
                     pode_salvar_boleto = False
+                    cache.set('pode_salvar_boleto', False)
                     return response        
     except ValueError:
         template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
         response = render(request, template_name=template_name, context={'errorMensagem': 'Valor INVÁLIDO'})
         pode_salvar_boleto = False
+        cache.set('pode_salvar_boleto', False)
         return response         
     
     print(f'VALOR PARCELAS ---------------> {valor_parcelas}')
@@ -666,6 +666,7 @@ def atualizar_resumo_boleto_mensal(request, pk):
             response = render(request, template_name=template_name, context={'errorMensagem': 'Data VAZIA'})
             response['HX-Trigger'] = "buttonError"
             pode_salvar_boleto = False
+            cache.set('pode_salvar_boleto', False)
             return response 
         else:
             for data in datas_parcelas:
@@ -674,6 +675,7 @@ def atualizar_resumo_boleto_mensal(request, pk):
                     response = render(request, template_name=template_name, context={'errorMensagem': 'Data INVÁLIDA'})
                     response['HX-Trigger'] = "buttonError"
                     pode_salvar_boleto = False
+                    cache.set('pode_salvar_boleto', False)
                     return response    
         
     except ValueError:
@@ -681,6 +683,7 @@ def atualizar_resumo_boleto_mensal(request, pk):
         response = render(request, template_name=template_name, context={'errorMensagem': 'Data INVÁLIDA'})
         response['HX-Trigger'] = "buttonError"
         pode_salvar_boleto = False
+        cache.set('pode_salvar_boleto', False)
         return response
     
     print(f'DATAS PARCELAS ---------------> {datas_parcelas}')
@@ -703,6 +706,8 @@ def atualizar_resumo_boleto_mensal(request, pk):
         resumo_listagem_boletos.append(parcela)
         valor_total += valor
     
+    pode_salvar_boleto = True
+    cache.set('pode_salvar_boleto', True)
     
     context = {
         'resumo': resumo_listagem_boletos,
@@ -713,7 +718,8 @@ def atualizar_resumo_boleto_mensal(request, pk):
     
     response = render(request, template_name , context)
     response['HX-Trigger'] = "buttonSave"
-    pode_salvar_boleto = True
+    
+    print(f'STATUS (pós atualizar) - PODE SALVAR BOLETOS? -------------> {cache.get("pode_salvar_boleto")}')
     return response
 
   
@@ -722,13 +728,16 @@ def atualizar_resumo_boleto_mensal(request, pk):
 def salvar_boletos_mensal(request, pk):
     global pode_salvar_boleto
     global resumo_listagem_boletos
+    status_salvar = cache.get('pode_salvar_boleto')
     
+    print(f'STATUS (pré salvar) - PODE SALVAR BOLETOS? -------------> {status_salvar}')
     
-    if not pode_salvar_boleto:
+    if not status_salvar:
         template_name = 'financeiro/fragmentos/pagamentos/error-mensagem.html'
-        response = render(request, template_name=template_name, context={'errorMensagem': 'Erro ao Salvar! Tentar novamente.'})
+        response = render(request, template_name=template_name, context={'errorMensagem': f'Erro ao Salvar! Tentar novamente.(Salvar Boleto:{pode_salvar_boleto}'})
         response['HX-Trigger'] = "buttonError"
         pode_salvar_boleto = False
+        cache.set('pode_salvar_boleto', False)
         return response
     
     #SALVANDO BOLETOS NO BANCO
@@ -754,6 +763,7 @@ def salvar_boletos_mensal(request, pk):
         nota_atual.save()
         
         pode_salvar_boleto = False #resetar variavel
+        cache.set('pode_salvar_boleto', False)
         return redirect(reverse('ver-nota-completa', kwargs={'pk':pk}))
     
     except (ValueError, ValidationErr):
@@ -761,6 +771,7 @@ def salvar_boletos_mensal(request, pk):
         response = render(request, template_name=template_name, context={'errorMensagem': 'Erro ao Salvar! Tentar novamente.'})
         response['HX-Trigger'] = "buttonError"
         pode_salvar_boleto = False
+        cache.set('pode_salvar_boleto', False)
         return response    
 
         

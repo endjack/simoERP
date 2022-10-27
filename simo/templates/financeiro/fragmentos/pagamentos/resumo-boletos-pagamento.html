@@ -2,7 +2,7 @@
 
 <li class="list-group-item" style="background-color:#f5f7f5">
 <div class=""><strong>Resumo:</strong></div>
-<form id="form-salvar-boletos" hx-post="{% url 'salvar-boletos-mensal' nota_atual.pk %}" hx-trigger="submit" hx-target="body" hx-swap="outerHTML" hx-include="[name='num_parcelaA']">
+<form id="form-salvar-boletos" hx-post="{% url 'salvar-boletos-mensal' nota_atual.pk %}" hx-trigger="submit throttle:500ms" hx-target="body" hx-swap="outerHTML" hx-include="[name='num_parcelaA']">
 
 {% for boleto in resumo %}
 

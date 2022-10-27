@@ -24,7 +24,7 @@
   {% if nota_atual.forma_pagamento == 1 %}
   <button class="m-1 btn btn-p-sm btn-danger" title="Excluir Pagamentos à vista"
     hx-delete="{% url 'excluir-pagamento-vista' nota_atual.pk %}"
-    hx-trigger="click"
+    hx-trigger="click throttle:500ms"
     hx-target="body"
     hx-swap="innerHTML"
     hx-confirm="Tem certeza que deseja EXCLUIR o PAGAMENTO de valor {{nota_atual.valor_BR}}?"
@@ -32,7 +32,7 @@
 
     <button class="m-1 btn btn-p-sm btn-primary" title="Excluir Pagamentos à vista"
       hx-post="{% url 'editar-pagamento-vista' nota_atual.pk %}"
-      hx-trigger="click"
+      hx-trigger="click throttle:500ms"
       hx-target="body"
       hx-swap="beforeend"
       >Editar Pagamento</button>
@@ -40,7 +40,7 @@
   {% elif nota_atual.forma_pagamento == 2 %}
     <button class="m-1 btn btn-p-sm btn-danger" title="Excluir Pagamentos por Boletos"
       hx-delete="{% url 'excluir-pagamento-boletos' nota_atual.pk %}"
-      hx-trigger="click"
+      hx-trigger="click throttle:500ms"
       hx-target="body"
       hx-swap="innerHTML"
       hx-confirm="Tem certeza que deseja EXCLUIR o PAGAMENTO de valor {{nota_atual.valor_BR}}?"
@@ -49,7 +49,7 @@
   {% else %}
   <a class="m-1 btn btn-p-sm btn-success" 
             hx-get="{% url 'modal-ver-formas-pagamentos' nota_atual.pk %}"
-            hx-trigger="click"
+            hx-trigger="click throttle:500ms"
             hx-target="body"
             hx-swap="beforeend">Realizar Pagamento</a>
   
@@ -63,7 +63,7 @@
       <a class="m-1 btn btn-p-sm btn-primary" href="{% url 'editar-saida' nota_atual.pk %}">Editar Dados da Nota</a>
       <a class="m-1 btn btn-p-sm btn-danger" 
       hx-delete="{% url 'excluir-saida' nota_atual.pk %}"
-      hx-trigger="click"
+      hx-trigger="click throttle:500ms"
       hx-target="body"
       hx-swap="innerHTML"
       hx-confirm="Tem certeza que deseja EXCLUIR Nota nº {{nota_atual.pk}} de valor {{nota_atual.valor_BR}}?">Excluir Nota</a>
@@ -174,24 +174,24 @@
                                   {% if not item.pago %}
                                   <span class="badge bg-primary" 
                                   hx-post="{% url 'editar-pagamento-boleto' item.pk nota_atual.pk %}" 
-                                  hx-trigger="click" 
+                                  hx-trigger="click throttle:500ms" 
                                   hx-target="body" 
                                   hx-swap="beforeend">Editar</span>  
                                   <span class="badge bg-success"
                                   hx-post="{% url 'pagar-boleto-unico' item.pk nota_atual.pk %}" 
-                                  hx-trigger="click" 
+                                  hx-trigger="click throttle:500ms" 
                                   hx-target="body" 
                                   hx-swap="beforeend">Pagar</span> 
                                   <span class="badge bg-danger" 
                                   hx-delete="{% url 'excluir-boleto-unico' item.pk nota_atual.pk %}"
-                                  hx-trigger="click"
+                                  hx-trigger="click throttle:500ms"
                                   hx-target="body"
                                   hx-swap="outerHTML"
                                   hx-confirm="Tem certeza que deseja EXCLUIR o BOLETO de valor {{item.valor_BR}}?">Excluir</span>
                                   {% else %}
                                   <span class="badge bg-danger" 
                                   hx-delete="{% url 'excluir-pagamento-boleto-unico' item.pk nota_atual.pk %}"
-                                  hx-trigger="click"
+                                  hx-trigger="click throttle:500ms"
                                   hx-target="body"
                                   hx-swap="outerHTML"
                                   hx-confirm="Tem certeza que deseja EXCLUIR o PAGAMENTO DO BOELTO de valor {{item.valor_BR}}?">Excluir Pagamento de Boleto</span>
