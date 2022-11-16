@@ -68,9 +68,9 @@ class PagamentoVista(models.Model):
     
     def valor_total_BR(self):
         if self.acrescimo:
-            return locale.currency(self.conta.valor + self.acrescimo, grouping=True)
+            return locale.currency((self.conta.valor or 0) + (self.acrescimo or 0), grouping=True)
         else:
-            return locale.currency(self.conta.valor, grouping=True)
+            return locale.currency(self.conta.valor or 0, grouping=True)
     
     def acrescimo_BR(self):
         return locale.currency(self.acrescimo, grouping=True)
