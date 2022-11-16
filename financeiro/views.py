@@ -244,9 +244,17 @@ def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resul
     try:
         descricao = request.GET.get('descricao') or ''
         fornecedor = request.GET.get('fornecedor') or ''
-        initial_date = request.GET.get('data') or datetime.min   # datetime.min is 1
-        end_date = request.GET.get('data_f') or datetime.max  # datetime.max is 9999
         
+        initial_date_aux = request.GET.get('data') or '0001-01-01' # datetime.min is 1
+        end_date_aux = request.GET.get('data_f') or '9999-12-31' # datetime.max is 9999
+        
+        initial_date = datetime.strptime(initial_date_aux, '%Y-%m-%d')    
+        end_date = datetime.strptime(end_date_aux, '%Y-%m-%d')   
+        
+        print(f'PESQUISA ------------------------ descricao/cod ---> {descricao}')
+        print(f'PESQUISA ------------------------ data inicial ---> {initial_date}')
+        print(f'PESQUISA ------------------------ data final ---> {end_date}')
+        print(f'PESQUISA ------------------------ fornecedor ---> {fornecedor}')
         
         #BOLETOS
         if request.GET.get('check_pago') == 'on' and request.GET.get('check_nao_pago') != 'on':
@@ -271,7 +279,7 @@ def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resul
                 Q(saida__data_emissao__range=[initial_date, end_date]),
                 Q(saida__nota_fiscal__icontains=descricao)).order_by('saida__data_emissao')
                
-        else:
+        elif request.GET.get('check_nao_pago') == 'on' and request.GET.get('check_pago') == 'on':
             objects = ContaBoleto.objects.all().filter(
                 Q(conta__saida__fornecedor__nome__icontains=fornecedor) | Q(conta__saida__fornecedor__razao_social__icontains=fornecedor),
                 Q(data_vencimento__range=[initial_date, end_date]),
@@ -281,6 +289,9 @@ def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resul
                 Q(saida__fornecedor__nome__icontains=fornecedor) | Q(saida__fornecedor__razao_social__icontains=fornecedor),
                 Q(saida__data_emissao__range=[initial_date, end_date]),
                 Q(saida__nota_fiscal__icontains=descricao)).order_by('saida__data_emissao')
+        else:
+            objects = None
+            objects2 = None
                        
         total_valor_boletos = 0             
         if objects:
@@ -1021,17 +1032,18 @@ def excluir_saida(request, pk):
 
 @login_required(login_url='login/')
 @csrf_exempt
-def selecionar_forma_de_pagamento(request, pk):
-    template_name = 'financeiro/fragmentos/pagamentos/modal-ver-formas-pagamentos.html'
-    nota_atual = NotaCompleta.objects.get(pk=pk)
-    form = PagamentoVistaForm()
+def selecionar_forma_de_pagamento(request, pk, template_name = 'financeiro/fragmentos/pagamentos/modal-ver-formas-pagamentos.html'):
     
-    context = {
-        'nota_atual': nota_atual,
-        'form' : form
-    }     
-    
-    return render(request, template_name , context)
+    if request.method == "GET":
+        nota_atual = NotaCompleta.objects.get(pk=pk)
+        form = PagamentoVistaForm()
+        
+        context = {
+            'nota_atual': nota_atual,
+            'form' : form
+        }     
+        
+        return render(request, template_name , context)
 
   
 @login_required(login_url='login/')
@@ -1160,7 +1172,6 @@ def editar_descricao_saida(request, pk, nota, template_name='financeiro/fragment
 @login_required(login_url='login/')
 @csrf_exempt
 def salvar_descricao_saida(request, template_name='financeiro/fragmentos/inserir-conta-a-pagar.html'):
-    
     fornecedor = request.POST.get('fornecedor')
     print(fornecedor)
     #validação fornecedor
