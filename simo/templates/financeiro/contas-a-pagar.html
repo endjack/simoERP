@@ -62,6 +62,7 @@
           <input class="form-check-input" type="checkbox" name="check_pago" id="flexCheckChecked" hx-include="#form_filtro_contas_atrasadas" hx-indicator="#spinner" hx-swap="innerHTML" hx-target="#resultados-contas-atrasadas" hx-get="/contas-a-pagar/filtro" hx-trigger="change" checked>
           <label class="form-check-label" style="color:green" for="flexCheckChecked"> Pagos </label>
         </div>
+        
     </div>
              
     <div class="">
@@ -71,7 +72,7 @@
               <label for="input1" class="">Descrição/Doc/Nota Fiscal</label>
               <input type="text" class="form-control form-control-sm" id="input1" name="descricao" hx-include="#form_filtro_contas_atrasadas" hx-indicator="#spinner" hx-swap="innerHTML" hx-target="#resultados-contas-atrasadas" hx-get="/contas-a-pagar/filtro" hx-trigger="keyup[target.value.length > 2] delay:1s throttle:1s">
             </div>
-  
+            <span class="help-block">*Mínimo de 3 letras para buscar</span>
           </div>
           <div class="col-2">
             <div class="col-12">
@@ -98,12 +99,14 @@
                       hx-get="/contas-a-pagar/filtro" 
                       hx-trigger="keyup[target.value.length > 2] delay:1s throttle:1s">
             </div>
+            <span class="help-block">Digite '###" para Todos os Fornecedores</span>
           </div>
 
-          <div class="col-1 d-flex align-items-end">
-            <button class="btn btn-p-sm btn-secondary m-2" hx-post="{% url 'contas-a-pagar' %}" hx-trigger="click" hx-target="body" hx-swap="outerHTML" disabled>Limpar</button>
+          <div class="col-1"> <br>
+            <a class="btn btn-p-sm btn-secondary m-2" href="{% url 'contas-a-pagar' %}">Limpar</a>
+  
           </div>
-          <span class="help-block">*Mínimo de 3 letras para buscar</span>
+         
         </div>
   
       </form>
