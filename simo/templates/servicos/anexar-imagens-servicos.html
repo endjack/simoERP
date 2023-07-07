@@ -34,7 +34,9 @@
 </form>
 
 <div class="d-flex flex-column-reverse justify-content-center">
+    {% if fotos_serv_atual %}
     {%  for image in fotos_serv_atual %}
+    {% if image.foto.width is not null%}
     <div class="row" style="margin:10px">
         <form id="form_excluir" action="{% url 'deletar-imagem' serv_atual.ordem.pk serv_atual.pk image.pk %}"
             method="POST">
@@ -71,8 +73,14 @@
                 </button>
             </div>
         </form>
+    {% else %}    
+    Imagem não encontrada!
+    {% endif %}
     </div>
-    {% endfor %}
+    {% endfor %} 
+    {% else %}
+    Sem fotos!
+    {% endif %}
 </div>
 
 

@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'dashboard.apps.DashboardConfig',
     'tarefas.apps.TarefasConfig',
     'faturamento',
+    'engenharia',
     
 
 ]

@@ -21,7 +21,11 @@
             class="btn btn-p-cinza btn-p-sm m-1"
             _="on htmx:afterOnLoad wait 10ms then add .show to #modal1 then add .show to #modal-backdrop1">Novo
             Evento</button>
+            {% if tarefa_exibir %}
             <a href="{% url 'ver-tarefa' tarefa_exibir.pk %}" class="btn btn-p-sm btn-p-cinza-claro m-1 ">Ver todos</a>
+            {% else %}
+            <button class="btn btn-p-sm btn-p-cinza-claro m-1 " disabled>Ver todos</button>
+            {% endif %}
         </div>
         
     </div>

@@ -15,22 +15,24 @@ def home_index(request):
     """
 
     today_date = datetime.now()
-    try:
-        eventos_do_dia = Tarefa.objects.all().filter(usuario=request.user).filter(data_inclusao__date__lte=today_date).filter(data_conclusao__date__gte=today_date).filter(feito=False)
-        tarefas = Tarefa.objects.all().filter(usuario=request.user).filter(feito=False)
-        tarefa_exibir = Tarefa.objects.all().filter(feito=False).latest('pk')
+    eventos_do_dia = Tarefa.objects.all().filter(usuario=request.user).filter(data_inclusao__date__lte=today_date).filter(data_conclusao__date__gte=today_date).filter(feito=False)
+    tarefas = Tarefa.objects.all().filter(usuario=request.user).filter(feito=False)
     
-        context = {
-                'tarefas': tarefas,
-                'eventos_do_dia': eventos_do_dia,
-                'tarefa_exibir': tarefa_exibir
-            }
+    if not tarefas.count():
+        tarefas = Tarefa.objects.none()
+        tarefa_exibir = Tarefa.objects.none()
+        
+    else:    
+        tarefa_exibir = tarefas.latest('pk')
     
-        template_name = 'home.html'
-        return render(request, template_name , context)
+    context = {
+        'tarefas': tarefas,
+        'eventos_do_dia': eventos_do_dia,
+        'tarefa_exibir': tarefa_exibir
+        }
     
-    except Tarefa.DoesNotExist:
-        raise Http404("ERRO: Evento não existe!")
+    template_name = 'home.html'
+    return render(request, template_name , context)
     
 
 @login_required(login_url='login/')
