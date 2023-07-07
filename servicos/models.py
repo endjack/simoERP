@@ -19,6 +19,7 @@ TIPO = (
     )
 
 class OrdemServico(models.Model):
+    numero_os = models.IntegerField(blank=True, null=True, unique=True)
     solicitante = models.ForeignKey(Fiscal, on_delete=models.SET_NULL, null=True, blank=True)
     encarregado = models.ForeignKey(Funcionario, on_delete=models.SET_NULL, null=True, blank=True)
     obra = models.ForeignKey(Obra, on_delete=models.SET_NULL, null=True)

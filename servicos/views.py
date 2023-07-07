@@ -447,7 +447,10 @@ class AnexarImagensServicoView(GroupRequiredMixin, LoginRequiredMixin, TemplateV
         servico_atual = Servico.objects.get(pk=kwargs.get('idServ')) 
         context["ordem_atual"] = OrdemServico.objects.get(pk=self.kwargs.get('pk'))
         context["serv_atual"] = servico_atual 
-        context["fotos_serv_atual"] = FotosServico.objects.filter(servico =servico_atual)   
+        
+        fotos = FotosServico.objects.filter(servico =servico_atual)   
+        
+        context["fotos_serv_atual"] = fotos   
         return context
        
     

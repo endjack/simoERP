@@ -32,11 +32,18 @@
       {% endfor %}
 
       <div class="form-group row mb-3">
+
+        <div class="col-3">
+          <div class="input-group">
+            <div class="input-group-text">Número OS: </div>
+            {% render_field form.numero_os class="form-control form-control-sm" id="solicitante" name="solicitante"%}
+          </div>
+        </div>
         
-        <div class="col-4">
+        <div class="col-3">
           <div class="input-group">
             <div class="input-group-text">Local: </div>
-            {% render_field form.local class="form-control" id="local" name="local" %}
+            {% render_field form.local class="form-control form-control-sm" id="local" name="local" %}
             <button type="button" class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal">
             <i class="fas fa-plus"></i>
             </button>
@@ -44,22 +51,23 @@
         </div>
 
         
-        <div class="col-6">
+        <div class="col-5">
           <div class="input-group">
             <div class="input-group-text">Solicitante: </div>
-            {% render_field form.solicitante class="form-control" id="solicitante" name="solicitante"%}
+            {% render_field form.solicitante class="form-control form-control-sm" id="solicitante" name="solicitante"%}
           </div>
         </div>
+
       </div>
 
 
       <!-- 3 column grid layout -->
       <div class="form-group row mb-3">
 
-        <div class="col-2">
+        <div class="col-3">
           <div class="input-group">
             <div class="input-group-text">Data:</div>
-            {% render_field form.data class="form-control date datepicker" id="date" name="data"%}
+            {% render_field form.data class="form-control form-control-sm date datepicker" id="date" name="data"%}
           </div>
         </div>
 
@@ -67,9 +75,9 @@
           <div class="input-group">
             <div class="input-group-text">Encarregado: </div>
             {% if request.user|has_group:"FiscalSESAD" %}
-            {% render_field form.encarregado class="form-control" id="encarregado" name="encarregado" disabled="disabled"%}
+            {% render_field form.encarregado class="form-control form-control-sm" id="encarregado" name="encarregado" disabled="disabled"%}
             {% else %}
-            {% render_field form.encarregado class="form-control" id="encarregado" name="encarregado"%}
+            {% render_field form.encarregado class="form-control form-control-sm" id="encarregado" name="encarregado"%}
             {% endif %}
           </div>
         </div>
@@ -82,7 +90,7 @@
         <div class="col-5">
           <div class="input-group">
             <div class="input-group-text">Centro de Custo: </div>
-             {% render_field form.obra class="form-control" id="obra" name="obra" %}
+             {% render_field form.obra class="form-control form-control-sm" id="obra" name="obra" %}
           </div>
         </div>
 
@@ -103,7 +111,8 @@ Ordem de Serviço Adicionadas: <br>
 <table class="table table-sm table-bordered tabela-listar">
   <thead class="card-header text-white " style="background: linear-gradient(to right, #0f2027, #203a43, #2c5364);">
     <tr>
-      <th scope="col">Id</th>
+      {% comment %} <th scope="col">Id</th> {% endcomment %}
+      <th scope="col">Núm. OS</th>
       <th scope="col">Data</th>
       <th scope="col">Solicitante</th>
       <th scope="col">Obra</th>
@@ -115,7 +124,12 @@ Ordem de Serviço Adicionadas: <br>
   <tbody>
     {% for ordem in lista_ordens %}
     <tr>
-      <td>{{ordem.pk}}</td>
+      {% comment %} <td>{{ordem.pk}}</td> {% endcomment %}
+      {% if  ordem.numero_os %}
+      <td>{{ordem.numero_os}}</td>
+      {% else %}
+      <td> - </td>
+      {% endif %}
       <td>{{ordem.data | date:"d/m/Y"}}</td>
       {% if ordem.solicitante %}
       <td>{{ordem.solicitante}}</td>

@@ -14,6 +14,7 @@ class Obra(models.Model):
     fiscal = models.ForeignKey(Fiscal, on_delete=models.SET_NULL, null=True)  
     fim = models.CharField(max_length=200)
     valor = models.DecimalField('preço', max_digits=15, decimal_places=2, default=0, blank=True, null=True)
+    concluido = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return str(self.nome)+ ' - Contrato: '+ str(self.num_contrato)

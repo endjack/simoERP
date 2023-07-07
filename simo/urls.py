@@ -1,3 +1,4 @@
+from engenharia.views import home_engenharia
 from simo.utils import limpar_cache
 from tarefas.views import *
 import debug_toolbar
@@ -113,7 +114,10 @@ urlpatterns = [
     path('contas-a-pagar/inserir-itens/<int:pk>', inserir_itens_conta_a_pagar, name='inserir-itens-conta'),
     path('contas-a-pagar/excluir-item/<int:pk>', excluir_item_conta_a_pagar, name='excluir-item-conta'),
 
+    #urls Engenharia v.2
+    path('engenharia/', home_engenharia, name='home_engenharia'),
     
+     
     
     #urls Financeiro v.2
     path('contas-a-pagar/salvar-saida', salvar_nota_completa, name='salvar-saida'),
@@ -188,10 +192,8 @@ urlpatterns = [
     path('fornecedores/get', get_fornecedores, name='get-fornecedores'),
     path('fornecedores/get/error', get_error, name='get-error'),
     
-     
-     
 
-     #urls Funcionários
+    #urls Funcionários
      path('funcionarios/', InserirFuncionarioView.as_view(), name='inserir-funcionario'),
      path('funcionarios/<pk>/editar', EditarFuncionarioView.as_view(), name='editar-funcionario'),
      path('funcionarios/<pk>/excluir', ExcluirFuncionarioView.as_view(), name='excluir-funcionario'),

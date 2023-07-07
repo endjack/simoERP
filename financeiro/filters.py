@@ -12,7 +12,7 @@ class ContasFilter(django_filters.FilterSet):
     fornecedor = django_filters.CharFilter(lookup_expr='icontains')
     data_inicial = DateFilter(field_name="vencimento", lookup_expr='gte')
     data_final = DateFilter(field_name="vencimento", lookup_expr='lte')
-    tags = MultiSelectField(choices=tuple(TagConta.objects.values_list('pk', 'nome')))
+    # tags = MultiSelectField(choices=tuple(TagConta.objects.values_list('pk', 'nome')))
 
     class Meta:
         model = ContaPagamento

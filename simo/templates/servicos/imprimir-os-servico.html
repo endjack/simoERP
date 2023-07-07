@@ -52,11 +52,11 @@
     </div>
 
     <div style="text-align:center; margin-top:10px;font-size:16pt;font-weight:bold;">
-        <h5>ORDEM DE SERVIÇO Nº {{ordem_serv_atual.pk}} | SERVIÇO Nº {{serv_atual.pk}}</h5>
+        <h5 class="fw-bold">ORDEM DE SERVIÇO Nº {{ordem_serv_atual.numero_os}} | SERVIÇO Nº {{serv_atual.pk}}</h5>
     </div>
 
     <div style="text-align:center;font-size:10pt;">
-        {{serv_atual.descricao}}
+        {{serv_atual.ordem.local}}
     </div>
     {% comment %} DADOS ORDEM DE SERVIÇO {% endcomment %}
 
@@ -143,7 +143,7 @@
             <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
                 <div class="ms-2 me-auto">
                     {% if serv_atual.descricao %}
-                    <div class="fw-bold">Descrição:</div>
+                    <div class="fw-bold">Serviço à Executar:</div>
                     {{serv_atual.descricao}}
                     {% else %}
                     - {% endif %}
@@ -190,19 +190,26 @@
                     {% for func in serv_atual.funcionarioservico_set.all %}
                     <div class="row"><span>{{func.funcionario.nome}} - {{func.funcionario.cargo}}</span></div>
                     {% endfor %}
+                    {% else %}
+                    <div class="fw-bold">Funcionários:</div>
+                    <div class="row">-</div>
                     {% endif %}
                 </div>
             </li>
 
-            {% if serv_atual.fornecedorservico_set.count  > 0 %}
+            
             <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
                 <div class="ms-2 me-auto">
+                    {% if serv_atual.fornecedorservico_set.count  > 0 %}
                     <div class="fw-bold"> Fornecedor:</div>
                     {% for func in serv_atual.fornecedorservico_set.all %}
                     <div class="row">
                         <span>{{func.fornecedor.nome}}{% if func.fornecedor.doc %}-{{func.fornecedor.doc}}{% endif %}</span>
                     </div>
                     {% endfor %}
+                    {% else %}
+                    <div class="fw-bold"> Fornecedor:</div>
+                    <div class="row">-</div>
                     {% endif %}
                 </div>
             </li>
@@ -211,7 +218,7 @@
             <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
                 <div class="ms-2 me-auto">
                     <div class="fw-bold">Materiais:</div>
-                    <table class="table table-bordered table-sm border border-dark">
+                    <table class="table table-bordered table-sm border border-dark" style="font-size:10px;">
                         <thead style="border-color:black;background-color:gray; color: white;">
                             <tr>
                                 <th scope="col">Cód:</th>
@@ -231,10 +238,48 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                    {% endif %}
+                    
                 </div>
             </li>
+            {% endif %}
+
             </ol>
+
+            <ol class="list-group mb-2 ">
+                Descrição dos Serviços:
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+                <li class="list-group-item d-flex justify-content-between align-items-start border-dark"></li>
+            </ol>   
+
+
+
+
+
             <ol style="margin-top:10px;font-size:12px;">
             Parnamirim, {% now "SHORT_DATE_FORMAT" %}.<br><br>
             
@@ -245,10 +290,11 @@
 
                 <div class="d-flex justify-content-center">
                 ______________________________ <br>
-                Solicitante {% if ordem_serv_atual.solicitante %}
+                Solicitante 
+                {% comment %} {% if ordem_serv_atual.solicitante %}
                     ({{ordem_serv_atual.solicitante}}):
                     {% else %}
-                    {% endif %}
+                    {% endif %} {% endcomment %}
                 </div> 
 
                 <div style="width:10px"> </div>
@@ -256,7 +302,7 @@
 
                  <div class="d-flex ms-auto justify-content-center">
                  ______________________________<br>
-                Resposável (BRASIL CONSTRUÇÃO LTDA)
+                Responsável (BRASIL CONSTRUÇÃO LTDA)
                 </div>
 
                
