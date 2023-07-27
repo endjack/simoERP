@@ -15,6 +15,7 @@ from django.views.generic import TemplateView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from braces.views import GroupRequiredMixin
 from django.core.cache import cache
+import os
 
 
 
@@ -448,8 +449,22 @@ class AnexarImagensServicoView(GroupRequiredMixin, LoginRequiredMixin, TemplateV
         context["ordem_atual"] = OrdemServico.objects.get(pk=self.kwargs.get('pk'))
         context["serv_atual"] = servico_atual 
         
-        fotos = FotosServico.objects.filter(servico =servico_atual)   
+        fotos = FotosServico.objects.filter(servico =servico_atual)
         
+        # print(f"------------------------------> {fotos}")
+         
+        try:
+            for im in fotos:
+                file_path = im.foto.url
+                if os.path.exists(file_path):
+                    print("----------------->Existe")
+                else:
+                    print("_________________>NÃO EXISTE")
+        except FileNotFoundError:
+            print("IMAGEM NÃO ENCONTRADA")
+            fotos = None
+                    
+                        
         context["fotos_serv_atual"] = fotos   
         return context
        

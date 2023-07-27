@@ -48,8 +48,8 @@ class InserirItemView(GroupRequiredMixin, LoginRequiredMixin, CreateView):
         f = super().form_valid(form)
              
         # GERANDO O QR CODE
-        qr_code = gerar_qrcode(f"#ID#{self.object.pk}")
-        self.object.qr_code = f'{qr_code}'
+        # qr_code = gerar_qrcode(f"#ID#{self.object.pk}")
+        # self.object.qr_code = f'{qr_code}'
         
         self.object.save()
         messages.add_message(
@@ -475,7 +475,7 @@ def log_item_updated(request, item, qnt, saldo, adicionado):
    if request.user.is_authenticated:
         usuario = request.user
    
-   novo_log = LogMovimentacao(usuario=usuario, item=item, quantidade=qnt, saldo=saldo, adicionado=adicionado, data_inclusao=current_time)
+   novo_log = LogMovimentacao(usuario=usuario, item=item.descricao, quantidade=qnt, saldo=saldo, adicionado=adicionado, data_inclusao=current_time)
    novo_log.save()
 
 @group_required('Administrador', 'Estoque','Tecnico')

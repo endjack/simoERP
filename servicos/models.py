@@ -74,3 +74,10 @@ class FotosServico(models.Model):
     
     image_height = models.IntegerField(blank=True, null=True)
     image_width = models.IntegerField(blank=True, null=True)
+    
+    def get_url(self):
+        try:
+                # or whatever causes the exception
+                return self.foto.url
+        except IOError:
+                return None

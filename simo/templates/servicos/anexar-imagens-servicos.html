@@ -34,53 +34,54 @@
 </form>
 
 <div class="d-flex flex-column-reverse justify-content-center">
-    {% if fotos_serv_atual %}
-    {%  for image in fotos_serv_atual %}
-    {% if image.foto.width is not null%}
-    <div class="row" style="margin:10px">
-        <form id="form_excluir" action="{% url 'deletar-imagem' serv_atual.ordem.pk serv_atual.pk image.pk %}"
-            method="POST">
-            {% csrf_token %}
-            <div class="col-5">
-                <input type="hidden" name="id_foto" value="{{image.pk}}">
-                <img src="{{ image.foto.url }}" class="rounded-3 border border-dark overflow-hidden" width="180"
-                    height="100">
+    {% if fotos_serv_atual is not null %}
+        {%  for image in fotos_serv_atual %}
+            {% if image.foto.width is not null%}
+            <div class="row" style="margin:10px">
+                <form id="form_excluir" action="{% url 'deletar-imagem' serv_atual.ordem.pk serv_atual.pk image.pk %}"
+                    method="POST">
+                    {% csrf_token %}
+                        <div class="col-5">
+                            <input type="hidden" name="id_foto" value="{{image.pk}}">
+                            <img src="{{ image.foto.url }}" class="rounded-3 border border-dark overflow-hidden" width="180"
+                                height="100">
+                        </div>
+                        <div class="col-3">
+                                <a href="#" onClick="abreJanela('{{ image.foto.url }}','Imagem','{{image.foto.width | no_dot}}','{{image.foto.height | no_dot}}','')">Ver Imagem</a>
+                                <script language="JavaScript">
+
+                                    /////////////////////////////////////////////
+                                    //abrir janela no centro da tela          ///
+                                    //Eric Silva eric_silva@javamail.com.br///
+                                    ////////////////////////////////////////////
+
+                                    function abreJanela(Url,NomeJanela,width,height,extras) { 
+                                        var largura = width;
+                                        var altura = height;
+                                        var adicionais= extras;
+                                        var topo = (screen.height-altura)/2;
+                                        var esquerda = (screen.width-largura)/2;
+                                        novaJanela=window.open(''+ Url + '',''+ NomeJanela + '','width=' + largura + ',height=' + altura + ',top=' + topo + ',left=' + esquerda + ',features=' + adicionais + '');
+                                        novaJanela.focus();
+                                    }
+                                </script>
+
+                            <!-- Button trigger modal -->
+                            |  <button type="button" class="btn btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal">
+                                <span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span>
+                            </button>
+                        </div>
+                </form>
             </div>
-            <div class="col-3">
-                    <a href="#" onClick="abreJanela('{{ image.foto.url }}','Imagem','{{image.foto.width | no_dot}}','{{image.foto.height | no_dot}}','')">Ver Imagem</a>
-                    <script language="JavaScript">
-
-                        /////////////////////////////////////////////
-                        //abrir janela no centro da tela          ///
-                        //Eric Silva eric_silva@javamail.com.br///
-                        ////////////////////////////////////////////
-
-                        function abreJanela(Url,NomeJanela,width,height,extras) { 
-                            var largura = width;
-                            var altura = height;
-                            var adicionais= extras;
-                            var topo = (screen.height-altura)/2;
-                            var esquerda = (screen.width-largura)/2;
-                            novaJanela=window.open(''+ Url + '',''+ NomeJanela + '','width=' + largura + ',height=' + altura + ',top=' + topo + ',left=' + esquerda + ',features=' + adicionais + '');
-                            novaJanela.focus();
-                        }
-                    </script>
-
-                <!-- Button trigger modal -->
-                |  <button type="button" class="btn btn-sm" data-bs-toggle="modal"
-                    data-bs-target="#exampleModal">
-                    <span style="color: tomato;"><i class="fas fa-trash fa-lg"></i></span>
-                </button>
-            </div>
-        </form>
-    {% else %}    
-    Imagem não encontrada!
-    {% endif %}
-    </div>
-    {% endfor %} 
+            {% else %}    
+            Imagem não encontrada!
+            {% endif %}
+    
+        {% endfor %} 
     {% else %}
     Sem fotos!
-    {% endif %}
+    {% endif %} 
 </div>
 
 
