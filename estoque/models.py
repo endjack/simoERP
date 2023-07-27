@@ -63,10 +63,12 @@ class Estoque(models.Model):
 
     def __str__(self) -> str:   
         return str(self.item.descricao)+ ' - ' + str(self.quantidade)
-    
+
+
 class LogMovimentacao(models.Model):
     usuario = models.ForeignKey(User, on_delete=PROTECT)
-    item = models.ForeignKey(Item, on_delete=models.DO_NOTHING)
+    # item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True)
+    item = models.CharField(max_length=300, blank=True, null=True)
     quantidade = models.FloatField(default=0)
     saldo = models.FloatField(default=0)
     adicionado = models.BooleanField(default=False)
@@ -75,4 +77,4 @@ class LogMovimentacao(models.Model):
     
 class ItensSelecionados(models.Model):
     estoque = models.OneToOneField(Estoque, on_delete=models.DO_NOTHING)
-    
+

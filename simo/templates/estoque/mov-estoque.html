@@ -81,9 +81,9 @@
                   <td class="text-center" style="">{{item.data_inclusao}}</td>
                   <td class="text-center" style="">{{item.usuario}}</td>
                   {% if item.adicionado %}
-                  <td><span style="color:blue;">Adicionado</span> {{item.quantidade}} {{item.item.unid_medida}} de {{item.item.descricao}} [Total = {{item.saldo}} {{item.item.unid_medida}}]</td>
+                  <td><span style="color:blue;">Adicionado</span> {{item.quantidade}} {{item.item.unid_medida}} de {{item.item}} [Total = {{item.saldo}} {{item.item.unid_medida}}]</td>
                   {% else %}
-                  <td><span style="color:red;">Retirado</span> {{item.quantidade}} {{item.item.unid_medida}} de {{item.item.descricao}} [Total = {{item.saldo}} {{item.item.unid_medida}}]</td>
+                  <td><span style="color:red;">Retirado</span> {{item.quantidade}} {{item.item.unid_medida}} de {{item.item}} [Total = {{item.saldo}} {{item.item.unid_medida}}]</td>
                   {% endif %}
               </tr>
             {% endfor %}
