@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block styleHead %}
+<link href="{% static 'css/image_preview.css' %}" rel="stylesheet">
+<style>
+   .link_tr:hover { 
+        background: #d9f5fc; 
+
+       
+     }
+    .link_os:hover { 
+        text-decoration: none;
+        color: black;
+
+     } 
+    .link_os { 
+        display: block; 
+        text-decoration: none;
+        color: black;
+     }
+</style>
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="cabecalho-contas mb-2">
+    <ol class="list-group ">
+        Resumo do dia:
+        <li class="list-group-item d-flex  justify-content-end mt-1 ">
+            <div class="col-1">
+                <img style="width: 5rem" class="card-img-top" src="{% static 'imagens/logo1.png' %}" alt="Imagem de capa da obra">
+            </div>
+            <div class="col-md">
+               <span style="font-size:14pt;font-weight: bold;"> 
+                {{obra.nome}} </span> <br> Até {% now "d/F/Y" %}
+            </div>
+            <div class="col-md text-end">
+                OS geradas: <h6 class="">{{ordens.count}}</h6>
+            </div>
+            <div class="col-md text-end">
+                Serviços "Não Iniciado": <h6 class="">{{os_nao_iniciados}}</h6>
+            </div>
+            <div class="col-md text-end">
+                Serviços "Em Andamento": <h6 class="">{{os_em_andamento}}</h6>
+            </div>
+            <div class="col-md text-end">
+                Serviços "Finalizados": <h6 class="">{{os_finalizados}}</h6>
+            </div>
+
+        </li>
+    </ol>
+    <ol class="list-group ">
+        Ações:
+        <li class="list-group-item d-flex">
+            <div class="col-md">
+                <a class="btn btn-sm btn-success m-2" href="{% url 'obra_nova_os' obra.pk %}"><i class="fas fa-plus"></i> Nova OS</a>
+                <a class="btn btn-sm btn-primary m-2" href="#"><i class="fas fa-angle-double-right"></i> Ver Todas</a>
+                <a class="btn btn-sm btn-secondary m-2" href="#"><i class="fas fa-search"></i> Procurar</a>
+                <a class="btn btn-sm btn-secondary m-2" href="#"><i class="far fa-file-alt"></i> Relatórios</a>
+            </div>
+        </li>
+    </ol>
+
+</div>
+<div class="cabecalho-contas mb-2">
+    Últimas Ordens Adicionadas:
+    <ol class="list-group ">
+
+            <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px;">
+                <thead style="border:solid 1px;border-color:silver;background:#0d6efd; color: white;" class="text-center">
+                    <tr>
+                        <th scope="col">OS nº</th>
+                        <th scope="col">Data Recebimento</th>
+                        <th scope="col">Local</th>
+                        <th scope="col">Serviço(s)</th>
+                        <th scope="col">Situação</th>
+                        {% comment %} <th scope="col">Opções</th> {% endcomment %}
+                    </tr>
+                </thead>
+                
+                <tbody class="text-center">
+                    {% for item in ordens %}
+                    
+                    <tr class="link_tr">
+                        {% if item.numero_os %}<td><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.numero_os}}</a></td>{% else %}<td> - </td>{% endif %}
+                        {% if item.data_recebimento %}<td><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.data_recebimento}}</a></td>{% else %}<td> - </td>{% endif %}
+                        {% if item.local %}<td class="text-start"><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.local.local}}</td>{% else %}</a><td> - </td>{% endif %}
+                        {% if item.servicos %}<td class="text-start"><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.servicos}}</td>{% else %}</a><td> - </td>{% endif %}
+                        {% if item.situacao %}<td><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.get_situacao}}</td>{% else %}</a><td> - </td>{% endif %}               
+                        {% comment %} <td><a href="#" title="Ver OS: #"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a></td>    {% endcomment %}
+                    </tr>
+                    
+                    {% endfor %}
+                </tbody>
+           
+            </table>
+
+    </ol>
+
+</div>
+
+{% endblock%}
+
+
+{% block jquery %}
+<script>
+
+    $(document).ready(function () {
+
+
+        $('.tabela-listar').DataTable({
+            responsive: true,
+            // "bSort": false,
+            "aaSorting": [],
+            "pageLength": 10,
+            "order": [
+                [0, "asc"]
+            ], //3º tabela em ordem decrescente
+            "language": {
+
+                "decimal": ",",
+                "emptyTable": "Sem registro",
+                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+                "infoFiltered": "(filtrado de _MAX_ registros no total)",
+                "infoPostFix": "",
+                "thousands": ".",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "loadingRecords": "A carregar dados...",
+                "processing": "A processar...",
+                "search": "Procurar:",
+                "zeroRecords": "Não foram encontrados resultados",
+                "paginate": {
+                    "first": "Primeiro",
+                    "last": "Último",
+                    "next": "Seguinte",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": ordem crescente",
+                    "sortDescending": ": ordem decrescente"
+                }
+            }
+        });
+
+    });
+
+</script>
+{% endblock%}

@@ -1,0 +1,42 @@
+<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
+	<div class="modal-underlay" _="on click trigger closeModal"></div>
+	<div class="modal-content" style="overflow:auto;">
+		<h5>Inserir Imagem:</h5>
+
+        <form id="formInserirImagensOs" method="POST" action="{% url 'salvar_imagem_em_categoria' obra.pk ordem_atual.pk %}" enctype="multipart/form-data"> 
+            {% csrf_token %}
+            <div class="form-group row mb-2">
+                <div class="col-4">
+                    <label for="input1" class="">Categoria:</label>
+                    <select id="input1" class="form-control form-control-sm"  name="categoria" >
+                        {% for i in categorias %}
+                        <option value="{{i.categoria}}"> {{i.categoria}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md">
+                    <label for="input2" class="">Imagem:</label>
+                    <input type="file" name="imagem" class="form-control form-control-sm" accept="image/*" multiple /> 
+                    <small class="small-error" id="error_imagem"></small>
+                </div>
+                
+            </div>
+         
+            {% for error in field.errors %}
+            <span class="help-block">{{ error }}</span>
+            {% endfor %}
+        </form>
+        <div class="">
+        </div>
+    </form>
+
+<div class="d-flex flex-row-reverse">
+    <button class="btn btn-p-sm btn-primary m-1" form="formInserirImagensOs">Salvar</button>
+    <button class="btn btn-p-sm btn-light m-1" _="on click trigger closeModal">Cancelar</button>
+    </div>
+</div>
+</div>
+
+{% block jquery %}
+
+{% endblock %}

@@ -1,0 +1,220 @@
+{% load static %}
+<style>
+   
+
+</style>
+
+<div class="d-flex align-items-center flex-row bd-highlight ">
+<div class="p-2 bd-highlight"><h5 style="padding-top:1rem">Fotos/Imagens:</h5></div>
+<div class="p-2 bd-highlight">
+    <span class="badge bg-primary" style="cursor: pointer;font-size: 10pt;"
+        hx-get="{% url 'obra_imagens_inserir_categoria_os' obra.pk ordem_atual.pk %}"
+        hx-trigger="click"
+        hx-target="body"
+        hx-swap="beforeend">      
+        + Categoria
+    </span>
+    </div>
+    {% if categorias %}
+    <div class="p-2 bd-highlight"><div class=""><span class="badge bg-primary" style="cursor: pointer;font-size: 10pt;"
+        hx-get="{% url 'inserir_imagem_em_categoria' obra.pk ordem_atual.pk %}"
+        hx-trigger="click"
+        hx-target="body"
+        hx-swap="beforeend"
+       >      
+        + Imagem</span>
+    </div> 
+    {% else %}
+    <div class="p-2 bd-highlight"><div class=""><span class="badge bg-secondary" style="font-size: 10pt;">+ Imagem</span>
+        <small class=""> *Necessário criar Categoria para upload de imagens</small>
+    </div>
+    
+    {% endif %} 
+</div>
+
+</div> 
+           
+<li class="list-group-item align-items-start">
+
+    <div class="col-md p-1">
+        {% if categorias %}           
+            {% for cat in categorias %}
+
+            {% with cat.get_imagens_by_category as imagens %}
+            <div class="fw-bold">{{cat.categoria}} 
+               
+
+                 <!-- Button -->
+                 <a style="margin:5px;" href="modal" class="" title="Editar Nome de Categoria" data-bs-toggle="modal" data-bs-target="#ModalCategoria{{cat.pk}}">
+                    <i class="fas fa-edit"></i></a>    
+
+                 <!-- Modal -->
+                 <div class="modal fade" id="ModalCategoria{{cat.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="d-flex flex-column bd-highlight">
+                                <div class="bd-highlight" >Editar Categoria:</div>
+                            </div>  
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            
+                            <form class="row g-2" method="POST" action="{% url 'obra_editar_categoria' obra.pk ordem_atual.pk cat.pk %}">
+                                <div class="input-group mb-3">
+                                    <input type="text" name="edit_categoria" class="form-control" aria-describedby="button-addon2" value="{{cat.categoria}}" required="required">
+                                    <button class="btn btn-success" type="submit" id="button-addon2" >Salvar</button>
+                                  </div>
+                             </form>
+                             
+                        </div>
+                        <div class="modal-footer form-control">
+
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                       
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <!-- Fim Modal -->  
+
+                 <!-- Button -->
+                 <a style="margin:5px;" href="modal" class="" title="Excluir Categoria" data-bs-toggle="modal" data-bs-target="#ModalExcluirCategoria{{cat.pk}}">
+                    <i class="fas fa-trash"></i></a>    
+
+                 <!-- Modal -->
+                 <div class="modal fade" id="ModalExcluirCategoria{{cat.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="d-flex flex-column bd-highlight">
+                                <div class="bd-highlight" >Excluir Categoria:</div>
+                            </div>  
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            
+                                    
+                        {% if imagens|length > 0 %}
+                            ATENÇÃO: 
+                            Essa categoria contém  {{imagens|length}} imagem(ns), que serão excluídas também.
+
+                        {% else %}
+                            Certeza que deseja excluir?
+                        
+                        {% endif %}
+                                 
+                             
+
+                        </div>
+                        <div class="modal-footer form-control">
+
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <a class="btn btn-sm btn-danger" type="button" href="{% url 'obra_excluir_categoria' obra.pk ordem_atual.pk cat.pk %}">EXCLUIR</a>
+                       
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <!-- Fim Modal -->  
+
+                {% comment %} <a style="margin:5px;" title="Download em Zip todas as imagens da Categoria" href="{% url 'dowload_imagens_categoria' obra.pk ordem_atual.pk cat.pk %}"><i class="fas fa-download"></i></a> {% endcomment %}
+
+
+<hr>
+            </div>
+            <div class="d-flex flex-row bd-highlight mb-3">
+                <div class="p-2 bd-highlight">
+
+                    <div class="d-flex flex-row bd-highlight mb-3">
+                        <div class="p-2 bd-highlight">
+                               
+                          
+                           
+                           {% for im in imagens %}
+                                    
+                           {% comment %} <a href="#" onclick="open('{{im.imagem.url}}','{{im.imagem.url}}','status=no,Width=320,Height=285');"><img src="{{im.imagem.url }}" class="card-img-top m-2" style="width: 100px; height: auto;"></a> {% endcomment %}
+                           
+                           <!-- Button -->
+                           <a href="modal" class="" data-bs-toggle="modal" data-bs-target="#ModalImagem{{im.pk}}">
+                            <img src="{{im.imagem.url }}" class="card-img-top m-2" style="width: 100px; height: auto;">
+                           </a>
+
+
+                           <!-- Modal -->
+                            <div class="modal fade" id="ModalImagem{{im.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <div class="d-flex flex-column bd-highlight">
+                                            <div class="bd-highlight" >Imagem: {{im.imagem.name}}</div>
+                                            <div class="bd-highlight" >Categoria: {{im.categoria.categoria}}</div>
+                                        </div>  
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <img src="{{im.imagem.url }}" class="card-img-top m-2" style="">
+                                    </div>
+                                    <div class="modal-footer form-control">
+
+                                        <form id="formEditarCategoriaEmImagem" method="POST" action="{% url 'editar_categoria_imagem' obra.pk ordem_atual.pk im.pk %}" > 
+                                                  
+                                            <select id="input1" class="form-control form-control-sm"  name="nova_categoria" >
+                                                {% for i in categorias %}
+                                                    {% if i.categoria  == im.categoria.categoria  %}
+                                                    <option value="{{i.categoria}}" selected> {{i.categoria}}</option> 
+                                                    {% else %}
+                                                        <option value="{{i.categoria}}"> {{i.categoria}}</option>
+                                                    {% endif %}
+
+                                                {% endfor %}
+                                            </select>
+                               
+                                        <button  type="submit" class="form-control form-control-sm btn btn-sm btn-primary">Salvar Categoria</button>    
+                                    </form>
+
+                                    <a type="button" class="btn btn-sm btn-danger" href="{% url 'excluir_imagem_em_categoria' obra.pk ordem_atual.pk im.pk %}">Excluir</a>
+                                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                   
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            <!-- Fim Modal -->
+
+                            
+                                
+                            {% endfor %}
+
+                            {% if not imagens %}
+                             Sem Imagens!
+                             {% endif %}
+
+                    
+                        
+                        
+
+                        
+                           {% endwith %}
+                            
+                        </div>
+                      </div>
+                       
+                    
+                </div>
+                
+              </div>
+
+            
+            {% endfor %}
+        {% else %}
+        Sem Categorias 
+        {% endif %}
+    </div>
+    
+</li>
+
+<script>
+
+   
+</script>

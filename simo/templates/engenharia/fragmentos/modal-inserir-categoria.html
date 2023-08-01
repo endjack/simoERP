@@ -1,0 +1,34 @@
+<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
+	<div class="modal-underlay" _="on click trigger closeModal"></div>
+	<div class="modal-content" style="overflow:auto;">
+		<h5>Inserir Categoria:</h5>
+
+        <form id="formInserirCategoriaImagens" method="POST" action="{% url 'obra_imagens_salvar_categoria_os' obra.pk ordem_atual.pk%}"> 
+            {% csrf_token %}
+            <div class="form-group row mb-2">
+                <div class="col-md">
+                    <label for="input3" class="">Categoria:</label>
+                       <input id="input3" type="text" name="categoria"  class="form-control form-control-sm" required="required">
+                       <small class="small-error" id="error_categoria"></small>
+                </div>
+    
+            </div>
+         
+            {% for error in field.errors %}
+            <span class="help-block">{{ error }}</span>
+            {% endfor %}
+        </form>
+        <div class="">
+        </div>
+    </form>
+
+<div class="d-flex flex-row-reverse">
+    <button class="btn btn-p-sm btn-primary m-1" form="formInserirCategoriaImagens">Salvar</button>
+    <button class="btn btn-p-sm btn-light m-1" _="on click trigger closeModal">Cancelar</button>
+    </div>
+</div>
+</div>
+
+{% block jquery %}
+
+{% endblock %}

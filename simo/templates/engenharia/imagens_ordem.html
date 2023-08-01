@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block styleHead %}
+<link href="{% static 'css/image_preview.css' %}" rel="stylesheet">
+<style>
+  
+</style>
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="cabecalho-contas mb-2">
+
+    <ol class="list-group ">
+        Obra:
+        
+        <li class="list-group-item d-flex">
+            <div class="col-1">
+                <img style="width: 5rem" class="card-img-top" src="{% static 'imagens/logo1.png' %}" alt="Imagem de capa da obra">
+            </div>
+            <div class="col-md">
+                <span style="font-size:14pt;font-weight: bold;"> 
+                 {{obra.nome}} </span> <br> Contratante: {{obra.contratante}} <br>
+                 Contrato nº: {{obra.num_contrato}}
+             </div>
+             <div class="col-md">
+                Objeto: {{obra.objeto |upper}} 
+            </div>
+            
+            <div class="col-md text-end">
+                Início da Obra: {{obra.inicio}} <br>
+                Previsão Fim: {{obra.fim}} <br>
+                Fiscal: {{obra.fiscal}} <br>
+                Gestor:
+            </div>
+        </li>
+        
+    </ol>
+    <div class="d-flex align-items-center flex-row bd-highlight mb-1">
+   
+        <div class="p-2 bd-highlight">
+            <a class="btn btn-sm btn-secondary m-2" href="{% url 'obra_detalhar_os' obra.pk ordem_atual.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
+    
+        </div>
+        <div class="p-2 bd-highlight">   
+            <h5>Ordem de Serviço nº {{ordem_atual.numero_os}} <span style="color:gray">|</span> Situação: {{ordem_atual.get_situacao}}</h5> 
+        </div> 
+       
+   
+    </div>
+        <div class="">
+            {% include 'engenharia/fragmentos/imagens_por_categoria.html' %}
+        </div>
+</div>
+
+
+{% endblock%}
+
+
+{% block jquery %}
+<script>
+
+     //DatePicker
+     $(".date").datepicker({
+        format: "dd/mm/yyyy",
+        todayHighlight: true,
+        language: "pt-BR",
+        container: '#modal1',
+      });
+    
+      
+
+    $('.money').mask('000.000.000,00', {
+        reverse: true
+    });
+
+	//CANCELAR TECLA ENTER NO FORMULÁRIO
+    window.document.onkeydown = CheckEnter;
+    function CheckEnter(){
+       if(event.keyCode == 13)
+            return false;
+       return true;
+  
+  }
+
+
+	//DESATIVAR '.' (DOT) NOS INPUTS
+	$(".nodot").on("keypress", function(evt) {
+	 var keycode = evt.charCode || evt.keyCode;
+	 if (keycode == 46) {
+	 return false;
+	 }
+    })
+
+</script>
+{% endblock%}
