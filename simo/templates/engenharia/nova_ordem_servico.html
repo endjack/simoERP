@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block styleHead %}
+<link href="{% static 'css/image_preview.css' %}" rel="stylesheet">
+<style>
+  
+</style>
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="cabecalho-contas mb-2">
+
+    <ol class="list-group ">
+        Obra:
+        
+        <li class="list-group-item d-flex">
+            <div class="col-1">
+                <img style="width: 5rem" class="card-img-top" src="{% static 'imagens/logo1.png' %}" alt="Imagem de capa da obra">
+            </div>
+            <div class="col-md">
+                <span style="font-size:14pt;font-weight: bold;"> 
+                 {{obra.nome}} </span> <br> Contratante: {{obra.contratante}} <br>
+                 Contrato nº: {{obra.num_contrato}}
+             </div>
+             <div class="col-md">
+                Objeto: {{obra.objeto |upper}} 
+            </div>
+            
+            <div class="col-md text-end">
+                Início da Obra: {{obra.inicio}} <br>
+                Previsão Fim: {{obra.fim}} <br>
+                Fiscal: {{obra.fiscal}} <br>
+                Gestor:
+            </div>
+        </li>
+        
+    </ol>
+
+    <ol class="list-group" style="padding-left:1rem;padding-top:1rem">
+        
+
+       <form id="FormaddOsObras" method="POST" action="{% url 'obra_salvar_nova_os' obra.pk %}"> 
+        {% csrf_token %}
+        <div class="form-group row mb-2">
+            <div class="col-2"> <strong> Nova Ordem de Serviço: </strong> </div>
+            <div class="col-2">
+                <label for="input4" class="">Data Recebida:</label>
+                <input type="date" class="form-control form-control-sm date" name="data_recebida" id="input4" value="{% now "Y-m-d" %}">
+                <small class="small-error" id="error_data_recebida"></small>
+            </div>
+            <div class="col-2">
+                <label for="input0" class="">Situação:</label>
+                <select id="input0" class="form-control form-control-sm"  name="situacao" >
+                    {% for i in situacao %}
+                    <option value="{{i.0}}"> {{i.1}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+         </div>
+
+        <div class="form-group row mb-2">
+
+            <div class="col-2">
+                <label for="input1" class="">OS número:</label>
+                   <input type="number" class="form-control form-control-sm" name="num_os" id="input1">
+                   <small class="small-error" id="error_num_os"></small>
+            </div>
+        
+            <div class="col-4">
+                <label for="input3" class="">Local/Unidade:</label>
+                <select id="input3" class="form-control form-control-sm"  name="unidade" >
+                    <option value="-1"> ------------------ </option>
+                    {% for i in locais %}
+                    <option value="{{i.local}}"> {{i.local}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            
+        </div>
+
+        <div class="form-group row mb-2">
+            <div class="col-6">
+                <label for="input2" class="">Endereço:</label>
+                   <input type="text" class="form-control form-control-sm" name="endereco" id="input2">
+                   <small class="small-error" id="error_endereço"></small>
+            </div>
+
+        </div>
+
+        <div class="form-group row mb-2">
+            <div class="col-6">
+                <label for="input3" class="">Serviços à Executar:</label>
+                   <textarea id="input3" name="servicos" rows="5" cols="50" class="form-control form-control-sm"></textarea>
+                   <small class="small-error" id="error_servicos"></small>
+            </div>
+
+        </div>
+
+        <div class="form-group row mb-2">
+            
+            <div class="col-2">
+                <label for="input5" class="">Data Início:</label>
+                <input type="date" class="form-control form-control-sm date" name="data_inicio" id="input5">
+                <small class="small-error" id="error_data_inicio"></small>
+            </div>
+
+            <div class="col-2">
+                <label for="input6" class="">Prazo:</label>
+                <input type="date" class="form-control form-control-sm date" name="data_prazo" id="input6">
+                <small class="small-error" id="error_data_prazo"></small>
+            </div>
+
+        </div>
+
+            {% for error in field.errors %}
+            <span class="help-block">{{ error }}</span>
+            {% endfor %}
+    </form>
+    <div class="">
+    </div>
+</form>
+
+
+    </ol>
+    <ol class="list-group col-6" style="padding-left:1rem;">
+        <li class="list-group-item d-flex">
+            <div class="col-md">
+                <button type="submit" class="btn btn-sm btn-success m-2" form="FormaddOsObras"><i class="fas fa-save"></i> Salvar</button>
+                <a class="btn btn-sm btn-primary m-2" href="{% url 'home_obra_os' obra.pk %}"><i class=""></i> Voltar</a>
+                <a class="btn btn-sm btn-secondary m-2" href="#"><i class=""></i> Limpar</a>
+            </div>
+        </li>
+    </ol>
+
+</div>
+
+
+{% endblock%}
+
+
+{% block jquery %}
+<script src="../static/js/datatables.min.js"></script>
+
+<script>
+
+     //DatePicker
+     $(".date").datepicker({
+        format: "dd/mm/yyyy",
+        todayHighlight: true,
+        language: "pt-BR",
+        container: '#modal1',
+      });
+    
+      
+
+    $('.money').mask('000.000.000,00', {
+        reverse: true
+    });
+
+	//CANCELAR TECLA ENTER NO FORMULÁRIO
+    window.document.onkeydown = CheckEnter;
+    function CheckEnter(){
+       if(event.keyCode == 13)
+            return false;
+       return true;
+  
+  }
+
+
+	//DESATIVAR '.' (DOT) NOS INPUTS
+	$(".nodot").on("keypress", function(evt) {
+	 var keycode = evt.charCode || evt.keyCode;
+	 if (keycode == 46) {
+	 return false;
+	 }
+
+
+</script>
+{% endblock%}

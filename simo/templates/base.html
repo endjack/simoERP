@@ -84,9 +84,9 @@
 
           {% comment %} SERVIÇOS MENU {% endcomment %}
           {% if request.user|has_group:"Tecnico" or  request.user|has_group:"Administrador" or request.user|has_group:"FiscalSESAD"%}
-          <li class="nav-item dropdown">
+          {% comment %} <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle titulo-menu" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Serviços
+              Engenharia
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
               <li><a class="dropdown-item" href="{% url 'inserir-ordem' %}">Inserir</a></li>
@@ -95,7 +95,10 @@
               <li><a class="dropdown-item" href="{% url 'listar-servicos-funcionario' %}">O.S. Funcionários</a></li>
               {% endif %}
               <li><a class="dropdown-item" href="{% url 'listar-ordens' %}">Ver O.S.</a></li>
-            </ul>
+            </ul> 
+          </li> {% endcomment %}
+          <li class="nav-item">
+            <a class="nav-link titulo-menu" href="{% url 'home_engenharia' %}" tabindex="-1" aria-disabled="true">Engenharia</a>
           </li>
           {% endif %}
 

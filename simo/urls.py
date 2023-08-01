@@ -1,4 +1,4 @@
-from engenharia.views import home_engenharia
+from engenharia.views import *
 from simo.utils import limpar_cache
 from tarefas.views import *
 import debug_toolbar
@@ -99,7 +99,7 @@ urlpatterns = [
     
     #urls Usuários 
     path('login/', auth_views.LoginView.as_view(template_name='usuarios/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'), 
     
     #urls Financeiro 
     path('resumo-do-dia/', home_resumo_do_dia, name='resumo-do-dia'),
@@ -116,8 +116,21 @@ urlpatterns = [
 
     #urls Engenharia v.2
     path('engenharia/', home_engenharia, name='home_engenharia'),
+    path('engenharia/obra/<int:pk>/os', home_obras_ver_servicos, name='home_obra_os'),
+    path('engenharia/obra/<int:pk>/nova_os', obras_nova_orden_servico, name='obra_nova_os'),
+    path('engenharia/obra/<int:pk>/nova_os/salvar', obras_salvar_nova_orden_servico, name='obra_salvar_nova_os'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar', obras_detalhar_orden_servico, name='obra_detalhar_os'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens', obras_imagens_orden_servico, name='obra_imagens_os'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/inserir_categoria', obras_imagens_inserir_categoria_orden_servico, name='obra_imagens_inserir_categoria_os'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/categoria/<int:cat>/editar_categoria', obras_editar_categoria_orden_servico, name='obra_editar_categoria'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/categoria/<int:cat>/excluir_categoria', obras_excluir_categoria_orden_servico, name='obra_excluir_categoria'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/salvar_categoria', obras_imagens_salvar_categoria_orden_servico, name='obra_imagens_salvar_categoria_os'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/inserir_imagem', obras_inserir_imagem_em_categoria_orden_servico, name='inserir_imagem_em_categoria'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/salvar_imagem', obras_salvar_imagem_em_categoria_orden_servico, name='salvar_imagem_em_categoria'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/<int:im>/excluir_imagem', obras_excluir_imagem_orden_servico, name='excluir_imagem_em_categoria'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/<int:im>/editar_categoria_imagem', obras_editar_categoria_imagem_orden_servico, name='editar_categoria_imagem'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/categoria/<int:cat>/download_imagens_por_categoria', dowload_imagens_categoria_orden_servico, name='dowload_imagens_categoria'),
     
-     
     
     #urls Financeiro v.2
     path('contas-a-pagar/salvar-saida', salvar_nota_completa, name='salvar-saida'),
@@ -232,7 +245,6 @@ htmlx_urlpatterns = [
     path('hx/limpar', limpar_cache, name='limpar-cache'),                
 
 ]
-
 
 urlpatterns += htmlx_urlpatterns
 

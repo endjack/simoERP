@@ -1,0 +1,72 @@
+{% load static %}
+<style>
+   
+
+</style>
+         
+<li class="list-group-item align-items-start ">
+        {% if categorias %}           
+            {% for cat in categorias %}
+
+            {% with cat.get_imagens_by_category as imagens %}
+      
+            <div class="fw-bold">{{cat.categoria}} </div>
+                    <div class="d-flex flex-row bd-highlight">
+                   
+                        <div class=" bd-highlight" style="margin-bottom:1rem">
+                            
+                           {% for im in imagens %}
+                                                              
+                           <!-- Button -->
+                           <a href="modal" class="" data-bs-toggle="modal" data-bs-target="#ModalImagem{{im.pk}}">
+                            <img src="{{im.imagem.url }}" class="card-img-top m-1" style="width: 100px; height: auto;">
+                           </a>
+
+
+                           <!-- Modal -->
+                            <div class="modal fade" id="ModalImagem{{im.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <div class="d-flex flex-column bd-highlight">
+                                            <div class="bd-highlight" >Imagem: {{im.imagem.name}}</div>
+                                            <div class="bd-highlight" >Categoria: {{im.categoria.categoria}}</div>
+                                        </div>  
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <img src="{{im.imagem.url }}" class="card-img-top m-2" style="">
+                                    </div>
+                                    <div class="modal-footer form-control">
+                                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                   
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            <!-- Fim Modal -->
+                            {% endfor %}
+
+                            {% if not imagens %}
+                                <div style="margin-bottom:1rem">Sem Imagens!</div>
+                             {% endif %}
+
+                           {% endwith %}
+                            
+                        </div>
+                      </div>
+                       
+            {% endfor %}
+            
+          
+        {% else %}
+        Sem Categorias 
+        {% endif %}
+    </div>
+    
+</li>
+
+<script>
+
+   
+</script>
