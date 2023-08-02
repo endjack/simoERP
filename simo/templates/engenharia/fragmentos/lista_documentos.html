@@ -1,0 +1,121 @@
+{% load static %}
+<style>
+    .limitar {
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }  
+
+</style>
+         
+<li class="list-group-item align-items-start ">
+        
+    <div class="fw-bold">Arquivos salvos:</div>
+
+
+    <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px;">
+        <thead style="border:solid 1px;border-color:silver;background:#0d6efd; color: white;" class="text-center">
+            <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">Arquivo</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Tamanho</th>
+                <th scope="col">Opções</th>
+            </tr>
+        </thead>
+        
+        <tbody class="text-center">
+            {% for item in arquivos %}
+            
+            <tr class="link_tr" >
+                <td class="text-center limitar">{{item.nome}}</td>
+                <td class="text-center limitar"><a class="link_os" href="{{item.file.url}}" target="_blank">{{item.filename}}</a></td>
+                <td style="font-size:14pt;"><a class="link_os" href="{{item.file.url}}" target="_blank">{{item.extension |safe}}</a></td>
+                <td>{{item.file.size}}kb</td>
+                <!-- Button -->
+                <td style="font-size:10pt;"><a href="modal" data-bs-toggle="modal" data-bs-target="#ExcluirFile{{item.pk}}"><span style="color: red;"><i class="fas fa-trash fa-lg"></i></span></a></td>
+                 <!-- Modal -->
+                <div class="modal fade" id="ExcluirFile{{item.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="d-flex flex-column bd-highlight">
+                                <h5 class="bd-highlight" style="color:red" >Excluir Arquivo: </h5>
+                            </div>  
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <strong> Certeza que deseja Excluir?</strong> <br>
+                            {{item.extension |safe}} {{item.filename}}
+                        </div>
+                        <div class="modal-footer form-control">
+                            <a class="btn btn-sm btn-danger" href="{% url 'excluir_arquivo_os'  obra.pk ordem_atual.pk item.pk  %}">Excluir</a>   
+                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            
+                        </div>
+                        
+                    </div>
+                    </div>
+                </div>
+                <!-- Fim Modal -->
+            </tr>
+            
+            {% endfor %}
+        </tbody>
+   
+    </table>
+
+   
+        
+    </div>
+    
+</li>
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/datatables.min.js' %}"></script>
+{% block jquery %}
+
+<script>
+    $(document).ready(function () {
+
+
+        $('.tabela-listar').DataTable({
+            responsive: true,
+            // "bSort": false,
+            "aaSorting": [],
+            "pageLength": 10,
+            "order": [
+                [0, "asc"]
+            ], //3º tabela em ordem decrescente
+            "language": {
+
+                "decimal": ",",
+                "emptyTable": "Sem registro",
+                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+                "infoFiltered": "(filtrado de _MAX_ registros no total)",
+                "infoPostFix": "",
+                "thousands": ".",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "loadingRecords": "A carregar dados...",
+                "processing": "A processar...",
+                "search": "Procurar:",
+                "zeroRecords": "Não foram encontrados resultados",
+                "paginate": {
+                    "first": "Primeiro",
+                    "last": "Último",
+                    "next": "Seguinte",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": ordem crescente",
+                    "sortDescending": ": ordem decrescente"
+                }
+            }
+        });
+
+    });
+   
+</script>
+
+{% endblock%}
