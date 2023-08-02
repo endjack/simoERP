@@ -38,25 +38,57 @@
         </li>
         
     </ol>
-
+  
     <ol class="list-group" style="padding-left:1rem;padding-top:1rem">
-        
 
-       <form id="FormaddOsObras" method="POST" action="{% url 'obra_salvar_nova_os' obra.pk %}"> 
-        {% csrf_token %}
+        <div class="d-flex align-items-center flex-row bd-highlight mb-1 ">
+   
+            <div class="p-2 bd-highlight">
+                {% if not editar %}
+                <a class="btn btn-sm btn-secondary m-2" href="{% url 'home_obra_os' obra.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
+                {% else %}
+                <a class="btn btn-sm btn-secondary m-2" href="{% url 'obra_detalhar_os' obra.pk os.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
+                {% endif %}
+        
+            </div>
+            <div class="p-2 bd-highlight">   
+                <h5> {% if not editar %}
+                    <div class="col-md"> <strong> Nova Ordem de Serviço: </strong> </div>
+                    {% else %}
+                    <div class="col-md"> <strong> Editar Ordem de Serviço nº {{os.numero_os}}</strong> </div>
+                    {% endif %} </h5> 
+            </div> 
+            <button type="submit" class="btn btn-sm btn-success m-2" form="FormaddOsObras"><i class="fas fa-save"></i> Salvar</button>
+            <a class="btn btn-sm btn-secondary m-2" href="#"><i class=""></i> Limpar</a>
+
+        </div>
+        
+        
+       <form id="FormaddOsObras" method="POST"  {% if editar %} action="{% url 'obra_salvar_editar_os' obra.pk  os.pk %}" {% else %} action="{% url 'obra_salvar_nova_os' obra.pk %}" {% endif %}> 
         <div class="form-group row mb-2">
-            <div class="col-2"> <strong> Nova Ordem de Serviço: </strong> </div>
+           
             <div class="col-2">
                 <label for="input4" class="">Data Recebida:</label>
-                <input type="date" class="form-control form-control-sm date" name="data_recebida" id="input4" value="{% now "Y-m-d" %}">
+                <input  {% if editar %} value="{{os.data_recebimento |date:'Y-m-d' }}" {% else %} value="{% now 'Y-m-d' %}" {% endif %} type="date" class="form-control form-control-sm date" name="data_recebida" id="input4">
                 <small class="small-error" id="error_data_recebida"></small>
             </div>
             <div class="col-2">
+                
                 <label for="input0" class="">Situação:</label>
                 <select id="input0" class="form-control form-control-sm"  name="situacao" >
-                    {% for i in situacao %}
-                    <option value="{{i.0}}"> {{i.1}}</option>
-                    {% endfor %}
+                    {% if editar %}
+                        {% for i in situacao %}
+                            {% if i.0|stringformat:'s' == os.situacao %}
+                                <option value="{{i.0}}" selected> {{i.1}}</option>
+                            {% else %}
+                                <option value="{{i.0}}"> {{i.1}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        {% for i in situacao %}
+                        <option value="{{i.0}}"> {{i.1}}</option>
+                        {% endfor %}
+                    {% endif %}        
                 </select>
             </div>
 
@@ -66,17 +98,23 @@
 
             <div class="col-2">
                 <label for="input1" class="">OS número:</label>
-                   <input type="number" class="form-control form-control-sm" name="num_os" id="input1">
+                   <input {% if editar %} value="{{os.numero_os }}" {% endif %} type="number" class="form-control form-control-sm" name="num_os" id="input1">
                    <small class="small-error" id="error_num_os"></small>
             </div>
         
             <div class="col-4">
                 <label for="input3" class="">Local/Unidade:</label>
-                <select id="input3" class="form-control form-control-sm"  name="unidade" >
-                    <option value="-1"> ------------------ </option>
-                    {% for i in locais %}
-                    <option value="{{i.local}}"> {{i.local}}</option>
-                    {% endfor %}
+                <select id="input3" class="form-control form-control-sm"  name="local" >
+                    {% if editar %}
+                        {% for i in locais %}
+                            <option value="{{i.pk}}"  {% if i.pk == os.local.pk %} selected {% endif %}> {{i.local}}</option>
+                        {% endfor %}
+                    {% else %}
+                        <option value="-1"> ------------------ </option>
+                        {% for i in locais %}
+                        <option value="{{i.pk}}"> {{i.local}}</option>
+                        {% endfor %}
+                    {% endif %}
                 </select>
             </div>
             
@@ -86,7 +124,7 @@
         <div class="form-group row mb-2">
             <div class="col-6">
                 <label for="input2" class="">Endereço:</label>
-                   <input type="text" class="form-control form-control-sm" name="endereco" id="input2">
+                   <input {% if editar %} value="{{os.local.endereco }}" {% endif %} type="text" class="form-control form-control-sm" name="endereco" id="input2">
                    <small class="small-error" id="error_endereço"></small>
             </div>
 
@@ -95,7 +133,7 @@
         <div class="form-group row mb-2">
             <div class="col-6">
                 <label for="input3" class="">Serviços à Executar:</label>
-                   <textarea id="input3" name="servicos" rows="5" cols="50" class="form-control form-control-sm"></textarea>
+                   <textarea id="input3" name="servicos" rows="5" cols="50" class="form-control form-control-sm">{% if editar %}{{os.servicos |safe}}{% endif %}</textarea>
                    <small class="small-error" id="error_servicos"></small>
             </div>
 
@@ -105,13 +143,13 @@
             
             <div class="col-2">
                 <label for="input5" class="">Data Início:</label>
-                <input type="date" class="form-control form-control-sm date" name="data_inicio" id="input5">
+                <input {% if editar %} value="{{os.data_inicio |date:'Y-m-d' }}" {% endif %} type="date" class="form-control form-control-sm date" name="data_inicio" id="input5">
                 <small class="small-error" id="error_data_inicio"></small>
             </div>
 
             <div class="col-2">
                 <label for="input6" class="">Prazo:</label>
-                <input type="date" class="form-control form-control-sm date" name="data_prazo" id="input6">
+                <input {% if editar %} value="{{os.data_prazo |date:'Y-m-d' }}" {% endif %} type="date" class="form-control form-control-sm date" name="data_prazo" id="input6">
                 <small class="small-error" id="error_data_prazo"></small>
             </div>
 
@@ -126,16 +164,7 @@
 </form>
 
 
-    </ol>
-    <ol class="list-group col-6" style="padding-left:1rem;">
-        <li class="list-group-item d-flex">
-            <div class="col-md">
-                <button type="submit" class="btn btn-sm btn-success m-2" form="FormaddOsObras"><i class="fas fa-save"></i> Salvar</button>
-                <a class="btn btn-sm btn-primary m-2" href="{% url 'home_obra_os' obra.pk %}"><i class=""></i> Voltar</a>
-                <a class="btn btn-sm btn-secondary m-2" href="#"><i class=""></i> Limpar</a>
-            </div>
-        </li>
-    </ol>
+    <div class="mb-4"></div>
 
 </div>
 

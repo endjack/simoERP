@@ -6,9 +6,8 @@ from obras.models import Local, Obra
 SITUAÇÃO = (
         (0, "Não Iniciado"),
         (1, "Em andamento"), 
-        (2, "Finalizado"),
-        (3, "Pendente"),
-        (4, "Paralisado"),
+        (2, "Pendente"),
+        (3, "Paralisado"),
     )
 
 class OrdemServicoObras(models.Model):
@@ -38,6 +37,10 @@ class OrdemServicoObras(models.Model):
         for s in SITUAÇÃO:
             if int(self.situacao) == s[0]:
                 return s[1]
+            
+    def get_files_by_os(self):
+        arquivos = DocumentoOS.objects.filter(ordem_servico=self)
+        return arquivos
 
 class CategoriaImagem(models.Model):
     categoria = models.CharField(max_length=200, unique=True, null=True)
@@ -51,10 +54,41 @@ class CategoriaImagem(models.Model):
     def __str__(self) -> str:
         return self.categoria
 
+
+
+
+def def_pasta_upload_imagem(instance, name):
+    return f'engenharia/fotos/obra{instance.ordem_servico.obra.pk}os{instance.ordem_servico.numero_os}/{name}'
+
 class ImagemOS(models.Model):
-    imagem = models.ImageField(upload_to='engenharia/', blank=True, null=True)
+    imagem = models.ImageField(upload_to=def_pasta_upload_imagem, blank=True, null=True)
     categoria = models.ForeignKey(CategoriaImagem, on_delete=models.SET_NULL, null=True)
     ordem_servico = models.ForeignKey(OrdemServicoObras, on_delete=models.SET_NULL, null=True)
     
+    
 
+def def_pasta_upload(instance, filename):
+    return f'engenharia/file/obra{instance.ordem_servico.obra.pk}os{instance.ordem_servico.numero_os}/{filename}'
+
+class DocumentoOS(models.Model):
+    file = models.FileField(upload_to=def_pasta_upload, blank=True, null=True)
+    nome = models.CharField(max_length=200, null=True)
+    ordem_servico = models.ForeignKey(OrdemServicoObras, on_delete=models.SET_NULL, null=True)    
+    
+    def filename(self):
+        import os
+        return os.path.basename(self.file.name)
+    
+    def extension(self):
+        import os
+        name, extension = os.path.splitext(self.file.name)
+        if extension == ".pdf":
+            return '<i style="color:red" class="far fa-file-pdf"></i>'
+        if extension == ".doc" or extension == '.docx' :
+            return '<i style="color:#1068cc" class="far fa-file-word"></i>'
+        if extension == ".xls" or extension == '.xlsx':
+            return '<i style="color:green" class="far fa-file-excel"></i>'
+        else:
+            return extension
+    
     

@@ -5,3 +5,4 @@ from .models import *
 admin.site.register(OrdemServicoObras)
 admin.site.register(CategoriaImagem)
 admin.site.register(ImagemOS)
+admin.site.register(DocumentoOS)

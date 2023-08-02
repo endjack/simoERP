@@ -60,6 +60,7 @@ def obras_nova_orden_servico(request, pk, template_name = 'engenharia/nova_ordem
             'obra': obra,
             'locais': locais,
             'situacao': situacao,
+            'editar': False,
         }
         
         return render(request, template_name , context)
@@ -76,16 +77,19 @@ def obras_salvar_nova_orden_servico(request, pk, template_name = 'engenharia/hom
         situacao = request.POST.get('situacao') or ''
         num_os = request.POST.get('num_os') or ''
         unidade = request.POST.get('unidade') or None
+        local = request.POST.get('local') or None
         endereco = request.POST.get('endereco') or ''
         servicos = request.POST.get('servicos') or ''
         data_inicio = datetime.strptime(request.POST.get('data_inicio'), '%Y-%m-%d') or None
         data_prazo = datetime.strptime(request.POST.get('data_prazo'), '%Y-%m-%d') or None
          
+        local_atual = Local.objects.get(pk=int(local)) 
        
         OrdemServicoObras.objects.create(numero_os=int(num_os),
                                          solicitante=None,
                                          encarregado=None,
                                          servicos=servicos,
+                                         local = local_atual,
                                          situacao=int(situacao),
                                          obra=obra,
                                          data_recebimento = data_recebida,
@@ -105,11 +109,82 @@ def obras_salvar_nova_orden_servico(request, pk, template_name = 'engenharia/hom
     
 @login_required(login_url='login/')
 @csrf_exempt
+def obras_editar_orden_servico(request, pk, os, template_name = 'engenharia/nova_ordem_servico.html'):
+
+    date = datetime.now()
+    obra = Obra.objects.get(pk=pk)
+    locais = Local.objects.all()
+    os = OrdemServicoObras.objects.get(pk=os)
+ 
+    if request.method == 'GET':
+             
+        context = {
+            'date': date,
+            'obra': obra,
+            'locais': locais,
+            'os': os,
+            'situacao': SITUAÇÃO,
+            'editar': True
+       
+        }
+        
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def obras_salvar_editar_orden_servico(request, pk, os, template_name = 'engenharia/detalhar_ordem.html'):
+
+    date = datetime.now()
+    obra = Obra.objects.get(pk=pk)
+    os_atual = OrdemServicoObras.objects.get(pk=os)
+    categorias = CategoriaImagem.objects.filter(ordem_servico = os_atual).order_by('categoria')
+    
+    if request.method == 'POST':
+        
+        data_recebida = datetime.strptime(request.POST.get('data_recebida'), '%Y-%m-%d') or None
+        situacao = request.POST.get('situacao') or ''
+        num_os = request.POST.get('num_os') or ''
+        unidade = request.POST.get('unidade') or None
+        local = request.POST.get('local') or None
+        endereco = request.POST.get('endereco') or ''
+        servicos = request.POST.get('servicos') or ''
+        data_inicio = datetime.strptime(request.POST.get('data_inicio'), '%Y-%m-%d') or None
+        data_prazo = datetime.strptime(request.POST.get('data_prazo'), '%Y-%m-%d') or None
+         
+        local_atual = Local.objects.get(pk=int(local)) 
+       
+        os_atual.numero_os=int(num_os)
+        os_atual.solicitante=None
+        os_atual.encarregado=None
+        os_atual.servicos=servicos
+        os_atual.local = local_atual
+        os_atual.situacao=int(situacao)
+        os_atual.data_recebimento = data_recebida
+        os_atual.data_inicio = data_inicio
+        os_atual.data_prazo=data_prazo
+        
+        os_atual.save()
+                                                
+        
+             
+        context = {
+            
+            'obra': obra,
+            'ordem_atual': os_atual,
+            'categorias': categorias,
+        
+        }
+        
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
 def obras_detalhar_orden_servico(request, pk, os, template_name = 'engenharia/detalhar_ordem.html'):
         
         obra = Obra.objects.get(pk=pk)
         ordem_atual = OrdemServicoObras.objects.get(pk=os)
         categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
+        arquivos = ordem_atual.get_files_by_os().order_by('nome')
         
              
         context = {
@@ -117,6 +192,7 @@ def obras_detalhar_orden_servico(request, pk, os, template_name = 'engenharia/de
             'obra': obra,
             'ordem_atual': ordem_atual,
             'categorias': categorias,
+            'arquivos': arquivos,
 
 
         }
@@ -388,3 +464,88 @@ def dowload_imagens_categoria_orden_servico(request, pk, os, cat):
       
         
         return FileResponse('z')
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def documentos_orden_servico(request, pk, os, template_name = 'engenharia/documentos_ordem.html'):
+
+    date = datetime.now()
+    obra = Obra.objects.get(pk=pk)
+    ordem_atual = OrdemServicoObras.objects.get(pk=os)
+    arquivos = ordem_atual.get_files_by_os().order_by('nome')
+       
+    context = {
+        'date': date,
+        'obra': obra,
+        'ordem_atual': ordem_atual,
+        'arquivos': arquivos,
+    }
+    return render(request, template_name , context)
+        
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def salvar_documento_os(request, pk, os, template_name = 'engenharia/documentos_ordem.html'):
+    print('----------')
+    print(f'---------> VIEW: salvar_documento_os') 
+    print('----------')
+        
+    date = datetime.now()
+    obra = Obra.objects.get(pk=pk)
+    ordem_atual = OrdemServicoObras.objects.get(pk=os)
+    
+
+ 
+    if request.method == 'POST':
+        
+        # UPLOAD FILES
+        file_field = request.FILES["upload_file"] or None
+        file_name = request.POST.get('nome_file') or '' 
+               
+         
+        file = DocumentoOS.objects.create(file = file_field, 
+                                   nome = file_name,
+                                   ordem_servico = ordem_atual)
+        
+        if(file.nome == ''):
+            file.nome = file.filename()
+            file.save()
+            
+        print(f'-UPLOAD DE DOCUMENTO {file.nome} -------- URL: {file.filename()} --')
+        
+        arquivos = ordem_atual.get_files_by_os().order_by('nome')
+            
+        context = {
+            'date': date,
+            'obra': obra,
+            'ordem_atual': ordem_atual,
+            'arquivos': arquivos,
+        }
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def excluir_arquivo_os(request, pk, os, file, template_name = 'engenharia/documentos_ordem.html'):
+    print('----------')
+    print(f'---------> VIEW: excluir_arquivo_os') 
+    print('----------')
+        
+    date = datetime.now()
+    obra = Obra.objects.get(pk=pk)
+    ordem_atual = OrdemServicoObras.objects.get(pk=os)
+    file_atual = DocumentoOS.objects.get(pk=file)
+
+    print(f'-DELETADO {file_atual.filename}---------------------')
+    
+    file_atual.delete()
+    
+    arquivos = ordem_atual.get_files_by_os().order_by('nome')
+        
+    context = {
+        'date': date,
+        'obra': obra,
+        'ordem_atual': ordem_atual,
+        'arquivos': arquivos,
+    }
+    return render(request, template_name , context)
+        
