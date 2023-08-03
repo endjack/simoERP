@@ -137,8 +137,10 @@ urlpatterns = [
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/documentos', documentos_orden_servico, name='documentos_orden_servico'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/documentos/salvar', salvar_documento_os, name='salvar_documento_os'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/documentos/<int:file>/excluir', excluir_arquivo_os, name='excluir_arquivo_os'),
-    #urls Engenharia Registros v.2
-    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/registros', resgitros_orden_servico, name='resgitros_orden_servico'),
+    #urls Engenharia RDO v.2
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/diariodeobra', rdo_orden_servico, name='rdo_orden_servico'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/diariodeobra/salvar', salvar_rdo_orden_servico, name='salvar_rdo_orden_servico'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/diariodeobra/<int:rdo>/detalhar', detalhar_rdo_rdo_orden_servico, name='detalhar_rdo_rdo_orden_servico'),
 
     
     
