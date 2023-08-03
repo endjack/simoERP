@@ -123,13 +123,10 @@
             </li>
 
 
-            <h6 style="padding-top:1rem"><i class="fas fa-images"></i> Fotos do Serviço: <a type="button" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a></h6> 
-           
-        
-                
-                <div class="card">
-                   {% include 'engenharia/fragmentos/imagens_por_categoria_visualizador.html' %}
-                </div>
+            <h6 style="padding-top:1rem"><i class="fas fa-images"></i> Fotos do Serviço: <a type="button" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a></h6>                  
+            <div class="card">
+                {% include 'engenharia/fragmentos/imagens_por_categoria_visualizador.html' %}
+            </div>
 
                 <div class="" style="padding-left:1rem;">
                     <h6 style="padding-top:1rem"><i class="fas fa-folder-open"></i> Documentos do Serviço: <a type="button" href="{% url 'documentos_orden_servico' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a></h6>
@@ -137,37 +134,41 @@
                 
                     <li class="list-group-item align-items-start card">
            
+                        {% if arquivos %}                                            
                         <div class="fw-bold">Arquivos salvos:</div>
-
-
-    <table class="table table-sm table-bordered dt-responsive">
-                
-        <tbody class="text-center">
-            {% for item in arquivos %}
+                        <table class="table table-sm table-bordered dt-responsive">
+                                    
+                            <tbody class="text-center">
+                                {% for item in arquivos %}
+                                
+                              
+                                    <td class="text-start limitar" style="font-size:14pt;"><a class="link_os" href="{{item.file.url}}" target="_blank">{{item.extension |safe}}</a> {{item.nome}}
             
-            <tr class="link_tr" >
-                <td style="font-size:14pt;"><a class="link_os" href="{{item.file.url}}" target="_blank">{{item.extension |safe}}</a></td>
-                <td class="text-start limitar">{{item.nome}}</td> 
-            </tr>
-            
-            {% endfor %}
-        </tbody>
-   
-    </table>
-                
-
+                                
+                              
+                                {% endfor %}
+                            </tbody>
+                    
+                        </table>
+                        {% else %} 
+                        Sem arquivos.           
+                        {% endif %}
                     </li>
                 
                 </div>
 
                 
                 <div class="" style="padding-left:1rem;">
-                    <h6 style="padding-top:1rem"><i class="far fa-calendar-check"></i> Registros e Observações do Serviço: <a type="button" href="#" class=""> <i class="fas fa-plus"></i></a></h6>
+                    <h6 style="padding-top:1rem"><i class="far fa-calendar-check"></i> Registros e Observações do Serviço: <a type="button" href="{% url 'resgitros_orden_servico' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a></h6>
                 
                 
                     <li class="list-group-item align-items-start card">
            
-                        <br><br><br><br><br><br>
+                        {% if registros %}
+                        
+                        {% else %}
+                        Sem Registros.
+                        {% endif %}
                 
 
                     </li>

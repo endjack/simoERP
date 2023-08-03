@@ -1,7 +1,8 @@
 from datetime import datetime
 from django.db import models
-
+from django.db.models.deletion import CASCADE, PROTECT
 from obras.models import Local, Obra
+from django.contrib.auth.models import User
 
 SITUAÇÃO = (
         (0, "Não Iniciado"),
@@ -41,6 +42,9 @@ class OrdemServicoObras(models.Model):
     def get_files_by_os(self):
         arquivos = DocumentoOS.objects.filter(ordem_servico=self)
         return arquivos
+
+
+
 
 class CategoriaImagem(models.Model):
     categoria = models.CharField(max_length=200, unique=True, null=True)
@@ -90,5 +94,9 @@ class DocumentoOS(models.Model):
             return '<i style="color:green" class="far fa-file-excel"></i>'
         else:
             return extension
-    
-    
+
+class RegistroOs(models.Model):
+    data = models.DateField(default=datetime.now().strftime("%d/%m/%Y"))
+    registro = models.TextField(max_length=500, null=True)
+    usuario = models.ForeignKey(User, on_delete=PROTECT)
+    ordem_servico = models.ForeignKey(OrdemServicoObras, on_delete=models.SET_NULL, null=True)   

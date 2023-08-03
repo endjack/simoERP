@@ -122,6 +122,7 @@ urlpatterns = [
     path('engenharia/obra/<int:pk>/os/<int:os>/editar', obras_editar_orden_servico, name='obra_editar_os'),
     path('engenharia/obra/<int:pk>/os/<int:os>/salvar', obras_salvar_editar_orden_servico, name='obra_salvar_editar_os'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar', obras_detalhar_orden_servico, name='obra_detalhar_os'),
+    #urls Engenharia Imagens v.2
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens', obras_imagens_orden_servico, name='obra_imagens_os'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/inserir_categoria', obras_imagens_inserir_categoria_orden_servico, name='obra_imagens_inserir_categoria_os'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/categoria/<int:cat>/editar_categoria', obras_editar_categoria_orden_servico, name='obra_editar_categoria'),
@@ -132,10 +133,13 @@ urlpatterns = [
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/<int:im>/excluir_imagem', obras_excluir_imagem_orden_servico, name='excluir_imagem_em_categoria'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/<int:im>/editar_categoria_imagem', obras_editar_categoria_imagem_orden_servico, name='editar_categoria_imagem'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/categoria/<int:cat>/download_imagens_por_categoria', dowload_imagens_categoria_orden_servico, name='dowload_imagens_categoria'),
+    #urls Engenharia Documentos v.2
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/documentos', documentos_orden_servico, name='documentos_orden_servico'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/documentos/salvar', salvar_documento_os, name='salvar_documento_os'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/documentos/<int:file>/excluir', excluir_arquivo_os, name='excluir_arquivo_os'),
-    
+    #urls Engenharia Registros v.2
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/registros', resgitros_orden_servico, name='resgitros_orden_servico'),
+
     
     
     

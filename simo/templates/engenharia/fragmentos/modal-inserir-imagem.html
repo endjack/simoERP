@@ -3,7 +3,11 @@
 	<div class="modal-content" style="overflow:auto;">
 		<h5>Inserir Imagem:</h5>
 
-        <form id="formInserirImagensOs" method="POST" action="{% url 'salvar_imagem_em_categoria' obra.pk ordem_atual.pk %}" enctype="multipart/form-data"> 
+        <form id="formInserirImagensOs" enctype="multipart/form-data"
+                hx-post="{% url 'salvar_imagem_em_categoria' obra.pk ordem_atual.pk %}"
+                hx-target="body"
+                hx-trigger="submit"
+                hx-swap="outerHTML"> 
             {% csrf_token %}
             <div class="form-group row mb-2">
                 <div class="col-4">
