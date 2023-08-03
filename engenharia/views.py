@@ -519,7 +519,7 @@ def salvar_documento_os(request, pk, os, template_name = 'engenharia/documentos_
     print(f'---------> VIEW: salvar_documento_os') 
     print('----------')
            
-    date = datetime.now()
+  
     obra = Obra.objects.get(pk=pk)
     ordem_atual = OrdemServicoObras.objects.get(pk=os)
         
@@ -545,7 +545,7 @@ def salvar_documento_os(request, pk, os, template_name = 'engenharia/documentos_
     arquivos = ordem_atual.get_files_by_os().order_by('nome')
         
     context = {
-        'date': date,
+     
         'obra': obra,
         'ordem_atual': ordem_atual,
         'arquivos': arquivos,
@@ -561,7 +561,7 @@ def excluir_arquivo_os(request, pk, os, file, template_name = 'engenharia/docume
         
     if request.method == 'GET':
    
-        date = datetime.now()
+    
         obra = Obra.objects.get(pk=pk)
         ordem_atual = OrdemServicoObras.objects.get(pk=os)
         file_atual = DocumentoOS.objects.get(pk=file)
@@ -573,29 +573,101 @@ def excluir_arquivo_os(request, pk, os, file, template_name = 'engenharia/docume
         arquivos = ordem_atual.get_files_by_os().order_by('nome')
             
         context = {
-            'date': date,
+          
             'obra': obra,
             'ordem_atual': ordem_atual,
             'arquivos': arquivos,
         }
         return render(request, template_name , context)
+    
+
+#View Relatório Diário de Obra -----------------------------------------------------
 
     
 @login_required(login_url='login/')
 @csrf_exempt
-def resgitros_orden_servico(request, pk, os, template_name = 'engenharia/registros_ordem.html'):
+def rdo_orden_servico(request, pk, os, template_name = 'engenharia/rdo_ordem.html'):
 
     if request.method == 'GET':
     
-        date = datetime.now()
+   
         obra = Obra.objects.get(pk=pk)
         ordem_atual = OrdemServicoObras.objects.get(pk=os)
-        arquivos = ordem_atual.get_files_by_os().order_by('nome')
+        diarios = DiarioDeObraOs.objects.filter(ordem_servico = ordem_atual).order_by('-data')
+  
         
         context = {
-            'date': date,
+    
             'obra': obra,
             'ordem_atual': ordem_atual,
-            'arquivos': arquivos,
+            'diarios': diarios,
+
+          
+        }
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def salvar_rdo_orden_servico(request, pk, os, template_name = 'engenharia/rdo_ordem.html'):
+    
+
+    obra = Obra.objects.get(pk=pk)
+    ordem_atual = OrdemServicoObras.objects.get(pk=os)
+
+
+    if request.method == 'POST':
+        
+        data_RDO = datetime.strptime(request.POST.get('data'), '%Y-%m-%d') or None
+        tempo_manha = request.POST.get('tempo_manha') or ''
+        tempo_tarde = request.POST.get('tempo_tarde') or ''
+        mao_de_obra = request.POST.get('mao_de_obra') or ''
+        equipamentos = request.POST.get('equipamentos') or ''
+        atividades = request.POST.get('atividades') or ''
+        ocorrencias = request.POST.get('ocorrencias') or ''
+        usuario = request.user
+        
+        
+        DiarioDeObraOs.objects.create(
+            data=data_RDO,
+            atividades = atividades,
+            usuario = usuario,
+            ordem_servico = ordem_atual,
+            tempo_manha = tempo_manha,
+            tempo_tarde = tempo_tarde,
+            equipamentos = equipamentos,
+            mao_de_obra = mao_de_obra,
+            ocorrencias = ocorrencias,
+            fotos = None 
+        )
+    
+        diarios = DiarioDeObraOs.objects.filter(ordem_servico = ordem_atual).order_by('-data')
+        
+    context = {
+        'obra': obra,
+        'ordem_atual': ordem_atual,
+        'diarios': diarios,
+        
+
+    }
+    return render(request, template_name , context)
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def detalhar_rdo_rdo_orden_servico(request, pk, os, rdo, template_name = 'engenharia/detalhar_rdo.html'):
+
+    if request.method == 'GET':
+    
+        obra = Obra.objects.get(pk=pk)
+        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        rdo_atual = DiarioDeObraOs.objects.get(pk = rdo)
+  
+        context = {
+          
+            'obra': obra,
+            'ordem_atual': ordem_atual,
+            'rdo_atual': rdo_atual,
+
+          
         }
         return render(request, template_name , context)

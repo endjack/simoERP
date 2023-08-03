@@ -1,6 +1,6 @@
 from datetime import datetime
 from django.db import models
-from django.db.models.deletion import CASCADE, PROTECT
+from django.db.models.deletion import CASCADE, PROTECT, SET_NULL
 from obras.models import Local, Obra
 from django.contrib.auth.models import User
 
@@ -42,6 +42,10 @@ class OrdemServicoObras(models.Model):
     def get_files_by_os(self):
         arquivos = DocumentoOS.objects.filter(ordem_servico=self)
         return arquivos
+    
+    def get_imagens_by_os(self):
+        imagens = ImagemOS.objects.filter(ordem_servico=self)
+        return imagens
 
 
 
@@ -95,8 +99,14 @@ class DocumentoOS(models.Model):
         else:
             return extension
 
-class RegistroOs(models.Model):
+class DiarioDeObraOs(models.Model):
     data = models.DateField(default=datetime.now().strftime("%d/%m/%Y"))
-    registro = models.TextField(max_length=500, null=True)
+    atividades = models.TextField(max_length=500, null=True, blank=True)
     usuario = models.ForeignKey(User, on_delete=PROTECT)
     ordem_servico = models.ForeignKey(OrdemServicoObras, on_delete=models.SET_NULL, null=True)   
+    tempo_manha =  models.CharField(max_length=200, null=True, blank=True)
+    tempo_tarde =  models.CharField(max_length=200, null=True, blank=True)
+    equipamentos = models.TextField(max_length=500, null=True, blank=True)
+    mao_de_obra = models.TextField(max_length=500, null=True, blank=True)
+    ocorrencias = models.TextField(max_length=1000, null=True, blank=True)
+    fotos = models.ForeignKey(CategoriaImagem, on_delete=SET_NULL, null=True)

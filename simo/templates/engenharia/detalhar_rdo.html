@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styleHead %}
+
+<style>
+  .card-header{
+    background-color: #d5e4f5  !important;
+    padding: 0px;
+    text-align: center;
+  }
+  .textheader{
+    font-weight: bold;
+  }
+    .camposTable{
+        padding:0px;
+    }
+    </style>
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="cabecalho-contas mb-2 ">
+
+    <ol class="list-group ">
+        Obra:
+        
+        <li class="list-group-item d-flex">
+            <div class="col-1">
+                <img style="width: 5rem" class="card-img-top" src="{% static 'imagens/logo1.png' %}" alt="Imagem de capa da obra">
+            </div>
+            <div class="col-md">
+                <span style="font-size:14pt;font-weight: bold;"> 
+                 {{obra.nome}} </span> <br> Contratante: {{obra.contratante}} <br>
+                 Contrato nº: {{obra.num_contrato}}
+             </div>
+             <div class="col-md">
+                Objeto: {{obra.objeto |upper}} 
+            </div>
+            
+            <div class="col-md text-end">
+                Início da Obra: {{obra.inicio}} <br>
+                Previsão Fim: {{obra.fim}} <br>
+                Fiscal: {{obra.fiscal}} <br>
+                Gestor:
+            </div>
+        </li>
+        
+    </ol>
+  
+        <div class="d-flex align-items-center flex-row bd-highlight mb-1 ">
+   
+            <div class="p-2 bd-highlight">
+                <a class="btn btn-sm btn-secondary m-2" href="{% url 'rdo_orden_servico' obra.pk ordem_atual.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
+        
+            </div>
+            <div class="p-2 bd-highlight">   
+                <h5>Ordem de Serviço nº {{ordem_atual.numero_os}} <span style="color:gray">|</span> Situação: {{ordem_atual.get_situacao}}</h5> 
+            </div> 
+
+            <div class="">
+                <a  class="btn btn-sm btn-dark m-2" href="#" target="_blank" title="Imprimir OS"><span style=""><i class="fas fa-print"></i></span></a>
+                <a  class="btn btn-sm btn-dark m-2" href="{% url 'documentos_orden_servico' obra.pk ordem_atual.pk %}" title="Ver/Anexar Fotos"><span style=""><i class="fas fa-images"></i></span></a>
+                <a  class="btn btn-sm btn-dark m-2" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" title="Ver/Anexar Documentos"><span style=""><i class="fas fa-folder-open"></i></span></a>
+                <a  class="btn btn-sm btn-dark m-2" href="{% url 'rdo_orden_servico' obra.pk ordem_atual.pk %}" title="Diários de Obra"><span style=""><i class="fas fa-calendar-check"></i></span></a>
+                <a  class="btn btn-sm btn-primary m-2" href="{% url 'obra_editar_os' obra.pk ordem_atual.pk %}" title="Editar OS"><span style=""><i class="fas fa-edit"></i></span></a>
+                <a  class="btn btn-sm btn-danger m-2" href="#" target="_blank" title="Excluir OS"><span style=""><i class="fas fa-trash"></i></span></a>
+            </div>
+           
+       
+        </div>
+             
+</div>
+
+<div class="row p-2">
+
+    <div class="col-md-5">
+        <!--CARD-->
+        <div class="card" style="">
+            <div class="card-header">
+             <span class="textheader">Relatório Diário de Obra - RDO</span>
+            </div>
+            <div class="p-2">
+                <table class="table table-sm camposTable">
+                    <tbody>
+                      <tr>
+                        <th scope="row" style="width:20%;">Obra:</th>
+                        <td>{{obra.nome}}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Cliente:</th>
+                        <td>{{obra.contratante}}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Local:</th>
+                        <td>{{ordem_atual.local.local}}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Endereço:</th>
+                        <td>{{ordem_atual.local.endereco}}</td>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--/CARD-->
+
+    </div>
+
+    <div class="col-md-3">
+
+        <!--CARD-->
+        <div class="card" style="">
+            <div class="card-header">
+                <span class="textheader">Data de Registro - {{rdo_atual.data |date:'d/m/Y'}}</span>
+            </div>
+        <div class="p-2">
+            <table class="table table-sm">
+                <tbody>
+                    <tr>
+                    <th scope="row">Diário de Obra nº:</th>
+                    <td>000{{rdo_atual.pk}}</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">Contrato nº:</th>
+                    <td>{{obra.num_contrato}}</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">Início da Obra:</th>
+                    <td>{{obra.inicio}}</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">Previsão de Término:</th>
+                    <td>{{obra.fim}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--/CARD-->
+    </div>
+</div>
+
+<div class="row p-2">
+
+    <div class="col-md-5">
+        <!--CARD-->
+        <div class="card" style="">
+            <div class="card-header">
+             <span class="textheader">Ordem de Serviço</span>
+            </div>
+            <div class="p-2">
+                <table class="table table-sm">
+                    <tbody>
+                      <tr>
+                        <th scope="row" style="width:20%;">OS Nº:</th>
+                        <td>000{{ordem_atual.numero_os}}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Data da Ordem:</th>
+                        <td>{{ordem_atual.data_recebimento}}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Data de Início:</th>
+                        <td>{{ordem_atual.data_inicio}}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Serviços:</th>
+                        <td style="white-space: pre-wrap;">{{ordem_atual.servicos | safe}}</td>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--/CARD-->
+    </div>
+
+    <div class="col-md-3">
+        <!--CARD-->
+        <div class="card" style="">
+            <div class="card-header">
+             <span class="textheader">Tempo/Condição</span>
+            </div>
+            <div class="p-2">
+                <table class="table table-sm">
+                    <tbody>
+                      <tr>
+                        <th scope="row">Manhã:</th>
+                        <td>{{rdo_atual.tempo_manha}}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Tarde:</th>
+                        <td>{{rdo_atual.tempo_tarde}}</td>
+                      </tr>
+                      
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--/CARD-->
+    </div>
+</div>
+
+<div class="row p-2">
+
+    <div class="col-md-4">
+        <!--CARD-->
+        <div class="card" style="">
+            <div class="card-header">
+             <span class="textheader">Mão-de-Obra</span>
+            </div>
+            <div class="p-2">
+                <table class="table table-sm">
+                    <tbody>
+                      <tr>
+                        <td style="white-space: pre-wrap;">{{rdo_atual.mao_de_obra}}</td>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--/CARD-->
+    </div>
+
+    <div class="col-md-4">
+        <!--CARD-->
+        <div class="card" style="">
+            <div class="card-header">
+             <span class="textheader">Equipamentos</span>
+            </div>
+            <div class="p-2">
+                <table class="table table-sm">
+                    <tbody>
+                      <tr>
+                        <td style="white-space: pre-wrap;">{{rdo_atual.equipamentos}}</td>
+                      </tr>
+                      
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--/CARD-->
+    </div>
+</div>
+
+
+<div class="row p-2">
+
+    <div class="col-md-8">
+        <!--CARD-->
+        <div class="card" style="">
+            <div class="card-header">
+             <span class="textheader">Atividades</span>
+            </div>
+            <div class="p-2">
+                <table class="table table-sm">
+                    <tbody>
+                      <tr>
+                        <td style="white-space: pre-wrap;">{{rdo_atual.atividades}}</td>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--/CARD-->
+    </div>
+
+</div>
+
+<div class="row p-2">
+    <div class="col-md-8">
+        <!--CARD-->
+        <div class="card" style="">
+            <div class="card-header">
+             <span class="textheader">Ocorrências e Observações</span>
+            </div>
+            <div class="p-2">
+                <table class="table table-sm">
+                    <tbody>
+                      <tr>
+                        <td style="white-space: pre-wrap;">{{rdo_atual.ocorrencias}}</td>
+                      </tr>
+                      
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--/CARD-->
+    </div>
+</div>
+
+<div class="row p-2">
+    <div class="col-md-8">
+        <!--CARD-->
+        <div class="card" style="">
+            <div class="card-header">
+             <span class="textheader">Fotos</span>
+            </div>
+            <div class="p-2">
+                <table class="table table-sm">
+                    <tbody>
+                      <tr>
+                        <td style="white-space: pre-wrap;">{{rdo_atual.fotos}}</td>
+                      </tr>
+                      
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--/CARD-->
+    </div>
+</div>
+
+
+<div class="mb-4"></div>
+
+
+
+{% endblock%}
+
+
+{% block jquery %}
+<script>
+
+
+</script>
+{% endblock%}
