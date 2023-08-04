@@ -303,18 +303,37 @@ def obras_inserir_imagem_em_categoria_orden_servico(request, pk, os, template_na
 
 @login_required(login_url='login/')
 @csrf_exempt    
-def obras_salvar_imagem_em_categoria_orden_servico(request, pk, os, template_name = 'engenharia/imagens_ordem.html'):
+def obras_salvar_imagem_em_categoria_orden_servico(request, pk, os):
         
            
         obra = Obra.objects.get(pk=pk)
         ordem_atual = OrdemServicoObras.objects.get(pk=os)
         categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
+        rdo_atual = None
             
         
         if request.method == 'POST':
-    
-            categoria_imagem = request.POST.get('categoria') or ''
-            categoria_atual = CategoriaImagem.objects.get(categoria = categoria_imagem)
+            
+            categoria_rdo= request.POST.get('rdo_id') or ''
+            
+            if categoria_rdo == '':
+                categoria_imagem = request.POST.get('categoria') or ''
+                categoria_atual = CategoriaImagem.objects.get(categoria = categoria_imagem)
+                template_name = 'engenharia/imagens_ordem.html'
+            else:
+                rdo_atual = DiarioDeObraOs.objects.get(pk=categoria_rdo)
+                
+                if not rdo_atual.fotos:
+                    categoria_atual = CategoriaImagem.objects.create(categoria = f'Diário De Obra ({rdo_atual.data.strftime("%d/%m/%Y")})',
+                                                                 ordem_servico = ordem_atual) 
+                    rdo_atual.fotos = categoria_atual
+                    rdo_atual.save() 
+                else:
+                    categoria_atual = rdo_atual.fotos
+                    
+                template_name = 'engenharia/detalhar_rdo.html'
+            
+           
             
             # UPLOAD DE IMAGENS
             imagens = request.FILES.getlist('imagem') or None
@@ -336,6 +355,7 @@ def obras_salvar_imagem_em_categoria_orden_servico(request, pk, os, template_nam
             'obra': obra,
             'ordem_atual': ordem_atual,
             'categorias': categorias,
+            'rdo_atual': rdo_atual,
 
         }
         
