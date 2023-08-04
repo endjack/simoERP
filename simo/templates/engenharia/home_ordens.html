@@ -84,7 +84,7 @@
                     {% for item in ordens %}
                     
                     <tr class="link_tr">
-                        {% if item.numero_os %}<td><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.numero_os}}</a></td>{% else %}<td> - </td>{% endif %}
+                        {% if item.numero_os %}<td><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">000{{item.numero_os}}</a></td>{% else %}<td> - </td>{% endif %}
                         {% if item.data_recebimento %}<td><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.data_recebimento}}</a></td>{% else %}<td> - </td>{% endif %}
                         {% if item.local %}<td class="text-start"><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.local.local}}</td>{% else %}</a><td> - </td>{% endif %}
                         {% if item.servicos %}<td class="text-start"><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.servicos}}</td>{% else %}</a><td> - </td>{% endif %}

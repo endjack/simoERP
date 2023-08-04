@@ -74,6 +74,7 @@ def obras_salvar_nova_orden_servico(request, pk, template_name = 'engenharia/hom
     
     date = datetime.now()
     obra = Obra.objects.get(pk=pk)
+   
     
     if request.method == 'POST':
         
@@ -101,10 +102,12 @@ def obras_salvar_nova_orden_servico(request, pk, template_name = 'engenharia/hom
                                          data_prazo=data_prazo
                                          )       
         
-             
+    ordens = OrdemServicoObras.objects.filter(obra=obra)     
+    
     context = {
     'date': date,
     'obra': obra,
+    'ordens': ordens,
     }
         
     return render(request, template_name , context)
@@ -671,3 +674,18 @@ def detalhar_rdo_rdo_orden_servico(request, pk, os, rdo, template_name = 'engenh
           
         }
         return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def hx_verificar_numero_os(request):
+
+    if request.method == 'GET':
+    
+        numero_os_input = request.GET.get('num_os')
+        
+        numero_livre = OrdemServicoObras.objects.filter(numero_os = int(numero_os_input))
+        
+        if numero_livre:
+            return HttpResponse('Erro: Ordem de Serviço já Existe!')
+        else:  
+            return HttpResponse('')

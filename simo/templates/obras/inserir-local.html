@@ -13,25 +13,20 @@
 {% endblock %}
 
 {% block conteudo %}
-<form action="" method="post">
+<form action="" method="post" action="{% url 'inserir-local' %}">
     {% csrf_token %}
-
-    {% for hidden_field in form.hidden_fields %}
-    {{ hidden_field }}
-    {% endfor %}
-
 
         <div class="mb-3 col-6">
             <div class="input-group">
                 <div class="input-group-text">Local: </div>
-                {% render_field form.local class="form-control" id="local" name="local" %}
+                <input type="text" class="form-control" id="local" name="local" required="required">
             </div>
         </div>
         <input type="hidden" name="id_ordem" value="{{ordem_serv_atual.pk}}">
         <div class="mb-3 col-6">
             <div class="input-group">
                 <div class="input-group-text">Endereço: </div>
-                {% render_field form.endereco class="form-control" id="endereco" name="endereco" %}
+                <input type="text" class="form-control" id="endereco" name="endereco" required="required">
             </div>
         </div>
 
@@ -48,20 +43,96 @@
     <thead>
         <tr>
             <th scope="col">#</th>
-            <th scope="col">Cód.</th>
             <th scope="col">Local</th>
             <th scope="col">Endereço</th>
             <th scope="col">Opções</th>
         </tr>
     </thead>
     <tbody>
-        {% for item in locais_list %}
+        {% for item in locais %}
         <tr>
             <td>{{forloop.counter}}</td>
-            <td>{{item.pk}}</td>
             <td>{{item.local}}</td>
             <td>{{item.endereco}}</td>
-            <td>Editar | Excluir </td>
+            
+                <!-- Buttons -->
+                <td style="font-size:10pt;"><a href="modal" data-bs-toggle="modal" data-bs-target="#Excluirlocal{{item.pk}}"><span style="color: red;"><i class="fas fa-trash fa-lg"></i></span></a>
+                <a href="modal" data-bs-toggle="modal" data-bs-target="#Editarlocal{{item.pk}}"><span style="color: blue;"><i class="fas fa-edit fa-lg"></i></span></a></td>
+
+                <!-- Modal EXCLUIR-->
+                <div class="modal fade" id="Excluirlocal{{item.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="d-flex flex-column bd-highlight">
+                                <h5 class="bd-highlight" style="color:red" >Excluir Local: </h5>
+                            </div>  
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <strong> Certeza que deseja Excluir?</strong> <br>
+                            Local: {{item.local |safe}} 
+                            Endereço: {{item.endereco}}
+                        </div>
+                        <div class="modal-footer form-control">
+                            <a class="btn btn-sm btn-danger" href="{% url 'excluir_local' item.pk  %}">Excluir</a>   
+                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            
+                        </div>
+                        
+                    </div>
+                    </div>
+                </div>
+                <!-- Fim Modal -->
+                <!-- Modal EDITAR -->
+                <div class="modal fade" id="Editarlocal{{item.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="d-flex flex-column bd-highlight">
+                                <h5 class="bd-highlight" style="color:blue" >Edital Local: </h5>
+                            </div>  
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            
+                            <form id="forEditarLocal" method="post" action="{% url 'editar_local' item.pk %}">
+                                {% csrf_token %}
+                            
+                                    <div class="mb-3 col-mb-12">
+                                        <div class="input-group">
+                                            <div class="input-group-text">Local: </div>
+                                            <input value="{{item.local}}" type="text" class="form-control" id="local" name="local" required="required">
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="id_ordem" value="{{ordem_serv_atual.pk}}">
+                                    <div class="mb-3 col-mb-12">
+                                        <div class="input-group">
+                                            <div class="input-group-text">Endereço: </div>
+                                            <input value="{{item.endereco}}" type="text" class="form-control" id="endereco" name="endereco" required="required">
+                                        </div>
+                                    </div>
+                            
+                              
+                               </form>
+
+
+                        </div>
+                        <div class="modal-footer form-control">
+                            <button form="forEditarLocal" class="btn btn-sm btn-primary">Salvar</button> 
+                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            
+                        </div>
+                        
+                    </div>
+                    </div>
+                </div>
+                <!-- Fim Modal -->
+
+
+
+
+            </td>
         </tr>
         {% endfor %}
     </tbody>
