@@ -69,7 +69,11 @@ urlpatterns = [
     #urls Obras
     path('inserir-obra/', InserirObraView.as_view(), name='inserir-obra'),
     path('ver-obras/', BuscarObraListView.as_view(), name='ver-obras'),
-    path('inserir-local/', InserirLocalView.as_view(), name='inserir-local'),
+    path('local/inserir', inserir_local, name='inserir-local'),
+    path('local/<int:pk>/excluir', excluir_local, name='excluir_local'),
+    path('local/<int:pk>/editar', editar_local, name='editar_local'),
+    path('hx/get_locais', get_locais, name='get_locais'),
+    
 
     #urls Serviços
     path('os/', OrdemServicoCreateView.as_view(), name='inserir-ordem'),
@@ -114,6 +118,9 @@ urlpatterns = [
     path('contas-a-pagar/inserir-itens/<int:pk>', inserir_itens_conta_a_pagar, name='inserir-itens-conta'),
     path('contas-a-pagar/excluir-item/<int:pk>', excluir_item_conta_a_pagar, name='excluir-item-conta'),
 
+    #VALIDAÇÕES Engenharia v.2
+    path('hx/validar/numero_os', hx_verificar_numero_os, name='hx_verificar_numero_os'),
+    
     #urls Engenharia v.2
     path('engenharia/', home_engenharia, name='home_engenharia'),
     path('engenharia/obra/<int:pk>/os', home_obras_ver_servicos, name='home_obra_os'),

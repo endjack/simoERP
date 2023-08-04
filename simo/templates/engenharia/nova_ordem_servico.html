@@ -58,7 +58,7 @@
                     <div class="col-md"> <strong> Editar Ordem de Serviço nº {{os.numero_os}}</strong> </div>
                     {% endif %} </h5> 
             </div> 
-            <button type="submit" class="btn btn-sm btn-success m-2" form="FormaddOsObras"><i class="fas fa-save"></i> Salvar</button>
+            <button hx-ext="disable-element" id="savarOrdemServicoBtt" type="submit" class="btn btn-sm btn-success m-2" form="FormaddOsObras"><i class="fas fa-save"></i> Salvar</button>
             <a class="btn btn-sm btn-secondary m-2" href="#"><i class=""></i> Limpar</a>
 
         </div>
@@ -69,7 +69,7 @@
            
             <div class="col-2">
                 <label for="input4" class="">Data Recebida:</label>
-                <input  {% if editar %} value="{{os.data_recebimento |date:'Y-m-d' }}" {% else %} value="{% now 'Y-m-d' %}" {% endif %} type="date" class="form-control form-control-sm date" name="data_recebida" id="input4">
+                <input  {% if editar %} value="{{os.data_recebimento |date:'Y-m-d' }}" {% else %} value="{% now 'Y-m-d' %}" {% endif %} type="date" class="form-control form-control-sm date" name="data_recebida" id="input4" required="required">
                 <small class="small-error" id="error_data_recebida"></small>
             </div>
             <div class="col-2">
@@ -98,24 +98,37 @@
 
             <div class="col-2">
                 <label for="input1" class="">OS número:</label>
-                   <input {% if editar %} value="{{os.numero_os }}" {% endif %} type="number" class="form-control form-control-sm" name="num_os" id="input1">
+                   <input {% if editar %} value="{{os.numero_os }}" {% endif %} 
+                    type="number" class="form-control form-control-sm" name="num_os" id="input1" required="required"
+                    hx-get="{% url 'hx_verificar_numero_os' %}"
+                    hx-include="[name='num_os']"
+                    hx-trigger="change"
+                    hx-ext="disable-element"
+                    hx-disable-element="#savarOrdemServicoBtt"
+                    hx-target="#error_num_os"
+                    hx-indicator="#htmx-indicator">
                    <small class="small-error" id="error_num_os"></small>
             </div>
         
             <div class="col-4">
                 <label for="input3" class="">Local/Unidade:</label>
-                <select id="input3" class="form-control form-control-sm"  name="local" >
+                <select id="input3" class="form-control form-control-sm"  name="local" 
+                    hx-get="{% url 'get_locais' %}"
+                    hx-include="[name='local']"
+                    hx-target="#inputEndereco"
+                    hx-indicator="#htmx-indicator">
                     {% if editar %}
                         {% for i in locais %}
                             <option value="{{i.pk}}"  {% if i.pk == os.local.pk %} selected {% endif %}> {{i.local}}</option>
                         {% endfor %}
                     {% else %}
-                        <option value="-1"> ------------------ </option>
                         {% for i in locais %}
                         <option value="{{i.pk}}"> {{i.local}}</option>
                         {% endfor %}
                     {% endif %}
                 </select>
+                <div id="htmx-indicator"></div>
+                <div id="local_selecionado"></div>
             </div>
             
             
@@ -124,7 +137,7 @@
         <div class="form-group row mb-2">
             <div class="col-6">
                 <label for="input2" class="">Endereço:</label>
-                   <input {% if editar %} value="{{os.local.endereco }}" {% endif %} type="text" class="form-control form-control-sm" name="endereco" id="input2">
+                {% include 'engenharia/fragmentos/endereco_input_fragment.html' %}
                    <small class="small-error" id="error_endereço"></small>
             </div>
 
@@ -143,13 +156,13 @@
             
             <div class="col-2">
                 <label for="input5" class="">Data Início:</label>
-                <input {% if editar %} value="{{os.data_inicio |date:'Y-m-d' }}" {% endif %} type="date" class="form-control form-control-sm date" name="data_inicio" id="input5">
+                <input {% if editar %} value="{{os.data_inicio |date:'Y-m-d' }}" {% endif %} type="date" class="form-control form-control-sm date" name="data_inicio" id="input5" required="required">
                 <small class="small-error" id="error_data_inicio"></small>
             </div>
 
             <div class="col-2">
                 <label for="input6" class="">Prazo:</label>
-                <input {% if editar %} value="{{os.data_prazo |date:'Y-m-d' }}" {% endif %} type="date" class="form-control form-control-sm date" name="data_prazo" id="input6">
+                <input {% if editar %} value="{{os.data_prazo |date:'Y-m-d' }}" {% endif %} type="date" class="form-control form-control-sm date" name="data_prazo" id="input6" required="required">
                 <small class="small-error" id="error_data_prazo"></small>
             </div>
 
