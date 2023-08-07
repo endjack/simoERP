@@ -28,7 +28,32 @@ def home_obras_ver_servicos(request, pk, template_name = 'engenharia/home_ordens
      
      if request.method == 'GET': 
    
-        date = datetime.now()
+   
+        obra = Obra.objects.get(pk=pk)
+        ordens = OrdemServicoObras.objects.filter(obra=obra)
+        ultimas_10 = OrdemServicoObras.objects.filter(obra=obra).order_by('-pk')[:10]
+        # os_nao_iniciados = ordens.filter(situacao=0).count()
+        # os_em_andamento= ordens.filter(situacao=1).count()
+        # os_finalizados = ordens.filter(finalizado=True).count()
+            
+        context = {
+     
+            'obra': obra,
+            'ordens': ultimas_10,
+            # 'os_nao_iniciados': os_nao_iniciados,
+            # 'os_em_andamento': os_em_andamento,
+            # 'os_finalizados': os_finalizados,
+        }
+
+        
+        return render(request, template_name , context)
+
+@login_required(login_url='login/')
+def ver_todas_os_por_obra(request, pk, template_name = 'engenharia/ver_todas_ordens.html'):
+     
+     if request.method == 'GET': 
+   
+   
         obra = Obra.objects.get(pk=pk)
         ordens = OrdemServicoObras.objects.filter(obra=obra)
         os_nao_iniciados = ordens.filter(situacao=0).count()
@@ -36,12 +61,14 @@ def home_obras_ver_servicos(request, pk, template_name = 'engenharia/home_ordens
         os_finalizados = ordens.filter(finalizado=True).count()
             
         context = {
-            'date': date,
+     
             'obra': obra,
             'ordens': ordens,
             'os_nao_iniciados': os_nao_iniciados,
             'os_em_andamento': os_em_andamento,
             'os_finalizados': os_finalizados,
+            'situacao': SITUAÇÃO,
+            
         }
 
         
@@ -52,13 +79,13 @@ def obras_nova_orden_servico(request, pk, template_name = 'engenharia/nova_ordem
     
     if request.method == 'GET':
             
-        date = datetime.now()
+
         obra = Obra.objects.get(pk=pk)
         locais = Local.objects.all()
         situacao = SITUAÇÃO
               
         context = {
-            'date': date,
+
             'obra': obra,
             'locais': locais,
             'situacao': situacao,
@@ -69,7 +96,7 @@ def obras_nova_orden_servico(request, pk, template_name = 'engenharia/nova_ordem
     
 @login_required(login_url='login/')
 @csrf_exempt
-def obras_salvar_nova_orden_servico(request, pk, template_name = 'engenharia/home_ordens.html'):
+def obras_salvar_nova_orden_servico(request, pk, template_name = 'engenharia/detalhar_ordem.html'):
     
     
     date = datetime.now()
@@ -90,7 +117,7 @@ def obras_salvar_nova_orden_servico(request, pk, template_name = 'engenharia/hom
          
         local_atual = Local.objects.get(pk=int(local)) 
        
-        OrdemServicoObras.objects.create(numero_os=int(num_os),
+        nova_ordem = OrdemServicoObras.objects.create(numero_os=int(num_os),
                                          solicitante=None,
                                          encarregado=None,
                                          servicos=servicos,
@@ -102,12 +129,15 @@ def obras_salvar_nova_orden_servico(request, pk, template_name = 'engenharia/hom
                                          data_prazo=data_prazo
                                          )       
         
-    ordens = OrdemServicoObras.objects.filter(obra=obra)     
+    ordens = OrdemServicoObras.objects.filter(obra=obra)
+    categorias = CategoriaImagem.objects.filter(ordem_servico = nova_ordem).order_by('categoria')     
     
     context = {
     'date': date,
     'obra': obra,
     'ordens': ordens,
+    'ordem_atual': nova_ordem,
+    'categorias': categorias,
     }
         
     return render(request, template_name , context)
@@ -831,3 +861,32 @@ def hx_verificar_numero_os(request):
             return HttpResponse('Erro: Ordem de Serviço já Existe!')
         else:  
             return HttpResponse('')
+    
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def hx_filtrar_os(request, pk, template_name = 'engenharia/fragmentos/resultados_filter_ver_todas_os.html'):
+
+    if request.method == 'GET':
+        
+        situacao =  request.GET.get('situacao')
+        
+        print(situacao)
+        
+        
+        obra = Obra.objects.get(pk=pk)
+        ordens = OrdemServicoObras.objects.all()
+        
+        
+    
+        
+      
+        
+        context = {
+          
+            'obra': obra,
+            'ordens': ordens,
+
+          
+        }
+        return render(request, template_name , context)

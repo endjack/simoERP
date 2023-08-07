@@ -12,35 +12,9 @@
 
 <div class="cabecalho-contas mb-2">
 
-    <ol class="list-group ">
-        Obra:
-        
-        <li class="list-group-item d-flex">
-            <div class="col-1">
-                {% if obra.imagem %}
-                <img style="width: 5rem;" class="card-img-top" src="{{ obra.imagem.url }}" alt="Imagem de capa da obra">
-                {% else %}
-                    <img style="width: 5rem;" class="card-img-top" src="{% static 'imagens/logo1.png' %}" alt="Imagem de capa da obra">
-                {% endif %}
-            </div>
-            <div class="col-md">
-                <span style="font-size:14pt;font-weight: bold;"> 
-                 {{obra.nome}} </span> <br> Contratante: {{obra.contratante}} <br>
-                 Contrato nº: {{obra.num_contrato}}
-             </div>
-             <div class="col-md">
-                Objeto: {{obra.objeto |upper}} 
-            </div>
-            
-            <div class="col-md text-end">
-                Início da Obra: {{obra.inicio}} <br>
-                Previsão Fim: {{obra.fim}} <br>
-                Fiscal: {{obra.fiscal}} <br>
-                Gestor:
-            </div>
-        </li>
-        
-    </ol>
+    
+    {% include "engenharia/fragmentos/cabecalho_resumo_obras.html" %}
+
     <div class="d-flex align-items-center flex-row bd-highlight mb-1">
    
         <div class="p-2 bd-highlight">
