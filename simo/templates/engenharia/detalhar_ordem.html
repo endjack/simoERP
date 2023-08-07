@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+
 
 {% block styleHead %}
 
@@ -12,35 +12,7 @@
 
 <div class="cabecalho-contas mb-2 ">
 
-    <ol class="list-group ">
-        Obra:
-        
-        <li class="list-group-item d-flex">
-            <div class="col-1">
-                {% if obra.imagem %}
-                    <img style="width: 5rem;" class="card-img-top" src="{{ obra.imagem.url }}" alt="Imagem de capa da obra">
-                {% else %}
-                    <img style="width: 5rem;" class="card-img-top" src="{% static 'imagens/logo1.png' %}" alt="Imagem de capa da obra">
-                {% endif %}
-            </div>
-            <div class="col-md">
-                <span style="font-size:14pt;font-weight: bold;"> 
-                 {{obra.nome}} </span> <br> Contratante: {{obra.contratante}} <br>
-                 Contrato nº: {{obra.num_contrato}}
-             </div>
-             <div class="col-md">
-                Objeto: {{obra.objeto |upper}} 
-            </div>
-            
-            <div class="col-md text-end">
-                Início da Obra: {{obra.inicio}} <br>
-                Previsão Fim: {{obra.fim}} <br>
-                Fiscal: {{obra.fiscal}} <br>
-                Gestor:
-            </div>
-        </li>
-        
-    </ol>
+        {% include "engenharia/fragmentos/cabecalho_resumo_obras.html" %}
 
       
         
@@ -65,60 +37,71 @@
         <ol class="list-group " style="padding-left:1rem;padding-top:1rem">
 
             <h6 style=""><i class="far fa-list-alt"></i> Dados dos Serviço: <a type="button" href="{% url 'obra_editar_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-pen"></i></a></h6> 
-
             <li class="list-group-item align-items-start card">
-                <div class="col-md p-1">
-                    <div class="fw-bold">Serviços à Executar:</div>
-                    {% if ordem_atual.servicos %}
-                    <span style='white-space:pre'>{{ordem_atual.servicos | safe}}</span>
-                    {% else %}
-                    - {% endif %}
-                </div>
-
-                <div class=" d-flex p-1">
-                    <div class="col-4">
-                        <div class="fw-bold">Local/Unidade:</div>
-                        {% if ordem_atual.local %}
-                        <span style='white-space:pre'>{{ordem_atual.local.local}}</span>
-                        {% else %}
-                        [sem local] {% endif %}
-                    </div>
-
-                    <div class="col-md">
-                        <div class="fw-bold">Endereço:</div>
-                        {% if ordem_atual.local %}
-                        <span style='white-space:pre'>{{ordem_atual.local.endereco }}</span>
-                        {% else %}
-                        [sem endereço] {% endif %}
-                    </div>
-                </div>
-
-                <div class=" d-flex p-1">
-                    
-                    <div class="col-2">
-                        <div class="fw-bold">Data de Recebimento:</div>
-                            {% if ordem_atual.data_recebimento %}
-                            <span style='white-space:pre'>{{ordem_atual.data_recebimento |date:'d/m/Y'}}</span>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="col-md p-1">
+                            <div class="fw-bold">Serviços à Executar:</div>
+                            {% if ordem_atual.servicos %}
+                            <span style='white-space:pre'>{{ordem_atual.servicos | safe}}</span>
                             {% else %}
                             - {% endif %}
-                     </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
 
-                     <div class="col-2">
-                        <div class="fw-bold">Data de Início:</div>
-                            {% if ordem_atual.data_inicio %}
-                            <span style='white-space:pre'>{{ordem_atual.data_inicio  |date:'d/m/Y' }}</span>
-                            {% else %}
-                            - {% endif %}
+                        <div class=" d-flex p-1">
+                            <div class="col-md">
+                                <div class="fw-bold">Local/Unidade:</div>
+                                {% if ordem_atual.local %}
+                                <span style='white-space:pre'>{{ordem_atual.local.local}}</span>
+                                {% else %}
+                                [sem local] {% endif %}
+                            </div>
+        
+                            <div class="col-md">
+                                <div class="fw-bold">Endereço:</div>
+                                {% if ordem_atual.local %}
+                                <span style='white-space:pre'>{{ordem_atual.local.endereco }}</span>
+                                {% else %}
+                                [sem endereço] {% endif %}
+                            </div>
+                        </div>
+        
+                        <div class=" d-flex p-1">
+                            
+                            <div class="col-md">
+                                <div class="fw-bold">Data de Recebimento:</div>
+                                    {% if ordem_atual.data_recebimento %}
+                                    <span style='white-space:pre'>{{ordem_atual.data_recebimento |date:'d/m/Y'}}</span>
+                                    {% else %}
+                                    - {% endif %}
+                             </div>
+        
+                             <div class="col-md">
+                                <div class="fw-bold">Data de Início:</div>
+                                    {% if ordem_atual.data_inicio %}
+                                    <span style='white-space:pre'>{{ordem_atual.data_inicio  |date:'d/m/Y' }}</span>
+                                    {% else %}
+                                    - {% endif %}
+                            </div>
+                            
+                            <div class="col-md">
+                                <div class="fw-bold">Prazo:</div>
+                                    {% if ordem_atual.data_prazo %}
+                                    <span style='white-space:pre'>{{ordem_atual.data_prazo  |date:'d/m/Y'}}</span>
+                                    {% else %}
+                                    - {% endif %}
+                            </div>
+                        
+                        </div>
+                        
+
+
+
+
+
                     </div>
-                    
-                    <div class="col-2">
-                        <div class="fw-bold">Prazo:</div>
-                            {% if ordem_atual.data_prazo %}
-                            <span style='white-space:pre'>{{ordem_atual.data_prazo  |date:'d/m/Y'}}</span>
-                            {% else %}
-                            - {% endif %}
-                    </div>
-                
                 </div>
                 
             </li>

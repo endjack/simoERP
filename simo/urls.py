@@ -118,12 +118,14 @@ urlpatterns = [
     path('contas-a-pagar/inserir-itens/<int:pk>', inserir_itens_conta_a_pagar, name='inserir-itens-conta'),
     path('contas-a-pagar/excluir-item/<int:pk>', excluir_item_conta_a_pagar, name='excluir-item-conta'),
 
-    #VALIDAÇÕES Engenharia v.2
+    #VALIDAÇÕES E BUSCAS Engenharia v.2
     path('hx/validar/numero_os', hx_verificar_numero_os, name='hx_verificar_numero_os'),
+    path('hx/obra/<int:pk>/filter_ordens', hx_filtrar_os, name='hx_filtrar_os'),
     
     #urls Engenharia v.2
     path('engenharia/', home_engenharia, name='home_engenharia'),
     path('engenharia/obra/<int:pk>/os', home_obras_ver_servicos, name='home_obra_os'),
+    path('engenharia/obra/<int:pk>/todas_os', ver_todas_os_por_obra, name='ver_todas_os_por_obra'),
     path('engenharia/obra/<int:pk>/nova_os', obras_nova_orden_servico, name='obra_nova_os'),
     path('engenharia/obra/<int:pk>/nova_os/salvar', obras_salvar_nova_orden_servico, name='obra_salvar_nova_os'),
     path('engenharia/obra/<int:pk>/os/<int:os>/editar', obras_editar_orden_servico, name='obra_editar_os'),

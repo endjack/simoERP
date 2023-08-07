@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block conteudo %}
+
+<div class="cabecalho-contas mb-2">
+   
+    {% include "engenharia/fragmentos/cabecalho_resumo_obras.html" %}
+
+
+    <ol class="list-group ">
+
+        <li class="list-group-item d-flex">
+            <div class="col-md">
+                <a class="btn btn-sm btn-secondary m-2" href="{% url 'home_obra_os' obra.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
+               
+                   
+            </div>
+        </li>
+    </ol>
+
+</div>
+<div class="cabecalho-contas mb-2">
+    <strong> Todas as Ordens Adicionadas:"</strong><br>
+    <small class="">Clique em uma ordem abaixo para ver mais detalhes.</small>
+    <ol class="list-group mt-2">
+          
+            <div class="col4 mb-1 input-group">
+                
+                <label style="margin-right:0.5rem" for="input0">Situação: </label>
+                <div class="col-md-2">
+
+                    <select id="input0" class="form-control form-control-sm col-md-5"  name="situacao" 
+                        hx-target="#resultados_filter_os"
+                        hx-get="{% url 'hx_filtrar_os' obra.pk %}"
+                        hx-swap="innerHTML"
+                       >
+                        <option value="-1"> Todas </option>
+                            {% for i in situacao %}
+                            
+                                    <option value="{{i.0}}"> {{i.1}}</option>
+    
+                            {% endfor %}
+          
+                    </select>
+
+                </div>
+               
+            </div>
+
+            <div>
+                {% include "engenharia/fragmentos/resultados_filter_ver_todas_os.html" %}
+            </div>
+    </ol>
+
+</div>
+
+{% endblock%}
+
