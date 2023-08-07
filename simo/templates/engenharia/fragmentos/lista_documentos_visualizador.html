@@ -1,0 +1,43 @@
+{% load static %}
+<style>
+    .limitar {
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      } 
+    
+</style>
+         
+<li class="list-group-item align-items-start card">
+           
+    {% if arquivos %}                                            
+    <div class="fw-bold">Arquivos salvos:</div>
+    <table class="table table-sm table-bordered dt-responsive">
+                
+        <tbody class="text-center">
+            
+            {% for item in arquivos %}
+            <tr class="">
+          
+                <td class="text-start limitar" ><a class="link_os" href="{{item.file.url}}" download>{{item.extension |safe}}</a> {{item.nome}}
+
+            
+                </tr>
+            {% endfor %}
+       
+        </tbody>
+
+    </table>
+    {% else %} 
+    <small class="">Sem anexos!</small>         
+    {% endif %}
+</li>
+
+{% block jquery %}
+
+<script>
+   
+</script>
+
+{% endblock%}
