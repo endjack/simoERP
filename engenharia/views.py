@@ -14,7 +14,7 @@ def home_engenharia(request, template_name = 'engenharia/home.html'):
     if request.method == 'GET':
     
         date = datetime.now()
-        obras = Obra.objects.filter(concluido=False)        
+        obras = Obra.objects.filter(concluido=False).filter(invisivel=False)        
              
         context = {
             'date': date,
@@ -191,6 +191,7 @@ def obras_detalhar_orden_servico(request, pk, os, template_name = 'engenharia/de
         ordem_atual = OrdemServicoObras.objects.get(pk=os)
         categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
         arquivos = ordem_atual.get_files_by_os().order_by('nome')
+        diarios = DiarioDeObraOs.objects.filter(ordem_servico = ordem_atual).order_by('-data')
         
                 
         context = {
@@ -199,6 +200,7 @@ def obras_detalhar_orden_servico(request, pk, os, template_name = 'engenharia/de
             'ordem_atual': ordem_atual,
             'categorias': categorias,
             'arquivos': arquivos,
+            'diarios': diarios,
 
 
         }
@@ -673,6 +675,89 @@ def salvar_rdo_orden_servico(request, pk, os, template_name = 'engenharia/rdo_or
 
     }
     return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def editar_rdo_orden_servico(request, pk, os, template_name = 'engenharia/rdo_ordem.html'):
+    
+
+    obra = Obra.objects.get(pk=pk)
+    ordem_atual = OrdemServicoObras.objects.get(pk=os)
+
+
+    if request.method == 'POST':
+        
+        data_RDO = datetime.strptime(request.POST.get('data'), '%Y-%m-%d') or None
+        tempo_manha = request.POST.get('tempo_manha') or ''
+        tempo_tarde = request.POST.get('tempo_tarde') or ''
+        mao_de_obra = request.POST.get('mao_de_obra') or ''
+        equipamentos = request.POST.get('equipamentos') or ''
+        atividades = request.POST.get('atividades') or ''
+        ocorrencias = request.POST.get('ocorrencias') or ''
+        usuario = request.user
+        
+        
+        DiarioDeObraOs.objects.create(
+            data=data_RDO,
+            atividades = atividades,
+            usuario = usuario,
+            ordem_servico = ordem_atual,
+            tempo_manha = tempo_manha,
+            tempo_tarde = tempo_tarde,
+            equipamentos = equipamentos,
+            mao_de_obra = mao_de_obra,
+            ocorrencias = ocorrencias,
+            fotos = None 
+        )
+    
+        diarios = DiarioDeObraOs.objects.filter(ordem_servico = ordem_atual).order_by('-data')
+        
+    context = {
+        'obra': obra,
+        'ordem_atual': ordem_atual,
+        'diarios': diarios,
+        
+
+    }
+    return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def salvar_editar_rdo_orden_servico(request, pk, os, rdo, template_name = 'engenharia/detalhar_rdo.html'):
+
+    obra = Obra.objects.get(pk=pk)
+    ordem_atual = OrdemServicoObras.objects.get(pk=os)
+    rdo_atual = DiarioDeObraOs.objects.get(pk=rdo)
+
+
+    if request.method == 'POST':
+        
+        data_RDO = datetime.strptime(request.POST.get('data_editar'), '%Y-%m-%d') or None
+        tempo_manha = request.POST.get('tempo_manha_editar') 
+        tempo_tarde = request.POST.get('tempo_tarde_editar') or ''
+        mao_de_obra = request.POST.get('mao_de_obra_editar') or ''
+        equipamentos = request.POST.get('equipamentos_editar') or ''
+        atividades = request.POST.get('atividades_editar') or ''
+        ocorrencias = request.POST.get('ocorrencias_editar') or ''
+ 
+        
+        rdo_atual.data=data_RDO
+        rdo_atual.atividades = atividades
+        rdo_atual.tempo_manha = tempo_manha
+        rdo_atual.tempo_tarde = tempo_tarde
+        rdo_atual. equipamentos = equipamentos
+        rdo_atual.mao_de_obra = mao_de_obra
+        rdo_atual.ocorrencias = ocorrencias
+        
+        rdo_atual.save()
+    
+
+        context = {
+            'obra': obra,
+            'ordem_atual': ordem_atual,
+            'rdo_atual': rdo_atual,
+        }
+        return render(request, template_name , context)
 
 
 @login_required(login_url='login/')
@@ -690,6 +775,43 @@ def detalhar_rdo_rdo_orden_servico(request, pk, os, rdo, template_name = 'engenh
             'obra': obra,
             'ordem_atual': ordem_atual,
             'rdo_atual': rdo_atual,
+
+          
+        }
+        
+        return render(request, template_name , context)
+
+@login_required(login_url='login/')
+@csrf_exempt
+def excluir_rdo_orden_servico(request, pk, os, rdo, template_name = 'engenharia/rdo_ordem.html'):
+
+    if request.method == 'GET':
+    
+        obra = Obra.objects.get(pk=pk)
+        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        rdo_atual = DiarioDeObraOs.objects.get(pk = rdo)
+        
+        
+        if request.GET.getlist('excluir_fotos'):
+            try:
+                del_categoria = rdo_atual.fotos.delete()
+            finally:
+                rdo_atual.delete()
+                pass
+            
+        else:
+            try:
+                rdo_atual.delete()
+            finally:
+                pass
+        
+        
+        diarios = DiarioDeObraOs.objects.filter(ordem_servico = ordem_atual).order_by('-data')
+        context = {
+          
+            'obra': obra,
+            'ordem_atual': ordem_atual,
+            'diarios': diarios,
 
           
         }

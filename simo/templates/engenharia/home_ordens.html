@@ -20,6 +20,12 @@
         text-decoration: none;
         color: black;
      }
+     .limitar {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      } 
 </style>
 {% endblock %}
 
@@ -30,7 +36,13 @@
         Resumo do dia:
         <li class="list-group-item d-flex  justify-content-end mt-1 ">
             <div class="col-1">
-                <img style="width: 5rem" class="card-img-top" src="{% static 'imagens/logo1.png' %}" alt="Imagem de capa da obra">
+
+                {% if obra.imagem %}
+                    <img style="width: 5rem;" class="card-img-top" src="{{ obra.imagem.url }}" alt="Imagem de capa da obra">
+                {% else %}
+                    <img style="width: 5rem;" class="card-img-top" src="{% static 'imagens/logo1.png' %}" alt="Imagem de capa da obra">
+                {% endif %}
+              
             </div>
             <div class="col-md">
                <span style="font-size:14pt;font-weight: bold;"> 
@@ -71,11 +83,11 @@
             <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px;">
                 <thead style="border:solid 1px;border-color:silver;background:#0d6efd; color: white;" class="text-center">
                     <tr>
-                        <th scope="col">OS nº</th>
-                        <th scope="col">Data Recebimento</th>
-                        <th scope="col">Local</th>
+                        <th scope="col" class="limitar">OS nº</th>
+                        <th scope="col" class="limitar">Data Recebimento</th>
                         <th scope="col">Serviço(s)</th>
-                        <th scope="col">Situação</th>
+                        <th scope="col" class="limitar">Local</th>
+                        <th scope="col" class="limitar">Situação</th>
                         {% comment %} <th scope="col">Opções</th> {% endcomment %}
                     </tr>
                 </thead>
@@ -84,11 +96,11 @@
                     {% for item in ordens %}
                     
                     <tr class="link_tr">
-                        {% if item.numero_os %}<td><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">000{{item.numero_os}}</a></td>{% else %}<td> - </td>{% endif %}
-                        {% if item.data_recebimento %}<td><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.data_recebimento}}</a></td>{% else %}<td> - </td>{% endif %}
-                        {% if item.local %}<td class="text-start"><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.local.local}}</td>{% else %}</a><td> - </td>{% endif %}
-                        {% if item.servicos %}<td class="text-start"><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.servicos}}</td>{% else %}</a><td> - </td>{% endif %}
-                        {% if item.situacao %}<td><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.get_situacao}}</td>{% else %}</a><td> - </td>{% endif %}               
+                        {% if item.numero_os %}<td class="limitar"><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">000{{item.numero_os}}</a></td>{% else %}<td> - </td>{% endif %}
+                        {% if item.data_recebimento %}<td class="limitar"><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.data_recebimento}}</a></td>{% else %}<td> - </td>{% endif %}
+                        {% if item.servicos %}<td class="text-start limitar"><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.servicos}}</td>{% else %}</a><td> - </td>{% endif %}
+                        {% if item.local %}<td class="text-start limitar"><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.local.local}}</td>{% else %}</a><td> - </td>{% endif %}
+                        {% if item.situacao %}<td class="limitar"><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.get_situacao}}</td>{% else %}</a><td> - </td>{% endif %}               
                         {% comment %} <td><a href="#" title="Ver OS: #"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a></td>    {% endcomment %}
                     </tr>
                     

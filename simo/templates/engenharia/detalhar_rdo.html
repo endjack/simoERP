@@ -27,7 +27,11 @@
         
         <li class="list-group-item d-flex">
             <div class="col-1">
-                <img style="width: 5rem" class="card-img-top" src="{% static 'imagens/logo1.png' %}" alt="Imagem de capa da obra">
+                {% if obra.imagem %}
+                <img style="width: 5rem;" class="card-img-top" src="{{ obra.imagem.url }}" alt="Imagem de capa da obra">
+                {% else %}
+                    <img style="width: 5rem;" class="card-img-top" src="{% static 'imagens/logo1.png' %}" alt="Imagem de capa da obra">
+                {% endif %}
             </div>
             <div class="col-md">
                 <span style="font-size:14pt;font-weight: bold;"> 
@@ -59,12 +63,7 @@
             </div> 
 
             <div class="">
-                <a  class="btn btn-sm btn-dark m-2" href="#" target="_blank" title="Imprimir OS"><span style=""><i class="fas fa-print"></i></span></a>
-                <a  class="btn btn-sm btn-dark m-2" href="{% url 'documentos_orden_servico' obra.pk ordem_atual.pk %}" title="Ver/Anexar Fotos"><span style=""><i class="fas fa-images"></i></span></a>
-                <a  class="btn btn-sm btn-dark m-2" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" title="Ver/Anexar Documentos"><span style=""><i class="fas fa-folder-open"></i></span></a>
-                <a  class="btn btn-sm btn-dark m-2" href="{% url 'rdo_orden_servico' obra.pk ordem_atual.pk %}" title="Diários de Obra"><span style=""><i class="fas fa-calendar-check"></i></span></a>
-                <a  class="btn btn-sm btn-primary m-2" href="{% url 'obra_editar_os' obra.pk ordem_atual.pk %}" title="Editar OS"><span style=""><i class="fas fa-edit"></i></span></a>
-                <a  class="btn btn-sm btn-danger m-2" href="#" target="_blank" title="Excluir OS"><span style=""><i class="fas fa-trash"></i></span></a>
+                {% include "engenharia/fragmentos/menu_ordem_de_servico.html" %}
             </div>
         </div>
              
@@ -72,11 +71,136 @@
 <div class="row card col-md-8 m-2">
     <div class=" text-center p-2" style="">
      <h5>Relatório de Diário de Obra - RDO nº 000{{rdo_atual.pk}} <span style="color:gray">|</span> Data: {{rdo_atual.data}}</h5> 
-     <a  style="margin-left:5px;" href="{% url 'obra_editar_os' obra.pk ordem_atual.pk %}" title="Editar Diário de Obra"><span><i class="fas fa-edit"></i></span></a>
+      <!-- Button EDITAR--> <a  style="margin-left:5px;" data-bs-toggle="modal" data-bs-target="#EditarRDO" href="modal" title="Editar Diário de Obra"><span><i class="fas fa-edit"></i></span></a> <!-- Button --> 
      <a  style="color:black;margin-left:5px;" href="#" target="_blank" title="Imprimir OS"><span><i class="fas fa-print"></i></span></a>
-     <a  style="color:red; margin-left:5px;" href="#" title="Excluir Diário de Obra"><span><i class="fas fa-trash"></i></span></a>
+     <a  style="color:red; margin-left:5px;" data-bs-toggle="modal" data-bs-target="#ExcluirRDO" href="modal" title="Excluir Diário de Obra"><span><i class="fas fa-trash"></i></span></a>
     </div>
 </div>
+
+ <!-- Modal EDITAR-->
+ <div class="modal fade" id="EditarRDO" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-scrollable modal-lg">
+ <div class="modal-content" style="background-color:#edeef5">
+     <div class="modal-header">
+         <div class="d-flex flex-column bd-highlight">
+             <h6 class="bd-highlight">Editar RDO nº 000{{rdo_atual.pk}}:</h6>
+             Relatório Diário de Obra 
+         </div>  
+     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+     </div>
+     <div class="modal-body">
+
+         <form id="formEditarRDO" class="row g-2" method="POST" action="{% url 'salvar_editar_rdo_orden_servico' obra.pk ordem_atual.pk rdo_atual.pk %}">
+             <div class="mb-3">  
+                 <div class="row">
+                     <div class="col-3">
+                         <strong>Data:</strong> <input value="{{rdo_atual.data |date:'Y-m-d'}}" type="date" class="form-control form-control-sm date enterDesabilitado" name="data_editar" id="input4" >
+                     </div>
+                     <div class="col-4 text-end"><strong>Tempo/Condições:</strong>
+                         <br>
+                         <small class="">Condição Climática do dia</small>
+                      <br></div>
+                     <div class="col-5">
+                       
+                         Manhã <input {% if rdo_atual.tempo_manha %} value='{{rdo_atual.tempo_manha}}'  {% endif %} type="text" name="tempo_manha_editar" class="form-control form-control-sm enterDesabilitado">
+                         Tarde <input {% if rdo_atual.tempo_tarde %} value='{{rdo_atual.tempo_tarde}}'  {% endif %} type="text" name="tempo_tarde_editar" class="form-control form-control-sm enterDesabilitado">
+                     </div>
+                 </div> 
+
+                 <span class="p-2"><hr></span>
+
+                 <div class="row">
+                        <div class="col-6">
+                         <strong>Mão-de-Obra:</strong> <br>
+                         <small class="">Indicar a quantidade de funcionários e prestadores de serviço.</small>
+                         <textarea name="mao_de_obra_editar" rows="3" cols="50" class="form-control form-control-sm">{% if rdo_atual.mao_de_obra %}{{rdo_atual.mao_de_obra}}{% else %}{% endif %}</textarea>
+                        </div>
+                        <div class="col-6">
+                         <strong>Equipamentos:</strong><br>
+                         <small class="">Indicar a quantidade de Equipamentos disponíveis na obra.</small>  
+                         <textarea name="equipamentos_editar" rows="3" cols="50" class="form-control form-control-sm">{% if rdo_atual.equipamentos %}{{rdo_atual.equipamentos}}{% else %}{% endif %}</textarea>
+                        </div> 
+
+                 </div>
+
+                 <span class="p-2"><hr></span>
+
+                 <div class="row">
+                     <div class="col-12">
+                         <strong>Atividades/Tarefas do dia:</strong> 
+                         <br>
+                         <small class="">Tarefas que estão em execução e finalizadas no dia.</small> 
+                         <textarea name="atividades_editar" rows="5" cols="50" class="form-control form-control-sm">{% if rdo_atual.atividades %}{{rdo_atual.atividades}}{% else %}{% endif %}</textarea>
+                     </div>
+                 </div>
+                 
+                 <span class="p-2"><hr></span>
+                 <div class="row">
+                     <div class="col-12">
+                         <strong>Ocorrências/Observações:</strong>
+                         <br>
+                         <small class="">Indicar as ocorrências do dia que precisam ser registradas.</small>
+                         <textarea name="ocorrencias_editar" rows="5" cols="50" class="form-control form-control-sm">{% if rdo_atual.ocorrencias %}{{rdo_atual.ocorrencias}}{% else %}{% endif %}</textarea>
+                 
+                     </div>
+                 </div>
+             </div>
+         </form>
+             
+     </div>
+     <div class="modal-footer form-control" style="background-color:#edeef5">
+     <button class="btn btn-sm btn-success" form="formEditarRDO">Salvar</button>   
+     <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+     
+     </div>
+ </div>
+ </div>
+ </div>
+ <!-- Fim Modal -->  
+
+ <!-- Modal EXCLUIR-->
+ <div class="modal fade" id="ExcluirRDO" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+    <div class="modal-content" style="">
+        <div class="modal-header">
+            <div class="d-flex flex-column bd-highlight">
+                <h6 class="bd-highlight" style="color:red">Excluir RDO nº 000{{rdo_atual.pk}}:</h6>
+                
+            </div>  
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+            <form id="formExcluirRDO" class="row g-2" method="GET" action="{% url 'excluir_rdo_orden_servico' obra.pk ordem_atual.pk rdo_atual.pk %}">
+               
+                {% if rdo_atual.fotos %}
+                    Atenção: Existem fotos neste RDO.
+                    <div style="margin-left:5rem" class=" form-check">
+                    <input name="excluir_fotos" class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                     <strong>DESEJA EXCLUIR FOTOS?</strong>
+                    </label>
+                  </div>
+                
+                {% else %}
+                <strong>NÃO HÁ FOTOS!</strong>
+
+                {% endif %}
+               
+
+            </form>
+   
+                           
+        </div>
+        <div class="modal-footer form-control" style="background-color:#edeef5">
+            <button class="btn btn-sm btn-danger" form="formExcluirRDO">Excluir</button>     
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        
+        </div>
+    </div>
+    </div>
+    </div>
+    <!-- Fim Modal -->  
 <div class="row p-2">
 
     <div class="col-md-5">

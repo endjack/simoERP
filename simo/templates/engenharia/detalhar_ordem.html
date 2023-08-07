@@ -17,7 +17,11 @@
         
         <li class="list-group-item d-flex">
             <div class="col-1">
-                <img style="width: 5rem" class="card-img-top" src="{% static 'imagens/logo1.png' %}" alt="Imagem de capa da obra">
+                {% if obra.imagem %}
+                    <img style="width: 5rem;" class="card-img-top" src="{{ obra.imagem.url }}" alt="Imagem de capa da obra">
+                {% else %}
+                    <img style="width: 5rem;" class="card-img-top" src="{% static 'imagens/logo1.png' %}" alt="Imagem de capa da obra">
+                {% endif %}
             </div>
             <div class="col-md">
                 <span style="font-size:14pt;font-weight: bold;"> 
@@ -52,13 +56,7 @@
             </div> 
 
             <div class="">
-                <a  class="btn btn-sm btn-dark m-2" href="{% url 'home_obra_os' obra.pk %}" title="Ver Home ({{obra.nome}})"><i class="fas fa-home"></i></a>
-                <a  class="btn btn-sm btn-dark m-2" href="#" target="_blank" title="Imprimir OS"><span style=""><i class="fas fa-print"></i></span></a>
-                <a  class="btn btn-sm btn-dark m-2" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" title="Ver/Anexar Fotos"><span style=""><i class="fas fa-images"></i></span></a>
-                <a  class="btn btn-sm btn-dark m-2" href="{% url 'documentos_orden_servico' obra.pk ordem_atual.pk %}" title="Ver/Anexar Documentos"><span style=""><i class="fas fa-folder-open"></i></span></a>
-                <a  class="btn btn-sm btn-dark m-2" href="{% url 'rdo_orden_servico' obra.pk ordem_atual.pk %}" title="Diários de Obra"><span style=""><i class="fas fa-calendar-check"></i></span></a>
-                <a  class="btn btn-sm btn-primary m-2" href="{% url 'obra_editar_os' obra.pk ordem_atual.pk %}" title="Editar OS"><span style=""><i class="fas fa-edit"></i></span></a>
-                <a  class="btn btn-sm btn-danger m-2" href="#" target="_blank" title="Excluir OS"><span style=""><i class="fas fa-trash"></i></span></a>
+                {% include "engenharia/fragmentos/menu_ordem_de_servico.html" %}
             </div>
            
        
@@ -124,61 +122,31 @@
                 </div>
                 
             </li>
+            
 
+                <h6 style="padding-top:1rem"><i class="fas fa-images"></i> Fotos do Serviço({{ordem_atual.get_imagens_by_os.count}}) <a type="button" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a></h6>                  
+            
+                <div class="card">
+                    {% include 'engenharia/fragmentos/imagens_por_categoria_visualizador.html' %}
+                </div>
+            </div>    
 
-            <h6 style="padding-top:1rem"><i class="fas fa-images"></i> Fotos do Serviço({{ordem_atual.get_imagens_by_os.count}}) <a type="button" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a></h6>                  
-            <div class="card">
-                {% include 'engenharia/fragmentos/imagens_por_categoria_visualizador.html' %}
+            <div class="" style="padding-left:1rem;">
+                <h6 style="padding-top:1rem"><i class="fas fa-folder-open"></i> Documentos do Serviço({{ordem_atual.get_files_by_os.count}}) <a type="button" href="{% url 'documentos_orden_servico' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a></h6>
+                  
+                <div class="card">
+                    {% include "engenharia/fragmentos/lista_documentos_visualizador.html" %}
+                </div>
             </div>
 
-                <div class="" style="padding-left:1rem;">
-                    <h6 style="padding-top:1rem"><i class="fas fa-folder-open"></i> Documentos do Serviço({{ordem_atual.get_files_by_os.count}}) <a type="button" href="{% url 'documentos_orden_servico' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a></h6>
+             <div class="" style="padding-left:1rem;">
+                 <h6 style="padding-top:1rem"><i class="far fa-calendar-check"></i> Relatório Diário de Obra(0) <a type="button" href="{% url 'rdo_orden_servico' obra.pk ordem_atual.pk %}" class=""><i class="fas fa-plus"></i></a></h6>
                 
+                 <div class="card">
+                    {% include "engenharia/fragmentos/lista_diario_de_obra_visualizador.html" %}
+                 </div>
                 
-                    <li class="list-group-item align-items-start card">
-           
-                        {% if arquivos %}                                            
-                        <div class="fw-bold">Arquivos salvos:</div>
-                        <table class="table table-sm table-bordered dt-responsive">
-                                    
-                            <tbody class="text-center">
-                                
-                                {% for item in arquivos %}
-                                <tr class="">
-                              
-                                    <td class="text-start limitar" ><a class="link_os" href="{{item.file.url}}" download>{{item.extension |safe}}</a> {{item.nome}}
-            
-                                
-                                    </tr>
-                                {% endfor %}
-                           
-                            </tbody>
-                    
-                        </table>
-                        {% else %} 
-                        Sem arquivos.           
-                        {% endif %}
-                    </li>
-                
-                </div>
-
-                
-                <div class="" style="padding-left:1rem;">
-                    <h6 style="padding-top:1rem"><i class="far fa-calendar-check"></i> Relatório Diário de Obra(0) <a type="button" href="{% url 'rdo_orden_servico' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a></h6>
-                
-                
-                    <li class="list-group-item align-items-start card">
-           
-                        {% if registros %}
-                        
-                        {% else %}
-                        Sem Registros.
-                        {% endif %}
-                
-
-                    </li>
-                
-                </div>
+             </div>
 
                 
                 

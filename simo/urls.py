@@ -147,7 +147,10 @@ urlpatterns = [
     #urls Engenharia RDO v.2
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/diariodeobra', rdo_orden_servico, name='rdo_orden_servico'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/diariodeobra/salvar', salvar_rdo_orden_servico, name='salvar_rdo_orden_servico'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/diariodeobra/<int:rdo>/editar', editar_rdo_orden_servico, name='editar_rdo_orden_servico'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/diariodeobra/<int:rdo>/salvar', salvar_editar_rdo_orden_servico, name='salvar_editar_rdo_orden_servico'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/diariodeobra/<int:rdo>/detalhar', detalhar_rdo_rdo_orden_servico, name='detalhar_rdo_rdo_orden_servico'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/diariodeobra/<int:rdo>/excluir', excluir_rdo_orden_servico, name='excluir_rdo_orden_servico'),
 
     
     

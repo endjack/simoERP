@@ -4,8 +4,12 @@ from django.db.models import F
 
 # Create your models here.
 
+def def_pasta_upload_imagem(instance, name):
+    return f'obra/imagens/obra{instance.pk}_{name}'
+
 class Obra(models.Model):
     nome = models.CharField(max_length=200)
+    imagem = models.ImageField(upload_to=def_pasta_upload_imagem, blank=True, null=True)
     objeto = models.TextField(max_length=300, blank=True, null=True)
     endereco = models.CharField(max_length=300)
     contratante = models.CharField(max_length=100)
@@ -15,6 +19,7 @@ class Obra(models.Model):
     fim = models.CharField(max_length=200)
     valor = models.DecimalField('preço', max_digits=15, decimal_places=2, default=0, blank=True, null=True)
     concluido = models.BooleanField(default=False)
+    invisivel = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return str(self.nome)+ ' - Contrato: '+ str(self.num_contrato)

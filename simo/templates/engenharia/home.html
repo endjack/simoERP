@@ -18,8 +18,12 @@
         {% for obra in obras %}  
         
             <div class="card" style="width: 18rem; margin-right:1rem">
-               
+                    {% if obra.imagem %}
+                      <img style="width: 14rem;padding:0.8rem" class="card-img-top" src="{{ obra.imagem.url }}" alt="Imagem de capa da obra">
+                    {% else %}
                     <img style="width: 14rem;padding:0.8rem" class="card-img-top" src="{% static 'imagens/logo1.png' %}" alt="Imagem de capa da obra">
+                    {% endif %}
+                    
              
                 <div class="card-body">
                   <h5 class="card-title"> {{obra.nome}}</h5>
