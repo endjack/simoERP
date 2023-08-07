@@ -46,6 +46,15 @@
         <div class="p-2 bd-highlight">   
             <h5>Ordem de Serviço nº {{ordem_atual.numero_os}} <span style="color:gray">|</span> Situação: {{ordem_atual.get_situacao}}</h5> 
         </div> 
+        <div class="">
+            <a  class="btn btn-sm btn-dark m-2" href="{% url 'home_obra_os' obra.pk %}" title="Ver Home ({{obra.nome}})"><i class="fas fa-home"></i></a>
+            <a  class="btn btn-sm btn-dark m-2" href="#" target="_blank" title="Imprimir OS"><span style=""><i class="fas fa-print"></i></span></a>
+            <a  class="btn btn-sm btn-dark m-2" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" title="Ver/Anexar Fotos"><span style=""><i class="fas fa-images"></i></span></a>
+            <a  class="btn btn-sm btn-dark m-2" href="{% url 'documentos_orden_servico' obra.pk ordem_atual.pk %}" title="Ver/Anexar Documentos"><span style=""><i class="fas fa-folder-open"></i></span></a>
+            <a  class="btn btn-sm btn-dark m-2" href="{% url 'rdo_orden_servico' obra.pk ordem_atual.pk %}" title="Diários de Obra"><span style=""><i class="fas fa-calendar-check"></i></span></a>
+            <a  class="btn btn-sm btn-primary m-2" href="{% url 'obra_editar_os' obra.pk ordem_atual.pk %}" title="Editar OS"><span style=""><i class="fas fa-edit"></i></span></a>
+            <a  class="btn btn-sm btn-danger m-2" href="#" target="_blank" title="Excluir OS"><span style=""><i class="fas fa-trash"></i></span></a>
+        </div>
        
    
     </div>
