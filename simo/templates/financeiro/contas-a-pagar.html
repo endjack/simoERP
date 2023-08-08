@@ -51,15 +51,22 @@
 <div class="tab-content">
     <div class="tab-pane fade show active" id="tab-ativa" style="margin-left:2em; margin-right:2em;">
 
-      <form id="form_filtro_contas_atrasadas" style="font-size:9pt;" >
+<form id="form_filtro_contas_atrasadas" style="font-size:9pt;" 
+        hx-indicator="#spinner" 
+        hx-swap="innerHTML" 
+        hx-target="#resultados-contas-atrasadas" 
+        hx-get="{% url 'resultados-filtro-contas-a-pagar' %}" 
+        hx-trigger="submit" >
     <div class="d-flex flex-row mb-3" style="font-size:12pt;">
-        <div class="m-1"><span class="mt-2"><strong>Filtrar Contas - Situação: </strong></span> </div>
-        <div class="form-check m-1">
-          <input class="form-check-input" type="checkbox" name="check_nao_pago" id="flexCheckDefault" hx-include="#form_filtro_contas_atrasadas" hx-indicator="#spinner" hx-swap="innerHTML" hx-target="#resultados-contas-atrasadas" hx-get="/contas-a-pagar/filtro" hx-trigger="change" checked>
+        <div class="m-1">
+          <span class="mt-2"><strong>Filtrar Contas - Situação: </strong></span> </div>
+          <div class="form-check m-1">
+          <input class="form-check-input" type="checkbox" name="check_nao_pago" id="flexCheckDefault" checked>
+
           <label class="form-check-label" style="color:red" for="flexCheckDefault" > Não pagos </label>
         </div>
         <div class="form-check m-1">
-          <input class="form-check-input" type="checkbox" name="check_pago" id="flexCheckChecked" hx-include="#form_filtro_contas_atrasadas" hx-indicator="#spinner" hx-swap="innerHTML" hx-target="#resultados-contas-atrasadas" hx-get="/contas-a-pagar/filtro" hx-trigger="change" checked>
+          <input class="form-check-input" type="checkbox" name="check_pago" id="flexCheckChecked"  >
           <label class="form-check-label" style="color:green" for="flexCheckChecked"> Pagos </label>
         </div>
         
@@ -70,46 +77,41 @@
           <div class="col-md">
             <div class="col-12 ">
               <label for="input1" class="">Busca por: Descrição / nº NF</label>
-              <input type="text" class="form-control form-control-sm" id="input1" name="descricao" hx-include="#form_filtro_contas_atrasadas" hx-indicator="#spinner" hx-swap="innerHTML" hx-target="#resultados-contas-atrasadas" hx-get="/contas-a-pagar/filtro" hx-trigger="keyup[target.value.length > 2] delay:1s throttle:1s">
+              <input type="text" class="form-control form-control-sm" id="input1" name="descricao" >
             </div>
             <span class="help-block">*Mínimo de 3 dígitos para buscar</span>
           </div>
           <div class="col-md">
             <div class="col-12 ">
               <label for="inputvalor" class="">Busca por: Valor</label>
-              <input type="text" class="form-control form-control-sm" id="inputvalor" name="valor" hx-include="#form_filtro_contas_atrasadas" hx-indicator="#spinner" hx-swap="innerHTML" hx-target="#resultados-contas-atrasadas" hx-get="/contas-a-pagar/filtro" hx-trigger="keyup[target.value.length > 2] delay:1s throttle:1s">
+              <input type="text" class="form-control form-control-sm" id="inputvalor" name="valor" >
             </div>
             <span class="help-block">*Mínimo de 3 dígitos para buscar</span>
           </div>
           <div class="col-md">
             <div class="col-12">
               <label for="input2" class="">Vencimento/Data Inicial</label>
-              <input type="date" class="form-control form-control-sm" id="input2" name="data" hx-include="#form_filtro_contas_atrasadas" hx-indicator="#spinner" hx-swap="innerHTML" hx-target="#resultados-contas-atrasadas" hx-get="/contas-a-pagar/filtro" hx-trigger="change">
+              <input type="date" class="form-control form-control-sm" id="input2" name="data" >
             </div>
           </div>
   
           <div class="col-md">
             <div class="col-12">
               <label for="input3" class="">Vencimento/Data Final</label>
-              <input type="date" class="form-control form-control-sm" id="input3" name="data_f" hx-include="#form_filtro_contas_atrasadas" hx-indicator="#spinner" hx-swap="innerHTML" hx-target="#resultados-contas-atrasadas" hx-get="/contas-a-pagar/filtro" hx-trigger="change">
+              <input type="date" class="form-control form-control-sm" id="input3" name="data_f" >
             </div>
           </div>
   
           <div class="col-md">
             <div class="col-12">
               <label for="input4" class="">Fornecedor/Razão Social</label>
-              <input  type="text" class="form-control form-control-sm " id="input4" name="fornecedor" 
-                      hx-include="#form_filtro_contas_atrasadas" 
-                      hx-indicator="#spinner" 
-                      hx-swap="innerHTML" 
-                      hx-target="#resultados-contas-atrasadas" 
-                      hx-get="/contas-a-pagar/filtro" 
-                      hx-trigger="keyup[target.value.length > 2] delay:1s throttle:1s">
+              <input  type="text" class="form-control form-control-sm " id="input4" name="fornecedor" >
             </div>
             <span class="help-block"></span>
           </div>
 
-          <div class="col-1"> <br>
+          <div class="col-md"> <br>
+            <button class="btn btn-p-sm btn-primary" form="form_filtro_contas_atrasadas">Buscar</button>
             <a class="btn btn-p-sm btn-secondary m-2" href="{% url 'contas-a-pagar' %}">Limpar</a>
   
           </div>
