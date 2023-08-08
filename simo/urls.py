@@ -131,6 +131,8 @@ urlpatterns = [
     path('engenharia/obra/<int:pk>/os/<int:os>/editar', obras_editar_orden_servico, name='obra_editar_os'),
     path('engenharia/obra/<int:pk>/os/<int:os>/salvar', obras_salvar_editar_orden_servico, name='obra_salvar_editar_os'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar', obras_detalhar_orden_servico, name='obra_detalhar_os'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/finalizar', obras_finalizar_orden_servico, name='obras_finalizar_orden_servico'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/mudar_finalizar', obras_mudar_finalizar_orden_servico, name='obras_mudar_finalizar_orden_servico'),
     #urls Engenharia Imagens v.2
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens', obras_imagens_orden_servico, name='obra_imagens_os'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/inserir_categoria', obras_imagens_inserir_categoria_orden_servico, name='obra_imagens_inserir_categoria_os'),

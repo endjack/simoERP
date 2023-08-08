@@ -1,0 +1,5 @@
+{% if ordem_atual.finalizado %}
+    <h5>Ordem de Serviço nº {{ordem_atual.numero_os}} <span style="color:gray">|</span> <span style="color:green">Situação: <i class="fas fa-check"></i> Finalizado </span></h5>
+{% else %}
+    <h5>Ordem de Serviço nº {{ordem_atual.numero_os}} <span style="color:gray">|</span> Situação: {{ordem_atual.get_situacao}}</h5>
+{% endif %}

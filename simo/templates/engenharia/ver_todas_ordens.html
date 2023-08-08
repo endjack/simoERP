@@ -10,14 +10,28 @@
 
 
     <ol class="list-group ">
-
-        <li class="list-group-item d-flex">
-            <div class="col-md">
-                <a class="btn btn-sm btn-secondary m-2" href="{% url 'home_obra_os' obra.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
-               
+       
+        
+            <div class="d-flex bd-highlight justify-content-end">
+                <div class="me-auto p-2 bd-highlight">
+                    <a class="btn btn-sm btn-secondary " href="{% url 'home_obra_os' obra.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
+                </div>
+                 <div class="col-md bd-highlight text-end ms-auto">
+                     Ordens de Serviço <br>geradas: <h6 class="">{{ordens.count}}</h6>
+                 </div>
+                 <div class="col-md bd-highlight text-end ms-auto">
+                    Ordens de Serviço<br> "Não Iniciado": <h6 class="">{{os_nao_iniciados}}</h6>
+                 </div>
+                 <div class="col-md bd-highlight text-end ms-auto">
+                    Ordens de Serviço<br> "Em Andamento": <h6 class="">{{os_em_andamento}}</h6>
+                 </div>
+                 <div class="col-md bd-highlight text-end ms-auto">
+                    Ordens de Serviço<br> "Finalizados": <h6 class="">{{os_finalizados}}</h6>
+                 </div>
                    
-            </div>
-        </li>
+             </div>
+       
+   
     </ol>
 
 </div>
@@ -42,7 +56,7 @@
                                     <option value="{{i.0}}"> {{i.1}}</option>
     
                             {% endfor %}
-          
+                            <option value="-9"> Finalizados </option>
                     </select>
 
                 </div>
