@@ -42,6 +42,7 @@
         
         
        <form id="FormaddOsObras" method="POST"  {% if editar %} action="{% url 'obra_salvar_editar_os' obra.pk  os.pk %}" {% else %} action="{% url 'obra_salvar_nova_os' obra.pk %}" {% endif %}> 
+        
         <div class="form-group row mb-2">
            
             <div class="col-2">
@@ -73,12 +74,14 @@
 
         <div class="form-group row mb-2">
 
+            <input type="hidden" name="num_obra" value="{{obra.pk}}">
+
             <div class="col-2">
                 <label for="input1" class="">OS número:</label>
                    <input {% if editar %} value="{{os.numero_os }}" {% endif %} 
                     type="number" class="form-control form-control-sm" name="num_os" id="input1" required="required"
                     hx-get="{% url 'hx_verificar_numero_os' %}"
-                    hx-include="[name='num_os']"
+                    hx-include="[name='num_os'], [name='num_obra']"
                     hx-trigger="change"
                     hx-ext="disable-element"
                     hx-disable-element="#savarOrdemServicoBtt"
@@ -86,6 +89,7 @@
                     hx-indicator="#htmx-indicator">
                    <small class="small-error" id="error_num_os"></small>
             </div>
+
         
             <div class="col-4">
                 <label for="input3" class="">Local/Unidade:</label>

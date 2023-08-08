@@ -922,12 +922,13 @@ def hx_verificar_numero_os(request):
 
     if request.method == 'GET':
     
+        numero_obra = request.GET.get('num_obra')
         numero_os_input = request.GET.get('num_os')
         
-        numero_livre = OrdemServicoObras.objects.filter(numero_os = int(numero_os_input))
+        numero_livre = OrdemServicoObras.objects.filter(obra=int(numero_obra)).filter(numero_os = int(numero_os_input))
         
         if numero_livre:
-            return HttpResponse('Erro: Ordem de Serviço já Existe!')
+            return HttpResponse('Nº de Ordem de Serviço já Existe!')
         else:  
             return HttpResponse('')
     
