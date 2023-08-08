@@ -66,6 +66,7 @@
                         {% comment %} <th scope="col">Opções</th> {% endcomment %}
                     </tr>
                 </thead>
+                {% if ordens %}
                 
                 <tbody class="text-center" style="background:white">
                     {% for item in ordens %}
@@ -81,6 +82,14 @@
                     
                     {% endfor %}
                 </tbody>
+                
+                {% else %}
+                <tbody class="text-center" style="background:white">
+                    <tr class="link_tr">
+                        <td colspan="5">Sem ordens!</td>
+                    </tr>
+                </tbody>
+                {% endif %}
            
             </table>
 

@@ -2,10 +2,15 @@
 
 
 {% block styleHead %}
-
 <style>
-  
-</style>
+      .quebralinha {
+     
+        overflow: hidden;
+        white-space: pre-wrap;
+
+
+       } 
+ </style>
 {% endblock %}
 
 {% block conteudo %}
@@ -41,9 +46,9 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="col-md p-1">
-                            <div class="fw-bold">Serviços à Executar:</div>
+                            <div class="fw-bold ">Serviços à Executar:</div>
                             {% if ordem_atual.servicos %}
-                            <span style='white-space:pre'>{{ordem_atual.servicos | safe}}</span>
+                            <span  class="quebralinha">{{ordem_atual.servicos}}</span>
                             {% else %}
                             - {% endif %}
                         </div>
@@ -54,7 +59,7 @@
                             <div class="col-md">
                                 <div class="fw-bold">Local/Unidade:</div>
                                 {% if ordem_atual.local %}
-                                <span style='white-space:pre'>{{ordem_atual.local.local}}</span>
+                                <span class="quebralinha">{{ordem_atual.local.local}}</span>
                                 {% else %}
                                 [sem local] {% endif %}
                             </div>
@@ -62,7 +67,7 @@
                             <div class="col-md">
                                 <div class="fw-bold">Endereço:</div>
                                 {% if ordem_atual.local %}
-                                <span style='white-space:pre'>{{ordem_atual.local.endereco }}</span>
+                                <span class="quebralinha">{{ordem_atual.local.endereco }}</span>
                                 {% else %}
                                 [sem endereço] {% endif %}
                             </div>

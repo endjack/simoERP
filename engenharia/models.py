@@ -12,7 +12,7 @@ SITUAÇÃO = (
     )
 
 class OrdemServicoObras(models.Model):
-    numero_os = models.IntegerField(blank=True, null=True, unique=True)
+    numero_os = models.IntegerField(blank=True, null=True)
     solicitante = models.CharField(max_length=200, null=True) 
     encarregado = models.CharField(max_length=200, null=True)
     servicos = models.TextField(max_length=500, null=True, blank=True)
