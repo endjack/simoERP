@@ -36,6 +36,8 @@ class OrdemServicoObras(models.Model):
         
     def get_situacao(self):
         for s in SITUAÇÃO:
+            if self.finalizado:
+                return 'Finalizado'
             if int(self.situacao) == s[0]:
                 return s[1]
             

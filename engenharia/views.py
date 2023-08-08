@@ -56,8 +56,9 @@ def ver_todas_os_por_obra(request, pk, template_name = 'engenharia/ver_todas_ord
    
         obra = Obra.objects.get(pk=pk)
         ordens = OrdemServicoObras.objects.filter(obra=obra)
-        os_nao_iniciados = ordens.filter(situacao=0).count()
-        os_em_andamento= ordens.filter(situacao=1).count()
+        ordens_nao_finalizadas = ordens.filter(finalizado=False) 
+        os_nao_iniciados = ordens_nao_finalizadas.filter(situacao=0).count()
+        os_em_andamento= ordens_nao_finalizadas.filter(situacao=1).count()
         os_finalizados = ordens.filter(finalizado=True).count()
             
         context = {
@@ -236,6 +237,74 @@ def obras_detalhar_orden_servico(request, pk, os, template_name = 'engenharia/de
         }
         
         return render(request, template_name , context)
+
+@login_required(login_url='login/')
+@csrf_exempt
+def obras_finalizar_orden_servico(request, pk, os, template_name = 'engenharia/detalhar_ordem.html'):
+    
+    obra = Obra.objects.get(pk=pk)
+    ordem_atual = OrdemServicoObras.objects.get(pk=os)
+    categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
+    arquivos = ordem_atual.get_files_by_os().order_by('nome')
+    diarios = DiarioDeObraOs.objects.filter(ordem_servico = ordem_atual).order_by('-data')
+        
+        
+    if request.method == 'POST':
+    
+        data_recebida = datetime.strptime(request.POST.get('data_conclusao'), '%Y-%m-%d')
+        
+        
+        ordem_atual.finalizado = True
+        ordem_atual.data_conclusao = data_recebida
+        ordem_atual.save()
+        
+        print(f'-------------------------OS Nº {ordem_atual.numero_os} - FINALIZADA')
+        
+                
+    context = {
+    
+        'obra': obra,
+        'ordem_atual': ordem_atual,
+        'categorias': categorias,
+        'arquivos': arquivos,
+        'diarios': diarios,
+
+
+    }
+    
+    return render(request, template_name , context)
+
+@login_required(login_url='login/')
+@csrf_exempt
+def obras_mudar_finalizar_orden_servico(request, pk, os, template_name = 'engenharia/detalhar_ordem.html'):
+    
+    obra = Obra.objects.get(pk=pk)
+    ordem_atual = OrdemServicoObras.objects.get(pk=os)
+    categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
+    arquivos = ordem_atual.get_files_by_os().order_by('nome')
+    diarios = DiarioDeObraOs.objects.filter(ordem_servico = ordem_atual).order_by('-data')
+        
+        
+    ordem_atual.finalizado = False
+    ordem_atual.data_conclusao = None
+    ordem_atual.situacao = 1
+    ordem_atual.save()
+    
+    print(f'-------------------------OS Nº {ordem_atual.numero_os} mudada para EM ANDAMENTO')
+    
+                
+    context = {
+    
+        'obra': obra,
+        'ordem_atual': ordem_atual,
+        'categorias': categorias,
+        'arquivos': arquivos,
+        'diarios': diarios,
+
+
+    }
+    
+    return render(request, template_name , context)
 
 @login_required(login_url='login/')
 @csrf_exempt
@@ -869,17 +938,24 @@ def hx_filtrar_os(request, pk, template_name = 'engenharia/fragmentos/resultados
 
     if request.method == 'GET':
         
-        situacao =  request.GET.get('situacao')
-        
-        print(situacao)
-        
-        
+        situacao =  int(request.GET.get('situacao'))
+              
         obra = Obra.objects.get(pk=pk)
         ordens = OrdemServicoObras.objects.all()
+        ordens_nao_finalizadas = ordens.filter(finalizado=False) 
         
-        
-    
-        
+        if situacao == 0:
+            ordens = ordens_nao_finalizadas.filter(situacao=0)  #Não Iniciado             
+        elif situacao == 1:
+            ordens = ordens_nao_finalizadas.filter(situacao=1) #Em andamento              
+        elif situacao == 2:
+            ordens = ordens_nao_finalizadas.filter(situacao=2)  #Pendente             
+        elif situacao == 3:
+            ordens = ordens_nao_finalizadas.filter(situacao=3)  #Paralisado                        
+        elif situacao == -9:
+            ordens = ordens.filter(finalizado=True)  #Finalizados             
+        else:
+            pass  #todos            
       
         
         context = {

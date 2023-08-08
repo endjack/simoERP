@@ -4,6 +4,89 @@
     <a  class="btn btn-sm btn-dark m-1" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" title="Ver/Anexar Fotos"><span style=""><i class="fas fa-images"></i></span></a>
     <a  class="btn btn-sm btn-dark m-1" href="{% url 'documentos_orden_servico' obra.pk ordem_atual.pk %}" title="Ver/Anexar Documentos"><span style=""><i class="fas fa-folder-open"></i></span></a>
     <a  class="btn btn-sm btn-dark m-1" href="{% url 'rdo_orden_servico' obra.pk ordem_atual.pk %}" title="Diários de Obra"><span style=""><i class="fas fa-calendar-check"></i></span></a>
+    <!-- Button FINALIZAR-->
+    {% if ordem_atual.finalizado %}
+        <a  class="btn btn-sm btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#RetirarFinalizarOs" href="modal" title="Retirar Serviço Finalizado"><span style=""><i class="fas fa-times"></i></span></a>
+    {% else %}
+        <a  class="btn btn-sm btn-success m-1" data-bs-toggle="modal" data-bs-target="#finalizar_os" href="modal" title="Finalizar Serviço"><span style=""><i class="fas fa-check"></i></span></a>
+    {% endif %}
+    <!-- Button -->
     <a  class="btn btn-sm btn-primary m-1" href="{% url 'obra_editar_os' obra.pk ordem_atual.pk %}" title="Editar OS"><span style=""><i class="fas fa-edit"></i></span></a>
     <a  class="btn btn-sm btn-danger m-1" href="#" target="_blank" title="Excluir OS"><span style=""><i class="fas fa-trash"></i></span></a>
 </div>
+
+ <!-- Modal FINALIZAR -->
+ <div class="modal fade" id="finalizar_os" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content ">
+            <div class="modal-header p-3">
+                <div class="d-flex flex-column bd-highlight">
+                    <h5 style="color:green" class="bd-highlight">Finalizar Ordem de Serviço</h5>
+                    <h6 class="bd-highlight">Número: {{ordem_atual.numero_os}}</h6>
+                    
+                </div>  
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-5">
+
+
+            <strong> Serviços Feitos: </strong> <br>
+               <div class="mb-3">
+                {{ordem_atual.servicos}}
+               </div>
+
+                <form id="formFinalizarServico" class="row g-2" method="POST" action="{% url 'obras_finalizar_orden_servico' obra.pk ordem_atual.pk %}" >
+                    <div class="col-md-3 mb-3">
+                        <strong>Data de Conclusão:</strong>
+                        <input type="date" name="data_conclusao" class="form-control"   required="required">
+                        </div>
+                    </form>
+            
+                    
+            </div>
+            <div class="modal-footer form-control">
+                <button class="btn btn-sm btn-success" form="formFinalizarServico"><i class="fas fa-check"></i> Finalizar</button>   
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            
+            </div>
+        </div>
+    </div>
+ </div>
+ <!-- Fim Modal -->  
+
+ <!-- Modal RETIRAR FINALIZAR-->
+ <div class="modal fade" id="RetirarFinalizarOs" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content ">
+            <div class="modal-header p-3">
+                <div class="d-flex flex-column bd-highlight">
+                    <h5 style="color:red" class="bd-highlight">Retirar Ordem de Serviço Finalizada</h5>
+                    <h6 class="bd-highlight">Número: {{ordem_atual.numero_os}}</h6>
+                    
+                </div>  
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-5">
+
+
+            <strong> Serviços Finalizados: </strong> <br>
+               <div class="mb-3">
+                {{ordem_atual.servicos}}
+               </div>
+            <strong> Data de Conclusão: </strong> <br>
+               <div class="mb-3">
+                {{ordem_atual.data_conclusao}}
+               </div>  
+               <br>
+               Nova Situação: EM ANDAMENTO        
+                    
+            </div>
+            <div class="modal-footer form-control">
+                <a class="btn btn-sm btn-dark" href="{% url 'obras_mudar_finalizar_orden_servico' obra.pk ordem_atual.pk %}"><i class="fas fa-times"></i> Mudar </a>   
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            
+            </div>
+        </div>
+    </div>
+ </div>
+ <!-- Fim Modal -->  
