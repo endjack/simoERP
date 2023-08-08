@@ -67,28 +67,35 @@
              
     <div class="">
         <div class="form-group row mb-2 ">
-          <div class="col-3">
+          <div class="col-md">
             <div class="col-12 ">
-              <label for="input1" class="">Descrição/Doc/Nota Fiscal</label>
+              <label for="input1" class="">Busca por: Descrição / nº NF</label>
               <input type="text" class="form-control form-control-sm" id="input1" name="descricao" hx-include="#form_filtro_contas_atrasadas" hx-indicator="#spinner" hx-swap="innerHTML" hx-target="#resultados-contas-atrasadas" hx-get="/contas-a-pagar/filtro" hx-trigger="keyup[target.value.length > 2] delay:1s throttle:1s">
             </div>
-            <span class="help-block">*Mínimo de 3 letras para buscar</span>
+            <span class="help-block">*Mínimo de 3 dígitos para buscar</span>
           </div>
-          <div class="col-2">
+          <div class="col-md">
+            <div class="col-12 ">
+              <label for="inputvalor" class="">Busca por: Valor</label>
+              <input type="text" class="form-control form-control-sm" id="inputvalor" name="valor" hx-include="#form_filtro_contas_atrasadas" hx-indicator="#spinner" hx-swap="innerHTML" hx-target="#resultados-contas-atrasadas" hx-get="/contas-a-pagar/filtro" hx-trigger="keyup[target.value.length > 2] delay:1s throttle:1s">
+            </div>
+            <span class="help-block">*Mínimo de 3 dígitos para buscar</span>
+          </div>
+          <div class="col-md">
             <div class="col-12">
               <label for="input2" class="">Vencimento/Data Inicial</label>
               <input type="date" class="form-control form-control-sm" id="input2" name="data" hx-include="#form_filtro_contas_atrasadas" hx-indicator="#spinner" hx-swap="innerHTML" hx-target="#resultados-contas-atrasadas" hx-get="/contas-a-pagar/filtro" hx-trigger="change">
             </div>
           </div>
   
-          <div class="col-2">
+          <div class="col-md">
             <div class="col-12">
               <label for="input3" class="">Vencimento/Data Final</label>
               <input type="date" class="form-control form-control-sm" id="input3" name="data_f" hx-include="#form_filtro_contas_atrasadas" hx-indicator="#spinner" hx-swap="innerHTML" hx-target="#resultados-contas-atrasadas" hx-get="/contas-a-pagar/filtro" hx-trigger="change">
             </div>
           </div>
   
-          <div class="col-3">
+          <div class="col-md">
             <div class="col-12">
               <label for="input4" class="">Fornecedor/Razão Social</label>
               <input  type="text" class="form-control form-control-sm " id="input4" name="fornecedor" 
