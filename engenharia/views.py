@@ -419,7 +419,7 @@ def obras_salvar_imagem_em_categoria_orden_servico(request, pk, os):
             
             if categoria_rdo == '':
                 categoria_imagem = request.POST.get('categoria') or ''
-                categoria_atual = CategoriaImagem.objects.get(categoria = categoria_imagem)
+                categoria_atual = CategoriaImagem.objects.get(categoria = categoria_imagem, ordem_servico = ordem_atual)
                 template_name = 'engenharia/imagens_ordem.html'
             else:
                 rdo_atual = DiarioDeObraOs.objects.get(pk=categoria_rdo)
