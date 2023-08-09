@@ -53,7 +53,7 @@ class OrdemServicoObras(models.Model):
 
 
 class CategoriaImagem(models.Model):
-    categoria = models.CharField(max_length=200, unique=True, null=True)
+    categoria = models.CharField(max_length=200, null=True)
     ordem_servico = models.ForeignKey(OrdemServicoObras, on_delete=models.SET_NULL, null=True)
    
     
