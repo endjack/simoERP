@@ -112,7 +112,8 @@
             </li>
             
 
-                <h6 style="padding-top:1rem"><i class="fas fa-images"></i> Fotos do Serviço({{ordem_atual.get_imagens_by_os.count}}) <a type="button" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a></h6>                  
+                <h6 style="padding-top:1rem"><i class="fas fa-images"></i> Fotos do Serviço({{ordem_atual.get_imagens_by_os.count}}) <a type="button" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i> Fotos</a><a style="margin-left:10px" href="{% url 'imprimir_relatorio_fotografico_manut_viaria' obra.pk ordem_atual.pk %}" target="_blank" title="Imprimir Relatório Fotográfico"><span style=""><i class="fas fa-print"></i> Relatório</span></a>
+                </h6>                  
             
                 <div class="card">
                     {% include 'engenharia/fragmentos/imagens_por_categoria_visualizador.html' %}

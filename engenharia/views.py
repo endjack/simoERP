@@ -967,3 +967,21 @@ def hx_filtrar_os(request, pk, template_name = 'engenharia/fragmentos/resultados
           
         }
         return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def imprimir_relatorio_fotografico_manut_viaria(request, pk, os, template_name = 'engenharia/fragmentos/impressoes/imprimir_rel_fotos_modelo_viario.html'):
+
+    if request.method == 'GET':
+        obra = Obra.objects.get(pk=pk)
+        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        
+            
+        context = {
+            
+            'obra': obra,
+            'ordem_atual': ordem_atual,
+
+            
+        }
+        return render(request, template_name , context)

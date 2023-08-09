@@ -1,0 +1,114 @@
+{% load static %}
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <title>Imprimir Serviços</title>
+    <style>
+        @page {
+            size: portrait;
+            margin: 1cm;
+        }
+
+
+        @media print {
+
+            html,
+            body {
+                height: 99%;
+            }
+        }
+
+        * {
+            color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+           
+        }
+        
+       #cabecalho{
+       
+            max-height:20rem;
+            
+        }
+    </style>
+</head>
+
+<body class="" style="font-family: sans-serif;">
+
+    <section class="p-i" id="cabecalho">
+        <div class="d-flex">
+            <div class="col-6  text-center">
+                <img style="width: 10rem;" class="" src="{% static 'imagens/logo_parnamirim.jpg' %}" alt="Imagem de parnamirim">
+            </div>
+            <div class="col-6 text-center">
+                PREFEITURA DE PARNAMIRIM <br>
+                Secretaria Municipal de Obra Públicas e Saneamento <br>
+                Rua Tenente Pedro Rufino dos Santos, 742<br>
+                Monte Castelo - CEP 59.146-160<br>
+                Fone: (084) 3645-5654
+            </div>
+        </div>
+    </section>
+
+    <section id="titulos" class="mt-3">
+        <div class="text-center"><strong>RELATÓRIO FOTOGRÁFICO</strong></div>
+    </section>
+
+    <section class="p-i mt-3" id="dadosObra">
+        <div class="d-flex">
+            <div class="col-4  text-center" style=" border: 1px solid black;">
+                <strong>CONTRATO Nº:</strong> {{obra.num_contrato}}
+                <div class=" text-center">
+                    <strong>PERÍODO:</strong>  ----XX---XX----
+                </div>
+            </div>
+            
+            <div class="col-8 text-center" style=" border: 1px solid black;">
+                <strong>OBRA:</strong> {{obra.objeto}}
+            </div>
+        </div>
+    </section>
+
+    <section class="p-i mt-2" id="fotos">
+
+        <div class="d-flex">
+            <table class="table table-bordered" style="border: 1px solid black;">
+                <tbody>
+                  <tr>
+                    <td><img style="width: 15rem;" class="" src="{% static 'imagens/logo_parnamirim.jpg' %}" alt="Imagem de parnamirim"></td>
+                    <td><img style="width: 10rem;" class="" src="{% static 'imagens/logo_parnamirim.jpg' %}" alt="Imagem de parnamirim"></td>
+                  </tr>
+                  <tr>
+                    <td>Local 1</td>
+                    <td>Local 1</td>
+                  </tr>
+                  <tr>
+                    <td><img style="width: 10rem;" class="" src="{% static 'imagens/logo_parnamirim.jpg' %}" alt="Imagem de parnamirim"></td>
+                    <td><img style="width: 12rem;" class="" src="{% static 'imagens/logo_parnamirim.jpg' %}" alt="Imagem de parnamirim"></td>
+                  </tr>
+                  <tr>
+                    <td>Local 1</td>
+                    <td>Local 1</td>
+                  </tr>
+                </tbody>
+              </table>
+
+        </div>
+    </section>
+
+
+
+
+{% comment %} <script>
+    (function () {
+        window.print();
+    })();
+</script> {% endcomment %}
+
+
+</body>
+
+</html>
