@@ -112,8 +112,13 @@
             </li>
             
 
-                <h6 style="padding-top:1rem"><i class="fas fa-images"></i> Fotos do Serviço({{ordem_atual.get_imagens_by_os.count}}) <a type="button" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i> Fotos</a><a style="margin-left:10px" href="{% url 'imprimir_relatorio_fotografico_manut_viaria' obra.pk ordem_atual.pk %}" target="_blank" title="Imprimir Relatório Fotográfico"><span style=""><i class="fas fa-print"></i> Relatório</span></a>
-                </h6>                  
+                <h6 style="padding-top:1rem"><i class="fas fa-images"></i> Fotos do Serviço({{ordem_atual.get_imagens_by_os.count}}) <a type="button" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a>
+                    {% if obra.tipo == '1' %}  
+                    <!-- Button IMPRIMIR RELATORIO--> <a style="margin-left:20px" data-bs-toggle="modal" data-bs-target="#ModalImprimirRelatorioViario" href="modal"  title="Imprimir Relatório Fotográfico"><span style=""><i class="fas fa-print"></i> Relatório</span></a>
+                    {% endif %}
+                </h6>     
+                
+                
             
                 <div class="card">
                     {% include 'engenharia/fragmentos/imagens_por_categoria_visualizador.html' %}
@@ -147,6 +152,55 @@
 
 
 </div>
+<!-- Modal IMPRIMIR RELATORIO-->
+<div class="modal fade" id="ModalImprimirRelatorioViario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+    <div class="modal-content" style="">
+        <div class="modal-header">
+            <div class="d-flex flex-column bd-highlight">
+                <h5 class="bd-highlight" style="color:black">Imprimir Relatório Fotográfico</h5>
+                <span class="bd-highlight" style="color:black">Modelo: Manutenção Viária:</span>
+                
+            </div>  
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+            <form id="formImprimirRelatorioViario" class="row g-2" method="GET" target="_blank" action="{% url 'imprimir_relatorio_fotografico_manut_viaria' obra.pk ordem_atual.pk %}">
+               <div class="row">Informações Extras:</div>
+               <div class="row">
+             
+                    <strong>Período:</strong> 
+                    <div class="row">
+                        <div class="col-5">
+                            <input value="" type="date" class="form-control form-control-sm enterDesabilitado date" name="data_relatorio_inicio" id="" required='required'>
+                        </div>
+                        <div class="col-1 text-center">Até</div>
+                        <div class="col-5"><input value="" type="date" class="form-control form-control-sm enterDesabilitado date" name="data_relatorio_fim" id="" required='required'>
+                        </div>
+                </div>
+               <div class="col-5">
+                <br>
+                <strong>Data do Relatório:</strong> 
+                <input value="{% now 'Y-m-d' %}" type="date" class="form-control form-control-sm enterDesabilitado date" name="data_relatorio" id="" >
+            
+                   
+                </div>
+            </div>
+
+            </form>
+   
+                           
+        </div>
+        <div class="modal-footer form-control" style="background-color:#edeef5">
+            <button class="btn btn-sm btn-dark" form="formImprimirRelatorioViario" >Imprimir</button>     
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        
+        </div>
+    </div>
+    </div>
+    </div>
+    <!-- Fim Modal -->  
 
 <div class="mb-4"></div>
 

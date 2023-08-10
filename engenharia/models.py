@@ -5,10 +5,10 @@ from obras.models import Local, Obra
 from django.contrib.auth.models import User
 
 SITUAÇÃO = (
-        (0, "Não Iniciado"),
-        (1, "Em andamento"), 
-        (2, "Pendente"),
-        (3, "Paralisado"),
+        ('0', "Não Iniciado"),
+        ('1', "Em andamento"), 
+        ('2', "Pendente"),
+        ('3', "Paralisado"),
     )
 
 class OrdemServicoObras(models.Model):
@@ -16,7 +16,7 @@ class OrdemServicoObras(models.Model):
     solicitante = models.CharField(max_length=200, null=True) 
     encarregado = models.CharField(max_length=200, null=True)
     servicos = models.TextField(max_length=500, null=True, blank=True)
-    situacao = models.CharField(max_length=50, choices=SITUAÇÃO, default='NÃO INICIADO') 
+    situacao = models.CharField(max_length=50, choices=SITUAÇÃO, default='0') 
     obra = models.ForeignKey(Obra, on_delete=models.SET_NULL, null=True)
     local = models.ForeignKey(Local, on_delete=models.SET_NULL, null=True)
     data_recebimento = models.DateField(null=True, blank=True, default=datetime.now().strftime("%d/%m/%Y"))
@@ -38,7 +38,7 @@ class OrdemServicoObras(models.Model):
         for s in SITUAÇÃO:
             if self.finalizado:
                 return 'Finalizado'
-            if int(self.situacao) == s[0]:
+            if self.situacao == s[0]:
                 return s[1]
             
     def get_files_by_os(self):

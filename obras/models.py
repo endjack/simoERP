@@ -2,7 +2,13 @@ from clientes.models import Fiscal
 from django.db import models
 from django.db.models import F
 
-# Create your models here.
+TIPO_OBRAS = (
+        ('0', "GERAL"),
+        ('1', "MANUTENÇÃO VIÁRIA"),
+        ('2', "MANUTENÇÃO"), 
+        ('3', "PRODUÇÃO"),
+        ('4', "CONSTRUÇÃO"),
+    )
 
 def def_pasta_upload_imagem(instance, name):
     return f'obra/imagens/obra{instance.pk}_{name}'
@@ -20,6 +26,7 @@ class Obra(models.Model):
     valor = models.DecimalField('preço', max_digits=15, decimal_places=2, default=0, blank=True, null=True)
     concluido = models.BooleanField(default=False)
     invisivel = models.BooleanField(default=False)
+    tipo = models.CharField(max_length=50, choices=TIPO_OBRAS, default='0') 
 
     def __str__(self) -> str:
         return str(self.nome)+ ' - Contrato: '+ str(self.num_contrato)

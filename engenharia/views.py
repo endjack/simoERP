@@ -7,6 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 from simo.settings import PROJECT_ROOT
 from django.http import FileResponse
 from django.http.response import HttpResponse, Http404
+from weasyprint import HTML
+from django.template.loader import render_to_string
 
 @login_required(login_url='login/')
 def home_engenharia(request, template_name = 'engenharia/home.html'):
@@ -411,6 +413,7 @@ def obras_salvar_imagem_em_categoria_orden_servico(request, pk, os):
         ordem_atual = OrdemServicoObras.objects.get(pk=os)
         categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
         rdo_atual = None
+        template_name = 'engenharia/detalhar_rdo.html'
             
         
         if request.method == 'POST':
@@ -432,7 +435,7 @@ def obras_salvar_imagem_em_categoria_orden_servico(request, pk, os):
                 else:
                     categoria_atual = rdo_atual.fotos
                     
-                template_name = 'engenharia/detalhar_rdo.html'
+                
             
            
             
@@ -466,7 +469,8 @@ def obras_salvar_imagem_em_categoria_orden_servico(request, pk, os):
 @login_required(login_url='login/')
 @csrf_exempt    
 def obras_excluir_imagem_orden_servico(request, pk, os, im, template_name = 'engenharia/imagens_ordem.html'):
-        
+    
+          
         if request.method == 'GET':
         
             obra = Obra.objects.get(pk=pk)
@@ -487,6 +491,36 @@ def obras_excluir_imagem_orden_servico(request, pk, os, im, template_name = 'eng
                 'obra': obra,
                 'ordem_atual': ordem_atual,
                 'categorias': categorias,
+
+            }
+            
+            return render(request, template_name , context)
+        
+@login_required(login_url='login/')
+@csrf_exempt    
+def obras_excluir_imagem_orden_servico_em_rdo(request, pk, os, im, rdo, template_name = 'engenharia/detalhar_rdo.html'):
+    
+          
+        if request.method == 'GET':
+        
+            obra = Obra.objects.get(pk=pk)
+            ordem_atual = OrdemServicoObras.objects.get(pk=os)
+            rdo_atual = DiarioDeObraOs.objects.get(pk = rdo)
+
+            try:
+                imagem_atual =     ImagemOS.objects.get(pk=im) 
+            except ImagemOS.DoesNotExist:
+                raise Http404("IMAGEM JÁ DELETADA OU NÃO EXISTE!")
+            
+
+            print(f'---------- IMAGEM DELETADA {imagem_atual}---------------------')
+            imagem_atual.delete()
+        
+            context = {
+        
+                'obra': obra,
+                'ordem_atual': ordem_atual,
+                'rdo_atual': rdo_atual,
 
             }
             
@@ -975,13 +1009,78 @@ def imprimir_relatorio_fotografico_manut_viaria(request, pk, os, template_name =
     if request.method == 'GET':
         obra = Obra.objects.get(pk=pk)
         ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        data_inicio = datetime.strptime(request.GET.get('data_relatorio_inicio'), '%Y-%m-%d')
+        data_final = datetime.strptime(request.GET.get('data_relatorio_fim'), '%Y-%m-%d')
+        data_relatorio = datetime.strptime(request.GET.get('data_relatorio'), '%Y-%m-%d')
         
-            
+        
         context = {
             
             'obra': obra,
             'ordem_atual': ordem_atual,
+            'data_inicio': data_inicio,
+            'data_final': data_final,
+            'data_relatorio': data_relatorio,
 
             
         }
         return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def imprimir_rdo_individual(request, pk, os, rdo, template_name = 'engenharia/fragmentos/impressoes/imprimir_rdo_individual.html'):
+
+    if request.method == 'GET':
+        obra = Obra.objects.get(pk=pk)
+        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        rdo_atual = DiarioDeObraOs.objects.get(pk = rdo)
+        
+        
+        context = {
+            
+            'obra': obra,
+            'ordem_atual': ordem_atual,
+            'rdo_atual': rdo_atual,
+     
+
+            
+        }
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def gerar_pdf_rdo_individual(request, pk, os, rdo, template_name = 'engenharia/fragmentos/impressoes/imprimir_rdo_individual.html'):
+
+
+    if request.method == 'GET':
+        obra = Obra.objects.get(pk=pk)
+        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        rdo_atual = DiarioDeObraOs.objects.get(pk = rdo)
+        
+        context = {
+            
+            'obra': obra,
+            'ordem_atual': ordem_atual,
+            'rdo_atual': rdo_atual,
+     
+            
+        }
+        
+        return render(request, template_name , context)
+        
+        # html_string = render_to_string(template_name, context)
+        
+        
+        # import pydf
+        # pdf = pydf.generate_pdf(html_string)
+        
+                    
+        
+
+        # http_response = HttpResponse(pdf, content_type='application/pdf',)
+        # http_response['Content-Disposition'] = 'attachment; filename="rdo-{}.pdf"'.format(rdo_atual.pk)
+        # return http_response
+        
+        
+       
+        

@@ -142,6 +142,7 @@ urlpatterns = [
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/inserir_imagem', obras_inserir_imagem_em_categoria_orden_servico, name='inserir_imagem_em_categoria'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/salvar_imagem', obras_salvar_imagem_em_categoria_orden_servico, name='salvar_imagem_em_categoria'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/<int:im>/excluir_imagem', obras_excluir_imagem_orden_servico, name='excluir_imagem_em_categoria'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/<int:im>/rdo/<int:rdo>/excluir_imagem', obras_excluir_imagem_orden_servico_em_rdo, name='obras_excluir_imagem_orden_servico_em_rdo'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/<int:im>/editar_categoria_imagem', obras_editar_categoria_imagem_orden_servico, name='editar_categoria_imagem'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens/categoria/<int:cat>/download_imagens_por_categoria', dowload_imagens_categoria_orden_servico, name='dowload_imagens_categoria'),
     #urls Engenharia Documentos v.2
@@ -157,6 +158,9 @@ urlpatterns = [
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/diariodeobra/<int:rdo>/excluir', excluir_rdo_orden_servico, name='excluir_rdo_orden_servico'),
     #urls Engenharia Impressões v.2
     path('engenharia/obra/<int:pk>/os/<int:os>/imprimir_rel_fotos_modelo_viario', imprimir_relatorio_fotografico_manut_viaria, name='imprimir_relatorio_fotografico_manut_viaria'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/<int:rdo>/imprimir_rdo_individual', imprimir_rdo_individual, name='imprimir_rdo_individual'),
+     #urls Engenharia PDF v.2
+    path('engenharia/obra/<int:pk>/os/<int:os>/<int:rdo>/pdf_rdo_individual', gerar_pdf_rdo_individual, name='gerar_pdf_rdo_individual'),
 
     
     
