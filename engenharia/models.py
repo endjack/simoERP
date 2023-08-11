@@ -2,6 +2,7 @@ from datetime import datetime
 from django.db import models
 from django.db.models.deletion import CASCADE, PROTECT, SET_NULL
 from obras.models import Local, Obra
+from funcionarios.models import Funcionario
 from django.contrib.auth.models import User
 
 SITUAÇÃO = (
@@ -48,9 +49,23 @@ class OrdemServicoObras(models.Model):
     def get_imagens_by_os(self):
         imagens = ImagemOS.objects.filter(ordem_servico=self)
         return imagens
+    
+    def get_rdos_by_os(self):
+        rdos = DiarioDeObraOs.objects.filter(ordem_servico=self)
+        return rdos
+    
+    def get_funcionarios_by_os(self):
+        func = FuncionarioOS.objects.filter(ordem_servico=self)
+        return func
 
 
-
+class FuncionarioOS(models.Model):
+    servico = models.TextField(max_length=500, null=True, blank=True)
+    funcionario = models.ForeignKey(Funcionario, on_delete=models.SET_NULL, null=True)
+    ordem_servico = models.ForeignKey(OrdemServicoObras, on_delete=models.SET_NULL, null=True)
+   
+    def __str__(self) -> str:
+        return self.funcionario.nome
 
 class CategoriaImagem(models.Model):
     categoria = models.CharField(max_length=200, null=True)

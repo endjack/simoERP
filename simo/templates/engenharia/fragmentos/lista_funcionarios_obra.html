@@ -1,0 +1,113 @@
+{% load static %}
+<style>
+    .limitar {
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      } 
+      
+    
+    .link_tr:hover { 
+            background: #d9f5fc; 
+    
+        
+    }
+    .link_os:hover { 
+            text-decoration: none;
+            color: black;
+    
+    } 
+    .link_os { 
+            display: block; 
+            text-decoration: none;
+            color: black;
+    }
+     
+
+</style>
+         
+<li class="list-group-item align-items-start ">
+        
+    <div class="fw-bold">Funcionários incluídos:</div>
+
+
+    <table class=" table table-sm table-bordered dt-responsive" id="tabela-listarFuncionarioOS" style="font-size:8pt;">
+        <thead style="border:solid 1px;border-color:silver;background:#0d6efd; color: white;" class="text-center">   <tr>
+                <th scope="col">#</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Cargo</th>
+                <th scope="col">Lotação</th>
+                <th scope="col">Opções</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in funcionariosOS %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+
+                <td>{{item.funcionario.nome}}</td>
+                <td class="limitar_td" title="{{item.cargo}}">{{item.funcionario.cargo}}</td>
+                <td class="limitar_td" title="{{item.lotacao}}">{{item.funcionario.lotacao}}</td>
+    
+                <td class="text-center">
+                    <a href="{% url 'excluir_funcionarios_imagens_os' obra.pk ordem_atual.pk item.pk %}" title="Excluir Funcionario"><span style="color: red;"><i class="fas fa-trash"></i></span></a>            
+                </td> 
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+   
+        
+    </div>
+    
+</li>
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/datatables.min.js' %}"></script>
+{% block jquery %}
+
+<script>
+    $(document).ready(function () {
+
+
+        $('#tabela-listarFuncionarioOS').DataTable({
+            responsive: true,
+            // "bSort": false,
+            "aaSorting": [],
+            "pageLength": 10,
+            "order": [
+                [0, "asc"]
+            ], //3º tabela em ordem decrescente
+            "language": {
+
+                "decimal": ",",
+                "emptyTable": "Sem registro",
+                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+                "infoFiltered": "(filtrado de _MAX_ registros no total)",
+                "infoPostFix": "",
+                "thousands": ".",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "loadingRecords": "A carregar dados...",
+                "processing": "A processar...",
+                "search": "Procurar:",
+                "zeroRecords": "Não foram encontrados resultados",
+                "paginate": {
+                    "first": "Primeiro",
+                    "last": "Último",
+                    "next": "Seguinte",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": ordem crescente",
+                    "sortDescending": ": ordem decrescente"
+                }
+            }
+        });
+
+    });
+   
+</script>
+
+{% endblock%}

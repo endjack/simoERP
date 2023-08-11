@@ -149,6 +149,10 @@ urlpatterns = [
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/documentos', documentos_orden_servico, name='documentos_orden_servico'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/documentos/salvar', salvar_documento_os, name='salvar_documento_os'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/documentos/<int:file>/excluir', excluir_arquivo_os, name='excluir_arquivo_os'),
+    #urls Engenharia Funcionários v.2
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/funcionarios', funcionarios_imagens_os, name='funcionarios_imagens_os'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/funcionarios/<int:func>/inserir', inserir_funcionarios_imagens_os, name='inserir_funcionarios_imagens_os'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/funcionarios/<int:func>/excluir', excluir_funcionarios_imagens_os, name='excluir_funcionarios_imagens_os'),
     #urls Engenharia RDO v.2
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/diariodeobra', rdo_orden_servico, name='rdo_orden_servico'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/diariodeobra/salvar', salvar_rdo_orden_servico, name='salvar_rdo_orden_servico'),

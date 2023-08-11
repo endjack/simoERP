@@ -8,15 +8,15 @@
       } 
     
 </style>
-         
-<li class="list-group-item align-items-start ">
+      
+<li class="list-group-item align-items-start " style="border: 1px solid gray;font-size:9pt;">
     
     {% if diarios %}
     
     <div class="fw-bold">Relatórios salvos:</div>
 
 
-    <table class="table table-sm table-bordered dt-responsive" style="font-size:12px;">
+    <table class="table table-sm table-bordered dt-responsive" >
         <thead style="border:solid 1px;border-color:silver;background:gray; color: white;" class="text-center">
             <tr>
                 <th scope="col">Data</th>
@@ -49,14 +49,6 @@
         <small class="">Sem Registros!</small>
 
     {% endif %}
-
     
 </li>
 
-{% block jquery %}
-
-<script>
-   
-</script>
-
-{% endblock%}

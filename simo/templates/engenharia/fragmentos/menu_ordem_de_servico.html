@@ -1,9 +1,11 @@
 <div class="">
     <a  class="btn btn-sm btn-dark m-1" href="{% url 'home_obra_os' obra.pk %}" title="Ver Home ({{obra.nome}})"><i class="fas fa-home"></i></a>
-    <a  class="btn btn-sm btn-dark m-1" href="#" target="_blank" title="Imprimir OS"><span style=""><i class="fas fa-print"></i></span></a>
+    <a  class="btn btn-sm btn-dark m-1" href="{% url 'funcionarios_imagens_os' obra.pk ordem_atual.pk %}" title="Funcionários"><i class="fas fa-hard-hat"></i></a>
     <a  class="btn btn-sm btn-dark m-1" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" title="Ver/Anexar Fotos"><span style=""><i class="fas fa-images"></i></span></a>
     <a  class="btn btn-sm btn-dark m-1" href="{% url 'documentos_orden_servico' obra.pk ordem_atual.pk %}" title="Ver/Anexar Documentos"><span style=""><i class="fas fa-folder-open"></i></span></a>
     <a  class="btn btn-sm btn-dark m-1" href="{% url 'rdo_orden_servico' obra.pk ordem_atual.pk %}" title="Diários de Obra"><span style=""><i class="fas fa-calendar-check"></i></span></a>
+    <a  class="btn btn-sm btn-secondary m-1" href="#" target="_blank" title="Imprimir OS"><span style=""><i class="fas fa-print"></i></span></a>
+
     <!-- Button FINALIZAR-->
     {% if ordem_atual.finalizado %}
         <a  class="btn btn-sm btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#RetirarFinalizarOs" href="modal" title="Retirar Serviço Finalizado"><span style=""><i class="fas fa-times"></i></span></a>

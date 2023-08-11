@@ -2,6 +2,7 @@ from datetime import datetime
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from obras.models import Obra,Local
+from funcionarios.models import Funcionario
 from engenharia.models import *
 from django.views.decorators.csrf import csrf_exempt
 from simo.settings import PROJECT_ROOT
@@ -225,6 +226,7 @@ def obras_detalhar_orden_servico(request, pk, os, template_name = 'engenharia/de
         categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
         arquivos = ordem_atual.get_files_by_os().order_by('nome')
         diarios = DiarioDeObraOs.objects.filter(ordem_servico = ordem_atual).order_by('-data')
+        funcionariosOS = FuncionarioOS.objects.filter(ordem_servico = ordem_atual)
         
                 
         context = {
@@ -234,6 +236,7 @@ def obras_detalhar_orden_servico(request, pk, os, template_name = 'engenharia/de
             'categorias': categorias,
             'arquivos': arquivos,
             'diarios': diarios,
+            'funcionariosOS': funcionariosOS,
 
 
         }
@@ -1083,4 +1086,85 @@ def gerar_pdf_rdo_individual(request, pk, os, rdo, template_name = 'engenharia/f
         
         
        
+       
+
+#VIEWS FUNCIONÁRIOS
         
+@login_required(login_url='login/')
+@csrf_exempt
+def funcionarios_imagens_os(request, pk, os, template_name = 'engenharia/funcionarios_ordem.html'):
+
+
+    if request.method == 'GET':
+        obra = Obra.objects.get(pk=pk)
+        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        funcionarios = Funcionario.objects.all()
+        funcionariosOS = FuncionarioOS.objects.filter(ordem_servico = ordem_atual)
+        
+        context = {
+            
+            'obra': obra,
+            'ordem_atual': ordem_atual,
+            'funcionarios': funcionarios,
+            'funcionariosOS': funcionariosOS,
+    
+       
+                
+            }
+            
+        return render(request, template_name , context)  
+        
+@login_required(login_url='login/')
+@csrf_exempt
+def inserir_funcionarios_imagens_os(request, pk, os, func, template_name = 'engenharia/funcionarios_ordem.html'):
+
+
+    if request.method == 'GET':
+        obra = Obra.objects.get(pk=pk)
+        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        funcionarios = Funcionario.objects.all()
+        funcionario_atual = Funcionario.objects.get(pk = func)
+        
+        FuncionarioOS.objects.create(funcionario = funcionario_atual, ordem_servico = ordem_atual)
+        
+        
+        funcionariosOS = FuncionarioOS.objects.filter(ordem_servico = ordem_atual)
+        
+        context = {
+            
+            'obra': obra,
+            'ordem_atual': ordem_atual,
+            'funcionarios': funcionarios,
+            'funcionariosOS': funcionariosOS,
+       
+                
+            }
+            
+        return render(request, template_name , context)  
+        
+@login_required(login_url='login/')
+@csrf_exempt
+def excluir_funcionarios_imagens_os(request, pk, os, func, template_name = 'engenharia/funcionarios_ordem.html'):
+
+
+    if request.method == 'GET':
+        obra = Obra.objects.get(pk=pk)
+        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        funcionarios = Funcionario.objects.all()
+        funcionario_atual = FuncionarioOS.objects.get(pk = func)
+    
+        funcionario_atual.delete()
+        
+        funcionariosOS = FuncionarioOS.objects.filter(ordem_servico = ordem_atual)
+        
+        context = {
+            
+            'obra': obra,
+            'ordem_atual': ordem_atual,
+            'funcionarios': funcionarios,
+            'funcionariosOS': funcionariosOS,
+       
+                
+            }
+            
+        return render(request, template_name , context)  
