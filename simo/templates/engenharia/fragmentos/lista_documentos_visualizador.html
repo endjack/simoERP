@@ -9,35 +9,63 @@
     
 </style>
          
-<li class="list-group-item align-items-start card">
+<li class="list-group-item align-items-start" style="border: 1px solid gray;font-size:9pt;">
            
     {% if arquivos %}                                            
     <div class="fw-bold">Arquivos salvos:</div>
-    <table class="table table-sm table-bordered dt-responsive">
-                
+
+    <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px;">
+        <thead style="border:solid 1px;border-color:silver;background:gray; color: white;" class="text-center">
+            <tr>
+                <th scope="col">Nome/File</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Tamanho</th>
+         
+            </tr>
+        </thead>
+        
         <tbody class="text-center">
-            
             {% for item in arquivos %}
-            <tr class="">
-          
-                <td class="text-start limitar" ><a class="link_os" href="{{item.file.url}}" download>{{item.extension |safe}}</a> {{item.nome}}
-
             
-                </tr>
+            <tr class="link_tr" >
+                {% if item.nome %}
+                <td class="text-start limitar"><a class="link_os" href="{{item.file.url}}" target="_blank">{{item.nome}}</a></td>
+                {% else %}
+                <td class="text-start limitar"><a class="link_os" href="{{item.file.url}}" target="_blank">{{item.filename}}</a></td>
+                {% endif %}
+                
+                <!-- Button --><td class="text-center" style="width:10%"><a class="link_os" href="modal" data-bs-toggle="modal" data-bs-target="#ModalDocumento{{item.pk}}">{{item.extension |safe}}</a>
+                 <td>{{item.file.size}}kb</td>
+                
+            </tr>
+            
+                     <!-- Modal -->
+                     <div class="modal fade" id="ModalDocumento{{item.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                {{item.filename}}
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                
+                                <object data="{{item.file.url}}" type="application/pdf" width="100%" height="500px">
+                                <p>Não pode ser Aberto! <a href="{{item.file.url}}" target="_blank">Download</a></p>
+                                </object>
+                               
+                               
+                            </div>
+                            
+                        </div>
+                        </div>
+                    </div>
+                    <!-- Fim Modal -->
+            
             {% endfor %}
-       
         </tbody>
-
+   
     </table>
     {% else %} 
     <small class="">Sem anexos!</small>         
     {% endif %}
 </li>
-
-{% block jquery %}
-
-<script>
-   
-</script>
-
-{% endblock%}

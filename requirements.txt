@@ -87,3 +87,4 @@ WeasyPrint==52.5
 webencodings==0.5.1
 wrapt==1.12.1
 zope.interface==4.3.2
+python-pdf==0.30.0

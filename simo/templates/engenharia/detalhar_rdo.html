@@ -42,10 +42,11 @@
 </div>
 <div class="row card col-md-8 m-2">
     <div class=" text-center p-2" style="">
-     <h5>Relatório de Diário de Obra - RDO nº 000{{rdo_atual.pk}} <span style="color:gray">|</span> Data: {{rdo_atual.data}}</h5> 
+     <h5>Relatório de Diário de Obra - RDO nº 000{{rdo_atual.pk}} <span style="color:gray">|</span> Data: {{rdo_atual.data | date:'d/m/Y'}}</h5> 
       <!-- Button EDITAR--> <a  style="margin-left:5px;" data-bs-toggle="modal" data-bs-target="#EditarRDO" href="modal" title="Editar Diário de Obra"><span><i class="fas fa-edit"></i></span></a> <!-- Button --> 
-     <a  style="color:black;margin-left:5px;" href="#" target="_blank" title="Imprimir OS"><span><i class="fas fa-print"></i></span></a>
-     <a  style="color:red; margin-left:5px;" data-bs-toggle="modal" data-bs-target="#ExcluirRDO" href="modal" title="Excluir Diário de Obra"><span><i class="fas fa-trash"></i></span></a>
+     <a  style="color:black;margin-left:5px;" href="{% url 'imprimir_rdo_individual' obra.pk ordem_atual.pk rdo_atual.pk %}" target="_blank" title="Imprimir Relatório"><span><i class="fas fa-print"></i></span></a>
+     <a  style="color:red;margin-left:5px;" href="{% url 'gerar_pdf_rdo_individual' obra.pk ordem_atual.pk rdo_atual.pk %}" target="_blank" title="Gerar PDF"><span><i class="far fa-file-pdf"></i></span></a>
+     <a  style="color:red; margin-left:5px;" data-bs-toggle="modal" data-bs-target="#ExcluirRDO" href="modal" title="Excluir Diário de Obra"><span><i class="fa fa-trash-alt"></i></span></a>
     </div>
 </div>
 
@@ -396,7 +397,7 @@
         <div class="card" style="">
             <div class="card-header">
              <span class="textheader">Fotos  <!-- Button ADD IMAGEM-->
-                <a style="margin:5px;" href="modal" class="" title="Adicionar Imagens" data-bs-toggle="modal" data-bs-target="#ModalCategoria{{cat.pk}}">
+                <a style="margin:5px;" href="modal" class="" title="Adicionar Imagens" data-bs-toggle="modal" data-bs-target="#RDOModalCategoria">
                    <i class="fas fa-plus"> Adicionar Fotos</i></a> </span>
             </div>
             <div class="p-2">
@@ -430,7 +431,7 @@
                                      <img src="{{im.imagem.url }}" class="card-img-top " style="">
                                  </div>
                                  <div class="modal-footer form-control">
-                                    <a type="button" class="btn btn-sm btn-danger" href="{% url 'excluir_imagem_em_categoria' obra.pk ordem_atual.pk im.pk %}">Excluir</a>
+                                    <a type="button" class="btn btn-sm btn-danger" href="{% url 'obras_excluir_imagem_orden_servico_em_rdo' obra.pk ordem_atual.pk im.pk rdo_atual.pk %}">Excluir</a>
                                     <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
                                     </div>
                                  
@@ -440,54 +441,11 @@
                          </div>
                          <!-- Fim Modal -->
                          {% endfor %}
+                      
                          {% endwith %}
-                            
    
 
-                 <!-- Modal -->
-                 <div class="modal fade" id="ModalCategoria{{cat.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <div class="d-flex flex-column bd-highlight">
-                                <div class="bd-highlight" >Inserir Fotos:</div>
-                            </div>  
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            
-                            
-
-                        <form id="formInserirImagensOs" enctype="multipart/form-data"
-                                hx-post="{% url 'salvar_imagem_em_categoria' obra.pk ordem_atual.pk %}"
-                                hx-target="body"
-                                hx-trigger="submit"
-                                hx-swap="outerHTML"> 
-                            {% csrf_token %}
-                            <div class="form-group row mb-2">
-                                <input type="hidden" value="{{rdo_atual.pk}}" name="rdo_id">    
-                                <div class="col-md">
-                                    <label for="input2" class=""></label>
-                                    <input type="file" name="imagem" class="form-control form-control-sm" accept="image/*" multiple /> 
-                                    <small class="small-error" id="error_imagem"></small>
-                                </div>
-                            </div>
-                        
-                            {% for error in field.errors %}
-                            <span class="help-block">{{ error }}</span>
-                            {% endfor %}
-                        </form>
-                                                    
-                        </div>
-                        <div class="modal-footer form-control">
-                        <button class="btn btn-p-sm btn-primary m-1" form="formInserirImagensOs">Salvar</button>
-                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                       
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                <!-- Fim Modal -->  
+                
                         {% endif %}
                       </tr>
                       
@@ -498,7 +456,46 @@
         <!--/CARD-->
     </div>
 </div>
+ <!-- Modal -->
+ <div class="modal fade" id="RDOModalCategoria" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="d-flex flex-column bd-highlight">
+                <div class="bd-highlight" >Inserir Fotos:</div>
+            </div>  
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            
+            
 
+        <form id="formInserirImagensOs" method="POST" action="{% url 'salvar_imagem_em_categoria' obra.pk ordem_atual.pk %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group row mb-2">
+                <input type="hidden" value="{{rdo_atual.pk}}" name="rdo_id">    
+                <div class="col-md">
+                    <label for="input2" class=""></label>
+                    <input type="file" name="imagem" class="form-control form-control-sm" accept="image/*" multiple /> 
+                    <small class="small-error" id="error_imagem"></small>
+                </div>
+            </div>
+        
+            {% for error in field.errors %}
+            <span class="help-block">{{ error }}</span>
+            {% endfor %}
+        </form>
+                                    
+        </div>
+        <div class="modal-footer form-control">
+        <button class="btn btn-p-sm btn-primary m-1" form="formInserirImagensOs">Salvar</button>
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+       
+        </div>
+    </div>
+    </div>
+</div>
+<!-- Fim Modal -->  
 
 <div class="mb-4"></div>
 
