@@ -77,46 +77,48 @@
                     </div>
                 </div>
                 <!-- Fim Modal -->  
+                        <!-- Button -->
+                        <a style="margin:5px;" href="modal" class="" title="Excluir Categoria" data-bs-toggle="modal" data-bs-target="#ModalExcluirCategoria{{cat.pk}}">
+                            <i class="fas fa-trash"></i></a>    
 
-                 <!-- Button -->
-                 <a style="margin:5px;" href="modal" class="" title="Excluir Categoria" data-bs-toggle="modal" data-bs-target="#ModalExcluirCategoria{{cat.pk}}">
-                    <i class="fas fa-trash"></i></a>    
-
-                 <!-- Modal -->
-                 <div class="modal fade" id="ModalExcluirCategoria{{cat.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <div class="d-flex flex-column bd-highlight">
-                                <div class="bd-highlight" >Excluir Categoria:</div>
-                            </div>  
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            
+                        <!-- Modal -->
+                        <div class="modal fade" id="ModalExcluirCategoria{{cat.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <div class="d-flex flex-column bd-highlight">
+                                        <div class="bd-highlight" >Excluir Categoria:</div>
+                                    </div>  
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
                                     
-                        {% if imagens|length > 0 %}
-                            ATENÇÃO: 
-                            Essa categoria contém  {{imagens|length}} imagem(ns), que serão excluídas também.
+                                            
+                                {% if imagens|length > 0 %}
+                                    ATENÇÃO: 
+                                    Essa categoria contém  {{imagens|length}} imagem(ns), que serão excluídas também.
 
-                        {% else %}
-                            Certeza que deseja excluir?
-                        
-                        {% endif %}
-                                 
-                             
+                                {% else %}
+                                    Certeza que deseja excluir?
+                                
+                                {% endif %}
+                                        
+                                    
 
+                                </div>
+                                <div class="modal-footer form-control">
+
+                                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                <form action="{% url 'obra_excluir_categoria' obra.pk ordem_atual.pk cat.pk %}" method="POST">
+                                     <button  class="btn btn-sm btn-danger" type="submit" href="">EXCLUIR</button>
+                                </form>   
+                                </div>
+                            </div>
+                            </div>
                         </div>
-                        <div class="modal-footer form-control">
+                        <!-- Fim Modal -->  
 
-                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                        <a class="btn btn-sm btn-danger" type="button" href="{% url 'obra_excluir_categoria' obra.pk ordem_atual.pk cat.pk %}">EXCLUIR</a>
-                       
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                <!-- Fim Modal -->  
+                
 
                 {% comment %} <a style="margin:5px;" title="Download em Zip todas as imagens da Categoria" href="{% url 'dowload_imagens_categoria' obra.pk ordem_atual.pk cat.pk %}"><i class="fas fa-download"></i></a> {% endcomment %}
 
@@ -172,8 +174,9 @@
                                
                                         <button  type="submit" class="form-control form-control-sm btn btn-sm btn-primary">Salvar Categoria</button>    
                                     </form>
-
-                                    <a type="button" class="btn btn-sm btn-danger" href="{% url 'excluir_imagem_em_categoria' obra.pk ordem_atual.pk im.pk %}">Excluir</a>
+                                    <form method="POST" action="{% url 'excluir_imagem_em_categoria' obra.pk ordem_atual.pk im.pk %}" > 
+                                        <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                    </form>
                                     <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
                                    
                                     </div>

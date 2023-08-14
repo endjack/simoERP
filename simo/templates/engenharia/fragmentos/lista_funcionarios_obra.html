@@ -51,7 +51,9 @@
                 <td class="limitar_td" title="{{item.lotacao}}">{{item.funcionario.lotacao}}</td>
     
                 <td class="text-center">
-                    <a href="{% url 'excluir_funcionarios_imagens_os' obra.pk ordem_atual.pk item.pk %}" title="Excluir Funcionario"><span style="color: red;"><i class="fas fa-trash"></i></span></a>            
+                    <form action="{% url 'excluir_funcionarios_imagens_os' obra.pk ordem_atual.pk item.pk %}" method="POST">
+                        <button style="border:0px;background:none" type="submit" title="Excluir Funcionario"><span style="color: red;"><i class="fas fa-trash"></i></span></button>            
+                    </form>
                 </td> 
             </tr>
             {% endfor %}

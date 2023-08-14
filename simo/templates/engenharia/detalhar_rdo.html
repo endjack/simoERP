@@ -431,9 +431,11 @@
                                      <img src="{{im.imagem.url }}" class="card-img-top " style="">
                                  </div>
                                  <div class="modal-footer form-control">
-                                    <a type="button" class="btn btn-sm btn-danger" href="{% url 'obras_excluir_imagem_orden_servico_em_rdo' obra.pk ordem_atual.pk im.pk rdo_atual.pk %}">Excluir</a>
+                                    <form action="{% url 'obras_excluir_imagem_orden_servico_em_rdo' obra.pk ordem_atual.pk im.pk rdo_atual.pk %}" method="POST">
+                                        <button type="submit" class="btn btn-sm btn-danger" href="">Excluir</button>
+                                    </form>
                                     <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                    </div>
+                                </div>
                                  
                              </div>
                              

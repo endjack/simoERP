@@ -1,5 +1,5 @@
 from datetime import datetime
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from obras.models import Obra,Local
 from funcionarios.models import Funcionario
@@ -311,6 +311,10 @@ def obras_mudar_finalizar_orden_servico(request, pk, os, template_name = 'engenh
     
     return render(request, template_name , context)
 
+#--------------------------
+#---------------------------VIEWS IMAGENS EM ORDEM DE SERVIÇO
+#--------------------------
+
 @login_required(login_url='login/')
 @csrf_exempt
 def obras_imagens_orden_servico(request, pk, os, template_name = 'engenharia/imagens_ordem.html'):
@@ -361,30 +365,16 @@ def obras_imagens_inserir_categoria_orden_servico(request, pk, os, template_name
 @csrf_exempt    
 def obras_imagens_salvar_categoria_orden_servico(request, pk, os, template_name = 'engenharia/imagens_ordem.html'):
         
-       
-        obra = Obra.objects.get(pk=pk)
+        
+    if request.method == 'POST':
         ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        categoria = request.POST.get('categoria') or ''
+        CategoriaImagem.objects.create(categoria = categoria,
+                                        ordem_servico = ordem_atual)
         
-        
-        if request.method == 'POST':
-            
-            categoria = request.POST.get('categoria') or ''
-            CategoriaImagem.objects.create(categoria = categoria,
-                                            ordem_servico = ordem_atual)
-            
-        categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
-        imagens = ImagemOS.objects.filter(ordem_servico = ordem_atual)
-                
-        context = {
-    
-            'obra': obra,
-            'ordem_atual': ordem_atual,
-            'categorias': categorias,
-            'imagens': imagens,
 
-        }
+    return redirect('obra_imagens_os', pk=pk, os=os)
 
-        return render(request, template_name , context)
 
 @login_required(login_url='login/')
 @csrf_exempt   
@@ -411,51 +401,13 @@ def obras_inserir_imagem_em_categoria_orden_servico(request, pk, os, template_na
 @csrf_exempt    
 def obras_salvar_imagem_em_categoria_orden_servico(request, pk, os):
         
-           
+    if request.method == 'GET':
+        
         obra = Obra.objects.get(pk=pk)
         ordem_atual = OrdemServicoObras.objects.get(pk=os)
         categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
         rdo_atual = None
         template_name = 'engenharia/detalhar_rdo.html'
-            
-        
-        if request.method == 'POST':
-            
-            categoria_rdo= request.POST.get('rdo_id') or ''
-            
-            if categoria_rdo == '':
-                categoria_imagem = request.POST.get('categoria') or ''
-                categoria_atual = CategoriaImagem.objects.get(categoria = categoria_imagem, ordem_servico = ordem_atual)
-                template_name = 'engenharia/imagens_ordem.html'
-            else:
-                rdo_atual = DiarioDeObraOs.objects.get(pk=categoria_rdo)
-                
-                if not rdo_atual.fotos:
-                    categoria_atual = CategoriaImagem.objects.create(categoria = f'Diário De Obra ({rdo_atual.data.strftime("%d/%m/%Y")})',
-                                                                 ordem_servico = ordem_atual) 
-                    rdo_atual.fotos = categoria_atual
-                    rdo_atual.save() 
-                else:
-                    categoria_atual = rdo_atual.fotos
-                    
-                
-            
-           
-            
-            # UPLOAD DE IMAGENS
-            imagens = request.FILES.getlist('imagem') or None
-            
-            if imagens is not None:
-                for image in imagens:   
-                    ImagemOS.objects.create(categoria = categoria_atual, 
-                                            imagem = image,
-                                            ordem_servico = ordem_atual)
-            else:
-                response = HttpResponse('<span style="color:red"><i>Sem imagem</i></span>')
-                response['HX-Retarget'] = '#error_imagem'
-                response['HX-Swap'] = 'innerHTML'
-                return response
-                
         
         context = {
     
@@ -467,6 +419,45 @@ def obras_salvar_imagem_em_categoria_orden_servico(request, pk, os):
         }
         
         return render(request, template_name , context)
+            
+        
+    if request.method == 'POST':
+        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        categoria_rdo= request.POST.get('rdo_id') or ''
+        
+        if categoria_rdo == '':
+            categoria_imagem = request.POST.get('categoria') or ''
+            categoria_atual = CategoriaImagem.objects.get(categoria = categoria_imagem, ordem_servico = ordem_atual)
+            url = redirect('obra_imagens_os', pk=pk, os=os)
+        else:
+            rdo_atual = DiarioDeObraOs.objects.get(pk=categoria_rdo)
+            
+            if not rdo_atual.fotos:
+                categoria_atual = CategoriaImagem.objects.create(categoria = f'Diário De Obra ({rdo_atual.data.strftime("%d/%m/%Y")})',
+                                                                ordem_servico = ordem_atual) 
+                rdo_atual.fotos = categoria_atual
+                rdo_atual.save() 
+            else:
+                categoria_atual = rdo_atual.fotos
+            
+            url = redirect('detalhar_rdo_rdo_orden_servico', pk=pk, os=os, rdo=rdo_atual.pk)    
+            
+        # UPLOAD DE IMAGENS
+        imagens = request.FILES.getlist('imagem') or None
+        
+        if imagens is not None:
+            for image in imagens:   
+                ImagemOS.objects.create(categoria = categoria_atual, 
+                                        imagem = image,
+                                        ordem_servico = ordem_atual)
+        else:
+            response = HttpResponse('<span style="color:red"><i>Sem imagem</i></span>')
+            response['HX-Retarget'] = '#error_imagem'
+            response['HX-Swap'] = 'innerHTML'
+            return response
+                    
+        return url
+
         
         
 @login_required(login_url='login/')
@@ -474,42 +465,26 @@ def obras_salvar_imagem_em_categoria_orden_servico(request, pk, os):
 def obras_excluir_imagem_orden_servico(request, pk, os, im, template_name = 'engenharia/imagens_ordem.html'):
     
           
-        if request.method == 'GET':
-        
-            obra = Obra.objects.get(pk=pk)
-            ordem_atual = OrdemServicoObras.objects.get(pk=os)
-            categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria') 
+    if request.method == 'POST':
+    
+        ordem_atual = OrdemServicoObras.objects.get(pk=os)
 
-            try:
-                imagem_atual =     ImagemOS.objects.get(pk=im) 
-            except ImagemOS.DoesNotExist:
-                raise Http404("IMAGEM JÁ DELETADA OU NÃO EXISTE!")
-            
-
-            print(f'---------- IMAGEM DELETADA {imagem_atual}---------------------')
-            imagem_atual.delete()
+        try:
+            imagem_atual =     ImagemOS.objects.get(pk=im) 
+        except ImagemOS.DoesNotExist:
+            raise Http404("IMAGEM JÁ DELETADA OU NÃO EXISTE!")
         
-            context = {
-        
-                'obra': obra,
-                'ordem_atual': ordem_atual,
-                'categorias': categorias,
 
-            }
-            
-            return render(request, template_name , context)
+        print(f'---------- IMAGEM DELETADA {imagem_atual}---------------------')
+        imagem_atual.delete()
+    
+        return redirect('obra_imagens_os', pk=pk, os=os)
         
 @login_required(login_url='login/')
 @csrf_exempt    
 def obras_excluir_imagem_orden_servico_em_rdo(request, pk, os, im, rdo, template_name = 'engenharia/detalhar_rdo.html'):
-    
-          
-        if request.method == 'GET':
-        
-            obra = Obra.objects.get(pk=pk)
-            ordem_atual = OrdemServicoObras.objects.get(pk=os)
-            rdo_atual = DiarioDeObraOs.objects.get(pk = rdo)
-
+             
+        if request.method == 'POST':
             try:
                 imagem_atual =     ImagemOS.objects.get(pk=im) 
             except ImagemOS.DoesNotExist:
@@ -519,15 +494,8 @@ def obras_excluir_imagem_orden_servico_em_rdo(request, pk, os, im, rdo, template
             print(f'---------- IMAGEM DELETADA {imagem_atual}---------------------')
             imagem_atual.delete()
         
-            context = {
-        
-                'obra': obra,
-                'ordem_atual': ordem_atual,
-                'rdo_atual': rdo_atual,
-
-            }
-            
-            return render(request, template_name , context)
+    
+            return redirect('detalhar_rdo_rdo_orden_servico', pk=pk, os=os, rdo=rdo)
     
         
 @login_required(login_url='login/')
@@ -597,10 +565,8 @@ def obras_editar_categoria_orden_servico(request, pk, os, cat, template_name = '
 def obras_excluir_categoria_orden_servico(request, pk, os, cat, template_name = 'engenharia/imagens_ordem.html'):
         
         
-        if request.method == 'GET':
+        if request.method == 'POST':
         
-            obra = Obra.objects.get(pk=pk)
-            ordem_atual = OrdemServicoObras.objects.get(pk=os)
             categoria_atual = CategoriaImagem.objects.get(pk = cat)
             categoria_para_deletar = categoria_atual.categoria
 
@@ -614,17 +580,8 @@ def obras_excluir_categoria_orden_servico(request, pk, os, cat, template_name = 
             
             print(f'-DELETADO CATEGORIA {categoria_para_deletar}')
             
-            categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
-        
-            context = {
-        
-                'obra': obra,
-                'ordem_atual': ordem_atual,
-                'categorias': categorias,
-
-            }
-            
-            return render(request, template_name , context)
+            return redirect('obra_imagens_os', pk=pk, os=os)
+ 
         
 @login_required(login_url='login/')
 @csrf_exempt    
@@ -652,6 +609,11 @@ def dowload_imagens_categoria_orden_servico(request, pk, os, cat):
       
         
         return FileResponse('z')
+
+
+#--------------------------
+#---------------------------VIEWS DOCUMENTOS EM ORDEM DE SERVIÇO
+#--------------------------
     
 @login_required(login_url='login/')
 @csrf_exempt
@@ -1084,9 +1046,7 @@ def gerar_pdf_rdo_individual(request, pk, os, rdo, template_name = 'engenharia/f
         # http_response['Content-Disposition'] = 'attachment; filename="rdo-{}.pdf"'.format(rdo_atual.pk)
         # return http_response
         
-        
-       
-       
+          
 
 #VIEWS FUNCIONÁRIOS
         
@@ -1094,7 +1054,6 @@ def gerar_pdf_rdo_individual(request, pk, os, rdo, template_name = 'engenharia/f
 @csrf_exempt
 def funcionarios_imagens_os(request, pk, os, template_name = 'engenharia/funcionarios_ordem.html'):
 
-
     if request.method == 'GET':
         obra = Obra.objects.get(pk=pk)
         ordem_atual = OrdemServicoObras.objects.get(pk=os)
@@ -1108,63 +1067,31 @@ def funcionarios_imagens_os(request, pk, os, template_name = 'engenharia/funcion
             'funcionarios': funcionarios,
             'funcionariosOS': funcionariosOS,
     
-       
                 
             }
             
         return render(request, template_name , context)  
+
         
 @login_required(login_url='login/')
 @csrf_exempt
 def inserir_funcionarios_imagens_os(request, pk, os, func, template_name = 'engenharia/funcionarios_ordem.html'):
-
-
-    if request.method == 'GET':
-        obra = Obra.objects.get(pk=pk)
+     
+    if request.method == 'POST':
         ordem_atual = OrdemServicoObras.objects.get(pk=os)
-        funcionarios = Funcionario.objects.all()
-        funcionario_atual = Funcionario.objects.get(pk = func)
-        
+        funcionario_atual = Funcionario.objects.get(pk = func)  
         FuncionarioOS.objects.create(funcionario = funcionario_atual, ordem_servico = ordem_atual)
         
-        
-        funcionariosOS = FuncionarioOS.objects.filter(ordem_servico = ordem_atual)
-        
-        context = {
-            
-            'obra': obra,
-            'ordem_atual': ordem_atual,
-            'funcionarios': funcionarios,
-            'funcionariosOS': funcionariosOS,
-       
-                
-            }
-            
-        return render(request, template_name , context)  
+        return redirect('funcionarios_imagens_os', pk=pk, os=os)    
+    
+  
         
 @login_required(login_url='login/')
 @csrf_exempt
 def excluir_funcionarios_imagens_os(request, pk, os, func, template_name = 'engenharia/funcionarios_ordem.html'):
 
-
-    if request.method == 'GET':
-        obra = Obra.objects.get(pk=pk)
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
-        funcionarios = Funcionario.objects.all()
+    if request.method == 'POST':
         funcionario_atual = FuncionarioOS.objects.get(pk = func)
-    
         funcionario_atual.delete()
         
-        funcionariosOS = FuncionarioOS.objects.filter(ordem_servico = ordem_atual)
-        
-        context = {
-            
-            'obra': obra,
-            'ordem_atual': ordem_atual,
-            'funcionarios': funcionarios,
-            'funcionariosOS': funcionariosOS,
-       
-                
-            }
-            
-        return render(request, template_name , context)  
+    return redirect('funcionarios_imagens_os', pk=pk, os=os)
