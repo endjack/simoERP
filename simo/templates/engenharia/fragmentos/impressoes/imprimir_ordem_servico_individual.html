@@ -1,0 +1,249 @@
+{% load static %}
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" media="print">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <title>Imprimir Serviços</title>
+    
+    <style>
+        @page {
+            size: A4;
+            margin: 0.5cm;
+            page-break-after: always;
+      
+
+        }
+        @media print {
+            .pagebreak {
+                clear: both;
+                page-break-after: always;
+            }
+        }
+
+
+        * {
+            color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+           
+        }
+
+        .card-header{
+            background-color: #d5e4f5  !important;
+            padding: 0px;
+            text-align: center;
+          }
+          .textheader{
+            font-weight: bold;
+          }
+            .camposTable{
+                padding:0px;
+            }
+
+            .quebralinha {
+     
+                overflow: hidden;
+                white-space: pre-wrap;
+        
+        
+               } 
+    </style>
+
+</head>
+
+<body class="container" style="font-family: sans-serif;">
+
+<div class="" >
+
+    <div class="row" style="">
+        <div class="d-flex justify-content-start">
+            <div class=" bd-highlight col-md-2">
+                <img src="{% static 'imagens/logo1.png' %}" alt="" height="80" >
+            </div>
+          
+            <div class="p-2 bd-highlight col-md-4" style="font-size:10pt;">
+                <div class="">
+                    <span style="font-size:12pt;font-weight:bold;"> 
+                     {{obra.nome}} </span> <br> {{obra.contratante}} <br>
+                     Contrato nº: {{obra.num_contrato}}
+                 </div>
+                
+            </div>
+
+            <div class="ms-auto p-2 bd-highlight col-md-6" style="font-size:10pt;">
+                <div class="text-end">   
+                    <span style="font-size:12pt;font-weight:bold;"> ORDEM DE SERVIÇO nº {{ordem_atual.numero_os}}</span>  
+                
+                        <div class="col-md-6" >
+                                {% if ordem_atual.local %}
+                                <span class="quebralinha">{{ordem_atual.local.local}}</span>
+                                {% else %}
+                                [sem local] {% endif %}
+                        </div>
+                
+                        <div class="col-md-6" style="font-size:10pt">
+                                {% if ordem_atual.local %}
+                                <span class="quebralinha">{{ordem_atual.local.endereco }}</span>
+                                {% endif %}
+                        </div>
+                            
+                </div> 
+                
+                 
+                
+            </div>
+        </div>
+    </div>
+
+</div>     
+        
+
+
+
+<div class="">
+        <ol class="list-group " style="">
+                <div class="d-flex flex-row" style="padding-top:0.2rem;">
+                    <div class="me-auto">
+                        <small><i class="far fa-list-alt"></i> Dados dos Serviço:</small> 
+                    </div>
+                    
+                </div>
+                
+                <li class="list-group-item align-items-start " style="border: 1px solid gray;font-size:9pt;border-radius: 5px;">
+                    <div class="row">
+                        <div class="col-md">
+                            <div class="col-md">
+                                <div class="fw-bold ">Serviços à Executar:</div>
+                                {% if ordem_atual.servicos %}
+                                <span  class="quebralinha">{{ordem_atual.servicos}}</span>
+                                {% else %}
+                                - {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                        
+                    <div class="d-flex flex-row justify-content-between">
+      
+                           
+                                
+                                <div class="">
+                                    <div class="fw-bold">Data de Recebimento:</div>
+                                        {% if ordem_atual.data_recebimento %}
+                                        <span style='white-space:pre'>{{ordem_atual.data_recebimento |date:'d/m/Y'}}</span>
+                                        {% else %}
+                                        - {% endif %}
+                                </div>
+            
+                                <div class="">
+                                    <div class="fw-bold">Data de Início:</div>
+                                        {% if ordem_atual.data_inicio %}
+                                        <span style='white-space:pre'>{{ordem_atual.data_inicio  |date:'d/m/Y' }}</span>
+                                        {% else %}
+                                        - {% endif %}
+                                </div>
+                                
+                                <div class="">
+                                    <div class="fw-bold">Prazo:</div>
+                                        {% if ordem_atual.data_prazo %}
+                                        <span style='white-space:pre'>{{ordem_atual.data_prazo  |date:'d/m/Y'}}</span>
+                                        {% else %}
+                                        - {% endif %}
+                                </div>
+                
+               
+                    </div>
+                    
+                </li>
+        
+                {% with ordem_atual.get_funcionarios_by_os as funcionariosOS %}
+                {% if funcionariosOS %}
+                <small style="padding-top:0.2rem;"><i class="fas fa-hard-hat"></i> Funcionários:</small>  
+                <li class="list-group-item align-items-start;" style="border: 1px solid gray;border-radius:5px;">
+       
+                    {% if funcionariosOS %}  
+                        <table class=" table table-sm  dt-responsive" style="font-size:9pt;border-radius:3px;">
+                            <tbody>
+                                {% for item in funcionariosOS %}
+                                <tr>
+                                
+                                    <td>{{item.funcionario.nome}}</td>
+                                    <td class="limitar_td" title="{{item.cargo}}">{{item.funcionario.cargo}}</td>
+                                    <td class="limitar_td text-center" title="{{item.telefone1}}">
+                                        {% if item.funcionario.telefone1 %}
+                                        {{item.funcionario.telefone1}}
+                                        {% else %} -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                
+                    {% else %}
+                    <small class="">Sem Funcionários.</small>  
+                    {% endif %}   
+                </li>
+                {% endif %}
+                {% endwith %}
+       
+                
+
+                {% if categoriasOS %}
+                    <small style="padding-top:0.2rem;"><i class="fas fa-images"></i> Fotos do Serviço:</small>
+                    <li class="list-group-item align-items-start;" style="border: 1px solid gray;border-radius:5px;">
+                    {% for cat in categoriasOS %}
+                        <div class=""><small>{{cat.categoria}}</small></div>
+                        <div class="d-flex flex-wrap ">
+                        {% with cat.get_imagens_by_category as imagensOS %}                                   
+                            {% for im in imagensOS %}
+                            <div class="" style="margin-bottom:0.5rem">                                            
+                                <img src="{{im.imagem.url}}" class="card-img-top m-1" style="max-width: 27vw; height: auto;">             
+                            </div>
+                            {% endfor %} 
+                        {% endwith %}
+                        </div>
+                    {% endfor %}
+                    </li>
+                {% endif %}
+         
+                {% if ordem_atual.obs %}  
+                <div class="" style="padding-top:0.2rem;">
+                    <small ><i class="far fa-comment-alt"></i> Observações da Empresa: </small>
+                    <li class="list-group-item align-items-start" style="border: 1px solid gray;font-size:9pt;border-radius: 5px;">            
+                    {{ordem_atual.obs}}
+                    </li>
+                </div>
+                {% endif %}    
+
+                <div class="" style="padding-top:0.2rem;">
+                    <small ><i class="far fa-comment-alt"></i> Atividades/Ocorrências do Funcionário: </small>
+                    <li class="list-group-item align-items-start" style="border: 1px solid gray;font-size:9pt;border-radius: 5px;">
+                    <div> <hr class="mt-3"> <hr class="mt-2"><hr class="mt-2"><hr class="mt-2"><hr class="mt-2"><hr class="mt-2">
+                        <hr class="mt-2"><hr class="mt-2"><hr class="mt-2"></div>
+                    </li>
+                </div>
+
+                <div class="mt-3">
+                    <div><small>Parnamirim, {%now 'd'%} de {%now 'F'%} de {%now 'Y'%}.</small></div>    
+
+                    <div class="d-flex justify-content-around mt-5">
+                        <div class="text-center">_________________________________<br><small>BRASIL CONSTRUÇÃO LTDA</small></div>
+                        <div class="text-center">_________________________________<br><small>FUNCIONÁRIO</small></div>
+
+                    </div>
+                </div>    
+     </ol>
+
+</div>
+
+<script>
+    (function () {
+        window.print();
+    })();
+</script> 
+
+</body>
+</html>

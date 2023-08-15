@@ -41,9 +41,9 @@
    
     </div>
         <div class="p-2">
-            <!-- Button --> 
+            <!-- Button Adicionar Funcionário --> 
             <h6 class="p-2"><a title="Adicionar Arquivo" data-bs-toggle="modal" data-bs-target="#AddFuncionárioOS" href="modal" class=""> <i class="far fa-file-alt"></i> Adicionar Funcionário <i class="fas fa-plus"></i></a></h6>
-            <!-- Modal -->
+            <!-- Modal Adicionar Funcionário -->
             <div class="modal fade" id="AddFuncionárioOS" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable modal-lg">
             <div class="modal-content" style="background-color:#edeef5">
@@ -76,7 +76,9 @@
                                             <td class="limitar_td" title="{{item.lotacao}}">{{item.lotacao}}</td>
                                 
                                             <td class="text-center">
-                                                <a href="{% url 'inserir_funcionarios_imagens_os' obra.pk ordem_atual.pk item.pk %}" title="Adicionar Funcionario"><span style="color: DodgerBlue;"><i class="fas fa-plus"></i></span></a>            
+                                                <form action="{% url 'inserir_funcionarios_imagens_os' obra.pk ordem_atual.pk item.pk %}" method="POST">
+                                                    <button style="border:0px" type="submit" title="Adicionar Funcionario"><span style="color: DodgerBlue;"><i class="fas fa-plus"></i></span></button>            
+                                                  </form>
                                             </td> 
                                         </tr>
                                         {% endfor %}

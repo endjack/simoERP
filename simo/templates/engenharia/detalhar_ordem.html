@@ -17,137 +17,151 @@
 
 <div class="cabecalho-contas mb-2 ">
 
-        {% include "engenharia/fragmentos/cabecalho_resumo_obras.html" %}
+    {% include "engenharia/fragmentos/cabecalho_resumo_obras.html" %}
 
+</div>     
         
-        <div class="d-flex align-items-center flex-row bd-highlight mb-1 " >
-   
-            <div class="p-2 bd-highlight">
-                <a class="btn btn-sm btn-secondary m-2" href="{% url 'home_obra_os' obra.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
-        
-            </div>
-            <div class="p-2 bd-highlight">   
-                {% include "engenharia/fragmentos/titulo_numero_ordem_de_servico.html" %}            
-            </div> 
+<div class="d-flex align-items-center flex-row bd-highlight mb-1 " >
 
-            <div class="">
-                {% include "engenharia/fragmentos/menu_ordem_de_servico.html" %}
-            </div>
-           
-       
-        </div>
-        
-        <ol class="list-group " style="padding-left:1rem;padding-top:1rem;">
+    <div class="p-2 bd-highlight">
+        <a class="btn btn-sm btn-secondary m-2" href="{% url 'home_obra_os' obra.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
 
-            <h6 style=""><i class="far fa-list-alt"></i> Dados dos Serviço: 
-            <a type="button" href="{% url 'obra_editar_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-pen"></i></a></h6> 
-            <li class="list-group-item align-items-start " style="border: 1px solid gray;font-size:9pt;">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="col-md p-1">
-                            <div class="fw-bold ">Serviços à Executar:</div>
-                            {% if ordem_atual.servicos %}
-                            <span  class="quebralinha">{{ordem_atual.servicos}}</span>
-                            {% else %}
-                            - {% endif %}
+    </div>
+    <div class="p-2 bd-highlight">   
+        {% include "engenharia/fragmentos/titulo_numero_ordem_de_servico.html" %}            
+    </div> 
+
+    <div class="">
+        {% include "engenharia/fragmentos/menu_ordem_de_servico.html" %}
+    </div>
+
+</div>
+
+    <div class="container">
+        <ol class="list-group " style="">
+                <div class="d-flex flex-row" style="padding-top:1rem;">
+                    <div class="me-auto">
+                        <h6><i class="far fa-list-alt"></i> Dados dos Serviço: <a type="button" href="{% url 'obra_editar_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-pen"></i></a></h6> 
+                    </div>
+                    {% if obra.tipo == '1' %}
+                        <div class="" style="margin-right:0.5rem;">
+                            <!-- Button PRODUÇÃO --> <h6><a style="text-decoration: none;" href="#" title="Produção Calceteiros"><i class="fas fa-edit"></i><span > Produção</span></a></h6>                      
+                        </div> 
+                        <div class="" style="margin-right:0.5rem;">
+                            <!-- Button MEDIÇÃO --> <h6><a style="text-decoration: none;" href="#" title="Medição Emulssão"><i class="fas fa-edit"></i><span > Medição</span></a></h6>
+                            
+                        </div> 
+                    {% endif %}
+                </div>
+                
+                <li class="list-group-item align-items-start " style="border: 1px solid gray;font-size:9pt;border-radius: 5px;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="col-md p-1">
+                                <div class="fw-bold ">Serviços à Executar:</div>
+                                {% if ordem_atual.servicos %}
+                                <span  class="quebralinha">{{ordem_atual.servicos}}</span>
+                                {% else %}
+                                - {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+
+                            <div class=" d-flex p-1">
+                                <div class="col-md">
+                                    <div class="fw-bold">Local/Unidade:</div>
+                                        {% if ordem_atual.local %}
+                                        <span class="quebralinha">{{ordem_atual.local.local}}</span>
+                                        {% else %}
+                                        [sem local] {% endif %}
+                                </div>
+            
+                                <div class="col-md">
+                                    <div class="fw-bold">Endereço:</div>
+                                        {% if ordem_atual.local %}
+                                        <span class="quebralinha">{{ordem_atual.local.endereco }}</span>
+                                        {% else %}
+                                        [sem endereço] {% endif %}
+                                </div>
+                            </div>
+            
+                            <div class=" d-flex p-1">
+                                
+                                <div class="col-md">
+                                    <div class="fw-bold">Data de Recebimento:</div>
+                                        {% if ordem_atual.data_recebimento %}
+                                        <span style='white-space:pre'>{{ordem_atual.data_recebimento |date:'d/m/Y'}}</span>
+                                        {% else %}
+                                        - {% endif %}
+                                </div>
+            
+                                <div class="col-md">
+                                    <div class="fw-bold">Data de Início:</div>
+                                        {% if ordem_atual.data_inicio %}
+                                        <span style='white-space:pre'>{{ordem_atual.data_inicio  |date:'d/m/Y' }}</span>
+                                        {% else %}
+                                        - {% endif %}
+                                </div>
+                                
+                                <div class="col-md">
+                                    <div class="fw-bold">Prazo:</div>
+                                        {% if ordem_atual.data_prazo %}
+                                        <span style='white-space:pre'>{{ordem_atual.data_prazo  |date:'d/m/Y'}}</span>
+                                        {% else %}
+                                        - {% endif %}
+                                </div>
+                            
+                            </div>
+                            
                         </div>
                     </div>
                     
-                    <div class="col-md-6">
-
-                        <div class=" d-flex p-1">
-                            <div class="col-md">
-                                <div class="fw-bold">Local/Unidade:</div>
-                                    {% if ordem_atual.local %}
-                                    <span class="quebralinha">{{ordem_atual.local.local}}</span>
-                                    {% else %}
-                                    [sem local] {% endif %}
-                            </div>
+                </li>
         
-                            <div class="col-md">
-                                <div class="fw-bold">Endereço:</div>
-                                    {% if ordem_atual.local %}
-                                    <span class="quebralinha">{{ordem_atual.local.endereco }}</span>
-                                    {% else %}
-                                    [sem endereço] {% endif %}
-                            </div>
-                        </div>
-        
-                        <div class=" d-flex p-1">
-                            
-                            <div class="col-md">
-                                <div class="fw-bold">Data de Recebimento:</div>
-                                    {% if ordem_atual.data_recebimento %}
-                                    <span style='white-space:pre'>{{ordem_atual.data_recebimento |date:'d/m/Y'}}</span>
-                                    {% else %}
-                                    - {% endif %}
-                            </div>
-        
-                            <div class="col-md">
-                                <div class="fw-bold">Data de Início:</div>
-                                    {% if ordem_atual.data_inicio %}
-                                    <span style='white-space:pre'>{{ordem_atual.data_inicio  |date:'d/m/Y' }}</span>
-                                    {% else %}
-                                    - {% endif %}
-                            </div>
-                            
-                            <div class="col-md">
-                                <div class="fw-bold">Prazo:</div>
-                                    {% if ordem_atual.data_prazo %}
-                                    <span style='white-space:pre'>{{ordem_atual.data_prazo  |date:'d/m/Y'}}</span>
-                                    {% else %}
-                                    - {% endif %}
-                            </div>
-                        
-                        </div>
-                        
-                    </div>
-                </div>
                 
-            </li>
-       
-
-            <h6 style="padding-top:1rem;"><i class="fas fa-hard-hat"></i> Funcionários({{ordem_atual.get_funcionarios_by_os.count}}) <a type="button" href="{% url 'funcionarios_imagens_os' obra.pk ordem_atual.pk %}" class=""><i class="fas fa-plus"></i></a></h6>
-            
-            <div style="">
+                <h6 style="padding-top:1rem;"><i class="fas fa-hard-hat"></i> Funcionários({{ordem_atual.get_funcionarios_by_os.count}}) <a type="button" href="{% url 'funcionarios_imagens_os' obra.pk ordem_atual.pk %}" class=""><i class="fas fa-plus"></i></a></h6>  
                 {% include "engenharia/fragmentos/lista_funcionarios_obra_visualizador.html" %}
-            </div>
-                
+              
+                <div class="d-flex flex-row" style="padding-top:1rem;">
+                    <div class="">
+                        <h6><i class="fas fa-images"></i> Fotos do Serviço({{ordem_atual.get_imagens_by_os.count}}) <a type="button" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a></h6>
+                    </div>
+                    <div class="ms-auto" style="margin-right:0.5rem;">
+                        {% if obra.tipo == '1' %}  
+                        <!-- Button IMPRIMIR RELATORIO--> <h6><a style="text-decoration: none;" data-bs-toggle="modal" data-bs-target="#ModalImprimirRelatorioViario" href="modal"  title="Imprimir Relatório Fotográfico"><i class="fas fa-print"></i><span > Relatório</span></a></h6>
+                        {% endif %}
+                    </div> 
+                </div>
 
-            <h6 style="padding-top:1rem; padding-left:1rem;"><i class="fas fa-images"></i> Fotos do Serviço({{ordem_atual.get_imagens_by_os.count}}) <a type="button" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a>
-                {% if obra.tipo == '1' %}  
-                <!-- Button IMPRIMIR RELATORIO--> <a data-bs-toggle="modal" data-bs-target="#ModalImprimirRelatorioViario" href="modal"  title="Imprimir Relatório Fotográfico"><span style=""><i class="fas fa-print"></i> Relatório</span></a>
-                {% endif %}
-            </h6>
-
-            <div style="padding-left:1rem">
                 {% include 'engenharia/fragmentos/imagens_por_categoria_visualizador.html' %}
-            </div>
-               
-
-    
-            <h6 style="padding-top:1rem;padding-left:1rem;"><i class="fas fa-folder-open"></i> Documentos do Serviço({{ordem_atual.get_files_by_os.count}}) <a type="button" href="{% url 'documentos_orden_servico' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a></h6>
-            
-            <div class="" style="padding-left:1rem">
+             
+        
+        
+                <h6 style="padding-top:1rem;"><i class="fas fa-folder-open"></i> Documentos do Serviço({{ordem_atual.get_files_by_os.count}}) <a type="button" href="{% url 'documentos_orden_servico' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a></h6>
                 {% include "engenharia/fragmentos/lista_documentos_visualizador.html" %}
-            </div>
         
-
-        
-            <h6 style="padding-top:1rem;padding-left:1rem;"><i class="far fa-calendar-check"></i> Relatório Diário de Obra({{ordem_atual.get_rdos_by_os.count}}) <a type="button" href="{% url 'rdo_orden_servico' obra.pk ordem_atual.pk %}" class=""><i class="fas fa-plus"></i></a></h6>
             
-            <div class="" style="padding-left:1rem;">
+        
+                <h6 style="padding-top:1rem;"><i class="far fa-calendar-check"></i> Relatório Diário de Obra({{ordem_atual.get_rdos_by_os.count}}) <a type="button" href="{% url 'rdo_orden_servico' obra.pk ordem_atual.pk %}" class=""><i class="fas fa-plus"></i></a></h6>
                 {% include "engenharia/fragmentos/lista_diario_de_obra_visualizador.html" %}
-            </div>
-                
-                
-            </div>
 
-        </ol>
-    
+                <h6 style="padding-top:1rem;"><i class="far fa-comment-alt"></i> Observações: <a type="button" href="{% url 'obra_editar_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-pen"></i></a></h6>
+                <li class="list-group-item align-items-start" style="border: 1px solid gray;font-size:9pt;border-radius: 5px;">
+                    {% if ordem_atual.obs %}               
+                        {{ordem_atual.obs}}
+                    {% else %} 
+                    <small class="">Sem obs.</small>         
+                    {% endif %}                
+                </li>
+        
+                    
+         </ol>
+
+    </div>
 
 
-</div>
+
 <!-- Modal IMPRIMIR RELATORIO-->
 <div class="modal fade" id="ModalImprimirRelatorioViario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -198,6 +212,7 @@
     </div>
     <!-- Fim Modal -->  
 
+
 <div class="mb-4"></div>
 
 {% endblock%}
@@ -214,11 +229,6 @@
         container: '#modal1',
       });
     
-      
-
-    $('.money').mask('000.000.000,00', {
-        reverse: true
-    });
 
 	//CANCELAR TECLA ENTER NO FORMULÁRIO
     window.document.onkeydown = CheckEnter;
@@ -228,7 +238,6 @@
        return true;
   
   }
-
 
 	//DESATIVAR '.' (DOT) NOS INPUTS
 	$(".nodot").on("keypress", function(evt) {
