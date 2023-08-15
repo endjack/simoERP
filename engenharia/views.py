@@ -59,6 +59,7 @@ def ver_todas_os_por_obra(request, pk, template_name = 'engenharia/ver_todas_ord
    
         obra = Obra.objects.get(pk=pk)
         ordens = OrdemServicoObras.objects.filter(obra=obra)
+        print(f'---------    > {ordens}')
         ordens_nao_finalizadas = ordens.filter(finalizado=False) 
         os_nao_iniciados = ordens_nao_finalizadas.filter(situacao=0).count()
         os_em_andamento= ordens_nao_finalizadas.filter(situacao=1).count()
@@ -397,6 +398,7 @@ def obras_inserir_imagem_em_categoria_orden_servico(request, pk, os, template_na
             
             return render(request, template_name , context)
 
+
 @login_required(login_url='login/')
 @csrf_exempt    
 def obras_salvar_imagem_em_categoria_orden_servico(request, pk, os):
@@ -458,8 +460,7 @@ def obras_salvar_imagem_em_categoria_orden_servico(request, pk, os):
                     
         return url
 
-        
-        
+           
 @login_required(login_url='login/')
 @csrf_exempt    
 def obras_excluir_imagem_orden_servico(request, pk, os, im, template_name = 'engenharia/imagens_ordem.html'):
@@ -479,7 +480,8 @@ def obras_excluir_imagem_orden_servico(request, pk, os, im, template_name = 'eng
         imagem_atual.delete()
     
         return redirect('obra_imagens_os', pk=pk, os=os)
-        
+
+       
 @login_required(login_url='login/')
 @csrf_exempt    
 def obras_excluir_imagem_orden_servico_em_rdo(request, pk, os, im, rdo, template_name = 'engenharia/detalhar_rdo.html'):
@@ -941,7 +943,7 @@ def hx_filtrar_os(request, pk, template_name = 'engenharia/fragmentos/resultados
         situacao =  int(request.GET.get('situacao'))
               
         obra = Obra.objects.get(pk=pk)
-        ordens = OrdemServicoObras.objects.all()
+        ordens = OrdemServicoObras.objects.filter(obra=obra)
         ordens_nao_finalizadas = ordens.filter(finalizado=False) 
         
         if situacao == 0:
