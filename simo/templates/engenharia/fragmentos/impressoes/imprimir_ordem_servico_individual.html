@@ -58,33 +58,33 @@
 
 <div class="" >
 
-    <div class="p-2 row" style="">
+    <div class="row" style="">
         <div class="d-flex justify-content-start">
-            <div class=" bd-highlight">
+            <div class=" bd-highlight col-md-2">
                 <img src="{% static 'imagens/logo1.png' %}" alt="" height="80" >
             </div>
           
-            <div class="p-2 bd-highlight" style="font-size:10pt;">
-                <div class="col-md">
+            <div class="p-2 bd-highlight col-md-4" style="font-size:10pt;">
+                <div class="">
                     <span style="font-size:12pt;font-weight:bold;"> 
-                     {{obra.nome}} </span> <br> Contratante: {{obra.contratante}} <br>
+                     {{obra.nome}} </span> <br> {{obra.contratante}} <br>
                      Contrato nº: {{obra.num_contrato}}
                  </div>
                 
             </div>
 
-            <div class="ms-auto p-2 bd-highlight" style="font-size:10pt;">
+            <div class="ms-auto p-2 bd-highlight col-md-6" style="font-size:10pt;">
                 <div class="text-end">   
                     <span style="font-size:12pt;font-weight:bold;"> ORDEM DE SERVIÇO nº {{ordem_atual.numero_os}}</span>  
                 
-                        <div class="col-md" >
+                        <div class="col-md-6" >
                                 {% if ordem_atual.local %}
                                 <span class="quebralinha">{{ordem_atual.local.local}}</span>
                                 {% else %}
                                 [sem local] {% endif %}
                         </div>
                 
-                        <div class="col-md" style="font-size:10pt">
+                        <div class="col-md-6" style="font-size:10pt">
                                 {% if ordem_atual.local %}
                                 <span class="quebralinha">{{ordem_atual.local.endereco }}</span>
                                 {% endif %}
