@@ -75,7 +75,7 @@
 
             <div class="ms-auto p-2 bd-highlight" style="font-size:10pt;">
                 <div class="text-end">   
-                    <span style="font-size:12pt;font-weight:bold;"> ORDEM DE SERVIÇO nº 00{{ordem_atual.numero_os}}</span>  
+                    <span style="font-size:12pt;font-weight:bold;"> ORDEM DE SERVIÇO nº {{ordem_atual.numero_os}}</span>  
                 
                         <div class="col-md" >
                                 {% if ordem_atual.local %}
@@ -159,6 +159,7 @@
                 </li>
         
                 {% with ordem_atual.get_funcionarios_by_os as funcionariosOS %}
+                {% if funcionariosOS %}
                 <small style="padding-top:0.2rem;"><i class="fas fa-hard-hat"></i> Funcionários:</small>  
                 <li class="list-group-item align-items-start;" style="border: 1px solid gray;border-radius:5px;">
        
@@ -185,36 +186,37 @@
                     <small class="">Sem Funcionários.</small>  
                     {% endif %}   
                 </li>
+                {% endif %}
                 {% endwith %}
+       
+                
 
-          
-                <small style="padding-top:0.2rem;"><i class="fas fa-images"></i> Fotos do Serviço:</small>
-                <li class="list-group-item align-items-start;" style="border: 1px solid gray;border-radius:5px;">
-                {% for cat in categoriasOS %}
-                    <div class=""><small>{{cat.categoria}}</small></div>
-                    <div class="d-flex flex-wrap ">
-                    {% with cat.get_imagens_by_category as imagensOS %}                                   
-                        {% for im in imagensOS %}
-                        <div class="" style="margin-bottom:0.5rem">                                            
-                            <img src="{{im.imagem.url}}" class="card-img-top m-1" style="max-width: 27vw; height: auto;">             
+                {% if categoriasOS %}
+                    <small style="padding-top:0.2rem;"><i class="fas fa-images"></i> Fotos do Serviço:</small>
+                    <li class="list-group-item align-items-start;" style="border: 1px solid gray;border-radius:5px;">
+                    {% for cat in categoriasOS %}
+                        <div class=""><small>{{cat.categoria}}</small></div>
+                        <div class="d-flex flex-wrap ">
+                        {% with cat.get_imagens_by_category as imagensOS %}                                   
+                            {% for im in imagensOS %}
+                            <div class="" style="margin-bottom:0.5rem">                                            
+                                <img src="{{im.imagem.url}}" class="card-img-top m-1" style="max-width: 27vw; height: auto;">             
+                            </div>
+                            {% endfor %} 
+                        {% endwith %}
                         </div>
-                        {% endfor %} 
-                    {% endwith %}
-                    </div>
-                {% endfor %}
-                </li>
+                    {% endfor %}
+                    </li>
+                {% endif %}
          
-               
+                {% if ordem_atual.obs %}  
                 <div class="" style="padding-top:0.2rem;">
                     <small ><i class="far fa-comment-alt"></i> Observações da Empresa: </small>
-                    <li class="list-group-item align-items-start" style="border: 1px solid gray;font-size:9pt;border-radius: 5px;">
-                        {% if ordem_atual.obs %}               
-                            {{ordem_atual.obs}}
-                        {% else %} 
-                        <small class="">Sem obs.</small>         
-                        {% endif %}                
+                    <li class="list-group-item align-items-start" style="border: 1px solid gray;font-size:9pt;border-radius: 5px;">            
+                    {{ordem_atual.obs}}
                     </li>
                 </div>
+                {% endif %}    
 
                 <div class="" style="padding-top:0.2rem;">
                     <small ><i class="far fa-comment-alt"></i> Atividades/Ocorrências do Funcionário: </small>

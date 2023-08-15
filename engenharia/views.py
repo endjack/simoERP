@@ -33,7 +33,7 @@ def home_obras_ver_servicos(request, pk, template_name = 'engenharia/home_ordens
    
    
         obra = Obra.objects.get(pk=pk)
-        ordens = OrdemServicoObras.objects.filter(obra=obra)
+        # ordens = OrdemServicoObras.objects.filter(obra=obra)
         ultimas_10 = OrdemServicoObras.objects.filter(obra=obra).order_by('-pk')[:10]
         # os_nao_iniciados = ordens.filter(situacao=0).count()
         # os_em_andamento= ordens.filter(situacao=1).count()
@@ -158,7 +158,7 @@ def obras_editar_orden_servico(request, pk, os, template_name = 'engenharia/nova
         date = datetime.now()
         obra = Obra.objects.get(pk=pk)
         locais = Local.objects.all()
-        os = OrdemServicoObras.objects.get(pk=os)
+        os = OrdemServicoObras.objects.get(obra=obra,pk=os)
               
         context = {
             'date': date,
@@ -177,7 +177,7 @@ def obras_editar_orden_servico(request, pk, os, template_name = 'engenharia/nova
 def obras_salvar_editar_orden_servico(request, pk, os, template_name = 'engenharia/detalhar_ordem.html'):
    
     obra = Obra.objects.get(pk=pk)
-    os_atual = OrdemServicoObras.objects.get(pk=os)
+    os_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
     categorias = CategoriaImagem.objects.filter(ordem_servico = os_atual).order_by('categoria')
     
     if request.method == 'POST':
@@ -228,7 +228,7 @@ def obras_detalhar_orden_servico(request, pk, os, template_name = 'engenharia/de
     if request.method == 'GET':
     
         obra = Obra.objects.get(pk=pk)
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra, pk=os)
         categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
         arquivos = ordem_atual.get_files_by_os().order_by('nome')
         diarios = DiarioDeObraOs.objects.filter(ordem_servico = ordem_atual).order_by('-data')
@@ -254,7 +254,7 @@ def obras_detalhar_orden_servico(request, pk, os, template_name = 'engenharia/de
 def obras_finalizar_orden_servico(request, pk, os, template_name = 'engenharia/detalhar_ordem.html'):
     
     obra = Obra.objects.get(pk=pk)
-    ordem_atual = OrdemServicoObras.objects.get(pk=os)
+    ordem_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
     categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
     arquivos = ordem_atual.get_files_by_os().order_by('nome')
     diarios = DiarioDeObraOs.objects.filter(ordem_servico = ordem_atual).order_by('-data')
@@ -290,7 +290,7 @@ def obras_finalizar_orden_servico(request, pk, os, template_name = 'engenharia/d
 def obras_mudar_finalizar_orden_servico(request, pk, os, template_name = 'engenharia/detalhar_ordem.html'):
     
     obra = Obra.objects.get(pk=pk)
-    ordem_atual = OrdemServicoObras.objects.get(pk=os)
+    ordem_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
     categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
     arquivos = ordem_atual.get_files_by_os().order_by('nome')
     diarios = DiarioDeObraOs.objects.filter(ordem_servico = ordem_atual).order_by('-data')
@@ -328,7 +328,7 @@ def obras_imagens_orden_servico(request, pk, os, template_name = 'engenharia/ima
     if request.method == 'GET':
         
         obra = Obra.objects.get(pk=pk)
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
         categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
         imagens = ImagemOS.objects.filter(ordem_servico = ordem_atual)
              
@@ -351,7 +351,7 @@ def obras_imagens_inserir_categoria_orden_servico(request, pk, os, template_name
     if request.method == 'GET':    
         
         obra = Obra.objects.get(pk=pk)
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
         categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
         imagens = ImagemOS.objects.filter(ordem_servico = ordem_atual)
              
@@ -373,7 +373,8 @@ def obras_imagens_salvar_categoria_orden_servico(request, pk, os, template_name 
         
         
     if request.method == 'POST':
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        obra = Obra.objects.get(pk=pk)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
         categoria = request.POST.get('categoria') or ''
         CategoriaImagem.objects.create(categoria = categoria,
                                         ordem_servico = ordem_atual)
@@ -389,7 +390,7 @@ def obras_inserir_imagem_em_categoria_orden_servico(request, pk, os, template_na
         if request.method == 'GET':
         
             obra = Obra.objects.get(pk=pk)
-            ordem_atual = OrdemServicoObras.objects.get(pk=os)
+            ordem_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
             categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
             
            
@@ -411,7 +412,7 @@ def obras_salvar_imagem_em_categoria_orden_servico(request, pk, os):
     if request.method == 'GET':
         
         obra = Obra.objects.get(pk=pk)
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
         categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
         rdo_atual = None
         template_name = 'engenharia/detalhar_rdo.html'
@@ -429,7 +430,8 @@ def obras_salvar_imagem_em_categoria_orden_servico(request, pk, os):
             
         
     if request.method == 'POST':
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        obra = Obra.objects.get(pk=pk)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
         categoria_rdo= request.POST.get('rdo_id') or ''
         
         if categoria_rdo == '':
@@ -474,11 +476,11 @@ def obras_excluir_imagem_orden_servico(request, pk, os, im, template_name = 'eng
     
           
     if request.method == 'POST':
-    
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        obra = Obra.objects.get(pk=pk)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
 
         try:
-            imagem_atual =     ImagemOS.objects.get(pk=im) 
+            imagem_atual =     ImagemOS.objects.get(ordem_servico= ordem_atual,pk=im) 
         except ImagemOS.DoesNotExist:
             raise Http404("IMAGEM JÁ DELETADA OU NÃO EXISTE!")
         
@@ -494,8 +496,10 @@ def obras_excluir_imagem_orden_servico(request, pk, os, im, template_name = 'eng
 def obras_excluir_imagem_orden_servico_em_rdo(request, pk, os, im, rdo, template_name = 'engenharia/detalhar_rdo.html'):
              
         if request.method == 'POST':
+            obra = Obra.objects.get(pk=pk)
+            ordem_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
             try:
-                imagem_atual =     ImagemOS.objects.get(pk=im) 
+                imagem_atual =     ImagemOS.objects.get(ordem_servico= ordem_atual, pk=im) 
             except ImagemOS.DoesNotExist:
                 raise Http404("IMAGEM JÁ DELETADA OU NÃO EXISTE!")
             
@@ -512,14 +516,14 @@ def obras_excluir_imagem_orden_servico_em_rdo(request, pk, os, im, rdo, template
 def obras_editar_categoria_imagem_orden_servico(request, pk, os, im, template_name = 'engenharia/imagens_ordem.html'):
         
         obra = Obra.objects.get(pk=pk)
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
         categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
         
         if request.method == 'POST':
         
             categoria_post = request.POST.get('nova_categoria') or '' 
-            imagem_atual = ImagemOS.objects.get(pk=im) 
-            categoria_atual = CategoriaImagem.objects.get(categoria = categoria_post)
+            imagem_atual = ImagemOS.objects.get(ordem_servico = ordem_atual, pk=im) 
+            categoria_atual = CategoriaImagem.objects.get(ordem_servico = ordem_atual, categoria = categoria_post)
             
 
             print(f'-EDITADO IMAGEM {imagem_atual.imagem.name}----------- CATEGORIA ANTES: {imagem_atual.categoria.categoria} --------CATEGORIA DEPOIS: {categoria_atual} --')
@@ -543,12 +547,12 @@ def obras_editar_categoria_imagem_orden_servico(request, pk, os, im, template_na
 @csrf_exempt    
 def obras_editar_categoria_orden_servico(request, pk, os, cat, template_name = 'engenharia/imagens_ordem.html'):
         
-        obra = Obra.objects.get(pk=pk)
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
         
         if request.method == 'POST':
+            obra = Obra.objects.get(pk=pk)
+            ordem_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
         
-            categoria_atual = CategoriaImagem.objects.get(pk = cat)
+            categoria_atual = CategoriaImagem.objects.get(ordem_servico = ordem_atual, pk = cat)
             categoria_edit = request.POST.get('edit_categoria') or '' 
             
             # EDITAR CATEGORIA
@@ -575,8 +579,10 @@ def obras_excluir_categoria_orden_servico(request, pk, os, cat, template_name = 
         
         
         if request.method == 'POST':
+            obra = Obra.objects.get(pk=pk)
+            ordem_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
         
-            categoria_atual = CategoriaImagem.objects.get(pk = cat)
+            categoria_atual = CategoriaImagem.objects.get(ordem_servico = ordem_atual, pk = cat)
             categoria_para_deletar = categoria_atual.categoria
 
             
@@ -632,7 +638,7 @@ def documentos_orden_servico(request, pk, os, template_name = 'engenharia/docume
     
         date = datetime.now()
         obra = Obra.objects.get(pk=pk)
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra, pk=os)
         arquivos = ordem_atual.get_files_by_os().order_by('nome')
         
         context = {
@@ -653,7 +659,7 @@ def salvar_documento_os(request, pk, os, template_name = 'engenharia/documentos_
            
   
     obra = Obra.objects.get(pk=pk)
-    ordem_atual = OrdemServicoObras.objects.get(pk=os)
+    ordem_atual = OrdemServicoObras.objects.get(obra=obra, pk=os)
         
 
     if request.method == 'POST':
@@ -695,8 +701,8 @@ def excluir_arquivo_os(request, pk, os, file, template_name = 'engenharia/docume
    
     
         obra = Obra.objects.get(pk=pk)
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
-        file_atual = DocumentoOS.objects.get(pk=file)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra, pk=os)
+        file_atual = DocumentoOS.objects.get(ordem_servico = ordem_atual, pk=file)
 
         print(f'-DELETADO {file_atual.filename}---------------------')
         
@@ -724,7 +730,7 @@ def rdo_orden_servico(request, pk, os, template_name = 'engenharia/rdo_ordem.htm
     
    
         obra = Obra.objects.get(pk=pk)
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra, pk=os)
         diarios = DiarioDeObraOs.objects.filter(ordem_servico = ordem_atual).order_by('-data')
   
         
@@ -744,7 +750,7 @@ def salvar_rdo_orden_servico(request, pk, os, template_name = 'engenharia/rdo_or
     
 
     obra = Obra.objects.get(pk=pk)
-    ordem_atual = OrdemServicoObras.objects.get(pk=os)
+    ordem_atual = OrdemServicoObras.objects.get(obra=obra, pk=os)
 
 
     if request.method == 'POST':
@@ -789,7 +795,7 @@ def editar_rdo_orden_servico(request, pk, os, template_name = 'engenharia/rdo_or
     
 
     obra = Obra.objects.get(pk=pk)
-    ordem_atual = OrdemServicoObras.objects.get(pk=os)
+    ordem_atual = OrdemServicoObras.objects.get(obra=obra, pk=os)
 
 
     if request.method == 'POST':
@@ -833,8 +839,8 @@ def editar_rdo_orden_servico(request, pk, os, template_name = 'engenharia/rdo_or
 def salvar_editar_rdo_orden_servico(request, pk, os, rdo, template_name = 'engenharia/detalhar_rdo.html'):
 
     obra = Obra.objects.get(pk=pk)
-    ordem_atual = OrdemServicoObras.objects.get(pk=os)
-    rdo_atual = DiarioDeObraOs.objects.get(pk=rdo)
+    ordem_atual = OrdemServicoObras.objects.get(obra=obra, pk=os)
+    rdo_atual = DiarioDeObraOs.objects.get(ordem_servico = ordem_atual, pk=rdo)
 
 
     if request.method == 'POST':
@@ -874,8 +880,8 @@ def detalhar_rdo_rdo_orden_servico(request, pk, os, rdo, template_name = 'engenh
     if request.method == 'GET':
     
         obra = Obra.objects.get(pk=pk)
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
-        rdo_atual = DiarioDeObraOs.objects.get(pk = rdo)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra, pk=os)
+        rdo_atual = DiarioDeObraOs.objects.get(ordem_servico = ordem_atual, pk = rdo)
   
         context = {
           
