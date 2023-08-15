@@ -4,7 +4,7 @@
     <a  class="btn btn-sm btn-dark m-1" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" title="Ver/Anexar Fotos"><span style=""><i class="fas fa-images"></i></span></a>
     <a  class="btn btn-sm btn-dark m-1" href="{% url 'documentos_orden_servico' obra.pk ordem_atual.pk %}" title="Ver/Anexar Documentos"><span style=""><i class="fas fa-folder-open"></i></span></a>
     <a  class="btn btn-sm btn-dark m-1" href="{% url 'rdo_orden_servico' obra.pk ordem_atual.pk %}" title="Diários de Obra"><span style=""><i class="fas fa-calendar-check"></i></span></a>
-    <a  class="btn btn-sm btn-secondary m-1" href="#" target="_blank" title="Imprimir OS"><span style=""><i class="fas fa-print"></i></span></a>
+    <a  class="btn btn-sm btn-secondary m-1" href="{% url 'imprimir_ordem_servico_individual' obra.pk ordem_atual.pk %}" target="_blank" title="Imprimir OS"><span style=""><i class="fas fa-print"></i></span></a>
 
     <!-- Button FINALIZAR-->
     {% if ordem_atual.finalizado %}

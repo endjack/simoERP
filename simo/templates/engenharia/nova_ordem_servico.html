@@ -16,31 +16,31 @@
     
     {% include "engenharia/fragmentos/cabecalho_resumo_obras.html" %}
   
-    <ol class="list-group" style="padding-left:1rem;padding-top:1rem">
+</div>
 
-        <div class="d-flex align-items-center flex-row bd-highlight mb-1 ">
+<div class="d-flex align-items-center flex-row bd-highlight mb-1 ">
    
-            <div class="p-2 bd-highlight">
-                {% if not editar %}
-                <a class="btn btn-sm btn-secondary m-2" href="{% url 'home_obra_os' obra.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
-                {% else %}
-                <a class="btn btn-sm btn-secondary m-2" href="{% url 'obra_detalhar_os' obra.pk os.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
-                {% endif %}
-        
-            </div>
-            <div class="p-2 bd-highlight">   
-                <h5> {% if not editar %}
-                    <div class="col-md"> <strong> Nova Ordem de Serviço: </strong> </div>
-                    {% else %}
-                    <div class="col-md"> <strong> Editar Ordem de Serviço nº {{os.numero_os}}</strong> </div>
-                    {% endif %} </h5> 
-            </div> 
-            <button hx-ext="disable-element" id="savarOrdemServicoBtt" type="submit" class="btn btn-sm btn-success m-2" form="FormaddOsObras"><i class="fas fa-save"></i> Salvar</button>
-            <a class="btn btn-sm btn-secondary m-2" href="#"><i class=""></i> Limpar</a>
+    <div class="p-2 bd-highlight">
+        {% if not editar %}
+        <a class="btn btn-sm btn-secondary m-2" href="{% url 'home_obra_os' obra.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
+        {% else %}
+        <a class="btn btn-sm btn-secondary m-2" href="{% url 'obra_detalhar_os' obra.pk os.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
+        {% endif %}
 
-        </div>
+    </div>
+    <div class="p-2 bd-highlight">   
+        <h5> {% if not editar %}
+            <div class="col-md"> <strong> Nova Ordem de Serviço: </strong> </div>
+            {% else %}
+            <div class="col-md"> <strong> Editar Ordem de Serviço nº {{os.numero_os}}</strong> </div>
+            {% endif %} </h5> 
+    </div> 
+    <button hx-ext="disable-element" id="savarOrdemServicoBtt" title="Salvar Ordem de Serviço" type="submit" class="btn btn-sm btn-success m-2" form="FormaddOsObras"><i class="fas fa-save"></i> Salvar</button>
+    <button class="btn btn-sm btn-secondary m-2" href="#" title="Limpar Campos" disabled><i class=""></i> Limpar</button>
+
+</div>
         
-        
+<div class="container">      
        <form id="FormaddOsObras" method="POST"  {% if editar %} action="{% url 'obra_salvar_editar_os' obra.pk  os.pk %}" {% else %} action="{% url 'obra_salvar_nova_os' obra.pk %}" {% endif %}> 
         
         <div class="form-group row mb-2">
@@ -137,14 +137,23 @@
             
             <div class="col-2">
                 <label for="input5" class="">Data Início:</label>
-                <input {% if editar %} value="{{os.data_inicio |date:'Y-m-d' }}" {% endif %} type="date" class="form-control form-control-sm date" name="data_inicio" id="input5" required="required">
+                <input {% if editar %} value="{{os.data_inicio |date:'Y-m-d' }}" {% else %} value="{% now 'Y-m-d' %}" {% endif %} type="date" class="form-control form-control-sm date" name="data_inicio" id="input5" required="required">
                 <small class="small-error" id="error_data_inicio"></small>
             </div>
 
             <div class="col-2">
                 <label for="input6" class="">Prazo:</label>
-                <input {% if editar %} value="{{os.data_prazo |date:'Y-m-d' }}" {% endif %} type="date" class="form-control form-control-sm date" name="data_prazo" id="input6" required="required">
+                <input {% if editar %} value="{{os.data_prazo |date:'Y-m-d' }}" {% else %} value="{% now 'Y-m-d' %}" {% endif %} type="date" class="form-control form-control-sm date" name="data_prazo" id="input6" required="required">
                 <small class="small-error" id="error_data_prazo"></small>
+            </div>
+
+        </div>
+
+        <div class="form-group row mb-2">
+            <div class="col-6">
+                <label for="input7" class="">Observações:</label>
+                   <textarea id="input7" name="obs" rows="2" cols="50" class="form-control form-control-sm">{% if editar %}{% if os.obs %}{{os.obs}}{% endif %}{% endif %}</textarea>
+                   <small class="small-error" id="error_obs"></small>
             </div>
 
         </div>
@@ -153,14 +162,12 @@
             <span class="help-block">{{ error }}</span>
             {% endfor %}
     </form>
-    <div class="">
-    </div>
-</form>
+</div> 
 
 
     <div class="mb-4"></div>
 
-</div>
+
 
 
 {% endblock%}

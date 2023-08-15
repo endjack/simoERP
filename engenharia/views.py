@@ -117,6 +117,7 @@ def obras_salvar_nova_orden_servico(request, pk, template_name = 'engenharia/det
         local = request.POST.get('local') or None
         endereco = request.POST.get('endereco') or ''
         servicos = request.POST.get('servicos') or ''
+        obs = request.POST.get('obs') or ''
         data_inicio = datetime.strptime(request.POST.get('data_inicio'), '%Y-%m-%d') or None
         data_prazo = datetime.strptime(request.POST.get('data_prazo'), '%Y-%m-%d') or None
          
@@ -131,7 +132,8 @@ def obras_salvar_nova_orden_servico(request, pk, template_name = 'engenharia/det
                                          obra=obra,
                                          data_recebimento = data_recebida,
                                          data_inicio = data_inicio,
-                                         data_prazo=data_prazo
+                                         data_prazo=data_prazo,
+                                         obs=obs,
                                          )       
         
     ordens = OrdemServicoObras.objects.filter(obra=obra)
@@ -187,6 +189,7 @@ def obras_salvar_editar_orden_servico(request, pk, os, template_name = 'engenhar
         local = request.POST.get('local') or None
         endereco = request.POST.get('endereco') or ''
         servicos = request.POST.get('servicos') or ''
+        obs = request.POST.get('obs') or ''
         data_inicio = datetime.strptime(request.POST.get('data_inicio'), '%Y-%m-%d') or None
         data_prazo = datetime.strptime(request.POST.get('data_prazo'), '%Y-%m-%d') or None
          
@@ -201,6 +204,8 @@ def obras_salvar_editar_orden_servico(request, pk, os, template_name = 'engenhar
         os_atual.data_recebimento = data_recebida
         os_atual.data_inicio = data_inicio
         os_atual.data_prazo=data_prazo
+        os_atual.obs=obs
+        
         
         os_atual.save()
                                                 
@@ -446,6 +451,8 @@ def obras_salvar_imagem_em_categoria_orden_servico(request, pk, os):
             
         # UPLOAD DE IMAGENS
         imagens = request.FILES.getlist('imagem') or None
+        
+        print(f'--------------------{imagens}')
         
         if imagens is not None:
             for image in imagens:   
@@ -975,7 +982,7 @@ def imprimir_relatorio_fotografico_manut_viaria(request, pk, os, template_name =
 
     if request.method == 'GET':
         obra = Obra.objects.get(pk=pk)
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        ordem_atual = OrdemServicoObras.objects.get(obra = obra, pk=os)
         data_inicio = datetime.strptime(request.GET.get('data_relatorio_inicio'), '%Y-%m-%d')
         data_final = datetime.strptime(request.GET.get('data_relatorio_fim'), '%Y-%m-%d')
         data_relatorio = datetime.strptime(request.GET.get('data_relatorio'), '%Y-%m-%d')
@@ -995,11 +1002,34 @@ def imprimir_relatorio_fotografico_manut_viaria(request, pk, os, template_name =
     
 @login_required(login_url='login/')
 @csrf_exempt
+def imprimir_ordem_servico_individual(request, pk, os, template_name = 'engenharia/fragmentos/impressoes/imprimir_ordem_servico_individual.html'):
+
+    if request.method == 'GET':
+        obra = Obra.objects.get(pk=pk)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra, pk=os)
+        categorias = CategoriaImagem.objects.filter(ordem_servico = ordem_atual).order_by('categoria')
+     
+        
+        
+        context = {
+            
+            'obra': obra,
+            'ordem_atual': ordem_atual,
+            'categoriasOS': categorias,
+   
+     
+
+            
+        }
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
 def imprimir_rdo_individual(request, pk, os, rdo, template_name = 'engenharia/fragmentos/impressoes/imprimir_rdo_individual.html'):
 
     if request.method == 'GET':
         obra = Obra.objects.get(pk=pk)
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
         rdo_atual = DiarioDeObraOs.objects.get(pk = rdo)
         
         
@@ -1021,8 +1051,8 @@ def gerar_pdf_rdo_individual(request, pk, os, rdo, template_name = 'engenharia/f
 
     if request.method == 'GET':
         obra = Obra.objects.get(pk=pk)
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
-        rdo_atual = DiarioDeObraOs.objects.get(pk = rdo)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra, pk=os)
+        rdo_atual = DiarioDeObraOs.objects.get(ordem_servico = ordem_atual, pk = rdo)
         
         context = {
             
@@ -1058,7 +1088,7 @@ def funcionarios_imagens_os(request, pk, os, template_name = 'engenharia/funcion
 
     if request.method == 'GET':
         obra = Obra.objects.get(pk=pk)
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra, pk=os)
         funcionarios = Funcionario.objects.all()
         funcionariosOS = FuncionarioOS.objects.filter(ordem_servico = ordem_atual)
         
@@ -1080,7 +1110,8 @@ def funcionarios_imagens_os(request, pk, os, template_name = 'engenharia/funcion
 def inserir_funcionarios_imagens_os(request, pk, os, func, template_name = 'engenharia/funcionarios_ordem.html'):
      
     if request.method == 'POST':
-        ordem_atual = OrdemServicoObras.objects.get(pk=os)
+        obra = Obra.objects.get(pk=pk)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra, pk=os)
         funcionario_atual = Funcionario.objects.get(pk = func)  
         FuncionarioOS.objects.create(funcionario = funcionario_atual, ordem_servico = ordem_atual)
         
@@ -1093,7 +1124,9 @@ def inserir_funcionarios_imagens_os(request, pk, os, func, template_name = 'enge
 def excluir_funcionarios_imagens_os(request, pk, os, func, template_name = 'engenharia/funcionarios_ordem.html'):
 
     if request.method == 'POST':
-        funcionario_atual = FuncionarioOS.objects.get(pk = func)
+        obra = Obra.objects.get(pk=pk)
+        ordem_atual = OrdemServicoObras.objects.get(obra=obra, pk=os)
+        funcionario_atual = FuncionarioOS.objects.get(ordem_servico = ordem_atual,pk = func)
         funcionario_atual.delete()
         
     return redirect('funcionarios_imagens_os', pk=pk, os=os)

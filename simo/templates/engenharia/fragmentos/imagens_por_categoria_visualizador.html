@@ -22,7 +22,9 @@
                             <img src="{{im.imagem.url}}" class="card-img-top m-1" style="width: 100px; height: auto;">
                             </a>
                             {% if forloop.counter == 9 %}
-                            <a type="button" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" style="text-decoration:none;">Ver mais...</a>
+                           
+                            <a type="button" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" style="text-decoration:none;">Ver mais ({{imagens|length|add:'-9'}})...</a>
+                            
                             {% endif %}
 
 

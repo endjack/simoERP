@@ -41,7 +41,7 @@
             {% for cat in categorias %}
 
             {% with cat.get_imagens_by_category as imagens %}
-            <div class="fw-bold">{{cat.categoria}} 
+            <div class="fw-bold">{{cat.categoria}} ({{imagens.count}} fotos)
                
 
                  <!-- Button -->
@@ -118,7 +118,54 @@
                         </div>
                         <!-- Fim Modal -->  
 
-                
+                        <a style="margin:5px;" href="modal" data-bs-toggle="modal" data-bs-target="#AddImagemEmCategoria{{cat.pk}}" class="" title="Adicionar Foto Nesta Categoria">
+                            <i class="fas fa-plus"></i></a> 
+
+                            <!-- Modal ADD IMAGENS EM CATEGORIA-->
+                            <div class="modal fade" id="AddImagemEmCategoria{{cat.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <div class="d-flex flex-column bd-highlight">
+                                            <div class="bd-highlight" >Inserir Imagem/Foto:</div>
+                                        </div>  
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                    <h5>Categoria: {{cat.categoria}}</h5>
+
+                                        <form id="formInserirImagensOsCategoria{{cat.pk}}"  method="POST" action="{% url 'salvar_imagem_em_categoria' obra.pk ordem_atual.pk %}" enctype="multipart/form-data">
+                    
+                                            {% csrf_token %}
+                                            <div class="form-group row mb-2">
+                                                <input type="hidden" name="categoria" value="{{cat}}">
+                                                <div class="col-md">
+                                                    <label for="input2" class="">Imagem:</label>
+                                                    <input type="file" name="imagem" class="form-control form-control-sm" accept="image/*" multiple /> 
+                                                    <small class="small-error" id="error_imagem"></small>
+                                                </div>
+                                                
+                                            </div>
+                                        
+                                            {% for error in field.errors %}
+                                            <span class="help-block">{{ error }}</span>
+                                            {% endfor %}
+                                        </form>
+                                        <div class="">
+                                        </div>
+                                    </form>
+                                </div>  
+                                    <div class="modal-footer form-control">
+
+                                    <button class="btn btn-p-sm btn-primary m-1" form="formInserirImagensOsCategoria{{cat.pk}}">Salvar</button>
+                                    <button type="button" class="btn btn-p-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            <!-- Fim Modal -->  
+
 
                 {% comment %} <a style="margin:5px;" title="Download em Zip todas as imagens da Categoria" href="{% url 'dowload_imagens_categoria' obra.pk ordem_atual.pk cat.pk %}"><i class="fas fa-download"></i></a> {% endcomment %}
 

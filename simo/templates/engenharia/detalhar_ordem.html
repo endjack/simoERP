@@ -39,8 +39,21 @@
 
     <div class="container">
         <ol class="list-group " style="">
-
-                <h6><i class="far fa-list-alt"></i> Dados dos Serviço:<a type="button" href="{% url 'obra_editar_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-pen"></i></a></h6> 
+                <div class="d-flex flex-row" style="padding-top:1rem;">
+                    <div class="me-auto">
+                        <h6><i class="far fa-list-alt"></i> Dados dos Serviço: <a type="button" href="{% url 'obra_editar_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-pen"></i></a></h6> 
+                    </div>
+                    {% if obra.tipo == '1' %}
+                        <div class="" style="margin-right:0.5rem;">
+                            <!-- Button PRODUÇÃO --> <h6><a style="text-decoration: none;" href="#" title="Produção Calceteiros"><i class="fas fa-edit"></i><span > Produção</span></a></h6>                      
+                        </div> 
+                        <div class="" style="margin-right:0.5rem;">
+                            <!-- Button MEDIÇÃO --> <h6><a style="text-decoration: none;" href="#" title="Medição Emulssão"><i class="fas fa-edit"></i><span > Medição</span></a></h6>
+                            
+                        </div> 
+                    {% endif %}
+                </div>
+                
                 <li class="list-group-item align-items-start " style="border: 1px solid gray;font-size:9pt;border-radius: 5px;">
                     <div class="row">
                         <div class="col-md-6">
@@ -110,12 +123,17 @@
                 <h6 style="padding-top:1rem;"><i class="fas fa-hard-hat"></i> Funcionários({{ordem_atual.get_funcionarios_by_os.count}}) <a type="button" href="{% url 'funcionarios_imagens_os' obra.pk ordem_atual.pk %}" class=""><i class="fas fa-plus"></i></a></h6>  
                 {% include "engenharia/fragmentos/lista_funcionarios_obra_visualizador.html" %}
               
-      
-                <h6 style="padding-top:1rem;"><i class="fas fa-images"></i> Fotos do Serviço({{ordem_atual.get_imagens_by_os.count}}) <a type="button" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a>
-                    {% if obra.tipo == '1' %}  
-                    <!-- Button IMPRIMIR RELATORIO--> <a data-bs-toggle="modal" data-bs-target="#ModalImprimirRelatorioViario" href="modal"  title="Imprimir Relatório Fotográfico"><span style=""><i class="fas fa-print"></i> Relatório</span></a>
-                    {% endif %}
-                </h6>
+                <div class="d-flex flex-row" style="padding-top:1rem;">
+                    <div class="">
+                        <h6><i class="fas fa-images"></i> Fotos do Serviço({{ordem_atual.get_imagens_by_os.count}}) <a type="button" href="{% url 'obra_imagens_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-plus"></i></a></h6>
+                    </div>
+                    <div class="ms-auto" style="margin-right:0.5rem;">
+                        {% if obra.tipo == '1' %}  
+                        <!-- Button IMPRIMIR RELATORIO--> <h6><a style="text-decoration: none;" data-bs-toggle="modal" data-bs-target="#ModalImprimirRelatorioViario" href="modal"  title="Imprimir Relatório Fotográfico"><i class="fas fa-print"></i><span > Relatório</span></a></h6>
+                        {% endif %}
+                    </div> 
+                </div>
+
                 {% include 'engenharia/fragmentos/imagens_por_categoria_visualizador.html' %}
              
         
@@ -127,6 +145,15 @@
         
                 <h6 style="padding-top:1rem;"><i class="far fa-calendar-check"></i> Relatório Diário de Obra({{ordem_atual.get_rdos_by_os.count}}) <a type="button" href="{% url 'rdo_orden_servico' obra.pk ordem_atual.pk %}" class=""><i class="fas fa-plus"></i></a></h6>
                 {% include "engenharia/fragmentos/lista_diario_de_obra_visualizador.html" %}
+
+                <h6 style="padding-top:1rem;"><i class="far fa-comment-alt"></i> Observações: <a type="button" href="{% url 'obra_editar_os' obra.pk ordem_atual.pk %}" class=""> <i class="fas fa-pen"></i></a></h6>
+                <li class="list-group-item align-items-start" style="border: 1px solid gray;font-size:9pt;border-radius: 5px;">
+                    {% if ordem_atual.obs %}               
+                        {{ordem_atual.obs}}
+                    {% else %} 
+                    <small class="">Sem obs.</small>         
+                    {% endif %}                
+                </li>
         
                     
          </ol>
