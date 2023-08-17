@@ -1,0 +1,66 @@
+{% block styleHead %}
+<style>
+    ._menu:hover{
+        background-color:gray;
+    }
+
+    ._menu_ativo{
+        background-color:gray;
+    }
+    ._menu_ativo:hover{
+        background-color:gray;
+    }
+
+</style>
+{% endblock %}
+
+<div class="menu-estoque" style="background-color:white; margin-bottom:1rem">
+<div class="container">
+<div class="d-flex flex-row align-items-center justify-content-center" >
+    <div class="" style="font-size:18pt">
+        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'INICIO' %} _menu_ativo{% endif %}" href="{% url 'inicio_estoquev2' %}" 
+            title="Início">
+            <div class="d-flex flex-column">
+            <span style="width:5rem"><i class="fas fa-home"></i></span>
+            Início
+            </div>
+        </a>
+        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'PROCURAR' %} _menu_ativo{% endif %}" href="{% url 'procurar_estoquev2' %}" 
+            title="Procurar">
+            <div class="d-flex flex-column">
+            <span style="width:5rem"><i class="fas fa-search"></i></span>
+            Procurar
+            </div>
+        </a>
+        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'REQUISIÇÃO' %} _menu_ativo{% endif %}" href="{% url 'requisicoes_estoquev2' %}" 
+            title="Requisições">
+            <div class="d-flex flex-column">
+            <span style="width:5rem"><i class="fas fa-cart-arrow-down"></i></span>
+            Requisições
+            </div>
+        </a>
+        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'CADASTRAR' %} _menu_ativo{% endif %}" href="{% url 'cadastrar_estoquev2' %}" 
+            title="Cadastrar">
+            <div class="d-flex flex-column">
+            <span style="width:5rem"><i class="fas fa-cart-plus"></i></span>
+            Cadastrar
+            </div>
+        </a>
+        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'IMPRESSÃO' %} _menu_ativo{% endif %}" href="{% url 'impressoes_estoquev2' %}" 
+            title="Impressões">
+            <div class="d-flex flex-column">
+            <span style="width:5rem"><i class="fas fa-print"></i></span>
+            Impressões
+            </div>
+        </a>
+        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'RELATÓRIO' %} _menu_ativo{% endif %}" href="{% url 'relatorios_estoquev2' %}" 
+            title="Relatório">
+            <div class="d-flex flex-column">
+            <span style="width:5rem"><i class="far fa-file-alt"></i></span>
+            Relatórios
+            </div>
+        </a>
+    </div>
+</div>
+</div> 
+</div>
