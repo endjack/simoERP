@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'tarefas.apps.TarefasConfig',
     'faturamento',
     'engenharia',
+    'estoque_v2',
     
 
 ]
