@@ -39,11 +39,18 @@
             Requisições
             </div>
         </a>
-        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'CADASTRAR' %} _menu_ativo{% endif %}" href="{% url 'cadastrar_estoquev2' %}" 
-            title="Cadastrar">
+        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'CADASTRARITENS' %} _menu_ativo{% endif %}" href="{% url 'cadastrar_itens_estoquev2' %}" 
+            title="Cadastrar Itens">
             <div class="d-flex flex-column">
             <span style="width:5rem"><i class="fas fa-cart-plus"></i></span>
-            Cadastrar
+            + Itens
+            </div>
+        </a>
+        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'CADASTRARCATEGORIAS' %} _menu_ativo{% endif %}" href="{% url 'cadastrar_categoria_estoquev2' %}" 
+            title="Cadastrar Categorias">
+            <div class="d-flex flex-column">
+            <span style="width:5rem"><i class="fas fa-tags"></i></span>
+            + Categorias
             </div>
         </a>
         <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'IMPRESSÃO' %} _menu_ativo{% endif %}" href="{% url 'impressoes_estoquev2' %}" 

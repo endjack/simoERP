@@ -35,6 +35,20 @@ def procurar_estoquev2(request, template_name = 'estoque_v2/procurar_estoque.htm
     
 @login_required(login_url='login/')
 @csrf_exempt
+def detalhar_item_de_estoque(request, pk, template_name = 'estoque_v2/detalhar_item_de_estoque.html'):
+
+    if request.method == 'GET':
+        item_estoque = Estoque.objects.get(pk=pk)
+       
+     
+        context = {
+            'item_estoque' : item_estoque,
+    
+        }
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
 def filtrar_itens_estoque(request, template_name = 'estoque_v2/fragmentos/procurar/resultados_procurar.html'):
 
     if request.method == 'POST':
@@ -75,10 +89,23 @@ def requisicoes_estoquev2(request, template_name = 'estoque_v2/requisicoes_estoq
     
 @login_required(login_url='login/')
 @csrf_exempt
-def cadastrar_estoquev2(request, template_name = 'estoque_v2/cadastrar_estoque.html'):
+def cadastrar_itens_estoquev2(request, template_name = 'estoque_v2/cadastrar_estoque.html'):
 
     if request.method == 'GET':
-        _menu_ativo = 'CADASTRAR'
+        _menu_ativo = 'CADASTRARITENS'
+     
+        context = {
+            'menu_ativo' : _menu_ativo,
+         
+        }
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def cadastrar_categoria_estoquev2(request, template_name = 'estoque_v2/cadastrar_estoque.html'):
+
+    if request.method == 'GET':
+        _menu_ativo = 'CADASTRARCATEGORIAS'
      
         context = {
             'menu_ativo' : _menu_ativo,

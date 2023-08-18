@@ -1,0 +1,164 @@
+{% load static %}
+
+{% block styleHead %}
+ 
+{% endblock %}
+
+{% block conteudo %}
+
+
+<div class="container mt-2">
+ 
+<div class="card">
+
+<div class="row mt-2">
+
+      <div class="col-3 ">
+            {% if item_estoque.item.imagem %}
+            <img src="{{item_estoque.item.imagem.url}}" class="card-img-top m-1" style="width: 100%; height: auto;">
+            {% else %}
+            <img src="{% static 'imagens/sem_imagem.png' %}" class="card-img-top m-1" style="width: 100%; height: auto;">
+            {% endif %}
+            
+      </div>
+
+      <div class="col-6" style="font-size: 14pt;">
+            <div class="">Descrição: <span style="font-weight: bold;">{{item_estoque.item.descricao}} </span></div>
+            <div class="">Marca: <span style="font-weight: bold;">{{item_estoque.item.marca|default_if_none:"-"}} </span></div>
+            <div class="">Categoria: <span style="font-weight: bold;">{{item_estoque.item.categoria}} </span></div>
+            <div class="">Peso: <span style="font-weight: bold;">{{item_estoque.item.peso |default_if_none:"-"}} </span></div>
+            <div class="">Fornecedor: <span style="font-weight: bold;">{{item_estoque.item.fornecedor.nome|default_if_none:"-"}} </span></div>
+            <div class="">Preço R$: <span style="font-weight: bold;">{{item_estoque.item.preco|default_if_none:"-" }} </span></div>
+      </div>
+
+      <div class="col-3">
+            Tem no estoque: <br>
+            <!-- Button Modal -->
+            <a style="width:80%;"  class="btn btn-{{item_estoque.get_situacao}} m-1 " data-bs-toggle="modal" data-bs-target="#movimentaritemdeestoque{{item_estoque.pk}}" href="modal" 
+            title="Movimentar Item">
+            <span style="font-size: 14pt;">{{item_estoque.quantidade}}</span>
+            <span style="font-size: 10pt;">{{item_estoque.item.unid_medida}}</span>
+
+            </a>
+            <!-- Fim button Modal -->
+        <br>
+        <div class="text-start">
+        <small>Clique para movimentar</small></div>
+        <br>
+        <div class="">Quant. Mínima: <span style="font-weight: bold;">{{item_estoque.item.qtd_minima}} {{item_estoque.item.unid_medida}}</span></div>
+      </div>
+
+</div>   
+
+</div>
+</div>
+
+<!-- Inicio Modal -->
+<div class="modal fade" id="movimentaritemdeestoque{{item_estoque.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+      <div class="modal-content" style="background-color:#edeef5">
+          <div class="modal-header">
+              <div class="d-flex flex-column bd-highlight">
+                  <h6 class="bd-highlight">Movimentar:</h6>
+                  
+              </div>  
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+
+            <form id="form_filtro" 
+                  hx-post="#" 
+                  hx-target="body" 
+                  hx-swap="innerHTML" 
+                  style="line-height: normal; font-size:9pt">
+                  {% csrf_token %}
+
+                  <div class="d-flex flex-row align-items-end">
+                        <div class="col-4 m-1">
+                              <label for="input0" class="">Tipo de Movimentação:</label>
+                              <select id="tipo" class="form-control form-control-sm"  name="categoria" >
+                                    <option value="SAIDA"> SAÍDA ESTOQUE</option>
+                                    <option value="ENTRADA"> ENTRADA ESTOQUE</option>
+                                    
+                              </select>
+                        </div>
+                        <div class="col-2 m-1">
+
+                              <label for="inputDescricao" class="">Quantidade:</label>
+                              <input type="number" step="any"  min='0.1' id="qnInput" class="form-control form-control-sm  text-white text-center btn-danger bgMovimentar" name="descricao">
+                        </div>
+                        <div class="col-2 m-1">
+
+                              <label for="inputDescricao" class="">Unid. Medida:</label>
+                              <input type="text" class="form-control form-control-sm text-center" value="{{item_estoque.item.unid_medida}}" disabled>
+                        </div>
+                        <div class="col-4 m-1 text-center">
+                              <button class="btn btn-sm btn-danger bgMovimentar"  form="formInserirRDO"><span id="labelButton" class="text-white">Retirar(-)</span></button>
+                             
+                        </div>
+
+
+                  </div>
+                  
+    
+    
+  
+        
+            </form>
+           
+
+              
+          </div>
+          <div class="m-4" style="background-color:#edeef5">
+
+            <div class="row">
+                  
+                  <div class="col-6" style="border:1px solid gray">
+                        Tem no Estoque:  <span style="font-size:14pt;font-weight:bold;">{{item_estoque.quantidade}} {{item_estoque.item.unid_medida}}</span><br>
+                        Ficará com:  <span style="font-size:14pt;font-weight:bold;"> 0,00 {{item_estoque.item.unid_medida}}</span>
+                  </div>
+                  <div class="col-6">
+                        Erros e Avisos:
+                  </div>
+                  
+            </div>
+             
+          
+          
+          </div>
+      </div>
+      </div>
+</div>
+<!-- Fim Modal -->  
+
+       
+{% endblock%}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>  
+{% block jquery %}
+
+
+<script>
+$(document).ready(function () {
+
+
+      $("#tipo").change( function() {
+          if ($("#tipo").val() == 'ENTRADA') {
+            $("#labelButton").html('Acrescentar(+): ').css("color", "blue");
+            $(".bgMovimentar").removeClass("btn-danger");
+            $(".bgMovimentar").addClass( "btn-primary" );
+          } else {
+              $("#labelButton").html('Retirar(-): ').css("color", "red");
+              $(".bgMovimentar").removeClass( "btn-primary" );
+              $(".bgMovimentar").addClass( "btn-danger" );
+          }
+      });
+
+
+
+
+
+   
+});
+</script>
+{% endblock%}
+
