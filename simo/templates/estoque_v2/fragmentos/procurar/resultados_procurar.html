@@ -1,11 +1,10 @@
 {% load static %}
 
-{{itens}}
 
 <div class="texto-enfase " style=""> Resultados: </div>
   <div class="p-2" style="border-color: #093637;">
       <table class="table table-sm table-bordered table-striped tabelaResultados" style="font-size:9pt">
-              <thead class="text-white text-center" style="background: #0d6efd;">
+              <thead class="text-white text-center" style="background:#39423b;">
               <tr style="line-height: 12px;white-space: nowrap; ">
                
                 <th scope="col">Cód</th>
@@ -22,7 +21,24 @@
               </tr>
             </thead>
             <tbody>
-   
+              {% if itens %}
+                {% for i in itens  %}
+                <tr class='linha_clicavel'>
+                  <td class="text-center ">{{i.item.pk}}</td>
+                  <td class="">{{i.item.descricao}}</td>
+                  <td class="">{{i.item.marca}}</td>
+                  <td class="text-center">{{i.quantidade}}</td>
+                  <td class="text-center">{{i.item.unid_medida}}</td>
+                  <td class="text-center">{{i.item.categoria}}</td>
+                  <td class="text-center">{{i.item.peso}}</td>
+                  <td class="text-center">{{i.item.qtd_minima}}</td>
+                  <td class="text-center">{{i.item.preco}}</td>
+                  <td class="text-center">-</td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                   Sem registros. 
+              {% endif %}
           
             </tbody>
     </table>

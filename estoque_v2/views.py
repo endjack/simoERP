@@ -38,10 +38,18 @@ def procurar_estoquev2(request, template_name = 'estoque_v2/procurar_estoque.htm
 def filtrar_itens_estoque(request, template_name = 'estoque_v2/fragmentos/procurar/resultados_procurar.html'):
 
     if request.method == 'POST':
-        itens = Estoque.objects.all()
+        
         descricao = request.POST.get('descricao') or ''
         marca = request.POST.get('marca') or ''
         categoria = request.POST.get('categoria') or '-1'
+
+        if categoria == '-1':    
+            itens = Estoque.objects.all().filter(item__descricao__icontains=descricao).filter(item__marca__icontains=marca)
+        else:
+            itens = Estoque.objects.all().filter(item__descricao__icontains=descricao).filter(item__marca__icontains=marca).filter(item__categoria__pk=int(categoria))
+    
+        
+        # print(f'-------------RESULTADO DO FILTER ---> {itens}')
        
         context = {
          
