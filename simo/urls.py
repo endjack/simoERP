@@ -63,13 +63,15 @@ urlpatterns = [
     
     #urls Estoque_v2
     path('estoque/inicio', inicio_estoquev2, name='inicio_estoquev2'),
+    path('estoque/item_estoque/<int:pk>', detalhar_item_de_estoque, name='detalhar_item_de_estoque'),
     #Procurar
     path('estoque/procurar', procurar_estoquev2, name='procurar_estoquev2'),
     path('estoque/procurar/filtrar', filtrar_itens_estoque, name='filtrar_itens_estoque'),
     
     
     path('estoque/requisicoes', requisicoes_estoquev2, name='requisicoes_estoquev2'),
-    path('estoque/cadastrar', cadastrar_estoquev2, name='cadastrar_estoquev2'),
+    path('estoque/cadastrar/itens', cadastrar_itens_estoquev2, name='cadastrar_itens_estoquev2'),
+    path('estoque/cadastrar/categorias', cadastrar_categoria_estoquev2, name='cadastrar_categoria_estoquev2'),
     path('estoque/impressoes', impressoes_estoquev2, name='impressoes_estoquev2'),
     path('estoque/relatorios', relatorios_estoquev2, name='relatorios_estoquev2'),
     

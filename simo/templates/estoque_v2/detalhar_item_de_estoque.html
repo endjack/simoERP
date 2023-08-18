@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styleHead %}
+<style>
+.htmx-indicator {
+    display:none;
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+.htmx-request {
+  display:block;
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+}
+
+
+</style>    
+{% endblock %}
+
+{% block conteudo %}
+
+{% include "estoque_v2/fragmentos/menu_estoque.html" %}
+
+<div class="container mt-2">
+ 
+          <div class="d-flex flex-row align-items-center" >
+                <h4 class="me-auto"><i class="fas fa-info-circle"></i> Detalhar Item de Estoque (Id: {{item_estoque.pk}})</h4>
+                <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#movimentaritemdeestoque{{item_estoque.pk}}" href="modal" 
+                      title="Início"><i class="fas fa-box-open"></i></i> Movimentar</a>
+                <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
+                      title="Início"><i class="fas fa-edit"></i></i> Alterar</a>
+                <a  style="" class="btn  btn-sm btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
+                      title="Início"><i class="fas fa-trash"></i> Excluir</a>
+          </div>
+</div>
+
+
+{% include "estoque_v2/item_de_estoque.html" %}
+
+
+    
+      
+      
+{% endblock%}
+
