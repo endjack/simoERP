@@ -61,19 +61,29 @@ urlpatterns = [
     path('filtrar-estoque', estoque_filter, name='estoque-filter'),
     
     
-    #urls Estoque_v2
+    #urls Estoque V2
     path('estoque/inicio', inicio_estoquev2, name='inicio_estoquev2'),
     path('estoque/item_estoque/<int:pk>', detalhar_item_de_estoque, name='detalhar_item_de_estoque'),
-    #Procurar
+    path('estoque/item_estoque/<int:pk>/movimentar', movimentar_item_de_estoque, name='movimentar_item_de_estoque'),
+    path('hx/<int:pk>/hx_calcular_saldo_estoque', hx_calcular_saldo_estoque, name='hx_calcular_saldo_estoque'),
+    #Procurar V2
     path('estoque/procurar', procurar_estoquev2, name='procurar_estoquev2'),
     path('estoque/procurar/filtrar', filtrar_itens_estoque, name='filtrar_itens_estoque'),
-    
-    
+    #Requisições V2
     path('estoque/requisicoes', requisicoes_estoquev2, name='requisicoes_estoquev2'),
+    path('estoque/requisicao/criar', criar_requisicao_sem_itens, name='criar_requisicao_sem_itens'),
+
+    
     path('estoque/cadastrar/itens', cadastrar_itens_estoquev2, name='cadastrar_itens_estoquev2'),
     path('estoque/cadastrar/categorias', cadastrar_categoria_estoquev2, name='cadastrar_categoria_estoquev2'),
     path('estoque/impressoes', impressoes_estoquev2, name='impressoes_estoquev2'),
     path('estoque/relatorios', relatorios_estoquev2, name='relatorios_estoquev2'),
+    
+    
+    
+    
+    
+    
     
     #urls Requisição
     path('gerar-requisicao/', GerarRequisicaoView.as_view(), name='gerar-requisicao'),
