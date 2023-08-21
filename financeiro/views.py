@@ -242,7 +242,7 @@ def add_descricao_nota(request):
 def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resultados-contas-a-pagar.html'):
              
    
-    try:
+
         check_pago = request.GET.get('check_pago') 
         check_nao_pago = request.GET.get('check_nao_pago') 
         
@@ -257,7 +257,7 @@ def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resul
         end_date = datetime.strptime(end_date_aux, '%Y-%m-%d')   
         
         print(f'PESQUISA ------------------------ descricao/cod ---> {descricao}')
-        print(f'PESQUISA ------------------------ Valos ---> {valor_busca}')
+        print(f'PESQUISA ------------------------ Valor ---> {valor_busca}')
         print(f'PESQUISA ------------------------ data inicial ---> {initial_date}')
         print(f'PESQUISA ------------------------ data final ---> {end_date}')
         print(f'PESQUISA ------------------------ fornecedor ---> {fornecedor}')
@@ -273,57 +273,31 @@ def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resul
         #     objectsNota = NotaCompleta.objects.all()
         
         
-        objectsConta = ContaBoleto.objects.all()
-        objectsNota = NotaCompleta.objects.all()
+        objectsConta = ContaBoleto.objects.all().filter(Q(conta__saida__nota_fiscal__icontains=descricao) & 
+                                                                      Q(valor__icontains=valor_busca) & 
+                                                                      Q(conta__saida__fornecedor__nome__icontains=fornecedor) | Q(conta__saida__fornecedor__razao_social__icontains=fornecedor) &
+                                                                      Q(conta__saida__descricao__icontains=descricao) &
+                                                                      Q(doc__icontains=descricao) &
+                                                                      Q(data_vencimento__range=[initial_date, end_date])).order_by('-data_vencimento')
+        objectsNota = NotaCompleta.objects.all().filter(Q(saida__nota_fiscal__icontains=descricao) & 
+                                                                    Q(valor__icontains=valor_busca) & 
+                                                                    Q(saida__fornecedor__nome__icontains=fornecedor) | Q(saida__fornecedor__razao_social__icontains=fornecedor) &
+                                                                    Q(saida__descricao__icontains=descricao) &
+                                                                    Q(saida__data_emissao__range=[initial_date, end_date])).order_by('-saida__data_emissao')
         
                
         if check_pago == 'on' and check_nao_pago == None:
+                print('------------------ PAGO: ON --------- NÃO PAGO: OFF')
             
-                objectsConta = objectsConta.filter(pago=True).filter(Q(conta__saida__fornecedor__nome__icontains=fornecedor) | 
-                                                      Q(conta__saida__fornecedor__razao_social__icontains=fornecedor) ,
-                                                      Q(data_vencimento__range=[initial_date, end_date]) ,
-                                                      Q(conta__valor__icontains=valor_busca) , 
-                                                      Q(conta__saida__nota_fiscal__icontains=descricao) , 
-                                                      Q(doc__icontains=descricao)).order_by('data_vencimento')
-                
-                objectsNota = objectsNota.filter(pago=True).filter(Q(saida__fornecedor__nome__icontains=fornecedor) | 
-                                                     Q(saida__fornecedor__razao_social__icontains=fornecedor) , 
-                                                     Q(saida__data_emissao__range=[initial_date, end_date]) , 
-                                                     Q(valor__icontains=valor_busca) ,
-                                                     Q(saida__nota_fiscal__icontains=descricao)).order_by('saida__data_emissao')
+                objectsConta = objectsConta.filter(pago=True)
+                objectsNota = objectsNota.filter(pago=True)
         
         elif check_nao_pago == 'on' and check_pago == None:
+                print('------------------ PAGO: OFF --------- NÃO PAGO: ON')
             
-                objectsConta = objectsConta.filter(pago=False).filter(Q(conta__saida__fornecedor__nome__icontains=fornecedor) | 
-                                                       Q(conta__saida__fornecedor__razao_social__icontains=fornecedor) ,
-                                                       Q(data_vencimento__range=[initial_date, end_date]) , 
-                                                       Q(conta__valor__icontains=valor_busca) ,
-                                                       Q(conta__saida__nota_fiscal__icontains=descricao) , 
-                                                       Q(doc__icontains=descricao)).order_by('data_vencimento')
-                
-                objectsNota = objectsNota.filter(pago=False).filter(Q(saida__fornecedor__nome__icontains=fornecedor) | 
-                                                      Q(saida__fornecedor__razao_social__icontains=fornecedor) ,
-                                                      Q(saida__data_emissao__range=[initial_date, end_date]) , 
-                                                      Q(valor__icontains=valor_busca) ,
-                                                      Q(saida__nota_fiscal__icontains=descricao)).order_by('saida__data_emissao')    
-        
-        elif check_nao_pago == 'on' and check_pago == 'on':
+                objectsConta = objectsConta.filter(pago=False)
+                objectsNota = objectsNota.filter(pago=False) 
 
-                objectsConta = objectsConta.filter(Q(conta__saida__fornecedor__nome__icontains=fornecedor) | 
-                                                       Q(conta__saida__fornecedor__razao_social__icontains=fornecedor) ,
-                                                       Q(data_vencimento__range=[initial_date, end_date]) , 
-                                                       Q(conta__valor__icontains=valor_busca) ,
-                                                       Q(conta__saida__nota_fiscal__icontains=descricao) , 
-                                                       Q(doc__icontains=descricao)).order_by('data_vencimento')
-                
-                objectsNota = objectsNota.filter(Q(saida__fornecedor__nome__icontains=fornecedor) | 
-                                   Q(saida__fornecedor__razao_social__icontains=fornecedor) ,
-                                   Q(saida__data_emissao__range=[initial_date, end_date]) ,
-                                   Q(valor__icontains=valor_busca) ,
-                                   Q(saida__nota_fiscal__icontains=descricao)).order_by('saida__data_emissao')   
-        else:
-            objectsConta = None
-            objectsNota = None
                        
         total_valor_boletos = 0             
         if objectsConta:
@@ -349,8 +323,7 @@ def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resul
      
         return render(request, template_name , context)
     
-    except ContaBoleto.DoesNotExist:
-        raise Http404("ERRO: Conta não existe!")
+
 
 @login_required(login_url='login/')
 @csrf_exempt
