@@ -34,6 +34,8 @@ class ItensNota(models.Model):
     def valor_total_BR(self):
         return locale.currency(self.qtd * self.valor, grouping=True)
     
+
+    
 class NotaCompleta(models.Model):
     saida = models.ForeignKey(DescricaoNota, on_delete=CASCADE, null=True, blank=True)
     itens = models.ManyToManyField(ItensNota)
@@ -53,6 +55,9 @@ class NotaCompleta(models.Model):
             return locale.currency(self.valor, grouping=True)
         else:
             return locale.currency(0, grouping=True)
+        
+    def get_all_itens_by_nota(self):
+        return ItensNota.objects.filter(pk= self.pk).values()
 
 
 class PagamentoVista(models.Model):

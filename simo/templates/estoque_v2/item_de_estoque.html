@@ -59,66 +59,85 @@
       <div class="modal-content" style="background-color:#edeef5">
           <div class="modal-header">
               <div class="d-flex flex-column bd-highlight">
-                  <h6 class="bd-highlight">Movimentar:</h6>
+                  <h6 class="bd-highlight">Movimentar: {{item_estoque.item.descricao}}</h6>
+                  <span class="bd-highlight">Data/Hora: {% now "d/m/Y H:i" %}</span>
+                  <span class="bd-highlight">Usuário: {{user.get_full_name}}</span>
+                 
                   
               </div>  
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+            <div class="container" style="">
 
-            <form id="form_filtro" 
-                  hx-post="#" 
+            <form id="formMovimentarItemEstoque" 
+                  hx-post="{% url 'movimentar_item_de_estoque' item_estoque.pk %}" 
                   hx-target="body" 
                   hx-swap="innerHTML" 
                   style="line-height: normal; font-size:9pt">
                   {% csrf_token %}
 
                   <div class="d-flex flex-row align-items-end">
-                        <div class="col-4 m-1">
+                        <div class="col-md-4 m-1">
                               <label for="input0" class="">Tipo de Movimentação:</label>
-                              <select id="tipo" class="form-control form-control-sm"  name="categoria" >
+                              <select id="tipo" class="form-control form-control-sm"  name="movimentar" hx-target="#saldoEstoque"
+                                    hx-swap="innerHTML"
+                                    hx-include="[name='qntInput'], [name='movimentar']"
+                                    hx-get="{% url 'hx_calcular_saldo_estoque' item_estoque.pk %}"
+                              >
                                     <option value="SAIDA"> SAÍDA ESTOQUE</option>
                                     <option value="ENTRADA"> ENTRADA ESTOQUE</option>
                                     
                               </select>
                         </div>
-                        <div class="col-2 m-1">
+                        <div class="col-md-2 m-1">
 
                               <label for="inputDescricao" class="">Quantidade:</label>
-                              <input type="number" step="any"  min='0.1' id="qnInput" class="form-control form-control-sm  text-white text-center btn-danger bgMovimentar" name="descricao">
+                              <input type="number" id="qntInput" class="form-control form-control-sm  text-center" name="qntInput" value="0"
+                                     hx-target="#saldoEstoque"
+                                     hx-swap="innerHTML"
+                                     hx-include="[name='qntInput'], [name='movimentar']"
+                                     hx-get="{% url 'hx_calcular_saldo_estoque' item_estoque.pk %}"
+                                     hx-trigger="change">
+                              
                         </div>
-                        <div class="col-2 m-1">
+                        
+                        <div class="col-md-2 m-1">
 
                               <label for="inputDescricao" class="">Unid. Medida:</label>
                               <input type="text" class="form-control form-control-sm text-center" value="{{item_estoque.item.unid_medida}}" disabled>
                         </div>
-                        <div class="col-4 m-1 text-center">
-                              <button class="btn btn-sm btn-danger bgMovimentar"  form="formInserirRDO"><span id="labelButton" class="text-white">Retirar(-)</span></button>
+                        <div class="col-md-4 m-1 text-start">
+                              <button class="btn btn-sm btn-danger bgMovimentar"  form="formMovimentarItemEstoque"><span id="labelButton" class="text-white">Retirar (-)</span></button>
                              
                         </div>
 
 
                   </div>
-                  
-    
+                  <div class="row">
+                        <div class="col-4"></div>
+                        <div class="col-6 text-start"><span id="errosDeMovimentacao" style="color:red"></span></div>  
+                  </div>
     
   
         
             </form>
            
 
-              
+      </div>
           </div>
-          <div class="m-4" style="background-color:#edeef5">
+          <div class="m-4 p-2" style="background-color:#edeef5">
 
-            <div class="row">
+            <div class="row p-2">
                   
-                  <div class="col-6" style="border:1px solid gray">
-                        Tem no Estoque:  <span style="font-size:14pt;font-weight:bold;">{{item_estoque.quantidade}} {{item_estoque.item.unid_medida}}</span><br>
-                        Ficará com:  <span style="font-size:14pt;font-weight:bold;"> 0,00 {{item_estoque.item.unid_medida}}</span>
+                  <div class="col-6 " style="">
+                        Tem no Estoque:  <br>
+                        <span style="font-size:14pt;font-weight:bold;">{{item_estoque.quantidade}} {{item_estoque.item.unid_medida}}</span><br>
+                       
                   </div>
                   <div class="col-6">
-                        Erros e Avisos:
+                        Ficará com: <br>
+                        <span style="font-size:14pt;font-weight:bold;"> <span id="saldoEstoque">{{item_estoque.quantidade}}</span> {{item_estoque.item.unid_medida}}</span>
                   </div>
                   
             </div>
@@ -143,11 +162,11 @@ $(document).ready(function () {
 
       $("#tipo").change( function() {
           if ($("#tipo").val() == 'ENTRADA') {
-            $("#labelButton").html('Acrescentar(+): ').css("color", "blue");
+            $("#labelButton").html('Acrescentar (+): ').css("color", "blue");
             $(".bgMovimentar").removeClass("btn-danger");
             $(".bgMovimentar").addClass( "btn-primary" );
           } else {
-              $("#labelButton").html('Retirar(-): ').css("color", "red");
+              $("#labelButton").html('Retirar (-): ').css("color", "red");
               $(".bgMovimentar").removeClass( "btn-primary" );
               $(".bgMovimentar").addClass( "btn-danger" );
           }
