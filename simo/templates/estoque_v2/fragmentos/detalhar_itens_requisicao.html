@@ -1,0 +1,76 @@
+<div id="listaItensRequisicaoAtual"></div>
+
+<table class="table table-sm" style="font-size:9pt">
+                              
+    <tbody>
+      {% if itensRequisicao %}
+        {% for i in itensRequisicao  %}
+       <tr class=''>
+         
+          <td class="text-center fw-bold">{{i.quantidade|default_if_none:"-"}}</td>
+          <td class="text-center">{{i.item.item.unid_medida|default_if_none:"-"}}</td>
+          <td class="fw-bold">{{i.item.item.descricao|default_if_none:"-"|upper}}</td>
+          <td class="">{{i.item.item.marca|default_if_none:"-"|upper}}</td>
+          <td class="text-center">{{i.item.item.categoria|default_if_none:"-"|upper}}</td>
+          <!-- Botao Modal EXCLUIR ITEN de REQUISICAO-->
+          <td class="text-center"><a data-bs-toggle="modal" data-bs-target="#ExcluirItensRequisicaoAtual{{i.pk}}" href="modal"><i class="fas fa-trash"></i></a></td>
+        
+        
+          <!-- Modal EXCLUIR ITEN de REQUISICAO-->
+          <div class="modal fade" id="ExcluirItensRequisicaoAtual{{i.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content ">
+                    <div class="modal-header p-3">
+                        <div class="d-flex flex-column bd-highlight">
+                            <h5 style="color:red" class="bd-highlight">Excluir Item de Requisicao Atual (nº {{i.pk}})</h5>
+                            
+                            
+                        </div>  
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-5">
+                        <!-- modal-body --> 
+
+                            <span class="text-danger">Você tem certeza que deseja EXCLUIR O item? </span><br>
+                            <span class="fw-bold">{{i.quantidade|default_if_none:"-"}} {{i.item.item.unid_medida|default_if_none:"-"}} - {{i.item.item.descricao|upper}} </span>
+                            <hr>
+                            Será devolvido/acrescido ao Estoque a quantidade de <span class="fw-bold">{{i.quantidade|default_if_none:"-"}} {{i.item.item.unid_medida|default_if_none:"-"}}</span>:
+                      
+                    
+                      
+
+                        <!-- Fim modal-body -->
+                    </div>
+                    <div class="modal-footer form-control">
+                        <a class="btn btn-sm btn-danger" href="{% url 'excluir_item_requisicao_estoque' req_atual.pk i.pk %}"><i class="fas fa-times"></i> Excluir </a>   
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    
+                    </div>
+                </div>
+            </div>
+          </div>
+          <!-- Fim Modal --> 
+        
+        
+        
+        
+        
+        
+        
+        
+        </tr>
+        {% endfor %}
+      {% else %}
+      <td class="text-center"><div style="height:100%;width:100%"></div>Sem Itens.
+        <!-- Botao Modal ADD ITENS A REQUISICAO-->    
+        <a  style="" class="" data-bs-toggle="modal" data-bs-target="#adicionarItensRequisicaoAtual" href="modal" 
+            title="Adicionar Itens a Requisição"><span><i class="fas fa-plus"></i></a></span> </td>
+
+      {% endif %}
+  
+    </tbody>
+</table>
+
+
+
+ 

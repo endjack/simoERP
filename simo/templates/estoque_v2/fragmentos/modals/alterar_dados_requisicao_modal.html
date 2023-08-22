@@ -1,0 +1,112 @@
+ <!-- Modal XXXXXXX-->
+ <div class="modal fade" id="modalDadosRequisicaoEstoquev2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content ">
+
+            <div class="modal-header p-3">
+                <div class="d-flex flex-column bd-highlight">
+                    <h5 style="color:black" class="bd-highlight"><i class="fas fa-edit"></i> Alterar Dados da Requisição (nº {{req_atual.pk}}): </h5>
+                    
+                    
+                </div>  
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body p-5">
+                <!-- modal-body --> 
+
+                <div class="container col-10">
+
+                    <form id="formInserirRequisiçãov2"
+                    hx-post="{% url 'editar_dados_requisicao' req_atual.pk %}" 
+                    hx-target="body" 
+                    hx-swap="innerHTML" >
+
+
+                        <div class="form-group row mb-2 ">
+                            <div class="">
+                             
+                                    <label for="inputDescricao" class=""><i class="fas fa-hard-hat"></i> Funcionário/Solicitante:</label>
+                                    <select id="input0" class="form-control "  name="solicitante">
+                                        <option value="-1" selected disabled>Selecione:</option>
+                                        {% for i in funcionarios_ativos %}
+                                        
+                                        {% if i == req_atual.solicitante  %}
+                                            <option value="{{req_atual.solicitante.pk}}" selected> {{req_atual.solicitante.nome}} - {{req_atual.solicitante.cargo}}</option>
+                                        {% else %}
+                                            <option value="{{i.pk}}"> {{i.nome}} - {{i.cargo}}</option>
+                                        {% endif %}
+                                            
+                                        {% endfor %}      
+                                    </select>
+         
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-2 ">
+                            <div class="">
+                             
+                                    <label for="inputDescricao" class=""><i class="fas fa-map-marker-alt"></i> Local:</label>
+                                    <select id="input0" class="form-control "  name="local" >
+                                        <option value="-1" selected disabled>Selecione:</option>
+                                        {% for i in locais %}
+
+                                        {% if i == req_atual.local  %}
+                                        <option value="{{req_atual.local.pk}}" selected> {{req_atual.local.local}} - {{req_atual.local.endereco}}</option>
+                                        {% else %}
+                                            <option value="{{i.pk}}"> {{i.local}} - {{i.endereco}}</option>
+                                        {% endif %}
+
+                                        {% endfor %}      
+                                    </select>
+         
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-2 ">
+                            <div class="">
+                             
+                                    <label for="inputDescricao" class=""><i class="fas fa-file-contract"></i> Obra:</label>
+                                    <select id="input0" class="form-control "  name="obra">
+                                        <option value="-1" selected disabled>Selecione:</option>
+                                        {% for i in obras %}
+
+                                        {% if i == req_atual.obra  %}
+                                            <option value="{{req_atual.obra.pk}}" selected> {{req_atual.obra.nome}} - Contrato: {{req_atual.obra.num_contrato}}</option>
+                                        {% else %}
+                                            <option value="{{i.pk}}"> {{i.nome}} - Contrato: {{i.num_contrato}}</option>
+                                        {% endif %}
+
+                                        {% endfor %}      
+                                    </select>
+         
+                            </div>
+                        </div>
+
+
+                    </form>
+                    <div class="text-center text-danger" id="ErrorRequisicao"></div>
+                    </div>
+
+
+
+
+
+
+
+            
+
+                <!-- Fim modal-body -->
+            </div>
+            
+            <div class="modal-footer form-control">
+               
+                <button class="btn btn-sm btn-primary" form="formInserirRequisiçãov2"><i class="fas fa-save"></i> Salvar Edição </button>   
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            
+            </div>
+
+        </div>
+    </div>
+ </div>
+ <!-- Fim Modal --> 

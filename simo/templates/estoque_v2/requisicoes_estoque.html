@@ -61,7 +61,7 @@
 
 </div>
 
-<div class="container mt-2">
+<div class="container">
     Requisições do dia ({% now "d/m/Y" %}): 
 
 
@@ -83,13 +83,15 @@
             <tbody>
               {% if requisicoes_do_dia %}
                 {% for i in requisicoes_do_dia  %}
+
                <tr class='linha_clicavel'>
-                  <td class="text-center"><a href="#"><div style="height:100%;width:100%">{{forloop.counter}}</div></a></td>
-                  <td class="text-center"><a href="#"><div style="height:100%;width:100%">{{i.data|default_if_none:"-"|date:'d/m/Y'}}</div></a></td>
-                  <td class="text-center"><a href="#"><div style="height:100%;width:100%">{{i.solicitante.nome|default_if_none:"-"}}</div></a></td>
-                  <td class="text-center"><a href="#"><div style="height:100%;width:100%">{{i.local.local|default_if_none:"-"}}</div></a></td>
-                  <td class="text-center"><a href="#"><div style="height:100%;width:100%">{{i.obra.nome|default_if_none:"-"}}</div></a></td>
-                  <td class="text-center"><a href="#"><div style="height:100%;width:100%">{{i.almoxarife.get_full_name|default_if_none:"-"}}</div></a></td>
+
+                  <td class="text-center"><a href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{forloop.counter}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.data|default_if_none:"-"|date:'d/m/Y'}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.solicitante.nome|default_if_none:"-"}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.local.local|default_if_none:"-"}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.obra.nome|default_if_none:"-"}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.almoxarife.get_full_name|default_if_none:"-"}}</div></a></td>
                 
                 </tr>
                 {% endfor %}
@@ -99,10 +101,9 @@
           
             </tbody>
     </table>
-</div>
-</div>
+  </div>
 
-
+</div>
             <!-- Modal Adicionar Funcionário -->
             <div class="modal fade" id="novaRequisicaoEstoquev2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-scrollable modal-lg">
@@ -202,7 +203,7 @@
     "language": {
 
       "decimal": "",
-      "emptyTable": "Sem requisições.",
+      "emptyTable": "Vazio.",
       "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
       "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
       "infoFiltered": "(filtrado de _MAX_ registros no total)",

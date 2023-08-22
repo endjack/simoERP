@@ -1,0 +1,111 @@
+{% load static %}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>  
+
+<div class="texto-enfase text-end" style=""> Legenda:  <span class="text-success"> <i class="fas fa-square"></i></span> Suficiente -  <span class="text-warning"><i class="fas fa-square"></i></span> Insuficiente - <span class="text-danger"><i class="fas fa-square"></i></span> Zerado  </div>
+    <div class="p-2" style="border-color: #093637;">
+        <table class="table table-sm table-bordered table-striped tabelaResultados" style="font-size:9pt">
+                <thead class="text-white text-center" style="background:#39423b;">
+                <tr style="line-height: 12px;white-space: nowrap; ">
+                
+                    <th scope="col">Cód</th>
+                    <th scope="col" style="text-align: left;">Item</th>
+                    <th scope="col" style="text-align: left;">Marca</th>
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Qtd Mínima</th>
+                    <th scope="col">NO ESTOQUE</th>
+                    <th scope="col">Unidade</th>
+                    <th scope="col">Qtd Solicitada</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% if itens %}
+                    {% for i in itens  %}
+                <tr class='linha_clicavel'>
+                    <td class="text-center ">{{i.item.pk}}</td>
+                    <td class="">{{i.item.descricao|default_if_none:"-"}}</td>
+                    <td class=" ">{{i.item.marca|default_if_none:"-"}}</td>
+                    <td class="text-center ">{{i.item.categoria|default_if_none:"-"}}</td>
+                    <td class="text-center ">{{i.item.qtd_minima|default_if_none:"-"}}</td>
+                    <td class="text-center "><div class="text-center bg-{{i.get_situacao}}"><span style="font-size:10pt; font-weight:bold">{{i.quantidade|default_if_none:"-"}}</span></div></td>
+                    <td class="text-center ">{{i.item.unid_medida|default_if_none:"-"}}</div></td>
+                    <!-- Button adicionarQuantidadeItensRequisicaoAtual-->
+                    {% if i.quantidade > 0 %}
+                    <td class="text-center">
+                        <div style="" id="">
+                            <input type="number" step="any" min="0.1"  name="qntItemDeRequisicao{{i.pk}}">&nbsp;
+                        
+                    
+                            <a href="" class="text-primary"
+                                hx-target="body"
+                                hx-include="[name='qntItemDeRequisicao{{i.pk}}']"
+                                hx-swap="innerHTML"
+                                hx-post="{% url 'add_itemRequisicao_requisicao' req_atual.pk i.pk %}"><i class="fas fa-plus"></i> Adicionar</a>
+                            <br><small><span id="erroQntItemRequisicao{{i.pk}}" style="color:red"></span></small>   
+                        </div>
+                    </td>
+
+                    {% comment %} <script>
+                     
+                        $(document).ready(function() {
+                            $('.divItem{{i.pk}}').click(function() {
+                                $('#inputItem{{i.pk}}').show("slide");
+                                
+                           });
+                        });
+                    
+                            
+                     </script> {% endcomment %}
+                   
+                    {% else %}
+                    <td class="text-center">Insuficiente.</td>
+
+                    {% endif %}
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                <td class="text-center" colspan="10">Sem itens.</td>
+                {% endif %}
+            
+                </tbody>
+        </table>
+    </div>
+
+
+    {% block jquery %}
+    <script>
+       
+        $('.tabelaResultados').DataTable({
+        responsive: true,
+        // "bSort": false,
+        "aaSorting": [],
+        "pageLength": 10,
+        "language": {
+    
+          "decimal": "",
+          "emptyTable": "Vazio.",
+          "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+          "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+          "infoFiltered": "(filtrado de _MAX_ registros no total)",
+          "infoPostFix": "",
+          "thousands": ",",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "loadingRecords": "A carregar dados...",
+          "processing": "A processar...",
+          "search": "Busca nos resultados:",
+          "zeroRecords": "Não foram encontrados resultados",
+          "paginate": {
+              "first": "Primeiro",
+              "last": "Último",
+              "next": "Seguinte",
+              "previous": "Anterior"
+          },
+          "aria": {
+              "sortAscending": ": ordem crescente",
+              "sortDescending": ": ordem decrescente"
+          }
+        }
+    });
+   </script>
+{% endblock%}
+

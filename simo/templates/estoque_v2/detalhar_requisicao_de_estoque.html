@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styleHead %}
+<style>
+.htmx-indicator {
+    display:none;
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+.htmx-request {
+  display:block;
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+}
+
+   table {
+    border-collapse: collapse;
+
+  } 
+{% comment %}   
+  .linha_clicavel {
+    border: 1px solid black;
+    cursor: pointer;
+    
+  }  {% endcomment %}
+  
+  .linha_clicavel:hover {
+    background: #bad6f7 !important;
+ 
+  }
+  td a, td a:hover{
+    text-decoration:none;
+    color:black;
+  }
+  
+
+</style>    
+{% endblock %}
+
+{% block conteudo %}
+
+{% include "estoque_v2/fragmentos/menu_estoque.html" %}
+
+<div class="container mt-2">
+ 
+ {% include "estoque_v2/fragmentos/requisicoes/menu_requisicoes_estoque.html" %}
+
+</div>
+
+
+<div class="container mt-2"> 
+      <div class="row mt-2 ">
+      
+            <div class="card col-md-6 p-2">
+                  <div class="" style="font-size: 13pt;">
+                        <div class="">Data/Hora: <span style="font-weight: bold;">{{req_atual.data}} </span></div>
+                        <div class="">Solicitante: <span style="font-weight: bold;">{{req_atual.solicitante|upper}} </span></div>
+                        <hr>
+                        <div class="">Local/Unidade: <span style="font-weight: bold;">{{req_atual.local.local}} </span></div>
+                        <div class="">Endereço: <span style="font-weight: bold;">{{req_atual.local.endereco|default_if_none:"-"}} </span></div>
+                        <div class="">Obra: <span style="font-weight: bold;">{{req_atual.obra.nome|default_if_none:"-"}} </span></div>
+                        <hr>
+                        <div class="">Almoxarife: <span style="font-weight: bold;color:gray">{{req_atual.almoxarife.get_full_name}} </span></div>
+                        
+                  </div>
+ 
+      
+            </div>   
+
+            <div class="card col-md-6 p-2">
+                  <div class="" style="font-size: 13pt;">
+                        <div class="">Itens Solicitados: <span style="font-weight: bold;"> </span></div>
+
+                       {% include "estoque_v2/fragmentos/detalhar_itens_requisicao.html" %}
+                        
+                        
+                  </div>
+ 
+      
+            </div>   
+      
+      </div>
+</div>
+      
+    
+ {% include "estoque_v2/fragmentos/modals/add_item_requisicao_atual.html" %} 
+
+ {% include "estoque_v2/fragmentos/modals/alterar_dados_requisicao_modal.html" %}     
+      
+{% endblock%}
