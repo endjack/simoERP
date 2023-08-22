@@ -1,0 +1,17 @@
+<div class="d-flex flex-row align-items-center" >
+    <h4 class="me-auto"><i class="fas fa-info-circle"></i> Detalhar Requisição de Estoque (Id: {{req_atual.pk}})</h4>
+    
+            <!-- Botao Modal ADD ITENS A REQUISICAO -->
+            <a  style="" class="btn btn-sm  btn-primary m-1 " data-bs-toggle="modal" data-bs-target="#adicionarItensRequisicaoAtual" href="modal" 
+            title="Adicionar Itens a Requisição"><span style="margin-left:1rem;margin-right:1rem;"><i class="fas fa-plus"></i></i> Itens</a></span>  
+
+            <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#" href="modal" 
+            title="Imprimir Requisição"><i class="fas fa-print"></i></i> Imprimir</a>
+
+            <!-- Botao Modal ALTERAR DADOS -->
+            <a  style="" class="btn btn-sm  btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#modalDadosRequisicaoEstoquev2" href="modal" 
+            title="Editar Dados da Requisição"><i class="fas fa-edit"></i></i> Alterar Dados</a>
+
+            <a  style="" class="btn  btn-sm btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
+            title="Excluir Requisição"><i class="fas fa-trash"></i> Excluir</a>
+</div>

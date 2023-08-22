@@ -1,0 +1,90 @@
+{% load static %}
+ <!-- Modal XXXXXXX-->
+ <div class="modal fade" id="adicionarItensRequisicaoAtual" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl">
+        <div class="modal-content ">
+            <div class="modal-header p-3">
+                <div class="d-flex flex-column bd-highlight">
+                    <h5 style="color:black" class="bd-highlight">Adicionar itens a Requisição (nº {{req_atual.pk}}) de {{req_atual.solicitante}}</h5>
+                    
+                    
+                </div>  
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body ">
+                <!-- modal-body --> 
+                <div class="container">
+                    <h5 class="mt-2"><i class="fas fa-search"></i> Filtrar Itens do Estoque:</h5>
+                    
+                      
+                      <div class="p-1">
+                        <form id="form_filtro" 
+                        hx-post="{% url 'filtrar_itens_estoque_requisicao' req_atual.pk %}" 
+                        hx-target="#resultados_filtro" 
+                        hx-swap="innerHTML" 
+                        hx-indicator="#spinner"
+                        style="line-height: normal; font-size:9pt">
+                          {% csrf_token %}
+                
+                
+                    
+                          <div class="form-group row mb-2 ">
+                            <div class="col-5">
+                              <div class="col-12 ">
+                                <label for="inputDescricao" class="">Descrição</label>
+                                <input type="text" class="form-control form-control-sm" name="descricao">
+                              </div>
+                    
+                            </div>
+                            <div class="col-2">
+                              <div class="col-12">
+                                <label for="inputmarca" class="">Marca</label>
+                                <input type="text" class="form-control form-control-sm" name="marca">
+                              </div>
+                            </div>
+                    
+                            <div class="col-2">
+                              <div class="col-12">
+                                <label for="input0" class="">Categoria:</label>
+                                <select id="input0" class="form-control form-control-sm"  name="categoria" >
+                                        <option value="-1"> Todas as Categorias</option>
+                                        {% for i in categorias %}
+                                        <option value="{{i.pk}}"> {{i.categoria}}</option>
+                                        {% endfor %}      
+                                </select>
+                              </div>
+                            </div>   
+                           
+                    
+                            <div class="col-2 d-flex align-items-end">
+                              <button form="form_filtro" class="btn btn-sm btn-primary "><i class="fas fa-search"></i> Filtrar </button>
+                              <a class="btn btn-sm btn-light " style="margin-left:1rem" href="#">Limpar</a>
+                            </div>
+                            <span class="help-block">*Para ver todos os itens do estoque: filtrar com os campos vazios.</span>
+                          </div>
+                    
+                        </form>
+                      </div>
+                    </div>
+                
+                    <div class="row text-center">
+                        <img id="spinner" class="htmx-indicator" width="30px" height="30px" src="{% static 'imagens/bars.svg' %}"/>
+                    </div>
+                    
+                    
+                    <div class="container" id="resultados_filtro">
+                
+                        {% include "estoque_v2/fragmentos/requisicoes/resultados_procurar_itens_requisicao.html" %}
+
+                    </div>
+
+
+
+            
+
+                <!-- Fim modal-body -->
+              </div>
+        </div>
+    </div>
+ </div>
+ <!-- Fim Modal --> 

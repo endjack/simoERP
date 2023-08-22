@@ -72,6 +72,11 @@ urlpatterns = [
     #Requisições V2
     path('estoque/requisicoes', requisicoes_estoquev2, name='requisicoes_estoquev2'),
     path('estoque/requisicao/criar', criar_requisicao_sem_itens, name='criar_requisicao_sem_itens'),
+    path('estoque/requisicao/<int:pk>/editar-dados', editar_dados_requisicao, name='editar_dados_requisicao'),
+    path('estoque/requisicao/<int:pk>/detalhar', detalhar_requisicao_de_estoque, name='detalhar_requisicao_de_estoque'),
+    path('estoque/requisicao/<int:pk>/buscar-itens', filtrar_itens_estoque_requisicao, name='filtrar_itens_estoque_requisicao'),
+    path('estoque/requisicao/<int:pk>/item/<int:item>/add', add_itemRequisicao_requisicao, name='add_itemRequisicao_requisicao'),
+    path('estoque/requisicao/<int:pk>/item/<int:item>/excluir', excluir_item_requisicao_estoque, name='excluir_item_requisicao_estoque'),
 
     
     path('estoque/cadastrar/itens', cadastrar_itens_estoquev2, name='cadastrar_itens_estoquev2'),

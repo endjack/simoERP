@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from funcionarios.models import Funcionario
 from obras.models import Local, Obra
 
-from requisicao.models import Requisicao
+from requisicao.models import ItemRequisicao, Requisicao
 
 
 @login_required(login_url='login/')
@@ -137,6 +137,7 @@ def requisicoes_estoquev2(request, template_name = 'estoque_v2/requisicoes_estoq
         locais = Local.objects.all()
         obras = Obra.objects.all()
         
+        
         print(f'------------Requisições do Dia ({data_hoje}):')
         print(f'------------{requisicoes_do_dia}')
      
@@ -146,13 +147,14 @@ def requisicoes_estoquev2(request, template_name = 'estoque_v2/requisicoes_estoq
             'funcionarios_ativos' : funcionarios_ativos,
             'locais' : locais,
             'obras' : obras,
+            
          
         }
         return render(request, template_name , context)
     
 @login_required(login_url='login/')
 @csrf_exempt
-def criar_requisicao_sem_itens(request, template_name = 'estoque_v2/requisicoes_estoque.html'):
+def criar_requisicao_sem_itens(request):
 
     if request.method == 'POST':
         solicitante_atual = request.POST.get('solicitante')
@@ -178,7 +180,148 @@ def criar_requisicao_sem_itens(request, template_name = 'estoque_v2/requisicoes_
             
             
             return redirect('requisicoes_estoquev2')
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def editar_dados_requisicao(request, pk):
+
+    if request.method == 'POST':
+        solicitante_atual = request.POST.get('solicitante')
+        local_atual = request.POST.get('local')
+        obra_atual = request.POST.get('obra')
         
+        
+        if solicitante_atual == '-1' or local_atual == '-1' or obra_atual == '-1':
+            response = HttpResponse('Necessário preencher todos os campos.')
+            response['HX-Retarget'] = '#ErrorRequisicao'
+            return response
+            
+        else:
+            solicitante_atual = Funcionario.objects.get(pk = int(solicitante_atual))
+            local_atual = Local.objects.get(pk = int(local_atual))
+            obra_atual = Obra.objects.get(pk = int(obra_atual))
+         
+            req_editada = Requisicao.objects.get(pk=pk)
+            req_editada.solicitante = solicitante_atual
+            req_editada.local = local_atual
+            req_editada.obra = obra_atual
+            
+            req_editada.save()
+            
+            return redirect('detalhar_requisicao_de_estoque', pk=pk)
+            
+            
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def filtrar_itens_estoque_requisicao(request, pk, template_name = 'estoque_v2/fragmentos/requisicoes/resultados_procurar_itens_requisicao.html'):
+
+    if request.method == 'POST':
+        req_atual = Requisicao.objects.get(pk=pk)
+        descricao = request.POST.get('descricao') or ''
+        marca = request.POST.get('marca') or ''
+        categoria = request.POST.get('categoria') or '-1'
+
+        if categoria == '-1':    
+            itens = Estoque.objects.all().filter(item__descricao__icontains=descricao).filter(item__marca__icontains=marca)
+        else:
+            itens = Estoque.objects.all().filter(item__descricao__icontains=descricao).filter(item__marca__icontains=marca).filter(item__categoria__pk=int(categoria))
+    
+        
+        # print(f'-------------RESULTADO DO FILTER ---> {itens}')
+       
+        context = {
+         
+            'itens': itens,
+            'req_atual': req_atual
+         
+        }
+     
+ 
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def add_itemRequisicao_requisicao(request, pk, item):
+
+    if request.method == 'POST':
+        _input_qtd = f'qntItemDeRequisicao{item}'
+        qtd_solicitada = request.POST.getlist(_input_qtd)[0]
+        item = Estoque.objects.get(pk=item)
+        qtd_item_no_estoque = item.quantidade
+        
+        print(f'-------------QTD SOLICITADA: {qtd_solicitada}')
+        print(f'-------------QTD NO ESTOQUE: {qtd_item_no_estoque}')
+        
+        #VALIDAÇÕES
+        
+        if qtd_solicitada == "":
+            response = HttpResponse('Valor Inválido!')
+            response['HX-Retarget'] = f'#erroQntItemRequisicao{item}'
+            return response
+        else:
+            qtd_solicitada = float(qtd_solicitada) 
+        
+        if qtd_solicitada > qtd_item_no_estoque:
+            response = HttpResponse('Qtd Insuficiente!')
+            response['HX-Retarget'] = f'#erroQntItemRequisicao{item}'
+            return response
+        else:
+            item.quantidade  =   qtd_item_no_estoque - qtd_solicitada
+            item.save()
+            req_atual = Requisicao.objects.get(pk=pk)
+            
+            ItemRequisicao.objects.create(requisicao = req_atual,
+                                          item=item,
+                                          quantidade=qtd_solicitada)
+            
+            return redirect('detalhar_requisicao_de_estoque', pk=pk)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def detalhar_requisicao_de_estoque(request, pk, template_name = 'estoque_v2/detalhar_requisicao_de_estoque.html'):
+
+    if request.method == 'GET':
+        _menu_ativo = 'REQUISIÇÃO'
+        req_atual = Requisicao.objects.get(pk=pk)
+        categorias = Categoria.objects.all()
+        funcionarios_ativos = Funcionario.objects.all()
+        locais = Local.objects.all()
+        obras = Obra.objects.all()
+        
+        itensRequisicao = ItemRequisicao.objects.filter(requisicao=req_atual)
+     
+        context = {
+            'menu_ativo' : _menu_ativo,
+            'req_atual' : req_atual,
+            'categorias' : categorias,
+            'itensRequisicao' : itensRequisicao,
+            'funcionarios_ativos' : funcionarios_ativos,
+            'locais' : locais,
+            'obras' : obras,
+         
+        }
+        return render(request, template_name , context)
+        
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def excluir_item_requisicao_estoque(request, pk, item):
+
+    if request.method == 'GET':
+        _menu_ativo = 'REQUISIÇÃO'
+        itenRequisicao = ItemRequisicao.objects.get(pk=item)
+        
+        #DEVOLVER QUANTIDADE AO ITEM DE ESTOQUE
+        itemEstoque = itenRequisicao.item
+        itemEstoque.quantidade = itemEstoque.quantidade + itenRequisicao.quantidade
+        
+        itemEstoque.save()
+        
+        #EXCLUIR ITEMREQUISIÇÃO
+        itenRequisicao.delete()
+       
+        return redirect('detalhar_requisicao_de_estoque', pk=pk)
     
 
 #TODO ITENS DO ESTOQUE
