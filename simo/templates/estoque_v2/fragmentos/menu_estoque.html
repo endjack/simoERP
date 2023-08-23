@@ -18,13 +18,13 @@
 <div class="container">
 <div class="d-flex flex-row align-items-center justify-content-center" >
     <div class="" style="font-size:18pt">
-        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'INICIO' %} _menu_ativo{% endif %}" href="{% url 'inicio_estoquev2' %}" 
+        {% comment %} <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'INICIO' %} _menu_ativo{% endif %}" href="{% url 'inicio_estoquev2' %}" 
             title="Início">
             <div class="d-flex flex-column">
             <span style="width:5rem"><i class="fas fa-home"></i></span>
             Início
             </div>
-        </a>
+        </a> {% endcomment %}
         <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'PROCURAR' %} _menu_ativo{% endif %}" href="{% url 'procurar_estoquev2' %}" 
             title="Procurar">
             <div class="d-flex flex-column">
@@ -44,6 +44,13 @@
             <div class="d-flex flex-column">
             <span style="width:5rem"><i class="fas fa-cart-plus"></i></span>
             + Itens
+            </div>
+        </a>
+        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'FERRAMENTAL' %} _menu_ativo{% endif %}" href="{% url 'ferramental_estoquev2' %}" 
+            title="Cadastrar Itens">
+            <div class="d-flex flex-column">
+            <span style="width:5rem"><i class="fas fa-hammer"></i><i class="fas fa-wrench"></i></span>
+            Ferramentas
             </div>
         </a>
         <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'CADASTRARCATEGORIAS' %} _menu_ativo{% endif %}" href="{% url 'cadastrar_categoria_estoquev2' %}" 

@@ -1,12 +1,307 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block styleHead %}
+<style>
+.htmx-indicator {
+    display:none;
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+.htmx-request {
+  display:block;
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+}
+
+   table {
+    border-collapse: collapse;
+
+  } 
+  
+  .linha_clicavel {
+    border: 1px solid black;
+    cursor: pointer;
+    
+  } 
+  
+  .linha_clicavel:hover {
+    background: #bad6f7 !important;
+ 
+  }
+  td a, td a:hover{
+    text-decoration:none;
+    color:black;
+  }
+  
+
+</style>    
+{% endblock %}
 
 {% block conteudo %}
 
 {% include "estoque_v2/fragmentos/menu_estoque.html" %}
 
-Relatórios
+
+<div class="container">
+        <h4 class="mt-2"><i class="fas fa-chart-bar"></i> Estoque <span class="text-primary">Visão Geral ({{itens_count}})</span>:</h4>
+
+        <div class="row">
+            <div class="col-md-3" >
+                <canvas id="chartTotalItens"></canvas >
+            </div>
+            <div class="col-md-3" >
+                <canvas id="chartItensPorCategoria"></canvas >
+            </div>
+            <div class="col-md-6" >
+                <canvas id="chartRequisicoesPorDia"></canvas >
+            </div>
+            
+        </div>
+    
+    
+</div>
+
+
+<hr>
+
+<div class="container">
+    <h4 class="mt-2"><i class="fas fa-chart-bar"></i> Itens <span style="color:orangered">Insuficientes ({{itens_insuficientes.count}})</span> ou <span style="color:red">Zerados ({{itens_zerados.count}}):</span></h4>
+
+    <div class="row">
+        <div class="col-md-3" >
+            <canvas id="itensInsuficientesZerados"></canvas >
+        </div>
+        <div class="col-md-9">
+            <div class="texto-enfase text-end" style=""> Legenda:  <span class="text-secondary"> <i class="fas fa-square"></i></span> Sem Qtd Mínima -  <span class="text-warning"><i class="fas fa-square"></i></span> Insuficiente - <span class="text-danger"><i class="fas fa-square"></i></span> Zerado  </div>
+
+            <div class="p-2" style="border-color: #093637;">
+                <table class="table table-sm table-bordered table-striped tabelaResultados" style="font-size:7pt">
+                        <thead class="text-white text-center" style="background:#39423b;">
+                        <tr style="line-height: 12px;white-space: nowrap; ">
+                         
+                          <th scope="col">Cód</th>
+                          <th scope="col" style="text-align: left;">Item</th>
+                          <th scope="col" style="text-align: left;">Marca</th>
+                          <th scope="col">Categoria</th>
+                          <th scope="col">Qtd Mínima</th>
+                          <th scope="col">NO ESTOQUE</th>
+                          <th scope="col">Unidade</th>
+          
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% if itens_zerados %}
+                          {% for i in itens_zerados  %}
+                         <tr class='linha_clicavel'>
+                          <td class="text-center "><a href="{% url 'detalhar_item_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.item.pk}}</div></a></td>
+                          <td class=""><a href="{% url 'detalhar_item_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.item.descricao|default_if_none:"-"}}</div></a></td>
+                            <td class=""><a href="{% url 'detalhar_item_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.item.marca|default_if_none:"-"}}</div></a></td>
+                            <td class="text-center"><a href="{% url 'detalhar_item_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.item.categoria|default_if_none:"-"}}</div></a></td>
+                            <td class="text-center"><a href="{% url 'detalhar_item_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.item.qtd_minima|default_if_none:"-"}}</div></a></td>
+                            <td class="text-center"><a href="{% url 'detalhar_item_de_estoque' i.pk %}"><div class="text-center bg-{{i.get_situacao}}" style="height:100%;width:100%"><span style="font-size:8pt; font-weight:bold">{{i.quantidade|default_if_none:"-"}}</span></div></a></td>
+                            <td class="text-center"><a href="{% url 'detalhar_item_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.item.unid_medida|default_if_none:"-"}}</div></a></td>
+                          </tr>
+                          {% endfor %}
+                          {% for i in itens_insuficientes  %}
+                          <tr class='linha_clicavel'>
+                           <td class="text-center "><a href="{% url 'detalhar_item_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.item.pk}}</div></a></td>
+                           <td class=""><a href="{% url 'detalhar_item_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.item.descricao|default_if_none:"-"}}</div></a></td>
+                             <td class=""><a href="{% url 'detalhar_item_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.item.marca|default_if_none:"-"}}</div></a></td>
+                             <td class="text-center"><a href="{% url 'detalhar_item_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.item.categoria|default_if_none:"-"}}</div></a></td>
+                             <td class="text-center"><a href="{% url 'detalhar_item_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.item.qtd_minima|default_if_none:"-"}}</div></a></td>
+                             <td class="text-center"><a href="{% url 'detalhar_item_de_estoque' i.pk %}"><div class="text-center bg-{{i.get_situacao}}" style="height:100%;width:100%"><span style="font-size:8pt; font-weight:bold">{{i.quantidade|default_if_none:"-"}}</span></div></a></td>
+                             <td class="text-center"><a href="{% url 'detalhar_item_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.item.unid_medida|default_if_none:"-"}}</div></a></td>
+                           </tr>
+                           {% endfor %}
+                        {% else %}
+                             
+                        {% endif %}
+                    
+                      </tbody>
+              </table>
+          </div>
+        </div>
+        
+    </div>
+
+
+</div>
+
+
+
+
+{% endblock%}
+
+{% block jquery %}
+<script src="{% static 'js/chart.js' %}"></script>  
+
+<script>
+    const chartTotalItens = document.getElementById('chartTotalItens');
+    const chartItensPorCategoria = document.getElementById('chartItensPorCategoria');
+    const chartRequisicoesPorDia = document.getElementById('chartRequisicoesPorDia');
+    const itensInsuficientesZerados = document.getElementById('itensInsuficientesZerados');
+
+
+    new Chart(chartTotalItens, {
+        type: 'bar',
+        data: {
+          //labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+          labels: ['Total de Itens', 'Total de Produtos',],
+          datasets: [{
+            label: ' Itens',
+            data: [{{itens_count}}, {{itens_produtos}}],
+            backgroundColor: ["#4287f5", "#2473f2", "#0c63f0","#0745a8", "#8bace0", "#2b4c82"],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          },
+          plugins: {
+              legend: {
+                position: 'top',
+                display: false,
+              },
+              title: {
+                display: true,
+                text: 'Total de Itens no Estoque:',
+              },
+          },
+        }
+    });
+  
+    new Chart(chartItensPorCategoria, {
+      type: 'pie',
+      data: {
+        //labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: [{% for cat in categorias %} '{{cat.categoria}}',{% endfor %}],
+        datasets: [{
+          label: ' Itens',
+          data: [{% for cat in categorias %} {{cat.get_counter_itens_by_categoria}},{% endfor %}],
+          backgroundColor: ["#4287f5", "#2473f2", "#0c63f0","#0745a8", "#8bace0", "#2b4c82"],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+            legend: {
+              position: 'top',
+              display: false,
+            },
+            title: {
+              display: true,
+              text: 'Itens no Estoque por Categoria',
+            },
+        },
+      }
+    });
+
+    new Chart(chartRequisicoesPorDia, {
+      type: 'bar',
+      data: {
+        //labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: [{% for req in req_ultimos_10_dias %} '{{req.data__date}}',{% endfor %}],
+        datasets: [{
+          label: ' Requisições',
+          data: [{% for req in req_ultimos_10_dias %} {{req.count}},{% endfor %}],
+          backgroundColor: ["#4287f5", "#2473f2", "#0c63f0","#0745a8", "#8bace0", "#2b4c82"],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+            legend: {
+              position: 'top',
+              display: false,
+            },
+            title: {
+              display: true,
+              text: 'Requisições ao Estoque (Últimos 10 dias):',
+            },
+        },
+      }
+    });
+
+    new Chart(itensInsuficientesZerados, {
+      type: 'bar',
+      data: {
+        //labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: ['Insuficientes', 'Zerados'],
+        datasets: [{
+          label: ' Total',
+          data: [{{itens_insuficientes.count}},{{itens_zerados.count}}],
+          backgroundColor: ["#f7c325", "#db3047"],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+            legend: {
+              position: 'top',
+              display: false,
+            },
+            title: {
+              display: true,
+              text: 'Total de Itens Insufientes/Zerados:',
+            },
+        },
+      }
+    });
+
+
+    $('.tabelaResultados').DataTable({
+        responsive: true,
+        // "bSort": false,
+        "aaSorting": [],
+        "pageLength": 10,
+        "language": {
+        
+          "decimal": "",
+          "emptyTable": "Sem resultados.",
+          "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+          "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+          "infoFiltered": "(filtrado de _MAX_ registros no total)",
+          "infoPostFix": "",
+          "thousands": ",",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "loadingRecords": "A carregar dados...",
+          "processing": "A processar...",
+          "search": "Busca nos resultados:",
+          "zeroRecords": "Não foram encontrados resultados",
+          "paginate": {
+              "first": "Primeiro",
+              "last": "Último",
+              "next": "Seguinte",
+              "previous": "Anterior"
+          },
+          "aria": {
+              "sortAscending": ": ordem crescente",
+              "sortDescending": ": ordem decrescente"
+          }
+        }
+        });
+
+
+  </script>
 
 {% endblock%}
 

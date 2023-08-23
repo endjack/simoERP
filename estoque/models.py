@@ -74,7 +74,7 @@ class Estoque(models.Model):
     def get_situacao(self):
         
         if not self.item.qtd_minima:
-             return 'success'
+             return 'secondary'
         else: 
             if self.quantidade > self.item.qtd_minima:
                 return 'success'
