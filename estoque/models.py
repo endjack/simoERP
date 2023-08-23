@@ -15,6 +15,12 @@ class Categoria(models.Model):
 
     def __str__(self) -> str:
         return self.categoria
+    
+    def get_all_itens_by_categoria(self):
+        return Item.objects.filter(categoria=self.categoria)
+    
+    def get_counter_itens_by_categoria(self):
+        return Item.objects.filter(categoria=self.pk).count()
 
 class Item(models.Model):
 
@@ -42,6 +48,7 @@ class Item(models.Model):
 
     class Meta:
         ordering = ('descricao',)
+        
     
     def __str__(self) -> str:
         return str(self.descricao)+ ' - '+ str(self.categoria if self.categoria != None else 'sem categoria')

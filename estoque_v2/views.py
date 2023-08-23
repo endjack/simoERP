@@ -1,3 +1,4 @@
+from datetime import timedelta
 from decimal import Decimal
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse
@@ -6,7 +7,7 @@ from estoque.models import *
 from django.views.decorators.csrf import csrf_exempt
 from funcionarios.models import Funcionario
 from obras.models import Local, Obra
-
+from django.db.models import Sum, Count
 from requisicao.models import ItemRequisicao, Requisicao
 
 
@@ -16,9 +17,23 @@ def inicio_estoquev2(request, template_name = 'estoque_v2/inicio_estoque.html'):
 
     if request.method == 'GET':
         _menu_ativo = 'INICIO'
+        categorias = Categoria.objects.all()
+        itens_count = Item.objects.all().count()
+        itens_produtos = Estoque.objects.aggregate(Sum('quantidade'))['quantidade__sum']
+        
+        
+        today_date = datetime.now()  
+        #Soma de requisições dos últimos 10 dias, contando de hoje.
+        req_ultimos_10_dias = Requisicao.objects.filter(data__range=[today_date - timedelta(days=10), today_date]).values(
+    'data__date').annotate(count=Count('data__date'))
+        
         
         context = {
             'menu_ativo' : _menu_ativo,
+            'categorias' : categorias,
+            'itens_count' : itens_count,
+            'itens_produtos' : itens_produtos,
+            'req_ultimos_10_dias' : req_ultimos_10_dias,
          
         }
         return render(request, template_name , context)
