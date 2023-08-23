@@ -6,9 +6,134 @@
 
 {% include "estoque_v2/fragmentos/menu_estoque.html" %}
 
-Dashboard <i class="fas fa-chart-bar"></i>
+
+<div class="container">
+        <h4 class="mt-2"><i class="fas fa-chart-bar"></i> Visão Geral:</h4>
+
+        <div class="row">
+            <div class="col-md-3" >
+                <canvas id="chartTotalItens"></canvas >
+            </div>
+            <div class="col-md-3" >
+                <canvas id="chartItensPorCategoria"></canvas >
+            </div>
+            <div class="col-md-6" >
+                <canvas id="chartRequisicoesPorDia"></canvas >
+            </div>
+            
+        </div>
+    
+    
+</div>
+
+
 <hr>
 Produtos <i class="fas fa-star"></i>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const chartTotalItens = document.getElementById('chartTotalItens');
+    const chartItensPorCategoria = document.getElementById('chartItensPorCategoria');
+    const chartRequisicoesPorDia = document.getElementById('chartRequisicoesPorDia');
+
+
+    new Chart(chartTotalItens, {
+        type: 'bar',
+        data: {
+          //labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+          labels: ['Total de Itens', 'Total de Produtos',],
+          datasets: [{
+            label: ' Itens',
+            data: [{{itens_count}}, {{itens_produtos}}],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          },
+          plugins: {
+              legend: {
+                position: 'top',
+                display: false,
+              },
+              title: {
+                display: true,
+                text: 'Total de Itens no Estoque:',
+              },
+          },
+        }
+      });
+
+
+
+  
+    new Chart(chartItensPorCategoria, {
+      type: 'pie',
+      data: {
+        //labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: [{% for cat in categorias %} '{{cat.categoria}}',{% endfor %}],
+        datasets: [{
+          label: ' Itens',
+          data: [{% for cat in categorias %} {{cat.get_counter_itens_by_categoria}},{% endfor %}],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+            legend: {
+              position: 'top',
+              display: false,
+            },
+            title: {
+              display: true,
+              text: 'Itens no Estoque por Categoria',
+            },
+        },
+      }
+    });
+
+    new Chart(chartRequisicoesPorDia, {
+      type: 'bar',
+      data: {
+        //labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: [{% for req in req_ultimos_10_dias %} '{{req.data__date}}',{% endfor %}],
+        datasets: [{
+          label: ' Requisições',
+          data: [{% for req in req_ultimos_10_dias %} {{req.count}},{% endfor %}],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+            legend: {
+              position: 'top',
+              display: false,
+            },
+            title: {
+              display: true,
+              text: 'Requisições ao Estoque (Últimos 10 dias):',
+            },
+        },
+      }
+    });
+
+
+  </script>
 
 {% endblock%}
 
