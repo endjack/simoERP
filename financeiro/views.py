@@ -247,7 +247,8 @@ def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resul
         check_nao_pago = request.GET.get('check_nao_pago') 
         
         descricao = request.GET.get('descricao') or ''
-        valor_busca = Decimal(request.GET.get('valor').replace(".","").replace(",","."))
+        valor_busca = request.GET.get('valor').replace(".","").replace(",",".")
+      
         fornecedor = request.GET.get('fornecedor') or ''
         
         initial_date_aux = request.GET.get('data') or '0001-01-01' # datetime.min is 1
@@ -275,14 +276,12 @@ def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resul
         
         objectsConta = ContaBoleto.objects.all().filter(Q(conta__saida__nota_fiscal__icontains=descricao) & 
                                                                       Q(valor__icontains=valor_busca) & 
-                                                                      Q(conta__saida__fornecedor__nome__icontains=fornecedor) | Q(conta__saida__fornecedor__razao_social__icontains=fornecedor) &
+                                                                      Q(conta__saida__fornecedor__nome__icontains=fornecedor) &
                                                                       Q(conta__saida__descricao__icontains=descricao) &
-                                                                      Q(doc__icontains=descricao) &
                                                                       Q(data_vencimento__range=[initial_date, end_date])).order_by('data_vencimento')
         objectsNota = NotaCompleta.objects.all().filter(Q(saida__nota_fiscal__icontains=descricao) & 
                                                                     Q(valor__icontains=valor_busca) & 
-                                                                    Q(saida__fornecedor__nome__icontains=fornecedor) | Q(saida__fornecedor__razao_social__icontains=fornecedor) &
-                                                                    Q(saida__descricao__icontains=descricao) &
+                                                                    Q(saida__fornecedor__nome__icontains=fornecedor) &                                                                     
                                                                     Q(saida__data_emissao__range=[initial_date, end_date])).order_by('-saida__data_emissao')
         
                

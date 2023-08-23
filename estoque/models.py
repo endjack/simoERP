@@ -72,12 +72,16 @@ class Estoque(models.Model):
         return str(self.item.descricao)+ ' - ' + str(self.quantidade)
     
     def get_situacao(self):
-        if self.quantidade > self.item.qtd_minima:
-            return 'success'
-        if self.quantidade <= self.item.qtd_minima and self.quantidade > 0:
-            return 'warning'
-        if self.quantidade <= 0:
-            return 'danger'
+        
+        if not self.item.qtd_minima:
+             return 'secondary'
+        else: 
+            if self.quantidade > self.item.qtd_minima:
+                return 'success'
+            if self.quantidade <= self.item.qtd_minima and self.quantidade > 0:
+                return 'warning'
+            if self.quantidade <= 0:
+                return 'danger'
 
 
 class LogMovimentacao(models.Model):

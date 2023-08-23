@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from estoque.models import *
 from django.views.decorators.csrf import csrf_exempt
+from estoque_v2.models import Ferramenta
 from funcionarios.models import Funcionario
 from obras.models import Local, Obra
 from django.db.models import Sum, Count, F
@@ -343,6 +344,25 @@ def excluir_item_requisicao_estoque(request, pk, item):
         itenRequisicao.delete()
        
         return redirect('detalhar_requisicao_de_estoque', pk=pk)
+ 
+#TODO FERRAMENTAL
+# ------------------------------------------------------------  FERRAMENTAL  ---------------------------------------------------   
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def ver_ferramental_estoquev2(request, template_name = 'estoque_v2/ferramental_estoquev2.html'):
+
+      if request.method == 'GET':
+        _menu_ativo = 'FERRAMENTAL'
+        
+        ferramentas = Ferramenta.objects.all()
+        
+        context = {
+            'menu_ativo' : _menu_ativo,
+            'ferramentas' : ferramentas,
+         
+        }
+        return render(request, template_name , context)
     
 
 #TODO ITENS DO ESTOQUE
@@ -393,9 +413,29 @@ def relatorios_estoquev2(request, template_name = 'estoque_v2/relatorios_estoque
 
     if request.method == 'GET':
         _menu_ativo = 'RELATÓRIO'
-     
+        categorias = Categoria.objects.all()
+        itens_count = Item.objects.all().count()
+        itens_no_estoque = Estoque.objects.all()
+        itens_produtos = itens_no_estoque.aggregate(Sum('quantidade'))['quantidade__sum']
+        itens_zerados = itens_no_estoque.filter(quantidade = 0)
+        itens_insuficientes = itens_no_estoque.filter(quantidade__lte = F('item__qtd_minima')).filter(quantidade__gt = 0)
+      
+        
+        
+        today_date = datetime.now()  
+        #Soma de requisições dos últimos 10 dias, contando de hoje.
+        req_ultimos_10_dias = Requisicao.objects.filter(data__range=[today_date - timedelta(days=10), today_date]).values(
+                                                        'data__date').annotate(count=Count('data__date'))
+        
+        
         context = {
             'menu_ativo' : _menu_ativo,
+            'categorias' : categorias,
+            'itens_count' : itens_count,
+            'itens_produtos' : itens_produtos,
+            'req_ultimos_10_dias' : req_ultimos_10_dias,
+            'itens_zerados' : itens_zerados,
+            'itens_insuficientes' : itens_insuficientes,
          
         }
         return render(request, template_name , context)
