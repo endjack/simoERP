@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from estoque.models import *
 from django.views.decorators.csrf import csrf_exempt
-from estoque_v2.models import CategoriaFerramenta, Ferramenta
+from estoque_v2.models import CategoriaFerramenta, Cautela, Ferramenta
 from funcionarios.models import Funcionario
 from obras.models import Local, Obra
 from django.db.models import Sum, Count, F
@@ -358,16 +358,147 @@ def ver_ferramental_estoquev2(request, template_name = 'estoque_v2/ferramental_e
         ferramentas = Ferramenta.objects.all()
         categorias_ferramentas = CategoriaFerramenta.objects.all()
         estados = Ferramenta.ESTADO
+        funcionarios_ativos = Funcionario.objects.all()
+        locais = Local.objects.all()
+        obras = Obra.objects.all()
+        
         
         context = {
             'menu_ativo' : _menu_ativo,
             'ferramentas' : ferramentas,
             'categorias_ferramentas' : categorias_ferramentas,
             'estados' : estados,
+            'funcionarios_ativos' : funcionarios_ativos,
+            'locais' : locais,
+            'obras' : obras,
             
          
         }
         return render(request, template_name , context)
+    
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def add_nova_ferramenta_estoquev2(request):
+
+    if request.method == 'POST':
+        
+        #VALIDAÇÕES
+        if request.POST.get('descricao') == '':
+            response = HttpResponse('Erro: Campo DESCRIÇÃO vazio.')
+            response['HX-Retarget'] = '#error_ferramenta'
+            return response
+        else:
+            descricao = request.POST.get('descricao').upper()
+            
+        marca = request.POST.get('marca').upper()
+        
+        if request.POST.get('categoria') == '-1':
+            response = HttpResponse('Erro: Selecione uma CATEGORIA.')
+            response['HX-Retarget'] = '#error_ferramenta'
+            return response
+        else:    
+            categoria = CategoriaFerramenta.objects.get(pk = int(request.POST.get('categoria')))
+            
+        cor = request.POST.get('cor').upper()
+        tamanho = request.POST.get('tamanho').upper()
+        numeracao = request.POST.get('numeracao')
+        preco = request.POST.get('preco')
+        
+        if request.POST.get('estado') == '-1':
+            response = HttpResponse('Erro: Selecione um ESTADO.')
+            response['HX-Retarget'] = '#error_ferramenta'
+            return response
+        else:     
+            estado = request.POST.get('estado')
+            
+        if request.POST.get('radioAtivoSituacaoFerramenta') == 'ATIVO':
+            ativa = True
+            manutencao = False
+        else:
+            ativa = False
+            manutencao = True
+     
+        imagemFerramenta = request.FILES.get('imagemFerramenta')
+        
+        obs = request.POST.get('obs')
+        
+        
+        #CRIAR FERRAMENTA
+        Ferramenta.objects.create(descricao = descricao,
+                                  categoria = categoria,
+                                  marca = marca,
+                                  cor = cor,
+                                  tamanho = tamanho,
+                                  numeracao = numeracao,
+                                  preco = preco,
+                                  estado = estado,
+                                  obs = obs,
+                                  ativa = ativa,
+                                  manutencao = manutencao,
+                                  imagem = imagemFerramenta)
+
+   
+        return redirect('ferramental_estoquev2')
+    
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def criar_cautela_ferramenta(request):
+
+    if request.method == 'POST':
+        
+        #VALIDAÇÕES
+        if request.POST.get('solicitante') == '-1':
+            response = HttpResponse('Erro: Selecione um FUNCIONÁRIO.')
+            response['HX-Retarget'] = '#error_cautela'
+            return response
+        else:
+            funcionario_atual = Funcionario.objects.get(pk = int(request.POST.get('solicitante')))
+        
+        if request.POST.get('local') == '-1':
+            response = HttpResponse('Erro: Selecione um LOCAL.')
+            response['HX-Retarget'] = '#error_cautela'
+            return response
+        else:
+            local_atual = Local.objects.get(pk = int(request.POST.get('local')))
+        
+        if request.POST.get('obra') == '-1':
+            response = HttpResponse('Erro: Selecione uma OBRA.')
+            response['HX-Retarget'] = '#error_cautela'
+            return response
+        else:
+            obra_atual = Obra.objects.get(pk = int(request.POST.get('obra')))
+            
+
+        #CRIAR CAUTELA
+        cautela_atual = Cautela.objects.create(solicitante = funcionario_atual,
+                            almoxarifado = request.user,
+                            obra = obra_atual,
+                            local = local_atual)
+         
+        return redirect('detalhar_cautela_ferramenta', pk = cautela_atual.pk) 
+         
+         
+    return redirect('ferramental_estoquev2')
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def detalhar_cautela_ferramenta(request, pk,  template_name = 'estoque_v2/detalhar_cautela.html'):
+
+    if request.method == 'GET':
+        _menu_ativo = 'FERRAMENTAL'
+    
+        cautela_atual = Cautela.objects.get(pk=pk)
+         
+        context = {
+            'menu_ativo' : _menu_ativo,
+            'cautela_atual' : cautela_atual,
+         
+        }
+        return render(request, template_name , context) 
+         
+
     
 
 #TODO ITENS DO ESTOQUE
@@ -385,19 +516,97 @@ def cadastrar_itens_estoquev2(request, template_name = 'estoque_v2/cadastrar_est
          
         }
         return render(request, template_name , context)
-    
+
+#TODO CATEGORIAS
+# ------------------------------------------------------------  CATEGORIAS---------------------------------------------------
+
+
 @login_required(login_url='login/')
 @csrf_exempt
-def cadastrar_categoria_estoquev2(request, template_name = 'estoque_v2/cadastrar_estoque.html'):
+def cadastrar_categoria_estoquev2(request, template_name = 'estoque_v2/categorias_estoque.html'):
 
     if request.method == 'GET':
         _menu_ativo = 'CADASTRARCATEGORIAS'
+        categorias_itens = Categoria.objects.all()
+        categorias_ferramentas = CategoriaFerramenta.objects.all()
      
         context = {
             'menu_ativo' : _menu_ativo,
+            'categorias_itens' : categorias_itens,
+            'categorias_ferramentas' : categorias_ferramentas,
          
         }
         return render(request, template_name , context)
+    
+
+@login_required(login_url='login/')
+@csrf_exempt
+def add_nova_categoria_item_estoquev2(request):
+
+    if request.method == 'POST':
+        categoria = request.POST.get('categoria').upper()
+        
+        Categoria.objects.create(categoria = categoria)
+     
+
+        return redirect('cadastrar_categoria_estoquev2')
+    
+
+@login_required(login_url='login/')
+@csrf_exempt
+def add_nova_categoria_ferramenta_estoquev2(request):
+
+    if request.method == 'POST':
+        categoria = request.POST.get('categoria').upper()
+        
+        CategoriaFerramenta.objects.create(categoria = categoria)
+     
+
+        return redirect('cadastrar_categoria_estoquev2')
+    
+    
+
+@login_required(login_url='login/')
+@csrf_exempt
+def excluir_categoria_estoquev2(request, pk, className):
+
+    if request.method == 'GET':
+        
+        # print(f' ---- Instance: {className}')
+        
+        if className == 'Categoria':      
+            Categoria.objects.get(pk = pk).delete()
+            
+        if className == 'CategoriaFerramenta':      
+            CategoriaFerramenta.objects.get(pk = pk).delete()
+     
+
+        return redirect('cadastrar_categoria_estoquev2')
+    
+    
+
+@login_required(login_url='login/')
+@csrf_exempt
+def editar_categoria_estoquev2(request, pk, className):
+
+    if request.method == 'POST':
+        categoria = request.POST.get('categoria').upper()
+        
+        if className == 'Categoria':      
+            categoria_atual = Categoria.objects.get(pk = pk)
+            categoria_atual.categoria = categoria
+            categoria_atual.save()
+            
+        if className == 'CategoriaFerramenta':      
+            categoria_atual = CategoriaFerramenta.objects.get(pk = pk)
+            categoria_atual.categoria = categoria
+            categoria_atual.save()
+     
+
+        return redirect('cadastrar_categoria_estoquev2')
+    
+    
+    
     
 @login_required(login_url='login/')
 @csrf_exempt

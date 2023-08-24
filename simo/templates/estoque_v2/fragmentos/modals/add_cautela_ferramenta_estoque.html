@@ -1,0 +1,89 @@
+{% load static %}
+ <!-- Modal XXXXXXX-->
+ <div class="modal fade" id="acautelarFerramentaEstoquev2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content ">
+            <div class="modal-header p-3">
+                <div class="d-flex flex-column bd-highlight">
+                    <h5 style="color:black" class="bd-highlight text-primary">Inserir Cautela de Ferramenta: </h5>
+                    
+                    
+                </div>  
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body ">
+                    <!-- modal-body --> 
+                    <div class="container col-10">
+
+                      <form id="formInserirCautelaFerramenta"
+                      hx-post="{% url 'criar_cautela_ferramenta' %}" 
+                      hx-target="body" 
+                      hx-indicator="#spinner"
+                      hx-swap="innerHTML" >
+
+
+                          <div class="form-group row mb-2 ">
+                              <div class="">
+                               
+                                      <label for="inputDescricao" class="fw-bold"><i class="fas fa-hard-hat"></i> Funcionário:</label><br>
+                                        <small class="">Selecione o Funcionário que ficará responsável pela(s) ferramenta(s):</small>
+                                      <select id="input0" class="form-control "  name="solicitante">
+                                          <option value="-1" selected disabled>Selecione:</option>
+                                          {% for i in funcionarios_ativos %}
+                                          <option value="{{i.pk}}"> {{i.nome}} - {{i.cargo}}</option>
+                                          {% endfor %}      
+                                      </select>
+           
+                              </div>
+                          </div>
+
+                          <div class="form-group row mb-2 ">
+                              <div class="">
+                               
+                                      <label for="inputDescricao" class="fw-bold"><i class="fas fa-map-marker-alt"></i> Local:</label><br>
+                                      <small class="">Selecione o local para onde o equipamento será destinado (no maior período):</small>
+                                      <select id="input0" class="form-control "  name="local" >
+                                          <option value="-1" selected disabled>Selecione:</option>
+                                          {% for i in locais %}
+                                          <option value="{{i.pk}}"> {{i.local}} - {{i.endereco}}</option>
+                                          {% endfor %}      
+                                      </select>
+           
+                              </div>
+                          </div>
+
+                          <div class="form-group row mb-2 ">
+                              <div class="">
+                               
+                                      <label for="inputDescricao" class="fw-bold"><i class="fas fa-file-contract"></i> Obra:</label>
+                                      <br>
+                                      <small class="">Selecione o Centro de Custo/Contrato/Obra onde o equipamento será destinado:</small>
+                                      <select id="input0" class="form-control "  name="obra">
+                                          <option value="-1" selected disabled>Selecione:</option>
+                                          {% for i in obras %}
+                                          <option value="{{i.pk}}"> {{i.nome}} - Contrato: {{i.num_contrato}}</option>
+                                          {% endfor %}      
+                                      </select>
+           
+                              </div>
+                          </div>
+
+
+                      </form>
+                
+                          
+                  </div>
+                    <!-- Fim modal-body -->
+                </div>
+                <div class="modal-footer form-control">
+                <small class="small-error" id="error_cautela"></small>
+                {% include "utils/load_htmx_centralizado.html" %}
+              
+              <button class="btn btn-sm btn-primary" form="formInserirCautelaFerramenta"><i class="fas fa-plus"></i> Continuar </button>   
+              <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          
+          </div>
+        </div>
+    </div>
+ </div>
+ <!-- Fim Modal --> 

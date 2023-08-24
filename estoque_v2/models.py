@@ -1,9 +1,8 @@
-from datetime import datetime
+
 from django.utils import timezone
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.forms import JSONField
-
+from django.contrib.auth.models import User
 from funcionarios.models import Funcionario
 from obras.models import Local, Obra
 
@@ -15,6 +14,9 @@ class CategoriaFerramenta(models.Model):
 
     def __str__(self) -> str:
         return self.categoria
+    
+    def get_class(self):
+        return self.__class__.__name__
 
 
 
@@ -47,14 +49,13 @@ class Ferramenta(models.Model):
     obs =  models.CharField(max_length=300, null=True, blank=True)
 
     def __str__(self) -> str:
-        return f'{self.pk} - {self.descricao}'
+        return f'Ferramenta: {self.pk} - {self.descricao}'
     
-class ReservaFerramenta(models.Model):
+class Cautela(models.Model):
     
     solicitante = models.ForeignKey(Funcionario, on_delete=models.SET_NULL, null=True, related_name='solicitante')
-    ferramenta = models.ForeignKey(Ferramenta, on_delete=models.SET_NULL, null=True)
-    almoxarifado = models.ForeignKey(Funcionario, on_delete=models.SET_NULL, null=True, related_name='almoxarifado')
-    data_reserva = models.DateTimeField(default=timezone.now)
+    almoxarifado = models.ForeignKey(User, on_delete=models.PROTECT)
+    data_cautela = models.DateTimeField(default=timezone.now)
     data_devolucao = models.DateTimeField(default=timezone.now)
     obra = models.ForeignKey(Obra, on_delete=models.SET_NULL, null=True, blank=True)
     local = models.ForeignKey(Local, on_delete=models.SET_NULL, null=True, blank=True)
@@ -62,6 +63,15 @@ class ReservaFerramenta(models.Model):
     obs_devolucao =  models.CharField(max_length=300, null=True, blank=True)
     
     def __str__(self) -> str:
-        return f'Reserva {self.pk}'
+        return f'Cautela {self.pk}'
+    
+class CautelaFerramenta(models.Model):
+    
+    ferramenta = models.ForeignKey(Ferramenta, on_delete=models.SET_NULL, null=True, related_name='ferramenta')
+    cautela = models.ForeignKey(Cautela, on_delete=models.SET_NULL, null=True, related_name='cautela')
+
+    
+    def __str__(self) -> str:
+        return f'CautelaFerramenta {self.pk}'
     
  

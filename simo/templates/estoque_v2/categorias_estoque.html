@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block conteudo %}
+
+{% include "estoque_v2/fragmentos/menu_estoque.html" %}
+
+<div class="container mt-2">
+    <div class="d-flex flex-row align-items-center" >
+        <h4 class="me-auto"><i class="fas fa-tags"></i> Categorias: </h4>
+
+        {% comment %} <!-- Button Modal ADD REQUISIÇÃO -->
+        <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#novaRequisicaoEstoquev2" href="modal" 
+              title="Início"><i class="fas fa-plus"></i>  Nova Requisição</a> {% endcomment %}
+
+    </div>
+
+
+    <div class="row">
+        <div class="col-6">
+            <div class="cat-Itens text-center">
+                <!-- Buttons -->
+                <a  style="" class="btn btn-sm  btn-primary m-1" data-bs-toggle="modal" data-bs-target="#novaCategoriaItensEstoque" href="modal" 
+              title="Início"><i class="fas fa-plus"></i>  Categoria Itens Estoque</a>
+                <!-- Modal ADD CATEGORIA DE ESTOQUE -->
+                <div class="modal fade" id="novaCategoriaItensEstoque" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="d-flex flex-column bd-highlight">
+                                <h5 class="bd-highlight text-primary">Criar Categoria Item de Estoque: </h5>
+                            </div>  
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            
+                            <form id="formnovaCategoriaItensEstoque" method="post" action="{% url 'add_nova_categoria_item_estoquev2' %}">
+                                {% csrf_token %}
+                            
+                                    <div class="mb-3 col-mb-12">
+                                        <div class="input-group">
+                                            <div class="input-group-text">Categoria: </div>
+                                            <input value="" type="text" class="form-control" id="local" name="categoria" required="required">
+                                        </div>
+                                    </div>
+                            
+                            </form>
+
+
+                        </div>
+                        <div class="modal-footer form-control">
+                            <button form="formnovaCategoriaItensEstoque" class="btn btn-sm btn-primary">Salvar</button> 
+                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            
+                        </div>
+                        
+                    </div>
+                    </div>
+                </div>
+                <!-- Fim Modal -->
+              
+
+
+
+
+
+            </div>
+
+            <div class="tabela">
+                <table class="table table-sm table-bordered table-striped tabelaResultados_left" style="font-size:8pt">
+                    <thead class="text-white text-center" style="background:#39423b;">
+                    <tr style="line-height: 12px;white-space: nowrap; ">
+                     
+                      <th scope="col" class="text-center col-1">Cód</th>
+                      <th scope="col" class="text-center">Categoria dos Itens</th>
+                      <th scope="col" class="text-center col-1">Opções</th>
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% if categorias_itens %}
+                        {% for i in categorias_itens  %}
+                        
+                        <tr>
+                            <td class="text-center col-1">{{i.pk}}</td>
+                            <td>{{i.categoria}}</td>
+                             <!-- Buttons -->
+                            <td class="text-center" style="font-size:8pt;">
+                                <a href="modal" data-bs-toggle="modal" data-bs-target="#ExcluirCategoriaItemEstoque{{i.pk}}"><span class="text-danger"><i class="fas fa-trash fa-lg"></i></span></a>
+                                <a href="modal" data-bs-toggle="modal" data-bs-target="#EditarrCategoriaItemEstoque{{i.pk}}"><span class="text-primary"><i class="fas fa-edit fa-lg"></i></span></a>
+                            </td>
+                        </tr>
+
+                            <!-- Modal EXCLUIR-->
+                            <div class="modal fade" id="ExcluirCategoriaItemEstoque{{i.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <div class="d-flex flex-column bd-highlight">
+                                            <h5 class="bd-highlight" style="color:red" >Excluir Categoria de Item: {{i.categoria}} </h5>
+                                        </div>  
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <strong> Certeza que deseja Excluir?</strong> <br>
+                                        Categoria: {{i.categoria}} 
+                                       
+                                    </div>
+                                    <div class="modal-footer form-control">
+                                        <a class="btn btn-sm btn-danger" href="{% url 'excluir_categoria_estoquev2' i.pk i.get_class %}">Excluir</a>   
+                                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        
+                                    </div>
+                                    
+                                </div>
+                                </div>
+                            </div>
+                            <!-- Fim Modal -->
+                            <!-- Modal EDITAR -->
+                            <div class="modal fade" id="EditarrCategoriaItemEstoque{{i.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <div class="d-flex flex-column bd-highlight">
+                                            <h5 class="bd-highlight text-primary">Edital Categoria Item de Estoque: </h5>
+                                        </div>  
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        
+                                        <form id="formEditarrCategoriaItemEstoque{{i.pk}}" method="post" action="{% url 'editar_categoria_estoquev2' i.pk i.get_class %}">
+                                            {% csrf_token %}
+                                        
+                                                <div class="mb-3 col-mb-12">
+                                                    <div class="input-group">
+                                                        <div class="input-group-text">Categoria: </div>
+                                                        <input value="{{i.categoria}}" type="text" class="form-control" id="local" name="categoria" required="required">
+                                                    </div>
+                                                </div>
+                                                
+                                        
+                                        </form>
+
+
+                                    </div>
+                                    <div class="modal-footer form-control">
+                                        <button form="formEditarrCategoriaItemEstoque{{i.pk}}" class="btn btn-sm btn-primary">Salvar</button> 
+                                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                        
+                                    </div>
+                                    
+                                </div>
+                                </div>
+                            </div>
+                            <!-- Fim Modal -->
+
+
+
+
+
+                        
+                        {% endfor %}
+                    {% endif %}
+                    
+                  </tbody>
+                </table>
+            </div>
+        </div>
+    
+        <div class="col-6" style="border-left: 2px solid gray;">
+            <div class="cat-Ferramentas text-center">
+                <!-- Buttons -->
+                <a  style="" class="btn btn-sm  btn-primary m-1" data-bs-toggle="modal" data-bs-target="#novaCategoriaFERRAMENTA" href="modal" 
+              title="Início"><i class="fas fa-plus"></i> Categoria Ferramentas</a> 
+
+
+                <!-- Modal ADD CATEGORIA FERRAMENTAS -->
+                <div class="modal fade" id="novaCategoriaFERRAMENTA" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="d-flex flex-column bd-highlight">
+                                <h5 class="bd-highlight text-primary">Criar Categoria de Ferramenta: </h5>
+                            </div>  
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            
+                            <form id="formnovaCategoriaFERRAMENTA" method="post" action="{% url 'add_nova_categoria_ferramenta_estoquev2' %}">
+                                {% csrf_token %}
+                            
+                                    <div class="mb-3 col-mb-12">
+                                        <div class="input-group">
+                                            <div class="input-group-text">Categoria: </div>
+                                            <input value="" type="text" class="form-control" id="local" name="categoria" required="required">
+                                        </div>
+                                    </div>
+                                    
+                            
+                            </form>
+
+
+                        </div>
+                        <div class="modal-footer form-control">
+                            <button form="formnovaCategoriaFERRAMENTA" class="btn btn-sm btn-primary">Salvar</button> 
+                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            
+                        </div>
+                        
+                    </div>
+                    </div>
+                </div>
+                <!-- Fim Modal -->
+
+
+
+        </div>
+        <div class="tabela">
+            <table class="table table-sm table-bordered table-striped tabelaResultados_left" style="font-size:8pt">
+                <thead class="text-white text-center" style="background:#39423b;">
+                <tr style="line-height: 12px;white-space: nowrap; ">
+                 
+                  <th scope="col" class="text-center col-1">Cód</th>
+                  <th scope="col" class="text-center">Categoria das Ferramentas</th>
+                  <th scope="col" class="text-center col-1">Opções</th>
+
+                </tr>
+              </thead>
+              <tbody>
+                {% if categorias_ferramentas %}
+                    {% for i in categorias_ferramentas  %}
+                    
+                    <tr>
+                        <td class="text-center col-1">{{i.pk}}</td>
+                        <td>{{i.categoria}}</td>
+                        <!-- Buttons -->
+                        <td class="text-center" style="font-size:8pt;">
+                            <a href="modal" data-bs-toggle="modal" data-bs-target="#ExcluirCategoriaFerramenta{{i.pk}}"><span class="text-danger"><i class="fas fa-trash fa-lg"></i></span></a>
+                            <a href="modal" data-bs-toggle="modal" data-bs-target="#EditarrCategoriaFerramenta{{i.pk}}"><span class="text-primary"><i class="fas fa-edit fa-lg"></i></span></a>
+                        </td>
+                    </tr>
+
+                     <!-- Modal EXCLUIR-->
+                     <div class="modal fade" id="ExcluirCategoriaFerramenta{{i.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <div class="d-flex flex-column bd-highlight">
+                                    <h5 class="bd-highlight" style="color:red" >Excluir Categoria de Ferramenta: {{i.categoria}} </h5>
+                                </div>  
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <strong> Certeza que deseja Excluir?</strong> <br>
+                                Categoria: {{i.categoria}} 
+                               
+                            </div>
+                            <div class="modal-footer form-control">
+                                <a class="btn btn-sm btn-danger" href="{% url 'excluir_categoria_estoquev2' i.pk i.get_class %}">Excluir</a>   
+                                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                
+                            </div>
+                            
+                        </div>
+                        </div>
+                    </div>
+                    <!-- Fim Modal -->
+                    <!-- Modal EDITAR -->
+                    <div class="modal fade" id="EditarrCategoriaFerramenta{{i.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <div class="d-flex flex-column bd-highlight">
+                                    <h5 class="bd-highlight text-primary">Edital Categoria Ferramenta: </h5>
+                                </div>  
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                
+                                <form id="formEditarrCategoriaFerramenta{{i.pk}}" method="post" action="{% url 'editar_categoria_estoquev2' i.pk i.get_class %}">
+                                    {% csrf_token %}
+                                
+                                        <div class="mb-3 col-mb-12">
+                                            <div class="input-group">
+                                                <div class="input-group-text">Categoria: </div>
+                                                <input value="{{i.categoria}}" type="text" class="form-control" id="local" name="categoria" required="required">
+                                            </div>
+                                        </div>
+                                        
+                                
+                                </form>
+
+
+                            </div>
+                            <div class="modal-footer form-control">
+                                <button form="formEditarrCategoriaFerramenta{{i.pk}}" class="btn btn-sm btn-primary">Salvar</button> 
+                                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                
+                            </div>
+                            
+                        </div>
+                        </div>
+                    </div>
+                    <!-- Fim Modal -->
+
+
+
+
+                    
+                    {% endfor %}
+                {% endif %}
+                
+              </tbody>
+            </table>
+        </div>
+
+
+        </div>
+
+</div>
+
+{% include "utils/tabela_com_search_esquerda.html" %}
+
+{% endblock%}
+

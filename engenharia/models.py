@@ -1,6 +1,6 @@
 from datetime import datetime
 from django.db import models
-from django.db.models.deletion import CASCADE, PROTECT, SET_NULL
+from django.db.models.deletion import PROTECT, SET_NULL
 from obras.models import Local, Obra
 from funcionarios.models import Funcionario
 from django.contrib.auth.models import User

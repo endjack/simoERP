@@ -22,6 +22,9 @@ class Categoria(models.Model):
     def get_counter_itens_by_categoria(self):
         return Item.objects.filter(categoria=self.pk).count()
 
+    def get_class(self):
+        return self.__class__.__name__
+
 class Item(models.Model):
 
     def validate_image(fieldfile_obj):
