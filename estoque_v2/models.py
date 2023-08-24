@@ -25,13 +25,21 @@ class Ferramenta(models.Model):
         megabyte_limit = 5.0
         if filesize > megabyte_limit*1024*1024:
             raise ValidationError("Tamanho máximo da Imagem é %sMB" % str(megabyte_limit))
+        
+    ESTADO = (
+        (0, "NOVA"),(1, "USADA"),(3, "COM DEFEITO"),
+        )
+
     
     categoria = models.ForeignKey(CategoriaFerramenta, on_delete=models.SET_NULL, blank=True, null=True, default='Sem Categoria')
     descricao = models.CharField(max_length=200, blank=True, null=True, unique=True)
     marca = models.CharField(max_length=200, blank=True, null=True)
     preco = models.DecimalField('preço', max_digits=20, decimal_places=2, default=0, null=True, blank=True)
     imagem = models.ImageField(upload_to='estoque/', validators=[validate_image], blank=True, null=True)
-    caracteristicas = JSONField(encoder=None)
+    cor = models.CharField(max_length=50, blank=True, null=True)
+    tamanho = models.CharField(max_length=50, blank=True, null=True)
+    numeracao = models.CharField(max_length=50, blank=True, null=True)
+    estado = models.CharField(max_length=50, choices=ESTADO, default=1)
     reservada = models.BooleanField(default=False)
     ativa = models.BooleanField(default=False)
     manutencao = models.BooleanField(default=False)

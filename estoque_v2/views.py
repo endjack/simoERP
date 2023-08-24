@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from estoque.models import *
 from django.views.decorators.csrf import csrf_exempt
-from estoque_v2.models import Ferramenta
+from estoque_v2.models import CategoriaFerramenta, Ferramenta
 from funcionarios.models import Funcionario
 from obras.models import Local, Obra
 from django.db.models import Sum, Count, F
@@ -356,10 +356,15 @@ def ver_ferramental_estoquev2(request, template_name = 'estoque_v2/ferramental_e
         _menu_ativo = 'FERRAMENTAL'
         
         ferramentas = Ferramenta.objects.all()
+        categorias_ferramentas = CategoriaFerramenta.objects.all()
+        estados = Ferramenta.ESTADO
         
         context = {
             'menu_ativo' : _menu_ativo,
             'ferramentas' : ferramentas,
+            'categorias_ferramentas' : categorias_ferramentas,
+            'estados' : estados,
+            
          
         }
         return render(request, template_name , context)
