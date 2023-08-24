@@ -20,21 +20,22 @@
                       
                      
                         <form id="formAddNovaFerramenta" 
-                        hx-post="#" 
+                        hx-post="{% url 'add_nova_ferramenta_estoquev2' %}" 
                         hx-target="body" 
                         hx-swap="innerHTML" 
                         hx-indicator="#spinner"
-                        style="line-height: normal; font-size:9pt">
+                        style="line-height: normal; font-size:9pt" enctype="multipart/form-data">
                           {% csrf_token %}
                 
                 
                        
                         <div class="form-group row ">
                             <strong>Dados:</strong>
+                      
                             <div class="col-5">
                              
-                                <label for="inputDescricao" class="">Descrição:</label>
-                                <input type="text" class="form-control form-control-sm" name="descricao" required>
+                                <label for="inputDescricao" class="">Descrição:<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm" name="descricao">
                               
                     
                             </div>
@@ -47,7 +48,7 @@
                     
                             <div class="col-3">
                                 
-                                    <label for="input0" class="">Categoria:</label>
+                                    <label for="input0" class="">Categoria:<span class="text-danger">*</span></label>
                                     <select id="input0" class="form-control form-control-sm"  name="categoria" >
                                             <option value="-1" disabled selected> Selecione</option>
                                             {% for i in categorias_ferramentas %}
@@ -86,7 +87,7 @@
                                 </div>
                                 <div class="col-3">
                                  
-                                    <label for="inputEstado" class="">Estado:</label>
+                                    <label for="inputEstado" class="">Estado:<span class="text-danger">*</span></label>
                                     <select id="inputEstado" class="form-control form-control-sm"  name="estado" required>
                                             <option value="-1" disabled selected> Selecione</option>
                                             {% for i in estados %}        
@@ -99,13 +100,13 @@
                         <div class=" form-group row mt-2">
                             <div class="col-3">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked>
+                                        <input class="form-check-input" type="radio" name="radioAtivoSituacaoFerramenta" value="ATIVO" id="flexRadioDefault1" checked>
                                         <label class="form-check-label" for="flexRadioDefault1">
                                         Ativa
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" >
+                                        <input class="form-check-input" type="radio" name="radioAtivoSituacaoFerramenta" value="MANUTENÇÃO" id="flexRadioDefault2" >
                                         <label class="form-check-label" for="flexRadioDefault2">
                                         Manutenção
                                         </label>
@@ -114,7 +115,7 @@
                             <div class="col-5">
                                 <div class="col-md">
                                     <label for="inputImagem" class="">Imagem:</label>
-                                    <input type="file" name="imagem" class="form-control form-control-sm" accept="image/*" /> 
+                                    <input type="file" name="imagemFerramenta" class="form-control form-control-sm" accept="image/*" /> 
 
                                 </div>
                             </div>
@@ -143,7 +144,7 @@
                 <!-- Fim modal-body -->
             </div>
             <div class="modal-footer form-control" style="background-color:#edeef5">
-                <small class="small-error" id="error_imagem">Error Example</small>
+                <small class="small-error" id="error_ferramenta"></small>
                 {% include "utils/load_htmx_centralizado.html" %}
                 <button class="btn btn-sm btn-primary" form="formAddNovaFerramenta"><i class="fas fa-plus"></i> Salvar </button>   
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>

@@ -69,9 +69,14 @@ urlpatterns = [
     
     #ferramental_estoquev2
     path('estoque/ferramental/inicio', ver_ferramental_estoquev2, name='ferramental_estoquev2'),
+    path('estoque/ferramental/nova', add_nova_ferramenta_estoquev2, name='add_nova_ferramenta_estoquev2'),
+    path('estoque/ferramental/cautelas/criar', criar_cautela_ferramenta, name='criar_cautela_ferramenta'),
+    path('estoque/ferramental/cautelas/<int:pk>/detalhar', detalhar_cautela_ferramenta, name='detalhar_cautela_ferramenta'),
+    
     #Procurar V2
     path('estoque/procurar', procurar_estoquev2, name='procurar_estoquev2'),
     path('estoque/procurar/filtrar', filtrar_itens_estoque, name='filtrar_itens_estoque'),
+    
     #Requisições V2
     path('estoque/requisicoes', requisicoes_estoquev2, name='requisicoes_estoquev2'),
     path('estoque/requisicao/criar', criar_requisicao_sem_itens, name='criar_requisicao_sem_itens'),
@@ -83,7 +88,14 @@ urlpatterns = [
 
     
     path('estoque/cadastrar/itens', cadastrar_itens_estoquev2, name='cadastrar_itens_estoquev2'),
+    
+    #Categorias v2
     path('estoque/cadastrar/categorias', cadastrar_categoria_estoquev2, name='cadastrar_categoria_estoquev2'),
+    path('estoque/cadastrar/categorias/nova-categoria-itens', add_nova_categoria_item_estoquev2, name='add_nova_categoria_item_estoquev2'),
+    path('estoque/cadastrar/categorias/nova-categoria-ferramenta', add_nova_categoria_ferramenta_estoquev2, name='add_nova_categoria_ferramenta_estoquev2'),
+    path('estoque/cadastrar/categorias/<int:pk>/excluir/<str:className>', excluir_categoria_estoquev2, name='excluir_categoria_estoquev2'),
+    path('estoque/cadastrar/categorias/<int:pk>/editar/<str:className>', editar_categoria_estoquev2, name='editar_categoria_estoquev2'),
+    
     path('estoque/impressoes', impressoes_estoquev2, name='impressoes_estoquev2'),
     path('estoque/relatorios', relatorios_estoquev2, name='relatorios_estoquev2'),
     

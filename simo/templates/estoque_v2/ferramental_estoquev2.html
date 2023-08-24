@@ -63,9 +63,13 @@
     <div class="d-flex flex-row align-items-center" >
         <h4 class="me-auto"><i class="fas fa-hammer"></i><i class="fas fa-wrench"></i> Ferramentas/Máquinas: </h4>
 
-        <!-- Button Modal ADD REQUISIÇÃO -->
-        <a  style="" class="btn btn-sm  btn-primary m-1" data-bs-toggle="modal" data-bs-target="#novaRequisicaoEstoquev2" href="modal" 
-              title="Início"><i class="fas fa-wrench"></i>   Reservar/Cancelar</a>
+        <!-- Button Modal -->
+        <a  style="" class="btn btn-sm  btn-primary m-1" data-bs-toggle="modal" data-bs-target="#acautelarFerramentaEstoquev2" href="modal" 
+              title="Início"><i class="fas fa-user-clock"></i>  Acautelar</a>
+
+        <!-- Modal Acautelar -->
+        {% include "estoque_v2/fragmentos/modals/add_cautela_ferramenta_estoque.html" %}
+
 
         <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#modalAddNovaFerramentaEstoquev2" href="modal" 
               title="Início"><i class="fas fa-plus"></i>  Nova Ferramenta</a>
@@ -73,8 +77,7 @@
         <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
               title="Início"><i class="fas fa-search"></i></i> Buscar </a>
 
-        {% comment %} <a  style="" class="btn  btn-sm btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
-              title="Início"><i class="fas fa-trash"></i> Excluir</a> {% endcomment %}
+
     </div>
 
 </div>
@@ -91,9 +94,10 @@
                 <th scope="col" style="text-align: left;">Descrição</th>
                 <th scope="col" style="text-align: left;">Marca</th>
                 <th scope="col">Características</th>
+                <th scope="col">Numeração</th>
                 <th scope="col">Categoria</th>
                 <th scope="col">Situação</th>
-                <th scope="col">Opções</th>
+                <th scope="col">Acautelamento</th>
 
               </tr>
             </thead>
@@ -104,10 +108,11 @@
                 <td class="text-center "><a href="#"><div style="height:100%;width:100%">{{i.pk}}</div></a></td>
                 <td class=""><a href="#"><div style="height:100%;width:100%">{{i.descricao|default_if_none:"-"}}</div></a></td>
                   <td class=""><a href="#"><div style="height:100%;width:100%">{{i.marca|default_if_none:"-"}}</div></a></td>
-                  <td class="text-center"><a href="#"><div style="height:100%;width:100%">-</div></a></td>
+                  <td class="text-center"><a href="#"><div style="height:100%;width:100%">Cor: {{i.cor|default_if_none:""}}</div></a></td>
+                  <td class="text-center"><a href="#"><div style="height:100%;width:100%">{{i.numeracao|default_if_none:"-"}}</div></a></td>
                   <td class="text-center"><a href="#"><div style="height:100%;width:100%">{{i.categoria|default_if_none:"-"}}</div></a></td>
                   <td class="text-center"><a href="#"><div style="height:100%;width:100%"> TODO Situação </div></a></td>
-                  <td class="text-center"><a href="#"><div style="height:100%;width:100%"> Ver Reserva</div></a></td>
+                  <td class="text-center"><a href="#"><div style="height:100%;width:100%"> <i class="fas fa-user-clock"></i> </div></a></td>
               
                 </tr>
                 {% endfor %}
