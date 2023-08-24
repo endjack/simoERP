@@ -67,7 +67,7 @@
         <a  style="" class="btn btn-sm  btn-primary m-1" data-bs-toggle="modal" data-bs-target="#novaRequisicaoEstoquev2" href="modal" 
               title="Início"><i class="fas fa-wrench"></i>   Reservar/Cancelar</a>
 
-        <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#novaRequisicaoEstoquev2" href="modal" 
+        <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#modalAddNovaFerramentaEstoquev2" href="modal" 
               title="Início"><i class="fas fa-plus"></i>  Nova Ferramenta</a>
 
         <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
@@ -121,7 +121,7 @@
 
 </div>
 
-
+{% include "estoque_v2/fragmentos/modals/add_nova_ferramenta_estoque.html" %}
 
 {% endblock%}
 <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>

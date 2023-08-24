@@ -1,0 +1,29 @@
+{% load static %}
+<style>
+    .htmx-indicator {
+        display:none;
+        opacity: 0;
+        transition: opacity 200ms ease-in;
+    }
+    .htmx-request {
+      display:block;
+      opacity: 1;
+      transition: opacity 200ms ease-in;
+    }
+    
+
+    {% comment %} .load_htmx_centralizado{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+    }  {% endcomment %}
+  </style>
+
+               
+               
+<div class="row text-center">
+    <img id="spinner" class="htmx-indicator load_htmx_centralizado" width="30px" height="30px" src="{% static 'imagens/bars.svg' %}"/>
+</div>
