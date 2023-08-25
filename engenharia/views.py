@@ -1008,6 +1008,35 @@ def imprimir_relatorio_fotografico_manut_viaria(request, pk, os, template_name =
     
 @login_required(login_url='login/')
 @csrf_exempt
+def imprimir_relatorio_fotografico_semsur(request, pk, os, template_name = 'engenharia/fragmentos/impressoes/imprimir_rel_fotos_modelo_semsur.html'):
+
+    if request.method == 'GET':
+        localidade = request.GET.get('localidade')
+        obra = Obra.objects.get(pk=pk)
+        ordem_atual = OrdemServicoObras.objects.get(obra = obra, pk=os)
+        data_inicio = datetime.strptime(request.GET.get('data_relatorio_inicio'), '%Y-%m-%d')
+        data_final = datetime.strptime(request.GET.get('data_relatorio_fim'), '%Y-%m-%d')
+        data_relatorio = datetime.strptime(request.GET.get('data_relatorio'), '%Y-%m-%d')
+        
+        if localidade == "" or localidade == None:
+            localidade = ordem_atual.local.local
+        
+        
+        context = {
+            
+            'obra': obra,
+            'ordem_atual': ordem_atual,
+            'data_inicio': data_inicio,
+            'data_final': data_final,
+            'data_relatorio': data_relatorio,
+            'localidade': localidade,
+
+            
+        }
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
 def imprimir_ordem_servico_individual(request, pk, os, template_name = 'engenharia/fragmentos/impressoes/imprimir_ordem_servico_individual.html'):
 
     if request.method == 'GET':
