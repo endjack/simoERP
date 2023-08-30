@@ -157,18 +157,20 @@ USE_L10N = True
 USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = 'static/'
-MEDIA_URL = 'media/'
 
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
+STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, "media")
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 
 
-if DEBUG:
-	STATICFILES_DIRS = [
-		os.path.join(PROJECT_ROOT, 'static')
-       ]
-else:
-	STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
+#if DEBUG:
+#	STATICFILES_DIRS = [
+#		os.path.join(PROJECT_ROOT, 'static')
+#       ]
+#else:
+#	STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

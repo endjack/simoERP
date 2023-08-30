@@ -1,6 +1,7 @@
 __pycache__
 **/__pycache__
 .vscode
+/venv
 .env
 media/
 venv/
@@ -13,3 +14,6 @@ db.sqlite3
 nginx.conf
 uwsgi.ini
 uwsgi_params
+simo/uwsgi_params
+simo/.env
+simo/media/
