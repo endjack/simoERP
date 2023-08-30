@@ -1,0 +1,151 @@
+{% load static %}
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" media="print">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <title>Imprimir Serviços</title>
+    
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+            page-break-after: always;
+
+        }
+
+
+       @media print {
+
+               
+            header {
+                
+                
+              }
+            footer {
+                position: fixed;
+                display: block;
+                bottom: 0px;
+            }
+            article{
+                
+               
+            }
+
+        } 
+
+        * {
+            color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+           
+        }
+
+        header {
+      
+
+            
+        }
+        article{
+
+            
+        }
+
+        footer {
+            position: fixed;
+            display: block;
+            bottom: 0px;
+        }
+        .cabecalho{
+            font-size:10pt;
+        }
+
+    </style>
+
+</head>
+
+<body class="" style="font-family: sans-serif;">
+
+<header class="cabecalho">
+    <section>
+        <div class="d-flex">
+            <div class="col-5  text-center">
+                <img style="width: 7rem;" class="" src="{% static 'imagens/logo_parnamirim.jpg' %}" alt="Imagem de parnamirim">
+            </div>
+            <div class="col-6 text-center">
+                PREFEITURA DE PARNAMIRIM <br>
+                Secretaria Municipal de Serviços Urbanos <br>
+                Rua Frei Henrique de Coimbra, 235<br>
+                Emaús/Parnamirim - CEP 59.149-090<br>
+                Fone: (084) 3644-8421 / 0800 281 6400
+            </div>
+        </div>
+    </section>
+
+
+    <section>
+        <div class="text-center mt-2"><strong>RELATÓRIO FOTOGRÁFICO</strong></div>
+    </section>
+
+    <section class="p-i mt-2" id="dadosObra">
+        <div class="d-flex">
+            <div class="col-3  text-center" style=" border: 1px solid black;">
+                <strong>CONTRATO Nº:</strong> {{obra.num_contrato}}
+                <div class=" text-center">
+                    <strong>PERÍODO:</strong>  {{data_inicio | date:'d/m/Y'}} até {{data_final | date:'d/m/Y'}}
+                </div>
+            </div>
+            
+            <div class="col-9 text-center" style=" border: 1px solid black;">
+                <strong>OBRA:</strong> {{obra.objeto}}
+            </div>
+        </div>
+        <div class="text-center" style=" border: 1px solid black;">
+            <strong> Localidade:</strong> {{localidade}}
+        </div>
+
+    </section>
+    
+</header>
+
+<article>
+<div class="d-flex justify-content-center flex-wrap text-center">
+     {% with ordem_atual.get_imagens_by_os as imagens %}
+    {% for im in imagens %}
+
+        <div class="p-2">
+        
+            <img style="width: 16rem;border: 1px solid black" class="" src="{{im.imagem.url}}" alt="Imagem de parnamirim"><br>
+            Local {{forloop.counter}}
+            <p style="page-break-after: verso;"></p>
+           
+    
+        </div>
+    
+    {% endfor %}
+    {% endwith %}
+</div>
+</article>
+
+
+
+
+
+<footer>
+        Parnamirim, {{data_relatorio |date:'d'}} de {{data_relatorio |date:'F'}} de {{data_relatorio |date:'Y'}}
+
+</footer>
+
+
+<script>
+    (function () {
+        window.print();
+    })();
+</script> 
+
+
+</body>
+
+</html>
