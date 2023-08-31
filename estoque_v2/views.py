@@ -510,12 +510,93 @@ def cadastrar_itens_estoquev2(request, template_name = 'estoque_v2/cadastrar_est
 
     if request.method == 'GET':
         _menu_ativo = 'CADASTRARITENS'
+        categorias_itens = Categoria.objects.all()
+        fornecedores = Fornecedor.objects.all()
+        
+        unid_medidas = Item.UNIDADES
      
         context = {
             'menu_ativo' : _menu_ativo,
+            'categorias_itens' : categorias_itens,
+            'fornecedores' : fornecedores,
+            'unid_medidas' : unid_medidas,
          
         }
         return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def filtrar_itens_nao_estoque(request, template_name = 'estoque_v2/itens/resultados_procurar_itens.html'):
+
+    if request.method == 'GET':
+        descricao = request.POST.get('descricao') or ''
+        marca = request.POST.get('marca') or ''
+        categoria = request.POST.get('categoria') or '-1'
+
+        if categoria == '-1':    
+            itens = Item.objects.all().filter(descricao__icontains=descricao).filter(marca__icontains=marca)
+        else:
+            itens = Item.objects.all().filter(descricao__icontains=descricao).filter(marca__icontains=marca).filter(categoria__pk=int(categoria))
+    
+        
+        # print(f'-------------RESULTADO DO FILTER ---> {itens}')
+       
+        context = {
+         
+            'itens': itens
+         
+        }
+     
+ 
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def add_novo_item_estoque(request):
+
+    if request.method == 'POST':
+        descricao = request.POST.get('descricao')
+        marca = request.POST.get('marca')
+        
+        #validação Categoria
+        categoria = request.POST.get('categoria')
+        if categoria == "" or categoria == '-1':
+            response = HttpResponse('Erro: Selecione uma CATEGORIA.')
+            response['HX-Retarget'] = '#error_item'
+            return response
+        else:
+            categoria = Categoria.objects.get(pk=int(categoria))    
+        
+        peso = request.POST.get('peso')
+        
+        unid_medida = request.POST.get('unid_medida')
+        
+        preco = request.POST.get('preco')
+        
+        #validação fornecedor
+        fornecedor = request.POST.get('fornecedor')
+        if fornecedor == "" or fornecedor == '-1':
+            fornecedor = None
+        else:
+            fornecedor = Fornecedor.objects.get(pk=int(fornecedor))
+        
+        qtd_minima = request.POST.get('qtd_minima')
+        imagemItem = request.FILES.getlist('imagemItem') or None
+
+        Item.objects.create(
+            descricao=descricao,
+            marca=marca,
+            categoria=categoria,
+            peso = peso,
+            unid_medida = unid_medida,
+            preco=preco,
+            fornecedor=fornecedor,
+            qtd_minima = qtd_minima,
+            imagem = imagemItem
+            
+        )
+        
+        return redirect('cadastrar_itens_estoquev2')
 
 #TODO CATEGORIAS
 # ------------------------------------------------------------  CATEGORIAS---------------------------------------------------

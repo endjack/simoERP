@@ -6,7 +6,84 @@
 
 {% include "estoque_v2/fragmentos/menu_estoque.html" %}
 
-Cadastrar
+<div class="container mt-2">
+
+    <div class="d-flex flex-row align-items-center" >
+        <h4 class="me-auto"><i class="fas fa-cart-plus"></i> Itens/Produtos: </h4>
+
+        <!-- Button Modal -->
+        <a  style="" class="btn btn-sm  btn-primary m-1" data-bs-toggle="modal" data-bs-target="#addNovoItemEstoquev2" href="modal" 
+              title="Adicionar Item de Estoque"><i class="fas fa-plus"></i>  Novo Item</a>
+
+        <!-- Modal Acautelar -->
+         {% include "estoque_v2/fragmentos/modals/add_novo_item_estoque .html" %}       
+
+
+
+        <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
+              title="Início"><i class="fas fa-search"></i></i> Buscar </a>
+
+
+    </div>
+
+</div>
+
+<div class="container">
+    <h6 class="mt-2"><i class="fas fa-search"></i> Filtrar Itens:</h6>
+    
+      
+      <div class="p-1">
+        <form id="form_filtro" 
+            hx-get="{% url 'filtrar_itens_nao_estoque' %}" 
+            hx-target="#resultados_filtro" 
+            hx-swap="innerHTML" 
+            hx-indicator="#spinner"
+            style="line-height: normal; font-size:9pt">
+          {% csrf_token %}
+
+
+    
+          <div class="form-group row mb-2 ">
+            <div class="col-5">
+              <div class="col-12 ">
+                <label for="inputDescricao" class="">Descrição</label>
+                <input type="text" class="form-control form-control-sm" name="descricao">
+              </div>
+    
+            </div>
+            <div class="col-2">
+              <div class="col-12">
+                <label for="inputmarca" class="">Marca</label>
+                <input type="text" class="form-control form-control-sm" name="marca">
+              </div>
+            </div>
+    
+            <div class="col-2">
+              <div class="col-12">
+                <label for="input0" class="">Categoria:</label>
+                <select id="input0" class="form-control form-control-sm"  name="categoria" >
+                        <option value="-1"> Todas as Categorias</option>
+                        {% for i in categorias_itens %}
+                        <option value="{{i.pk}}"> {{i.categoria}}</option>
+                        {% endfor %}      
+                </select>
+              </div>
+            </div>   
+           
+    
+            <div class="col-2 d-flex align-items-end">
+              <button form="form_filtro" class="btn btn-sm btn-primary "><i class="fas fa-search"></i> Filtrar </button>
+              <a class="btn btn-sm btn-light " style="margin-left:1rem" href="{% url 'cadastrar_itens_estoquev2' %}">Limpar</a>
+            </div>
+            <span class="help-block">*Para ver todos os itens: filtrar com os campos vazios.</span>
+          </div>
+    
+        </form>
+      </div>
+</div>
+<div class="container" id="resultados_filtro">
+    {% include "estoque_v2/itens/resultados_procurar_itens.html" %}
+</div>
 
 {% endblock%}
 

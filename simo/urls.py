@@ -86,8 +86,10 @@ urlpatterns = [
     path('estoque/requisicao/<int:pk>/item/<int:item>/add', add_itemRequisicao_requisicao, name='add_itemRequisicao_requisicao'),
     path('estoque/requisicao/<int:pk>/item/<int:item>/excluir', excluir_item_requisicao_estoque, name='excluir_item_requisicao_estoque'),
 
-    
+    #Itens 
     path('estoque/cadastrar/itens', cadastrar_itens_estoquev2, name='cadastrar_itens_estoquev2'),
+    path('estoque/cadastrar/itens/novo', add_novo_item_estoque, name='add_novo_item_estoquev2'),
+    path('estoque/cadastrar/itens/filtrar', filtrar_itens_nao_estoque, name='filtrar_itens_nao_estoque'),
     
     #Categorias v2
     path('estoque/cadastrar/categorias', cadastrar_categoria_estoquev2, name='cadastrar_categoria_estoquev2'),
