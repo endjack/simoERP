@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styleHead %}
+<style>
+.htmx-indicator {
+    display:none;
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+.htmx-request {
+  display:block;
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+}
+
+
+</style>    
+{% endblock %}
+
+{% block conteudo %}
+
+{% include "estoque_v2/fragmentos/menu_estoque.html" %}
+
+
+<div class="container mt-2">
+ 
+          <div class="d-flex flex-row align-items-center" >
+                <h4 class="me-auto"><i class="fas fa-info-circle"></i> Detalhar Item/Produto (Id: {{item.pk}}) </h4>
+                  {% if item.estocado %}
+                  <h6 class="me-auto text-primary">Item já estocado</h6>
+                  {% else %}
+                  <h6 class="me-auto text-danger">Item não estocado, apenas rótulo.</h6>
+                  <a  style="" class="btn btn-sm  btn-primary m-1" data-bs-toggle="modal" data-bs-target="#estocarItemNaoEstoquev2{{item.pk}}" href="modal" 
+                      title="Início"><i class="fas fa-cart-plus"></i> Estocar</a>
+                  {% endif %}   
+                <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'editar_dados_item_estoquev2' item.pk %}" 
+                      title="Início"><i class="fas fa-edit"></i> Alterar Dados</a>
+                <a  style="" class="btn  btn-sm btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
+                      title="Início"><i class="fas fa-trash"></i> Excluir</a>
+          </div>
+</div>
+
+
+{% include "estoque_v2/itens/item_nao_estoque.html" %} 
+
+ <!-- Modal XXXXXXX-->
+ <div class="modal fade" id="estocarItemNaoEstoquev2{{item.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content ">
+            <div class="modal-header p-3">
+                <div class="d-flex flex-column bd-highlight">
+                    <h5 style="color:black" class="bd-highlight">Certeza que deseja Estocar Item?</h5>
+                    
+                    
+                </div>  
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-5">
+                <!-- modal-body --> 
+                  <div class="">Descrição: <span style="font-weight: bold;">{{item.descricao}} </span></div>
+
+                  <div>Ao estocar o item, ele iniciará no Estoque com <span class="text-danger fw-bold">0 {{item.unid_medida}}</span></div>
+
+                <!-- Fim modal-body -->
+            </div>
+            <div class="modal-footer form-control">
+                <a class="btn btn-sm btn-success" hx-post="{% url 'estocar_item_nao_estoquev2' item.pk %}" hx-target="body"><i class="fas fa-cart-plus"></i> Estocar</a>   
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            
+            </div>
+        </div>
+    </div>
+ </div>
+ <!-- Fim Modal --> 
+      
+   
+{% endblock%}
+

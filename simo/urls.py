@@ -90,6 +90,9 @@ urlpatterns = [
     path('estoque/cadastrar/itens', cadastrar_itens_estoquev2, name='cadastrar_itens_estoquev2'),
     path('estoque/cadastrar/itens/novo', add_novo_item_estoque, name='add_novo_item_estoquev2'),
     path('estoque/cadastrar/itens/filtrar', filtrar_itens_nao_estoque, name='filtrar_itens_nao_estoque'),
+    path('estoque/cadastrar/itens/<int:pk>/detalhar', detalhar_item_nao_estoquev2, name='detalhar_item_nao_estoquev2'),
+    path('estoque/cadastrar/itens/<int:pk>/estocar', estocar_item_nao_estoquev2, name='estocar_item_nao_estoquev2'),
+    path('estoque/cadastrar/itens/<int:pk>/editar', editar_dados_item_estoquev2, name='editar_dados_item_estoquev2'),
     
     #Categorias v2
     path('estoque/cadastrar/categorias', cadastrar_categoria_estoquev2, name='cadastrar_categoria_estoquev2'),
