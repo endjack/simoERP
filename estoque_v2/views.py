@@ -369,7 +369,9 @@ def ver_ferramental_estoquev2(request, template_name = 'estoque_v2/ferramental_e
       if request.method == 'GET':
         _menu_ativo = 'FERRAMENTAL'
         
-        ferramentas = Ferramenta.objects.all()
+        #TODO COLOCAR AS FERRAMENTAS ACAUTELADAS PRIMEIRO E DEPOIS AS NÃO ACAUTELADAS EM LISTA
+        
+        ferramentas = Ferramenta.objects.filter(ativa=True)
         categorias_ferramentas = CategoriaFerramenta.objects.all()
         estados = Ferramenta.ESTADO
         funcionarios_ativos = Funcionario.objects.all()
