@@ -31,12 +31,14 @@
                   <h6 class="me-auto text-primary">Item já estocado</h6>
                   {% else %}
                   <h6 class="me-auto text-danger">Item não estocado, apenas rótulo.</h6>
+                  <!-- Button Modal Estocar-->
                   <a  style="" class="btn btn-sm  btn-primary m-1" data-bs-toggle="modal" data-bs-target="#estocarItemNaoEstoquev2{{item.pk}}" href="modal" 
                       title="Início"><i class="fas fa-cart-plus"></i> Estocar</a>
                   {% endif %}   
-                <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'editar_dados_item_estoquev2' item.pk %}" 
+                    <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'editar_dados_item_estoquev2' item.pk %}" 
                       title="Início"><i class="fas fa-edit"></i> Alterar Dados</a>
-                <a  style="" class="btn  btn-sm btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
+                    <!-- Button Modal Excluir-->
+                    <a  style="" class="btn  btn-sm btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#excluirItemNaoEstoquev2{{item.pk}}" href="modal" 
                       title="Início"><i class="fas fa-trash"></i> Excluir</a>
           </div>
 </div>
@@ -44,7 +46,7 @@
 
 {% include "estoque_v2/itens/item_nao_estoque.html" %} 
 
- <!-- Modal XXXXXXX-->
+ <!-- Modal Estocar-->
  <div class="modal fade" id="estocarItemNaoEstoquev2{{item.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content ">
@@ -66,6 +68,38 @@
             </div>
             <div class="modal-footer form-control">
                 <a class="btn btn-sm btn-success" hx-post="{% url 'estocar_item_nao_estoquev2' item.pk %}" hx-target="body"><i class="fas fa-cart-plus"></i> Estocar</a>   
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            
+            </div>
+        </div>
+    </div>
+ </div>
+ <!-- Fim Modal --> 
+
+  <!-- Modal Excluir-->
+  <div class="modal fade" id="excluirItemNaoEstoquev2{{item.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content ">
+            <div class="modal-header p-3">
+                <div class="d-flex flex-column bd-highlight">
+                    <h5 class="bd-highlight">Excluir Item {{item.descricao}}</h5>
+                    
+                    
+                </div>  
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-5">
+                <div class="text-center">
+                    <h5 class="bd-highlight text-danger">Certeza que deseja Excluir?</h5>
+                           
+                    <hr>
+                   
+                    <small>A exclusão deste item não afeta o estoque.</small>
+                </div>  
+
+            </div>
+            <div class="modal-footer form-control">
+                <a class="btn btn-sm btn-danger" href="{% url 'excluir_item_nao_estocado' item.pk %}"><i class="fas fa-times"></i> Excluir </a>   
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
             
             </div>

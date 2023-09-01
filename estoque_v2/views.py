@@ -76,6 +76,20 @@ def detalhar_item_de_estoque(request, pk, template_name = 'estoque_v2/detalhar_i
     
 @login_required(login_url='login/')
 @csrf_exempt
+def excluir_item_de_estoque(request, pk):
+
+    if request.method == 'GET':
+        item_estoque = Estoque.objects.get(pk=pk)
+        item = item_estoque.item
+        
+        item_estoque.delete()
+        item.estocado = False
+        item.save()
+       
+        return redirect('inicio_estoquev2')
+    
+@login_required(login_url='login/')
+@csrf_exempt
 def movimentar_item_de_estoque(request, pk):
 
     if request.method == 'POST':
@@ -376,6 +390,34 @@ def ver_ferramental_estoquev2(request, template_name = 'estoque_v2/ferramental_e
         }
         return render(request, template_name , context)
     
+@login_required(login_url='login/')
+@csrf_exempt
+def buscar_ferramentas(request, template_name = 'estoque_v2/ferramentas/buscar_ferramentas.html'):
+
+      if request.method == 'GET':
+        _menu_ativo = 'FERRAMENTAL'
+        
+        ferramentas = Ferramenta.objects.all()
+        categorias_ferramentas = CategoriaFerramenta.objects.all()
+        estados = Ferramenta.ESTADO
+        funcionarios_ativos = Funcionario.objects.all()
+        locais = Local.objects.all()
+        obras = Obra.objects.all()
+        
+        
+        context = {
+            'menu_ativo' : _menu_ativo,
+            'ferramentas' : ferramentas,
+            'categorias_ferramentas' : categorias_ferramentas,
+            'estados' : estados,
+            'funcionarios_ativos' : funcionarios_ativos,
+            'locais' : locais,
+            'obras' : obras,
+            
+         
+        }
+        return render(request, template_name , context)
+    
     
 @login_required(login_url='login/')
 @csrf_exempt
@@ -594,6 +636,17 @@ def editar_dados_item_estoquev2(request, pk, template_name = 'estoque_v2/itens/e
     
 @login_required(login_url='login/')
 @csrf_exempt
+def excluir_item_nao_estocado(request, pk):
+
+    if request.method == 'GET':
+        item_atual = Item.objects.get(pk=pk)  
+        item_atual.delete()      
+ 
+        return redirect('cadastrar_itens_estoquev2')
+    
+    
+@login_required(login_url='login/')
+@csrf_exempt
 def estocar_item_nao_estoquev2(request, pk):
 
     if request.method == 'POST':
@@ -668,8 +721,25 @@ def add_novo_item_estoque(request):
         else:
             qtd_minima = Decimal(qtd_minima)
         
-        imagemItem = request.FILES.getlist('imagemItem') or None
-
+        imagemItem = request.FILES.get('imagemItem')
+        print(f'----------------------------{request.FILES}--------------------------')
+        
+        if action == "Editar":
+            
+            item_atual = Item.objects.get(pk=int(request.POST.get('pkEditar')))
+            item_atual.descricao=descricao
+            item_atual.marca=marca
+            item_atual.categoria=categoria
+            item_atual.peso=peso
+            item_atual.unid_medida=unid_medida
+            item_atual.preco=preco
+            item_atual.fornecedor=fornecedor
+            item_atual.qtd_minima=qtd_minima
+            item_atual.imagem=imagemItem
+            item_atual.save()
+            
+            return redirect('detalhar_item_nao_estoquev2', pk=item_atual.pk)
+         
         item_atual = Item.objects.create(
             descricao=descricao,
             marca=marca,

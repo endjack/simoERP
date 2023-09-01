@@ -27,17 +27,21 @@
  
           <div class="d-flex flex-row align-items-center" >
                 <h4 class="me-auto"><i class="fas fa-edit"></i> Editar Item (Id: {{item.pk}}) </h4>
-                <a  style="" class="btn btn-sm  btn-primary m-1" href="{% url 'editar_dados_item_estoquev2' item.pk %}" 
-                      title="Início"><i class="fas fa-edit"></i> Salvar Edição</a>
-                <a  style="" class="btn  btn-sm btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
+                <small class="small-error" id="error_item"></small>
+                {% include "utils/load_htmx_centralizado.html" %}
+                <button class="btn btn-sm btn-success" form='formEditarItemEstoque'><i class="fas fa-plus" ></i> Salvar</button>   
+                <a style="" class="btn  btn-sm btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
                       title="Início"><i class="fas fa-trash"></i> Excluir</a>
           </div>
 </div>
 <div class="container">                 
                       
                      
-    <form name="formAddNovoItemEstoque" 
-          style="line-height: normal; font-size:9pt" enctype="multipart/form-data">
+    <form id="formEditarItemEstoque"  style="line-height: normal; font-size:9pt" enctype="multipart/form-data"
+                    hx-post="{% url 'add_novo_item_estoquev2' %}" 
+                    hx-target="body" 
+                    hx-indicator="#spinner"
+                    hx-vals='{"action": "Editar","pkEditar": "{{item.pk}}"} '>
       {% csrf_token %}
 
 
@@ -80,7 +84,7 @@
             <div class="col-2">
              
                 <label for="inputCor" class="">Peso:</label>
-                <input type="number" step="any" min="0" class="form-control form-control-sm" name="peso" value="{{item.peso}}">
+                <input type="number" step="any" min="0" class="form-control form-control-sm" name="peso" value="{{item.peso|stringformat:'s'}}">
 
               
     
@@ -102,7 +106,7 @@
             <div class="col-2">
              
                 <label for="inputPreço" class="">Preço:</label>
-                <input type="number" step="any" min="0" class="form-control form-control-sm" name="preco">
+                <input type="number" step="any" min="0" class="form-control form-control-sm" name="preco" value="{{item.preco|stringformat:'s'}}">
              
             </div>
             <div class="col-6">
@@ -127,25 +131,53 @@
             <div class="col-2">
              
                 <label for="inputCor" class="">Qtd Mínima:<span class="text-danger">*</span></label>
-                <input type="number" step="any" min="0" class="form-control form-control-sm" name="qtd_minima" required>
+                <input type="number" step="any" min="0" class="form-control form-control-sm" name="qtd_minima" value="{{item.qtd_minima|stringformat:'s'}}" required>
 
               
     
             </div>
+
+    </div>
+    <div class=" form-group row mt-2">
+        <strong>Imagem do Item:</strong>
+        <div class="col-3 ">
+            {% if item.imagem %}
+            <img src="{{item.imagem.url}}" class="card-img-top m-1" style="width: 100%; height: auto;">
+            {% else %}
+            <img src="{% static 'imagens/sem_imagem.png' %}" class="card-img-top m-1" style="width: 100%; height: auto;">
+            {% endif %}
+            
+      </div>
             <div class="col-5">
                 <div class="col-md">
-                    <label for="inputImagem" class="">Imagem:</label>
+                    <label for="imagemItem" class="">Alterar Imagem:</label>
                     <input type="file" name="imagemItem" class="form-control form-control-sm" accept="image/*" /> 
 
                 </div>
             </div>
-            <div class="col-5">
-                <div class="col-md">
-                    <label for="inputQrcode" class="">QR Code: <small class="text-danger">(Desativado)</small></label>
-                    <input type="file" name="qr-code-Item" class="form-control form-control-sm" accept="image/*" disabled/> 
+            
+    </div>
+    
 
-                </div>
-            </div>
+    <div class=" form-group row mt-2" style="opacity:0.5">
+        <strong>QRCode do Item:</strong>
+        <div class="col-3 ">
+            {% if item.qr_code %}
+            <img src="{{item.qr_code.url}}" class="card-img-top m-1" style="width: 100%; height: auto;">
+            {% else %}
+            <img src="{% static 'imagens/sem_imagem.png' %}" class="card-img-top m-1" style="width: 100%; height: auto;">
+            {% endif %}
+            
+      </div>
+                      
+      <div class="col-5" >
+        <div class="col-md">
+            <label for="inputQrcode" class="">QR Code: <small class="text-danger">(Desativado)</small></label>
+            <input type="file" name="qr-code-Item" class="form-control form-control-sm" accept="image/*" disabled/> 
+
+        </div>
+    </div>
+            
     </div>
     
 
