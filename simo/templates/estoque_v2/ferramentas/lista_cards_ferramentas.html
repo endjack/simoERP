@@ -1,0 +1,56 @@
+{% load static %}
+<div class="container mt-2">
+<div class="row ">
+    {% for f in ferramentas %}
+
+      {% if f.acautelada %}
+
+        <div class="" style="width:10rem" >
+          <div class="card ">
+              {% if f.imagem %}
+              <img src="{{f.imagem.url}}" class="card-img-top p-2" style="height: 120px; filter">
+              {% else %}
+              <img src="{% static 'imagens/sem_imagem.png' %}" class="card-img-top p-2" style="height: 120px">
+              {% endif %}
+      
+            <div class="card-body" style="height: 20%;">
+              <h6 class="card-title">{{f.descricao}}</h6>
+              <p class="card-text"></p>
+            </div>
+
+            <div class="card-footer text-center" style="height: 30%;">
+              <small class="text-muted">No Estoque</small>
+            </div>
+
+          </div>
+
+        </div>
+
+      
+      {% else %}
+
+          <div class="" style="width:10rem" >
+            <div class="card ">
+                {% if f.imagem %}
+                <img src="{{f.imagem.url}}" class="card-img-top p-2" style="height: 120px; filter: grayscale(100%);">
+                {% else %}
+                <img src="{% static 'imagens/sem_imagem.png' %}" class="card-img-top p-2" style="height: 120px">
+                {% endif %}
+        
+              <div class="card-body" style="height: 20%;">
+                <h6 class="card-title">{{f.descricao}}</h6>
+                <p class="card-text"></p>
+              </div>
+
+              <div class="card-footer text-center" style="height: 30%;">
+                <small class="text-muted">No Estoque</small>
+              </div>
+
+            </div>
+
+          </div>
+
+      {% endif %}
+    {% endfor %}
+</div>
+</div>

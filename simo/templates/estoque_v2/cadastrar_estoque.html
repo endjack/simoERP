@@ -1,6 +1,41 @@
 {% extends "base.html" %}
 {% load static %}
+{% block styleHead %}
+<style>
+.htmx-indicator {
+    display:none;
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+.htmx-request {
+  display:block;
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+}
 
+   table {
+    border-collapse: collapse;
+
+  } 
+  
+  .linha_clicavel {
+    border: 1px solid black;
+    cursor: pointer;
+    
+  } 
+  
+  .linha_clicavel:hover {
+    background: #bad6f7 !important;
+ 
+  }
+  td a, td a:hover{
+    text-decoration:none;
+    color:black;
+  }
+  
+
+</style>    
+{% endblock %}
 
 {% block conteudo %}
 
@@ -15,7 +50,7 @@
         <a  style="" class="btn btn-sm  btn-primary m-1" data-bs-toggle="modal" data-bs-target="#addNovoItemEstoquev2" href="modal" 
               title="Adicionar Item de Estoque"><i class="fas fa-plus"></i>  Novo Item</a>
 
-        <!-- Modal Acautelar -->
+        <!-- Modal Novo Item -->
          {% include "estoque_v2/fragmentos/modals/add_novo_item_estoque .html" %}       
 
 
@@ -29,7 +64,7 @@
 </div>
 
 <div class="container">
-    <h6 class="mt-2"><i class="fas fa-search"></i> Filtrar Itens:</h6>
+    <h6 class="mt-2"><i class="fas fa-search"></i> Filtrar Itens <span class="text-danger">Não Estocados:</span></h6>
     
       
       <div class="p-1">

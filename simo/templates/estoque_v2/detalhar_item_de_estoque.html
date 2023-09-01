@@ -26,11 +26,13 @@
  
           <div class="d-flex flex-row align-items-center" >
                 <h4 class="me-auto"><i class="fas fa-info-circle"></i> Detalhar Item de Estoque (Id: {{item_estoque.pk}})</h4>
+                <!-- Button movimentar-->
                 <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#movimentaritemdeestoque{{item_estoque.pk}}" href="modal" 
                       title="Início"><i class="fas fa-box-open"></i></i> Movimentar</a>
-                <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
+                <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'editar_dados_item_estoquev2' item_estoque.item.pk %}" 
                       title="Início"><i class="fas fa-edit"></i></i> Alterar</a>
-                <a  style="" class="btn  btn-sm btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
+                <!-- Button Excluir-->
+                  <a  style="" class="btn  btn-sm btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#excluirItemDeEstoque{{item_estoque.pk}}" href="modal" 
                       title="Início"><i class="fas fa-trash"></i> Excluir</a>
           </div>
 </div>
@@ -38,7 +40,38 @@
 
 {% include "estoque_v2/item_de_estoque.html" %}
 
-
+<!-- Modal Excluir-->
+<div class="modal fade" id="excluirItemDeEstoque{{item_estoque.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content ">
+              <div class="modal-header p-3">
+                  <div class="d-flex flex-column bd-highlight">
+                      <h5 class="bd-highlight text-danger">Excluir Item de Estoque</h5>
+                      Item: {{item_estoque.item.descricao}} 
+                      
+                  </div>  
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-5">
+                  <div class="text-center">
+                  <h5 class="bd-highlight text-danger">Certeza que deseja Excluir?</h5>
+                  <span class="fw-bold">Quantidade no Estoque: {{item_estoque.quantidade}} {{item_estoque.item.unid_medida}}</span>
+                  </div>       
+                  <hr>
+                  <div class="text-center">
+                        <small>Ao excluir o item a quantidade será retirada do Estoque, <span class="fw-bold">mas o rótulo não será apagado.</span></small>
+                  </div>            
+                  
+              </div>
+              <div class="modal-footer form-control">
+                  <a class="btn btn-sm btn-danger" href="{% url 'excluir_item_de_estoque' item_estoque.pk %}"><i class="fas fa-times"></i> Excluir </a>   
+                  <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              
+              </div>
+          </div>
+      </div>
+   </div>
+   <!-- Fim Modal --> 
     
       
       

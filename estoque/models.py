@@ -6,7 +6,10 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.db.models.deletion import PROTECT
 from datetime import datetime
+import locale
 
+
+locale.setlocale(locale.LC_MONETARY, 'pt_BR.UTF-8')  
 
 # Create your models here.
 
@@ -29,12 +32,12 @@ class Item(models.Model):
 
     def validate_image(fieldfile_obj):
         filesize = fieldfile_obj.file.size
-        megabyte_limit = 3.0
+        megabyte_limit = 5.0
         if filesize > megabyte_limit*1024*1024:
             raise ValidationError("Tamanho máximo da Imagem é %sMB" % str(megabyte_limit))
       
     UNIDADES = (
-        ("UNID", "Unidade"),("M", "Metros"),("M2", "Metros2"),("M3", "Metros3"),("CX", "Caixa"), ("CJ", "Conjunto"),
+        ("UNID", "Unidade"),("KG", "Quilos"),("M", "Metros"),("M2", "Metros2"),("M3", "Metros3"),("CX", "Caixa"), ("CJ", "Conjunto"),
         ("PCT", "Pacote"),("PÇ", "Peça"),("TON", "Tonelada"),("L", "Litros"),("BD", "Balde"), ("GL","Galão"), ("LT","Latão"), ("QTD", "Quantidade"),
     )
 
@@ -45,9 +48,10 @@ class Item(models.Model):
     imagem = models.ImageField(upload_to='estoque/', validators=[validate_image], blank=True, null=True)
     peso = models.FloatField(default=0, blank=True, null=True)
     unid_medida = models.CharField(max_length=50, choices=UNIDADES, default="UNID")
-    qtd_minima = models.IntegerField(default=0, blank=True, null=True)
+    qtd_minima = models.FloatField(default=0, blank=True, null=True)
     preco = models.DecimalField('preço', max_digits=20, decimal_places=2, default=0, null=True, blank=True)
     qr_code = models.ImageField(upload_to='qrcodes/', blank=True, null=True)
+    estocado = models.BooleanField(default=False)
 
     class Meta:
         ordering = ('descricao',)
@@ -55,6 +59,9 @@ class Item(models.Model):
     
     def __str__(self) -> str:
         return str(self.descricao)+ ' - '+ str(self.categoria if self.categoria != None else 'sem categoria')
+    
+    def get_valor_to_input(self):
+        return str(self.preco)
     
 class MovimentacaoEstoque(models.Model):
     TIPOS = (("1","Entrada"),("2","Saída"))

@@ -29,7 +29,7 @@ class Ferramenta(models.Model):
             raise ValidationError("Tamanho máximo da Imagem é %sMB" % str(megabyte_limit))
         
     ESTADO = (
-        (0, "NOVA"),(1, "USADA"),(3, "COM DEFEITO"),
+        ('0', "NOVA"),('1', "USADA"),('2', "COM DEFEITO"),
         )
 
     
@@ -41,12 +41,12 @@ class Ferramenta(models.Model):
     cor = models.CharField(max_length=50, blank=True, null=True)
     tamanho = models.CharField(max_length=50, blank=True, null=True)
     numeracao = models.CharField(max_length=50, blank=True, null=True)
-    estado = models.CharField(max_length=50, choices=ESTADO, default=1)
-    reservada = models.BooleanField(default=False)
+    estado = models.CharField(max_length=50, choices=ESTADO, default='1')
     ativa = models.BooleanField(default=False)
     manutencao = models.BooleanField(default=False)
     data_inclusao = models.DateTimeField(default=timezone.now)
     obs =  models.CharField(max_length=300, null=True, blank=True)
+    acautelada = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f'Ferramenta: {self.pk} - {self.descricao}'

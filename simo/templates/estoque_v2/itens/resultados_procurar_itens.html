@@ -21,13 +21,13 @@
               {% if itens %}
                 {% for i in itens  %}
                <tr class='linha_clicavel'>
-                <td class="text-center col-md-1"><a href="#"><div style="height:100%;width:100%">{{i.pk}}</div></a></td>
-                <td class="col-md-3"><a href="#"><div style="height:100%;width:100%">{{i.descricao|default_if_none:"-"}}</div></a></td>
-                  <td class=""><a href="#"><div style="height:100%;width:100%">{{i.marca|default_if_none:"-"}}</div></a></td>
-                  <td class="text-center"><a href="#"><div style="height:100%;width:100%">{{i.categoria|default_if_none:"-"}}</div></a></td>
-                  <td class="text-center"><a href="#"><div style="height:100%;width:100%">{{i.peso|default_if_none:"-"}}</div></a></td>
-                  <td class="text-center"><a href="#"><div style="height:100%;width:100%">{{i.qtd_minima|default_if_none:"-"}}</div></a></td>
-                  <td class="text-center"><a href="#"><div style="height:100%;width:100%">{{i.unid_medida|default_if_none:"-"}}</div></a></td>
+                <td class="text-center col-md-1"><a href="{% url 'detalhar_item_nao_estoquev2' i.pk %}"><div style="height:100%;width:100%">{{i.pk}}</div></a></td>
+                <td class="col-md-4"><a href="{% url 'detalhar_item_nao_estoquev2' i.pk %}"><div style="height:100%;width:100%">{{i.descricao|default_if_none:"-"}}</div></a></td>
+                  <td class=""><a href="{% url 'detalhar_item_nao_estoquev2' i.pk %}"><div style="height:100%;width:100%">{{i.marca|default_if_none:"-"}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'detalhar_item_nao_estoquev2' i.pk %}"><div style="height:100%;width:100%">{{i.categoria|default_if_none:"-"}}</div></a></td>
+                  <td class="text-center col-md-1"><a href="{% url 'detalhar_item_nao_estoquev2' i.pk %}"><div style="height:100%;width:100%">{{i.peso|default_if_none:"-"}}</div></a></td>
+                  <td class="text-center col-md-1"><a href="{% url 'detalhar_item_nao_estoquev2' i.pk %}"><div style="height:100%;width:100%">{{i.qtd_minima|default_if_none:"-"}}</div></a></td>
+                  <td class="text-center col-md-1"><a href="{% url 'detalhar_item_nao_estoquev2' i.pk %}"><div style="height:100%;width:100%">{{i.unid_medida|default_if_none:"-"}}</div></a></td>
                   </tr>
                 {% endfor %}
               {% else %}

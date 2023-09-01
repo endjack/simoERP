@@ -76,6 +76,20 @@ def detalhar_item_de_estoque(request, pk, template_name = 'estoque_v2/detalhar_i
     
 @login_required(login_url='login/')
 @csrf_exempt
+def excluir_item_de_estoque(request, pk):
+
+    if request.method == 'GET':
+        item_estoque = Estoque.objects.get(pk=pk)
+        item = item_estoque.item
+        
+        item_estoque.delete()
+        item.estocado = False
+        item.save()
+       
+        return redirect('inicio_estoquev2')
+    
+@login_required(login_url='login/')
+@csrf_exempt
 def movimentar_item_de_estoque(request, pk):
 
     if request.method == 'POST':
@@ -355,6 +369,36 @@ def ver_ferramental_estoquev2(request, template_name = 'estoque_v2/ferramental_e
       if request.method == 'GET':
         _menu_ativo = 'FERRAMENTAL'
         
+        #TODO COLOCAR AS FERRAMENTAS ACAUTELADAS PRIMEIRO E DEPOIS AS NÃO ACAUTELADAS EM LISTA
+        
+        ferramentas = Ferramenta.objects.filter(ativa=True)
+        categorias_ferramentas = CategoriaFerramenta.objects.all()
+        estados = Ferramenta.ESTADO
+        funcionarios_ativos = Funcionario.objects.all()
+        locais = Local.objects.all()
+        obras = Obra.objects.all()
+        
+        
+        context = {
+            'menu_ativo' : _menu_ativo,
+            'ferramentas' : ferramentas,
+            'categorias_ferramentas' : categorias_ferramentas,
+            'estados' : estados,
+            'funcionarios_ativos' : funcionarios_ativos,
+            'locais' : locais,
+            'obras' : obras,
+            
+         
+        }
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def buscar_ferramentas(request, template_name = 'estoque_v2/ferramentas/buscar_ferramentas.html'):
+
+      if request.method == 'GET':
+        _menu_ativo = 'FERRAMENTAL'
+        
         ferramentas = Ferramenta.objects.all()
         categorias_ferramentas = CategoriaFerramenta.objects.all()
         estados = Ferramenta.ESTADO
@@ -534,9 +578,9 @@ def filtrar_itens_nao_estoque(request, template_name = 'estoque_v2/itens/resulta
         categoria = request.POST.get('categoria') or '-1'
 
         if categoria == '-1':    
-            itens = Item.objects.all().filter(descricao__icontains=descricao).filter(marca__icontains=marca)
+            itens = Item.objects.all().filter(estocado=False).filter(descricao__icontains=descricao).filter(marca__icontains=marca)
         else:
-            itens = Item.objects.all().filter(descricao__icontains=descricao).filter(marca__icontains=marca).filter(categoria__pk=int(categoria))
+            itens = Item.objects.all().filter(estocado=False).filter(descricao__icontains=descricao).filter(marca__icontains=marca).filter(categoria__pk=int(categoria))
     
         
         # print(f'-------------RESULTADO DO FILTER ---> {itens}')
@@ -550,12 +594,89 @@ def filtrar_itens_nao_estoque(request, template_name = 'estoque_v2/itens/resulta
  
         return render(request, template_name , context)
     
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def detalhar_item_nao_estoquev2(request, pk, template_name = 'estoque_v2/itens/detalhar_item_nao_estoque.html'):
+
+    if request.method == 'GET':
+       
+        item_atual = Item.objects.get(pk=pk)
+    
+       
+        context = {
+         
+            'item': item_atual,
+            
+         
+        }
+     
+ 
+        return render(request, template_name , context)
+    
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def editar_dados_item_estoquev2(request, pk, template_name = 'estoque_v2/itens/editar_item_estoque.html'):
+
+    if request.method == 'GET':
+        item_atual = Item.objects.get(pk=pk)
+        categorias_itens = Categoria.objects.all()
+        unid_medidas = Item.UNIDADES
+        fornecedores = Fornecedor.objects.all()
+       
+        context = {
+         
+            'item': item_atual,
+            'categorias_itens': categorias_itens,
+            'unid_medidas': unid_medidas,
+            'fornecedores': fornecedores,
+        }
+     
+ 
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def excluir_item_nao_estocado(request, pk):
+
+    if request.method == 'GET':
+        item_atual = Item.objects.get(pk=pk)  
+        item_atual.delete()      
+ 
+        return redirect('cadastrar_itens_estoquev2')
+    
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def estocar_item_nao_estoquev2(request, pk):
+
+    if request.method == 'POST':
+        item_atual = Item.objects.get(pk=pk)
+        
+        estocar = Estoque.objects.create(item=item_atual,
+                                            quantidade=0)
+        item_atual.estocado = True
+        item_atual.save()
+  
+        return redirect('detalhar_item_de_estoque', pk=estocar.pk)
+    
 @login_required(login_url='login/')
 @csrf_exempt
 def add_novo_item_estoque(request):
 
     if request.method == 'POST':
+        
+        action = request.POST.get('action')
+        
+        
+        #validação Descricao
         descricao = request.POST.get('descricao')
+        if descricao == "" or descricao == None:
+            response = HttpResponse('Erro: Insira uma DESCRIÇÃO')
+            response['HX-Retarget'] = '#error_item'
+            return response
+        
         marca = request.POST.get('marca')
         
         #validação Categoria
@@ -567,11 +688,23 @@ def add_novo_item_estoque(request):
         else:
             categoria = Categoria.objects.get(pk=int(categoria))    
         
+        
+        #Peso
         peso = request.POST.get('peso')
+        if not peso == "":
+            peso = float(peso)
+        else:
+            peso = 0
         
         unid_medida = request.POST.get('unid_medida')
         
+        #Preço
         preco = request.POST.get('preco')
+        if not preco == "":
+            preco = Decimal(preco)
+        else:
+            preco = 0
+        
         
         #validação fornecedor
         fornecedor = request.POST.get('fornecedor')
@@ -580,10 +713,36 @@ def add_novo_item_estoque(request):
         else:
             fornecedor = Fornecedor.objects.get(pk=int(fornecedor))
         
+        #Qtd_minima
         qtd_minima = request.POST.get('qtd_minima')
-        imagemItem = request.FILES.getlist('imagemItem') or None
-
-        Item.objects.create(
+        if qtd_minima == ""  or qtd_minima == '0':
+            response = HttpResponse('Erro: Inclua uma QUANTIDADE MÍNIMA > 0.')
+            response['HX-Retarget'] = '#error_item'
+            return response
+            
+        else:
+            qtd_minima = Decimal(qtd_minima)
+        
+        imagemItem = request.FILES.get('imagemItem')
+        print(f'----------------------------{request.FILES}--------------------------')
+        
+        if action == "Editar":
+            
+            item_atual = Item.objects.get(pk=int(request.POST.get('pkEditar')))
+            item_atual.descricao=descricao
+            item_atual.marca=marca
+            item_atual.categoria=categoria
+            item_atual.peso=peso
+            item_atual.unid_medida=unid_medida
+            item_atual.preco=preco
+            item_atual.fornecedor=fornecedor
+            item_atual.qtd_minima=qtd_minima
+            item_atual.imagem=imagemItem
+            item_atual.save()
+            
+            return redirect('detalhar_item_nao_estoquev2', pk=item_atual.pk)
+         
+        item_atual = Item.objects.create(
             descricao=descricao,
             marca=marca,
             categoria=categoria,
@@ -596,7 +755,16 @@ def add_novo_item_estoque(request):
             
         )
         
-        return redirect('cadastrar_itens_estoquev2')
+        if action == "Salvar":
+            return redirect('cadastrar_itens_estoquev2')
+        else:   
+            estocar = Estoque.objects.create(item=item_atual,
+                                                quantidade=0)
+            item_atual.estocado = True
+            item_atual.save()
+    
+            return redirect('detalhar_item_de_estoque', pk=estocar.pk)
+            
 
 #TODO CATEGORIAS
 # ------------------------------------------------------------  CATEGORIAS---------------------------------------------------

@@ -65,10 +65,12 @@ urlpatterns = [
     path('estoque/inicio', procurar_estoquev2, name='inicio_estoquev2'),
     path('estoque/item_estoque/<int:pk>', detalhar_item_de_estoque, name='detalhar_item_de_estoque'),
     path('estoque/item_estoque/<int:pk>/movimentar', movimentar_item_de_estoque, name='movimentar_item_de_estoque'),
+    path('estoque/item_estoque/<int:pk>/excluir', excluir_item_de_estoque, name='excluir_item_de_estoque'),
     path('hx/<int:pk>/hx_calcular_saldo_estoque', hx_calcular_saldo_estoque, name='hx_calcular_saldo_estoque'),
     
     #ferramental_estoquev2
     path('estoque/ferramental/inicio', ver_ferramental_estoquev2, name='ferramental_estoquev2'),
+    path('estoque/ferramental/buscar', buscar_ferramentas, name='buscar_ferramentas'),
     path('estoque/ferramental/nova', add_nova_ferramenta_estoquev2, name='add_nova_ferramenta_estoquev2'),
     path('estoque/ferramental/cautelas/criar', criar_cautela_ferramenta, name='criar_cautela_ferramenta'),
     path('estoque/ferramental/cautelas/<int:pk>/detalhar', detalhar_cautela_ferramenta, name='detalhar_cautela_ferramenta'),
@@ -90,6 +92,10 @@ urlpatterns = [
     path('estoque/cadastrar/itens', cadastrar_itens_estoquev2, name='cadastrar_itens_estoquev2'),
     path('estoque/cadastrar/itens/novo', add_novo_item_estoque, name='add_novo_item_estoquev2'),
     path('estoque/cadastrar/itens/filtrar', filtrar_itens_nao_estoque, name='filtrar_itens_nao_estoque'),
+    path('estoque/cadastrar/itens/<int:pk>/detalhar', detalhar_item_nao_estoquev2, name='detalhar_item_nao_estoquev2'),
+    path('estoque/cadastrar/itens/<int:pk>/estocar', estocar_item_nao_estoquev2, name='estocar_item_nao_estoquev2'),
+    path('estoque/cadastrar/itens/<int:pk>/editar', editar_dados_item_estoquev2, name='editar_dados_item_estoquev2'),
+    path('estoque/cadastrar/itens/<int:pk>/excluir', excluir_item_nao_estocado, name='excluir_item_nao_estocado'),
     
     #Categorias v2
     path('estoque/cadastrar/categorias', cadastrar_categoria_estoquev2, name='cadastrar_categoria_estoquev2'),
