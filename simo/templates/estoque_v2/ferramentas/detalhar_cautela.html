@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styleHead %}
+<style>
+
+</style>    
+{% endblock %}
+
+{% block conteudo %}
+
+{% include "estoque_v2/fragmentos/menu_estoque.html" %}
+
+<div class="container mt-2">
+ 
+          <div class="d-flex flex-row align-items-center" >
+                <h4 class="me-auto"><i class="fas fa-info-circle"></i> Detalhar Cautela (Id: {{cautela_atual.pk}})</h4>
+                
+             <!-- Botao Modal ADD FERRAMENTA A CAUTELA -->
+             <a  style="" class="btn btn-sm  btn-primary m-1 " data-bs-toggle="modal" data-bs-target="#AddFerramentaCautelaAtiva{{cautela_atual.pk}}" href="modal" 
+             title="Adicionar Itens a Requisição"><span style="margin-left:1rem;margin-right:1rem;"><i class="fas fa-plus"></i></i> Ferramenta</a></span>  
+ 
+             <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#" href="modal" 
+             title="Imprimir Requisição"><i class="fas fa-print"></i></i> Imprimir</a>
+ 
+             <!-- Botao Modal ALTERAR DADOS -->
+             <a  style="" class="btn btn-sm  btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#" href="modal" 
+             title="Editar Dados da Requisição"><i class="fas fa-edit"></i></i> Alterar Dados</a>
+ 
+             <a  style="" class="btn  btn-sm btn-secondary m-1" href="#" 
+             title="Excluir Requisição"><i class="fas fa-trash"></i> Excluir</a>
+
+
+
+
+          </div>
+</div>
+
+<div class="container mt-2"> 
+   <div class="row mt-2 ">
+   
+         <div class="card col-md-6 p-2">
+               <div class="" style="font-size: 13pt;">
+                     <div class="">Data/Hora: <span style="font-weight: bold;">{{cautela_atual.data_cautela}} </span></div>
+                     <div class="">Solicitante: <span style="font-weight: bold;">{{cautela_atual.solicitante|upper}} </span></div>
+                     <hr>
+                     <div class="">Local/Unidade: <span style="font-weight: bold;">{{cautela_atual.local.local}} </span></div>
+                     <div class="">Endereço: <span style="font-weight: bold;">{{cautela_atual.local.endereco|default_if_none:"-"}} </span></div>
+                     <div class="">Obra: <span style="font-weight: bold;">{{cautela_atual.obra.nome|default_if_none:"-"}} </span></div>
+                     <hr>
+                     <div class="">Almoxarife: <span style="font-weight: bold;color:gray">{{cautela_atual.almoxarifado|upper}} </span></div>
+                     
+               </div>
+
+   
+         </div>   
+
+         <div class="card col-md-6 p-2">
+               <div class="" style="font-size: 13pt;">
+                     <div class="">Ferramentas Acauteladas: <span style="font-weight: bold;"> </span></div>
+
+                    {% comment %} {% include "estoque_v2/fragmentos/modals/add_ferramenta_cautela_modal.html" %} {% endcomment %}
+                     
+                     
+               </div>
+
+   
+         </div>   
+   
+   </div>
+</div>
+
+
+{% include "estoque_v2/fragmentos/modals/add_ferramenta_cautela_modal.html" %}
+    
+      
+      
+{% endblock%}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+
+{% block jquery %}
+
+{% endblock%}

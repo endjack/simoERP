@@ -1,36 +1,42 @@
 {% load static %}
 <div class="container mt-2">
 <div class="row ">
-    {% for f in ferramentas %}
+    {% for f in acauteladas %}
 
-      {% if f.acautelada %}
-
+   
         <div class="" style="width:10rem" >
           <div class="card ">
-              {% if f.imagem %}
-              <img src="{{f.imagem.url}}" class="card-img-top p-2" style="height: 120px; filter">
+            <div class="card-header text-center bg-success" style="height: 30%;">
+              <small class="text-white fw-bold">Acautelado</small>
+            </div>
+              {% if f.ferramenta.imagem %}
+              <img src="{{f.ferramenta.imagem.url}}" class="card-img-top p-2" style="height: 120px; filter">
               {% else %}
               <img src="{% static 'imagens/sem_imagem.png' %}" class="card-img-top p-2" style="height: 120px">
               {% endif %}
       
             <div class="card-body" style="height: 20%;">
-              <h6 class="card-title">{{f.descricao}}</h6>
+              <h6 class="card-title">{{f.ferramenta.descricao}}</h6>
               <p class="card-text"></p>
             </div>
 
             <div class="card-footer text-center" style="height: 30%;">
-              <small class="text-muted">No Estoque</small>
+              <small class="text-success">Detalhes</small>
             </div>
 
           </div>
 
         </div>
 
+        {% endfor %}
+        {% for f in ferramentas %}
+        
       
-      {% else %}
-
-          <div class="" style="width:10rem" >
+          <div class="" style="width:10rem;opacity:0.5" >
             <div class="card ">
+              <div class="card-header text-center" style="height: 30%;">
+                <small class="">No Estoque</small>
+              </div>
                 {% if f.imagem %}
                 <img src="{{f.imagem.url}}" class="card-img-top p-2" style="height: 120px; filter: grayscale(100%);">
                 {% else %}
@@ -43,14 +49,14 @@
               </div>
 
               <div class="card-footer text-center" style="height: 30%;">
-                <small class="text-muted">No Estoque</small>
+                <small class="text-secondary">Detalhes</small>
               </div>
 
             </div>
 
           </div>
 
-      {% endif %}
+
     {% endfor %}
 </div>
 </div>

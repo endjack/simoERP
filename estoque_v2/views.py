@@ -3,9 +3,10 @@ from decimal import Decimal
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse, reverse_lazy
 from estoque.models import *
 from django.views.decorators.csrf import csrf_exempt
-from estoque_v2.models import CategoriaFerramenta, Cautela, Ferramenta
+from estoque_v2.models import CategoriaFerramenta, Cautela, CautelaFerramenta, Ferramenta
 from funcionarios.models import Funcionario
 from obras.models import Local, Obra
 from django.db.models import Sum, Count, F
@@ -370,8 +371,9 @@ def ver_ferramental_estoquev2(request, template_name = 'estoque_v2/ferramental_e
         _menu_ativo = 'FERRAMENTAL'
         
         #TODO COLOCAR AS FERRAMENTAS ACAUTELADAS PRIMEIRO E DEPOIS AS NÃO ACAUTELADAS EM LISTA
+        acauteladas = CautelaFerramenta.objects.all()
         
-        ferramentas = Ferramenta.objects.filter(ativa=True)
+        ferramentas = Ferramenta.objects.filter(acautelada=False)
         categorias_ferramentas = CategoriaFerramenta.objects.all()
         estados = Ferramenta.ESTADO
         funcionarios_ativos = Funcionario.objects.all()
@@ -382,6 +384,7 @@ def ver_ferramental_estoquev2(request, template_name = 'estoque_v2/ferramental_e
         context = {
             'menu_ativo' : _menu_ativo,
             'ferramentas' : ferramentas,
+            'acauteladas' : acauteladas,
             'categorias_ferramentas' : categorias_ferramentas,
             'estados' : estados,
             'funcionarios_ativos' : funcionarios_ativos,
@@ -520,28 +523,41 @@ def criar_cautela_ferramenta(request):
                             almoxarifado = request.user,
                             obra = obra_atual,
                             local = local_atual)
-         
+        
         return redirect('detalhar_cautela_ferramenta', pk = cautela_atual.pk) 
-         
-         
-    return redirect('ferramental_estoquev2')
+ 
+             
+
     
 @login_required(login_url='login/')
 @csrf_exempt
-def detalhar_cautela_ferramenta(request, pk,  template_name = 'estoque_v2/detalhar_cautela.html'):
+def detalhar_cautela_ferramenta(request, pk,  template_name = 'estoque_v2/ferramentas/detalhar_cautela.html'):
 
     if request.method == 'GET':
         _menu_ativo = 'FERRAMENTAL'
     
         cautela_atual = Cautela.objects.get(pk=pk)
+        ferramentas = Ferramenta.objects.all()
          
         context = {
             'menu_ativo' : _menu_ativo,
             'cautela_atual' : cautela_atual,
+            'ferramentas' : ferramentas,
          
         }
         return render(request, template_name , context) 
          
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def inserir_ferramenta_em_cautela(request, pk, ferr, template_name = 'estoque_v2/ferramentas/detalhar_cautela.html'):
+
+    if request.method == 'GET':
+
+        cautela_atual = Cautela.objects.get(pk=pk)
+        
+        return redirect('detalhar_cautela_ferramenta', pk = cautela_atual.pk) 
+            
 
     
 

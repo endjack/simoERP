@@ -73,7 +73,8 @@ urlpatterns = [
     path('estoque/ferramental/buscar', buscar_ferramentas, name='buscar_ferramentas'),
     path('estoque/ferramental/nova', add_nova_ferramenta_estoquev2, name='add_nova_ferramenta_estoquev2'),
     path('estoque/ferramental/cautelas/criar', criar_cautela_ferramenta, name='criar_cautela_ferramenta'),
-    path('estoque/ferramental/cautelas/<int:pk>/detalhar', detalhar_cautela_ferramenta, name='detalhar_cautela_ferramenta'),
+    path('estoque/ferramental/cautela/<int:pk>/detalhar', detalhar_cautela_ferramenta, name='detalhar_cautela_ferramenta'),
+    path('estoque/ferramental/cautela/<int:pk>/detalhar/<int:ferr>/inserir', inserir_ferramenta_em_cautela, name='inserir_ferramenta_em_cautela'),
     
     #Procurar V2
     path('estoque/procurar', procurar_estoquev2, name='procurar_estoquev2'),

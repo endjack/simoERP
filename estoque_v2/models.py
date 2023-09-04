@@ -51,6 +51,16 @@ class Ferramenta(models.Model):
     def __str__(self) -> str:
         return f'Ferramenta: {self.pk} - {self.descricao}'
     
+    
+    def get_situacao(self):
+        if self.manutencao:
+            return '<span class="text-secondary">EM MANUTENÇÃO</span>'
+        else:
+            if self.acautelada:
+                return '<span class="text-danger">RESERVADA</span>'
+            else:
+                return '<span class="text-success">LIVRE</span>'
+    
 class Cautela(models.Model):
     
     solicitante = models.ForeignKey(Funcionario, on_delete=models.SET_NULL, null=True, related_name='solicitante')
@@ -61,6 +71,7 @@ class Cautela(models.Model):
     local = models.ForeignKey(Local, on_delete=models.SET_NULL, null=True, blank=True)
     obs_entrega =  models.CharField(max_length=300, null=True, blank=True)
     obs_devolucao =  models.CharField(max_length=300, null=True, blank=True)
+    ativa = models.BooleanField(default=False)
     
     def __str__(self) -> str:
         return f'Cautela {self.pk}'

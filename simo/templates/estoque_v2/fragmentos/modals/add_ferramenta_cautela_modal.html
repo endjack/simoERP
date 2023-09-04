@@ -1,0 +1,182 @@
+{% load static %}
+<style>
+    .htmx-indicator {
+        display:none;
+        opacity: 0;
+        transition: opacity 200ms ease-in;
+    }
+    .htmx-request {
+      display:block;
+      opacity: 1;
+      transition: opacity 200ms ease-in;
+    }
+    
+       table {
+        border-collapse: collapse;
+    
+      } 
+      
+      .linha_clicavel {
+        border: 1px solid black;
+        cursor: pointer;
+        
+      } 
+      
+      .linha_clicavel:hover {
+        background: #bad6f7 !important;
+     
+      }
+      td a, td a:hover{
+        text-decoration:none;
+        color:black;
+      }
+
+
+      div.dataTables_filter input{
+        width:40rem !important;
+        margin-bottom:1rem;
+     }
+ 
+     .pull-left{
+         float:left !important;
+     }
+ 
+     .pull-right{
+         float:right !important;
+     }
+      
+    
+</style>  
+ 
+
+ <!-- Modal AddFerramentaCautelaAtiva-->
+ <div class="modal fade" id="AddFerramentaCautelaAtiva{{cautela_atual.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl">
+        <div class="modal-content ">
+            <div class="modal-header p-3">
+                <div class="d-flex flex-column bd-highlight">
+                    <h6 class=""><i class="fas fa-plus"></i> Adicionar Ferramentas a Cautela (nº {{cautela_atual.pk}}) de {{cautela_atual.solicitante|upper}}</h6>
+                    
+                    
+                </div>  
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <!-- modal-body --> 
+ 
+<div class="d-flex flex-row align-items-center" >
+    <h6 class="me-auto"><i class="fas fa-search"></i> Buscar Ferramentas/Máquinas: <span class="text-primary">Clique na ferramenta para Adicionar</span></h6>
+
+</div>               
+<div class="container ">
+<div class="texto-enfase text-end" style=""> Legenda:  <span class="text-success"> <i class="fas fa-square"></i></span> Reservada -  <span class="text-warning"><i class="fas fa-square"></i></span> Depósito - <span class="text-secondary"><i class="fas fa-square"></i></span> Manutenção  </div>
+  <div class="p-2" style="border-color: #093637;">
+      <table class="table table-sm table-bordered table-striped tabelaResultados" style="font-size:9pt;vertical-align: middle;">
+              <thead class="text-white text-center" style="background:#39423b;">
+              <tr style="line-height: 12px;white-space: nowrap; ">
+               
+                <th scope="col">Cód</th>
+                <th scope="col" style="text-align: left;">Descrição</th>
+                <th scope="col" style="text-align: left;">Marca</th>
+                <th scope="col">Características</th>
+                <th scope="col">Numeração</th>
+                <th scope="col">Categoria</th>
+                <th scope="col">Situação</th>
+    
+
+              </tr>
+            </thead>
+            <tbody>
+              {% if ferramentas %}
+                {% for i in ferramentas  %}
+               <tr class='linha_clicavel'>
+                <td class="text-center col-1"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div style="height:100%;width:100%">{{i.pk}}</div></a></td>
+                <td class="col-4"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div style="height:100%;width:100%">{{i.descricao|default_if_none:"-"}}</div></a></td>
+                  <td class=""><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div style="height:100%;width:100%">{{i.marca|default_if_none:"-"}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div style="height:100%;width:100%">Cor: {{i.cor|default_if_none:""}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div style="height:100%;width:100%">{{i.numeracao|default_if_none:"-"}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div style="height:100%;width:100%">{{i.categoria|default_if_none:"-"}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div style="height:100%;width:100%"> {{i.get_situacao|safe}} </div></a></td>
+              
+                </tr>
+                {% endfor %}
+              {% else %}
+                   
+              {% endif %}
+          
+            </tbody>
+    </table>
+</div>
+
+</div>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+            
+ 
+                <!-- Fim modal-body -->
+            </div>
+            <div class="modal-footer form-control">
+                <a class="btn btn-sm btn-dark" href=""><i class="fas fa-times"></i> Salvar </a>   
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            
+            </div>
+        </div>
+    </div>
+ </div>
+ <!-- Fim Modal --> 
+
+
+
+
+
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/datatables.min.js' %}"></script>
+{% block jquery %}
+
+<script>
+    $(document).ready(function () {
+        $('.tabelaResultados').DataTable({
+            responsive: true,
+            'dom':'<"pull-left"f><"pull-right"l>tip',
+            "aaSorting": [],
+            "pageLength": 10,
+            "order": [
+                [0, "asc"]
+            ], 
+            "language": {
+
+                "decimal": ",",
+                "emptyTable": "Sem registro",
+                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+                "infoFiltered": "(filtrado de _MAX_ registros no total)",
+                "infoPostFix": "",
+                "thousands": ".",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "loadingRecords": "A carregar dados...",
+                "processing": "A processar...",
+                "search": "Buscar ",
+                "zeroRecords": "Não foram encontrados resultados",
+                "paginate": {
+                    "first": "Primeiro",
+                    "last": "Último",
+                    "next": "Seguinte",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": ordem crescente",
+                    "sortDescending": ": ordem decrescente"
+                }
+            }
+        });
+
+    });
+</script>
+{% endblock%}
+
+

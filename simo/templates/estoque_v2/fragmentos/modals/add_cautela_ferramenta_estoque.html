@@ -18,8 +18,9 @@
                       <form id="formInserirCautelaFerramenta"
                       hx-post="{% url 'criar_cautela_ferramenta' %}" 
                       hx-target="body" 
+                      hx-push-url="true"
                       hx-indicator="#spinner"
-                      hx-swap="innerHTML" >
+                      hx-swap="outerHTML" >
 
 
                           <div class="form-group row mb-2 ">
