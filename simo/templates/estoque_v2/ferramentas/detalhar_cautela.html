@@ -59,7 +59,10 @@
                <div class="" style="font-size: 13pt;">
                      <div class="">Ferramentas Acauteladas: <span style="font-weight: bold;"> </span></div>
 
-                    {% comment %} {% include "estoque_v2/fragmentos/modals/add_ferramenta_cautela_modal.html" %} {% endcomment %}
+                    {% for ferr in ferramentas_acauteladas %}
+                    <li class="">{{ferr.ferramenta.descricao}}</li>
+                    
+                    {% endfor %}
                      
                      
                </div>

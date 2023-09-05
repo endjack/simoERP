@@ -52,14 +52,30 @@ class Ferramenta(models.Model):
         return f'Ferramenta: {self.pk} - {self.descricao}'
     
     
-    def get_situacao(self):
+    def get_situacao_label(self):
         if self.manutencao:
             return '<span class="text-secondary">EM MANUTENÇÃO</span>'
         else:
             if self.acautelada:
                 return '<span class="text-danger">RESERVADA</span>'
             else:
-                return '<span class="text-success">LIVRE</span>'
+                return '<span>LIVRE</span>'
+    
+    def get_situacao(self):
+        if self.manutencao:
+            return 'manutencao'
+        else:
+            if self.acautelada:
+                return 'reservada'
+            else:
+                return 'livre'
+            
+    def get_cautela_by_ferramenta(self):
+        if self.acautelada:
+            cautelaFerr = CautelaFerramenta.objects.get(ferramenta = self)
+            return cautelaFerr.cautela
+        else:
+            None
     
 class Cautela(models.Model):
     

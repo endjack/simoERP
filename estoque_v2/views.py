@@ -494,23 +494,26 @@ def add_nova_ferramenta_estoquev2(request):
 def criar_cautela_ferramenta(request):
 
     if request.method == 'POST':
+        print(f"---------------Solicitante ---{request.POST.get('solicitante')}")
+        print(f"---------------local ---{request.POST.get('local')}")
         
         #VALIDAÇÕES
-        if request.POST.get('solicitante') == '-1':
+        if request.POST.get('solicitante') == '-1' or request.POST.get('solicitante') == "":
             response = HttpResponse('Erro: Selecione um FUNCIONÁRIO.')
             response['HX-Retarget'] = '#error_cautela'
             return response
         else:
             funcionario_atual = Funcionario.objects.get(pk = int(request.POST.get('solicitante')))
         
-        if request.POST.get('local') == '-1':
+        if request.POST.get('local') == '-1' or request.POST.get('local') == "":
+            
             response = HttpResponse('Erro: Selecione um LOCAL.')
             response['HX-Retarget'] = '#error_cautela'
             return response
         else:
             local_atual = Local.objects.get(pk = int(request.POST.get('local')))
         
-        if request.POST.get('obra') == '-1':
+        if request.POST.get('obra') == '-1' or request.POST.get('obra') == "":
             response = HttpResponse('Erro: Selecione uma OBRA.')
             response['HX-Retarget'] = '#error_cautela'
             return response
@@ -538,11 +541,13 @@ def detalhar_cautela_ferramenta(request, pk,  template_name = 'estoque_v2/ferram
     
         cautela_atual = Cautela.objects.get(pk=pk)
         ferramentas = Ferramenta.objects.all()
+        ferramentas_acauteladas = CautelaFerramenta.objects.filter(cautela = cautela_atual)
          
         context = {
             'menu_ativo' : _menu_ativo,
             'cautela_atual' : cautela_atual,
             'ferramentas' : ferramentas,
+            'ferramentas_acauteladas' : ferramentas_acauteladas,
          
         }
         return render(request, template_name , context) 
@@ -553,8 +558,20 @@ def detalhar_cautela_ferramenta(request, pk,  template_name = 'estoque_v2/ferram
 def inserir_ferramenta_em_cautela(request, pk, ferr, template_name = 'estoque_v2/ferramentas/detalhar_cautela.html'):
 
     if request.method == 'GET':
-
         cautela_atual = Cautela.objects.get(pk=pk)
+        ferramenta_atual = Ferramenta.objects.get(pk=ferr)
+        
+        print(f'---------Cautela: {cautela_atual}')
+        print(f'---------Ferramenta: {ferramenta_atual}')
+        
+        #Criar CautelaFerramenta
+        
+        cau_ferr = CautelaFerramenta.objects.create(ferramenta = ferramenta_atual, cautela = cautela_atual)
+        ferramenta_atual.acautelada = True
+        ferramenta_atual.save()
+        cautela_atual.ativa = True
+        ferramenta_atual.save()
+        print(f'---------Acautelamento Criado com Sucesso: Id: {cau_ferr.pk}')
         
         return redirect('detalhar_cautela_ferramenta', pk = cautela_atual.pk) 
             

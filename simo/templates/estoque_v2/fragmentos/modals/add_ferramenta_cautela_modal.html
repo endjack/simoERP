@@ -23,7 +23,7 @@
       } 
       
       .linha_clicavel:hover {
-        background: #bad6f7 !important;
+        opacity: 0.9 !important;
      
       }
       td a, td a:hover{
@@ -69,7 +69,7 @@
 
 </div>               
 <div class="container ">
-<div class="texto-enfase text-end" style=""> Legenda:  <span class="text-success"> <i class="fas fa-square"></i></span> Reservada -  <span class="text-warning"><i class="fas fa-square"></i></span> Depósito - <span class="text-secondary"><i class="fas fa-square"></i></span> Manutenção  </div>
+<div class="texto-enfase text-end" style=""> Legenda:  <span class="text-success"> <i class="fas fa-square"></i></span> Livre -  <span class="text-danger"><i class="fas fa-square"></i></span> Reservada - <span class="text-secondary"><i class="fas fa-square"></i></span> Manutenção  </div>
   <div class="p-2" style="border-color: #093637;">
       <table class="table table-sm table-bordered table-striped tabelaResultados" style="font-size:9pt;vertical-align: middle;">
               <thead class="text-white text-center" style="background:#39423b;">
@@ -89,16 +89,37 @@
             <tbody>
               {% if ferramentas %}
                 {% for i in ferramentas  %}
-               <tr class='linha_clicavel'>
-                <td class="text-center col-1"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div style="height:100%;width:100%">{{i.pk}}</div></a></td>
-                <td class="col-4"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div style="height:100%;width:100%">{{i.descricao|default_if_none:"-"}}</div></a></td>
-                  <td class=""><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div style="height:100%;width:100%">{{i.marca|default_if_none:"-"}}</div></a></td>
-                  <td class="text-center"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div style="height:100%;width:100%">Cor: {{i.cor|default_if_none:""}}</div></a></td>
-                  <td class="text-center"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div style="height:100%;width:100%">{{i.numeracao|default_if_none:"-"}}</div></a></td>
-                  <td class="text-center"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div style="height:100%;width:100%">{{i.categoria|default_if_none:"-"}}</div></a></td>
-                  <td class="text-center"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div style="height:100%;width:100%"> {{i.get_situacao|safe}} </div></a></td>
-              
-                </tr>
+                {% if i.get_situacao == 'manutencao' or i.get_situacao == 'reservada' %}
+                  <tr class=''>
+                    <td class="text-center col-1"><div style="height:100%;width:100%">{{i.pk}}</div></td>
+                    <td class="col-4"><div style="height:100%;width:100%">{{i.descricao|default_if_none:"-"}}</div></td>
+                    <td class=""><div style="height:100%;width:100%">{{i.marca|default_if_none:"-"}}</div></td>
+                    <td class="text-center"><div style="height:100%;width:100%">{{i.cor|default_if_none:""}}</div></td>
+                    <td class="text-center"><div style="height:100%;width:100%">{{i.numeracao|default_if_none:"-"}}</div></td>
+                    <td class="text-center"><div style="height:100%;width:100%">{{i.categoria|default_if_none:"-"}}</div></td>
+                    <td class="text-center">
+                      <div style="height:100%;width:100%"> 
+                        {% if i.get_situacao == 'reservada' %}
+                        <a href="{% url 'detalhar_cautela_ferramenta' i.get_cautela_by_ferramenta.pk %}" class="">{{i.get_situacao_label|safe}}</a> 
+                        {% else %}
+                        {{i.get_situacao_label|safe}}
+                        {% endif %}
+                      </div>
+                    </td>
+                  </tr>
+                
+                
+                {% else %}
+                  <tr class='linha_clicavel bg-success '>
+                    <td class="text-center col-1  "><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-light" style="height:100%;width:100%">{{i.pk}}</div></a></td>
+                    <td class="col-4  "><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-light" style="height:100%;width:100%">{{i.descricao|default_if_none:"-"}}</div></a></td>
+                    <td class=" "><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-light" style="height:100%;width:100%">{{i.marca|default_if_none:"-"}}</div></a></td>
+                    <td class="text-center  "><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-light" style="height:100%;width:100%">{{i.cor|default_if_none:""}}</div></a></td>
+                    <td class="text-center  "><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-light" style="height:100%;width:100%">{{i.numeracao|default_if_none:"-"}}</div></a></td>
+                    <td class="text-center  "><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-light" style="height:100%;width:100%">{{i.categoria|default_if_none:"-"}}</div></a></td>
+                    <td class="text-center "><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-light" style="height:100%;width:100%"> {{i.get_situacao_label|safe}} </div></a></td>
+                  </tr>
+                {% endif %}
                 {% endfor %}
               {% else %}
                    
@@ -121,8 +142,8 @@
                 <!-- Fim modal-body -->
             </div>
             <div class="modal-footer form-control">
-                <a class="btn btn-sm btn-dark" href=""><i class="fas fa-times"></i> Salvar </a>   
-                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                {% comment %} <a class="btn btn-sm btn-success" href=""><i class="fas fa-plus"></i> Salvar </a>    {% endcomment %}
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Voltar</button>
             
             </div>
         </div>

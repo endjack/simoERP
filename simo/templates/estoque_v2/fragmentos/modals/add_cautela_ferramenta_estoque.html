@@ -1,7 +1,7 @@
 {% load static %}
  <!-- Modal XXXXXXX-->
  <div class="modal fade" id="acautelarFerramentaEstoquev2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-dialog  modal-lg">
         <div class="modal-content ">
             <div class="modal-header p-3">
                 <div class="d-flex flex-column bd-highlight">
@@ -20,7 +20,7 @@
                       hx-target="body" 
                       hx-push-url="true"
                       hx-indicator="#spinner"
-                      hx-swap="outerHTML" >
+                      hx-swap="innerHTML" >
 
 
                           <div class="form-group row mb-2 ">
@@ -28,8 +28,8 @@
                                
                                       <label for="inputDescricao" class="fw-bold"><i class="fas fa-hard-hat"></i> Funcionário:</label><br>
                                         <small class="">Selecione o Funcionário que ficará responsável pela(s) ferramenta(s):</small>
-                                      <select id="input0" class="form-control "  name="solicitante">
-                                          <option value="-1" selected disabled>Selecione:</option>
+                                      <select id="selectFuncionarios" class=""  name="solicitante">
+                                        <option value="-1" selected>Selecione</option>
                                           {% for i in funcionarios_ativos %}
                                           <option value="{{i.pk}}"> {{i.nome}} - {{i.cargo}}</option>
                                           {% endfor %}      
@@ -43,9 +43,9 @@
                                
                                       <label for="inputDescricao" class="fw-bold"><i class="fas fa-map-marker-alt"></i> Local:</label><br>
                                       <small class="">Selecione o local para onde o equipamento será destinado (no maior período):</small>
-                                      <select id="input0" class="form-control "  name="local" >
-                                          <option value="-1" selected disabled>Selecione:</option>
-                                          {% for i in locais %}
+                                        <select id="selectLocais" class=""  name="local" >
+                                            <option value="-1" selected disabled hidden>Selecione </option>
+                                         {% for i in locais %}
                                           <option value="{{i.pk}}"> {{i.local}} - {{i.endereco}}</option>
                                           {% endfor %}      
                                       </select>
@@ -59,8 +59,8 @@
                                       <label for="inputDescricao" class="fw-bold"><i class="fas fa-file-contract"></i> Obra:</label>
                                       <br>
                                       <small class="">Selecione o Centro de Custo/Contrato/Obra onde o equipamento será destinado:</small>
-                                      <select id="input0" class="form-control "  name="obra">
-                                          <option value="-1" selected disabled>Selecione:</option>
+                                      <select id="selectObra" class=""  name="obra">
+                                         <option value="-1" selected disabled hidden>Selecione </option> 
                                           {% for i in obras %}
                                           <option value="{{i.pk}}"> {{i.nome}} - Contrato: {{i.num_contrato}}</option>
                                           {% endfor %}      
@@ -88,3 +88,22 @@
     </div>
  </div>
  <!-- Fim Modal --> 
+ <script src="{% static 'js/dselect.js' %}"></script>
+ 
+ <script>
+
+    var config = {
+        search: true, // Toggle search feature. Default: false
+        creatable: true, // Creatable selection. Default: false
+        clearable: true, // Clearable selection. Default: false
+        maxHeight: '360px', // Max height for showing scrollbar. Default: 360px
+        size: 'sm', // Can be "sm" or "lg". Default ''
+    }
+
+    dselect(document.querySelector('#selectFuncionarios'), config)
+    dselect(document.querySelector('#selectLocais'), config)
+    dselect(document.querySelector('#selectObra'), config)
+
+
+
+ </script>
