@@ -1,53 +1,5 @@
 {% load static %}
-<style>
-    .htmx-indicator {
-        display:none;
-        opacity: 0;
-        transition: opacity 200ms ease-in;
-    }
-    .htmx-request {
-      display:block;
-      opacity: 1;
-      transition: opacity 200ms ease-in;
-    }
-    
-       table {
-        border-collapse: collapse;
-    
-      } 
-      
-      .linha_clicavel {
-        border: 1px solid black;
-        cursor: pointer;
-        
-      } 
-      
-      .linha_clicavel:hover {
-        opacity: 0.9 !important;
-     
-      }
-      td a, td a:hover{
-        text-decoration:none;
-        color:black;
-      }
 
-
-      div.dataTables_filter input{
-        width:40rem !important;
-        margin-bottom:1rem;
-     }
- 
-     .pull-left{
-         float:left !important;
-     }
- 
-     .pull-right{
-         float:right !important;
-     }
-      
-    
-</style>  
- 
 
  <!-- Modal AddFerramentaCautelaAtiva-->
  <div class="modal fade" id="AddFerramentaCautelaAtiva{{cautela_atual.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -110,14 +62,14 @@
                 
                 
                 {% else %}
-                  <tr class='linha_clicavel bg-success '>
-                    <td class="text-center col-1  "><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-light" style="height:100%;width:100%">{{i.pk}}</div></a></td>
-                    <td class="col-4  "><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-light" style="height:100%;width:100%">{{i.descricao|default_if_none:"-"}}</div></a></td>
-                    <td class=" "><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-light" style="height:100%;width:100%">{{i.marca|default_if_none:"-"}}</div></a></td>
-                    <td class="text-center  "><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-light" style="height:100%;width:100%">{{i.cor|default_if_none:""}}</div></a></td>
-                    <td class="text-center  "><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-light" style="height:100%;width:100%">{{i.numeracao|default_if_none:"-"}}</div></a></td>
-                    <td class="text-center  "><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-light" style="height:100%;width:100%">{{i.categoria|default_if_none:"-"}}</div></a></td>
-                    <td class="text-center "><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-light" style="height:100%;width:100%"> {{i.get_situacao_label|safe}} </div></a></td>
+                  <tr class='linha_clicavel fw-bold'>
+                    <td class="text-center col-1"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-success" style="height:100%;width:100%">{{i.pk}}</div></a></td>
+                    <td class="col-4"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-success" style="height:100%;width:100%">{{i.descricao|default_if_none:"-"}}</div></a></td>
+                    <td class=" "><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-success" style="height:100%;width:100%">{{i.marca|default_if_none:"-"}}</div></a></td>
+                    <td class="text-center"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-success" style="height:100%;width:100%">{{i.cor|default_if_none:""}}</div></a></td>
+                    <td class="text-center"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-success" style="height:100%;width:100%">{{i.numeracao|default_if_none:"-"}}</div></a></td>
+                    <td class="text-center"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-success" style="height:100%;width:100%">{{i.categoria|default_if_none:"-"}}</div></a></td>
+                    <td class="text-center"><a href="{% url 'inserir_ferramenta_em_cautela' cautela_atual.pk  i.pk %}"><div class="text-success" style="height:100%;width:100%">{{i.get_situacao_label|safe}}</div></a></td>
                   </tr>
                 {% endif %}
                 {% endfor %}

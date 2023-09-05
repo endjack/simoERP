@@ -59,7 +59,7 @@ class Ferramenta(models.Model):
             if self.acautelada:
                 return '<span class="text-danger">RESERVADA</span>'
             else:
-                return '<span>LIVRE</span>'
+                return '<span class="text-success">LIVRE</span>'
     
     def get_situacao(self):
         if self.manutencao:
@@ -91,6 +91,16 @@ class Cautela(models.Model):
     
     def __str__(self) -> str:
         return f'Cautela {self.pk}'
+    
+    
+    def get_situacao_label(self):
+        if self.ativa:
+            return '<span class="text-success">ATIVA</span>'
+        else:
+            return '<span class="text-secondary">EM ABERTO</span>'
+        
+    def get_ferramentas(self):
+        return CautelaFerramenta.objects.filter(cautela = self)
     
 class CautelaFerramenta(models.Model):
     

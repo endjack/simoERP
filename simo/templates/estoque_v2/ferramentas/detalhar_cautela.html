@@ -3,8 +3,62 @@
 
 {% block styleHead %}
 <style>
-
-</style>    
+      .htmx-indicator {
+          display:none;
+          opacity: 0;
+          transition: opacity 200ms ease-in;
+      }
+      .htmx-request {
+        display:block;
+        opacity: 1;
+        transition: opacity 200ms ease-in;
+      }
+      
+         table {
+          border-collapse: collapse;
+      
+        } 
+        
+        .linha_clicavel {
+          border: 1px solid black;
+          cursor: pointer;
+          
+        } 
+        
+        .linha_clicavel:hover {
+          opacity: 0.9 !important;
+       
+        }
+        td a, td a:hover{
+          text-decoration:none;
+          color:black;
+        }
+        
+        .no_link_dec{
+            text-decoration:none;
+            color:black;
+            opacity: 0.9 !important;
+        }
+        .no_link_dec:hover{
+            opacity: 100%% !important;
+        }
+  
+        div.dataTables_filter input{
+          width:40rem !important;
+          margin-bottom:1rem;
+       }
+   
+       .pull-left{
+           float:left !important;
+       }
+   
+       .pull-right{
+           float:right !important;
+       }
+        
+      
+  </style>  
+     
 {% endblock %}
 
 {% block conteudo %}
@@ -14,35 +68,42 @@
 <div class="container mt-2">
  
           <div class="d-flex flex-row align-items-center" >
-                <h4 class="me-auto"><i class="fas fa-info-circle"></i> Detalhar Cautela (Id: {{cautela_atual.pk}})</h4>
+                <h4 class="me-auto"><i class="fas fa-info-circle"></i> Detalhar Cautela (Id: {{cautela_atual.pk}}) - {{cautela_atual.get_situacao_label|safe}}</h4>
                 
              <!-- Botao Modal ADD FERRAMENTA A CAUTELA -->
-             <a  style="" class="btn btn-sm  btn-primary m-1 " data-bs-toggle="modal" data-bs-target="#AddFerramentaCautelaAtiva{{cautela_atual.pk}}" href="modal" 
-             title="Adicionar Itens a Requisição"><span style="margin-left:1rem;margin-right:1rem;"><i class="fas fa-plus"></i></i> Ferramenta</a></span>  
+             <a  style="" class="btn btn-sm  btn-primary m-1 " data-bs-toggle="modal" data-bs-target="#AddFerramentaCautelaAtiva{{cautela_atual.pk}}" href="adicionar-cautela" 
+             title="Adicionar Ferramenta a Cautela"><span style="margin-left:1rem;margin-right:1rem;"><i class="fas fa-plus"></i></i> Ferramenta</a></span>  
  
-             <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#" href="modal" 
-             title="Imprimir Requisição"><i class="fas fa-print"></i></i> Imprimir</a>
+             <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#" href="imprimir-cautela" 
+             title="Imprimir Cautela"><i class="fas fa-print"></i></i> Imprimir</a>
  
-             <!-- Botao Modal ALTERAR DADOS -->
-             <a  style="" class="btn btn-sm  btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#" href="modal" 
-             title="Editar Dados da Requisição"><i class="fas fa-edit"></i></i> Alterar Dados</a>
- 
-             <a  style="" class="btn  btn-sm btn-secondary m-1" href="#" 
-             title="Excluir Requisição"><i class="fas fa-trash"></i> Excluir</a>
+             <!-- Botao Modal ALTERAR DADOS DE CAUTELA -->
+             <a  style="" class="btn btn-sm  btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#" href="alterar-cautela" 
+             title="Editar Dados da Cautela"><i class="fas fa-edit"></i></i> Alterar Dados</a>
+            
+             <!-- Botao Modal EXCLUIR CAUTELA -->
+             <a  style="" class="btn  btn-sm btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#excluiraCautelaEstoquev2{{cautela_atual.pk}}" href="excluir-cautela"
+             title="Excluir Cautela"><i class="fas fa-trash"></i> Excluir</a>
 
 
-
+             <!-- Modal EXCLUIR CAUTELA -->
+             {% include 'estoque_v2/fragmentos/modals/excluir_cautela_modal.html' %}
 
           </div>
 </div>
 
 <div class="container mt-2"> 
+  <div class="row">
+    <div class="col-5">Dados:</div>
+    <div class="col-7">Ferramentas Acauteladas:</div>
+  </div>
    <div class="row mt-2 ">
    
-         <div class="card col-md-6 p-2">
+         <div class="card col-md-5 p-2">
+        
                <div class="" style="font-size: 13pt;">
                      <div class="">Data/Hora: <span style="font-weight: bold;">{{cautela_atual.data_cautela}} </span></div>
-                     <div class="">Solicitante: <span style="font-weight: bold;">{{cautela_atual.solicitante|upper}} </span></div>
+                     <div class="">Solicitante: <span style="font-weight: bold;">{{cautela_atual.solicitante.nome|upper}} </span></div>
                      <hr>
                      <div class="">Local/Unidade: <span style="font-weight: bold;">{{cautela_atual.local.local}} </span></div>
                      <div class="">Endereço: <span style="font-weight: bold;">{{cautela_atual.local.endereco|default_if_none:"-"}} </span></div>
@@ -55,15 +116,57 @@
    
          </div>   
 
-         <div class="card col-md-6 p-2">
+         <div class="card col-md-7 p-2">
+              
                <div class="" style="font-size: 13pt;">
-                     <div class="">Ferramentas Acauteladas: <span style="font-weight: bold;"> </span></div>
-
-                    {% for ferr in ferramentas_acauteladas %}
-                    <li class="">{{ferr.ferramenta.descricao}}</li>
                     
-                    {% endfor %}
-                     
+                    <table class="table table-sm table-bordered table-striped " style="font-size:8pt">
+                      <thead class="text-white text-center" style="background:#39423b;">
+                      <tr style="line-height: 12px;white-space: nowrap; ">
+                       
+                      
+                        <th scope="col" style="text-align: left;">Descrição</th>
+                        <th scope="col" style="text-align: left;">Marca</th>
+                        <th scope="col">Características</th>
+                        <th scope="col">Numeração</th>
+                        <th scope="col">Opções</th>
+                      
+
+        
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% if ferramentas %}
+                        {% for ferr in ferramentas_acauteladas  %}
+                       <tr class=''>
+                           <!-- Botao Modal VER FERRAMENTA DA CAUTELA -->
+                          <td class=""><a data-bs-toggle="modal" data-bs-target="#detalharFerramentaEstoquev2{{ferr.ferramenta.pk}}" href="ver-ferramenta">{{ferr.ferramenta.descricao|default_if_none:"-"}}</a></td>
+                          <td class="">{{ferr.ferramenta.marca|default_if_none:"-"}}</td>
+                          <td class="text-center">Cor: {{ferr.ferramenta.cor|default_if_none:""}}</td>
+                          <td class="text-center">{{ferr.ferramenta.numeracao|default_if_none:"-"}}</td>
+                          <td class="text-center">
+                            <!-- Botao Modal RETIRAR FERRAMENTA DA CAUTELA -->
+                            <a class="text-danger m-1" data-bs-toggle="modal" data-bs-target="#retirarFerramentaDaCautela{{ferr.pk}}" href="retirar-ferramenta" title="Retirar Ferramenta"><i class="fas fa-trash"></i></a>
+                            <a class="text-primary" data-bs-toggle="modal" data-bs-target="#detalharFerramentaEstoquev2{{ferr.ferramenta.pk}}" href="ver-ferramenta" title="Ver Ferramenta"><i class="fas fa-arrow-circle-right"></i></a>
+                            <!-- Modal RETIRAR FERRAMENTA DA CAUTELA-->
+                            {% include "estoque_v2/fragmentos/modals/retirar_ferramenta_da_cautela_modal.html" %}
+                             <!-- Modal VER FERRAMENTA DA CAUTELA -->
+                            {% with ferr.ferramenta as ferramenta %}
+                              {% include "estoque_v2/ferramentas/detalhar_ferramenta.html" %}
+                            {% endwith %}
+                          </td>
+                      
+                        </tr>
+                        {% endfor %}
+                      {% else %}
+                           
+                      {% endif %}
+                  
+                    </tbody>
+            </table>
+
+
+
                      
                </div>
 

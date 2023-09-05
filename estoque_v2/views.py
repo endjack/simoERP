@@ -426,6 +426,26 @@ def buscar_ferramentas(request, template_name = 'estoque_v2/ferramentas/buscar_f
     
 @login_required(login_url='login/')
 @csrf_exempt
+def buscar_cautelas(request, template_name = 'estoque_v2/ferramentas/buscar_cautelas.html'):
+
+      if request.method == 'GET':
+        _menu_ativo = 'FERRAMENTAL'
+        cautelas = Cautela.objects.all()
+        
+        
+        
+        context = {
+            'menu_ativo' : _menu_ativo,
+            'cautelas' : cautelas,
+           
+            
+         
+        }
+        return render(request, template_name , context)
+    
+    
+@login_required(login_url='login/')
+@csrf_exempt
 def add_nova_ferramenta_estoquev2(request):
 
     if request.method == 'POST':
@@ -551,6 +571,21 @@ def detalhar_cautela_ferramenta(request, pk,  template_name = 'estoque_v2/ferram
          
         }
         return render(request, template_name , context) 
+
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def excluir_cautela(request, pk):
+
+    if request.method == 'GET':
+        _menu_ativo = 'FERRAMENTAL'
+    
+        cautela_atual = Cautela.objects.get(pk=pk)
+        
+        if not cautela_atual.get_ferramentas().exists(): 
+            cautela_atual.delete()
+        
+        return redirect('buscar_cautelas')
          
     
 @login_required(login_url='login/')
@@ -570,8 +605,34 @@ def inserir_ferramenta_em_cautela(request, pk, ferr, template_name = 'estoque_v2
         ferramenta_atual.acautelada = True
         ferramenta_atual.save()
         cautela_atual.ativa = True
-        ferramenta_atual.save()
+        cautela_atual.save()
         print(f'---------Acautelamento Criado com Sucesso: Id: {cau_ferr.pk}')
+        
+        return redirect('detalhar_cautela_ferramenta', pk = cautela_atual.pk) 
+            
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def retirar_ferramenta_cautela(request, pk, ferr):
+
+    if request.method == 'GET':
+        ferr = CautelaFerramenta.objects.get(pk=ferr)
+        ferramenta_atual = ferr.ferramenta
+        cautela_atual = ferr.cautela
+        
+        #retirar CautelaFerramenta
+        ferr.delete()
+        
+        ferramenta_atual.acautelada = False
+        ferramenta_atual.save()
+        
+        
+        #verificar se a cautela está vazia
+   
+        if not cautela_atual.get_ferramentas().exists():
+           
+            cautela_atual.ativa = False
+            cautela_atual.save()
         
         return redirect('detalhar_cautela_ferramenta', pk = cautela_atual.pk) 
             

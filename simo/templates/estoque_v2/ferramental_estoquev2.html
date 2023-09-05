@@ -74,15 +74,19 @@
         <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#modalAddNovaFerramentaEstoquev2" href="modal" 
               title="Início"><i class="fas fa-plus"></i>  Nova Ferramenta</a>
 
+        <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'buscar_cautelas' %}" 
+              title="Início"><i class="fas fa-search"></i></i> Buscar Cautelas</a>
+
         <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'buscar_ferramentas' %}" 
-              title="Início"><i class="fas fa-search"></i></i> Buscar </a>
+              title="Início"><i class="fas fa-search"></i></i> Buscar Ferramentas</a>
 
 
     </div>
 
 </div>
 
-{% include "estoque_v2/ferramentas/lista_cards_ferramentas.html" %}
+{% comment %} {% include "estoque_v2/ferramentas/lista_cards_ferramentas.html" %} {% endcomment %}
+{% include "estoque_v2/ferramentas/lista_cautelas_ativas.html" %}
 
 
 {% include "estoque_v2/fragmentos/modals/add_cautela_ferramenta_estoque.html" %}

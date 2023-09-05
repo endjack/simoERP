@@ -61,7 +61,7 @@
 <div class="container mt-2">
 
     <div class="d-flex flex-row align-items-center" >
-        <h4 class="me-auto"><i class="fas fa-search"></i> <i class="fas fa-wrench"></i> Buscar Ferramentas/Máquinas: </h4>
+        <h4 class="me-auto"><i class="fas fa-search"></i> <i class="fas fa-user-clock"></i> Buscar Cautelas: </h4>
 
         <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'ferramental_estoquev2' %}" 
         title="Início"><i class="fas fa-arrow-left"></i></i> Voltar </a>
@@ -72,41 +72,33 @@
 </div>
 
 <div class="container mt-2">
-    <div class="texto-enfase text-end" style=""> Legenda:  <span class="text-success"> <i class="fas fa-square"></i></span> Livre -  <span class="text-danger"><i class="fas fa-square"></i></span> Reservada - <span class="text-secondary"><i class="fas fa-square"></i></span> Manutenção  </div>
+    <div class="texto-enfase text-end" style=""> Legenda:  <span class="text-success"> <i class="fas fa-square"></i></span> Ativa -  <span class="text-secondary"><i class="fas fa-square"></i></span> Em Aberto </div>
   <div class="p-2" style="border-color: #093637;">
       <table class="table table-sm table-bordered table-striped tabelaResultados" style="font-size:9pt">
               <thead class="text-white text-center" style="background:#39423b;">
               <tr style="line-height: 12px;white-space: nowrap; ">
                
                 <th scope="col">Cód</th>
-                <th scope="col" style="text-align: left;">Descrição</th>
-                <th scope="col" style="text-align: left;">Marca</th>
-                <th scope="col">Características</th>
-                <th scope="col">Numeração</th>
-                <th scope="col">Categoria</th>
+                <th scope="col" style="text-align: left;">Solicitante</th>
+                <th scope="col" style="text-align: left;">Data</th>
+                <th scope="col">Local</th>
+                <th scope="col">Obra</th>
                 <th scope="col">Situação</th>
-                
 
               </tr>
             </thead>
             <tbody>
-              {% if ferramentas %}
-                {% for i in ferramentas  %}
+              {% if cautelas %}
+                {% for i in cautelas  %}
                <tr class='linha_clicavel'>
-                <td class="text-center "><a title="Ver Ferramenta" data-bs-toggle="modal" data-bs-target="#detalharFerramentaEstoquev2{{i.pk}}" href="ver-ferramenta"><div style="height:100%;width:100%">{{i.pk}}</div></a></td>
-                <td class=""><a title="Ver Ferramenta" data-bs-toggle="modal" data-bs-target="#detalharFerramentaEstoquev2{{i.pk}}" href="ver-ferramenta"><div style="height:100%;width:100%">{{i.descricao|default_if_none:"-"}}</div></a></td>
-                  <td class=""><a title="Ver Ferramenta" data-bs-toggle="modal" data-bs-target="#detalharFerramentaEstoquev2{{i.pk}}" href="ver-ferramenta"><div style="height:100%;width:100%">{{i.marca|default_if_none:"-"}}</div></a></td>
-                  <td class="text-center"><a title="Ver Ferramenta" data-bs-toggle="modal" data-bs-target="#detalharFerramentaEstoquev2{{i.pk}}" href="ver-ferramenta"><div style="height:100%;width:100%">Cor: {{i.cor|default_if_none:""}}</div></a></td>
-                  <td class="text-center"><a title="Ver Ferramenta" data-bs-toggle="modal" data-bs-target="#detalharFerramentaEstoquev2{{i.pk}}" href="ver-ferramenta"><div style="height:100%;width:100%">{{i.numeracao|default_if_none:"-"}}</div></a></td>
-                  <td class="text-center"><a title="Ver Ferramenta" data-bs-toggle="modal" data-bs-target="#detalharFerramentaEstoquev2{{i.pk}}" href="ver-ferramenta"><div style="height:100%;width:100%">{{i.categoria|default_if_none:"-"}}</div></a></td>
-                  <td class="text-center"><a title="Ver Ferramenta" data-bs-toggle="modal" data-bs-target="#detalharFerramentaEstoquev2{{i.pk}}" href="ver-ferramenta"><div style="height:100%;width:100%"> <span style="font-weight: bold;">{{i.get_situacao_label|default_if_none:"-"|safe}} </span> </div></a></td>
-               
+                <td class="text-center "><a href="{% url 'detalhar_cautela_ferramenta' i.pk %}"><div style="height:100%;width:100%">{{i.pk}}</div></a></td>
+                <td class=""><a href="{% url 'detalhar_cautela_ferramenta' i.pk %}"><div style="height:100%;width:100%">{{i.solicitante.nome|default_if_none:"-"}}</div></a></td>
+                  <td class=""><a href="{% url 'detalhar_cautela_ferramenta' i.pk %}"><div style="height:100%;width:100%">{{i.data_cautela.date|default_if_none:"-"}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'detalhar_cautela_ferramenta' i.pk %}"><div style="height:100%;width:100%">{{i.local.local|default_if_none:""}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'detalhar_cautela_ferramenta' i.pk %}"><div style="height:100%;width:100%">{{i.obra.nome|default_if_none:"-"}}</div></a></td>
+                  <td class="text-center fw-bold"><a href="{% url 'detalhar_cautela_ferramenta' i.pk %}"><div style="height:100%;width:100%">{{i.get_situacao_label|default_if_none:"-"|safe}}</div></a></td>
               
                 </tr>
-
-                {% with i as ferramenta %}
-                {% include "estoque_v2/ferramentas/detalhar_ferramenta.html" %}
-                {% endwith %}
                 {% endfor %}
               {% else %}
                    

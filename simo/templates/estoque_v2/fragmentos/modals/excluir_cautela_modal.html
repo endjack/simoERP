@@ -1,0 +1,41 @@
+
+ <div class="modal fade" id="excluiraCautelaEstoquev2{{cautela_atual.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content ">
+            <div class="modal-header p-3">
+                <div class="d-flex flex-column bd-highlight">
+                    <h5 class="bd-highlight text-danger">Excluir Cautela nº {{cautela_atual.pk}}</h5>
+                    
+                    
+                </div>  
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-5">
+                <!-- modal-body --> 
+
+                {% with cautela_atual.get_ferramentas|length as num_ferramentas %}
+              
+                {% if num_ferramentas >= 1  %}
+                    <h6 class="text-black">Não é possível excluir Cautela com Ferramentas Ativas.</h6>
+                    <h6 class="text-secondary">Favor, excluir Ferramentas antes.</h6>
+                {% else %}
+                    <h6 class="text-danger">Tem certeza que deseja EXCLUIR ?</h6>
+                {% endif %}
+  
+
+                <!-- Fim modal-body -->
+            </div>
+            <div class="modal-footer form-control">
+                {% if not num_ferramentas >= 1  %}
+                <a class="btn btn-sm btn-danger" href="{% url 'excluir_cautela' cautela_atual.pk %}"><i class="fas fa-times"></i> Excluir </a> 
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                {% else %}
+       
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Voltar</button>
+                {% endif %} 
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+ </div>
+ <!-- Fim Modal --> 

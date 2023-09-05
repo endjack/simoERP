@@ -68,13 +68,16 @@ urlpatterns = [
     path('estoque/item_estoque/<int:pk>/excluir', excluir_item_de_estoque, name='excluir_item_de_estoque'),
     path('hx/<int:pk>/hx_calcular_saldo_estoque', hx_calcular_saldo_estoque, name='hx_calcular_saldo_estoque'),
     
-    #ferramental_estoquev2
+    #ferramental e Cautelas _estoquev2
     path('estoque/ferramental/inicio', ver_ferramental_estoquev2, name='ferramental_estoquev2'),
     path('estoque/ferramental/buscar', buscar_ferramentas, name='buscar_ferramentas'),
     path('estoque/ferramental/nova', add_nova_ferramenta_estoquev2, name='add_nova_ferramenta_estoquev2'),
     path('estoque/ferramental/cautelas/criar', criar_cautela_ferramenta, name='criar_cautela_ferramenta'),
+    path('estoque/ferramental/cautelas/buscar', buscar_cautelas, name='buscar_cautelas'),
     path('estoque/ferramental/cautela/<int:pk>/detalhar', detalhar_cautela_ferramenta, name='detalhar_cautela_ferramenta'),
+    path('estoque/ferramental/cautela/<int:pk>/excluir', excluir_cautela, name='excluir_cautela'),
     path('estoque/ferramental/cautela/<int:pk>/detalhar/<int:ferr>/inserir', inserir_ferramenta_em_cautela, name='inserir_ferramenta_em_cautela'),
+    path('estoque/ferramental/cautela/<int:pk>/detalhar/<int:ferr>/retirar', retirar_ferramenta_cautela, name='retirar_ferramenta_cautela'),
     
     #Procurar V2
     path('estoque/procurar', procurar_estoquev2, name='procurar_estoquev2'),
