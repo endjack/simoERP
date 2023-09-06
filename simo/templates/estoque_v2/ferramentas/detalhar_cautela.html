@@ -68,7 +68,11 @@
 <div class="container mt-2">
  
           <div class="d-flex flex-row align-items-center" >
-                <h4 class="me-auto"><i class="fas fa-info-circle"></i> Detalhar Cautela (Id: {{cautela_atual.pk}}) - {{cautela_atual.get_situacao_label|safe}}</h4>
+                <h4 class="me-auto"><i class="fas fa-info-circle"></i> Detalhar Cautela (Id: {{cautela_atual.pk}}) - 
+                <!-- Botao Modal ALTERAR SITUAÇÃO DE CAUTELA -->
+                <a  style="text-decoration:none;" data-bs-toggle="modal" data-bs-target="#alterarSituacaoCautelaEstoquev2{{cautela_atual.pk}}" href="alterar-situacao"
+                title="Alterar Situação da Cautela">{{cautela_atual.get_situacao_label|safe}} <i class="fas fa-edit"></i></a>
+                </h4>
                 
              <!-- Botao Modal ADD FERRAMENTA A CAUTELA -->
              <a  style="" class="btn btn-sm  btn-primary m-1 " data-bs-toggle="modal" data-bs-target="#AddFerramentaCautelaAtiva{{cautela_atual.pk}}" href="adicionar-cautela" 
@@ -78,26 +82,63 @@
              title="Imprimir Cautela"><i class="fas fa-print"></i></i> Imprimir</a>
  
              <!-- Botao Modal ALTERAR DADOS DE CAUTELA -->
-             <a  style="" class="btn btn-sm  btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#" href="alterar-cautela" 
+             <a  style="" class="btn btn-sm  btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#alterarDadosCautelaEstoquev2{{cautela_atual.pk}}" href="alterar-cautela"
              title="Editar Dados da Cautela"><i class="fas fa-edit"></i></i> Alterar Dados</a>
             
              <!-- Botao Modal EXCLUIR CAUTELA -->
              <a  style="" class="btn  btn-sm btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#excluiraCautelaEstoquev2{{cautela_atual.pk}}" href="excluir-cautela"
              title="Excluir Cautela"><i class="fas fa-trash"></i> Excluir</a>
 
+            <!-- Modal ALTERAR SITUAÇÃO DE CAUTELA -->   
+            {% include 'estoque_v2/fragmentos/modals/alterar_situacao_cautela_modal.html' %}   
 
-             <!-- Modal EXCLUIR CAUTELA -->
-             {% include 'estoque_v2/fragmentos/modals/excluir_cautela_modal.html' %}
+            <!-- Modal ADD FERRAMENTA A CAUTELA -->
+            {% include "estoque_v2/fragmentos/modals/add_ferramenta_cautela_modal.html" %}
+
+            <!-- Modal ALTERAR DADOS CAUTELA -->
+            {% include 'estoque_v2/fragmentos/modals/alterar_cautela_ferramenta_estoque.html' %}
+
+            <!-- Modal EXCLUIR CAUTELA -->
+            {% include 'estoque_v2/fragmentos/modals/excluir_cautela_modal.html' %}
 
           </div>
 </div>
 
 <div class="container mt-2"> 
-  <div class="row">
-    <div class="col-5">Dados:</div>
-    <div class="col-7">Ferramentas Acauteladas:</div>
+
+    {% if cautela_atual.situacao == '2' or cautela_atual.situacao == '3' %}
+    <div class="row">
+      <div class="col-5  fw-bold" >Dados da Entrega:</div>
+
+      <div class="card col-md-12 p-2">
+          
+        <div class="" style="font-size: 13pt;">
+              <!-- Botao Modal ALTERAR DATA DE ENTREGA -->
+              <div class=""><a  style="text-decoration:none;" data-bs-toggle="modal" data-bs-target="#alterarDatadevolucaoCautelaEstoquev2{{cautela_atual.pk}}" href="alterar-data-devolucao"
+                title="Alterar Data de Entrega"><i class="fas fa-edit"></i></a> Data/Hora da Devolução: <span style="font-weight: bold;"> {{cautela_atual.data_devolucao}} </span></div>
+              <!-- Botao Modal ALTERAR OBS DE ENTREGA -->
+              <div class=""> <a  style="text-decoration:none;" data-bs-toggle="modal" data-bs-target="#alterarOBSdevolucaoCautelaEstoquev2{{cautela_atual.pk}}" href="alterar-obs-devolucao"
+                title="Alterar Observações de Entrega"><i class="fas fa-edit"></i></a> Observações da Devolução: <span style="font-weight: bold"> {{cautela_atual.obs_devolucao|default_if_none:""|upper}} 
+              </span></div>
+              <hr>
+              <div class="">Recebente: <span style="font-weight: bold;color:gray">{{cautela_atual.almoxarifado|upper}} </span></div>   
+        </div>
+      </div>   
+    </div>
+
+      <!-- Modal ALTERAR DATA DE ENTREGA -->
+      {% include "estoque_v2/fragmentos/modals/alterar_data_devolucao_cautela_modal.html" %}
+
+      <!-- Botao Modal ALTERAR OBS DE ENTREGA -->
+      {% include "estoque_v2/fragmentos/modals/alterar_obs_devolucao_cautela_modal.html" %}
+
+    {% endif %}
+
+  <div class="row mt-3">
+    <div class="col-5 fw-bold">Dados da Cautela:</div>
+    <div class="col-7  fw-bold">Ferramentas Acauteladas:</div>
   </div>
-   <div class="row mt-2 ">
+   <div class="row ">
    
          <div class="card col-md-5 p-2">
         
@@ -109,6 +150,9 @@
                      <div class="">Endereço: <span style="font-weight: bold;">{{cautela_atual.local.endereco|default_if_none:"-"}} </span></div>
                      <div class="">Obra: <span style="font-weight: bold;">{{cautela_atual.obra.nome|default_if_none:"-"}} </span></div>
                      <hr>
+                     <div class="">Observações: <span style="font-weight: bold;color:gray">{{cautela_atual.obs_entrega|default_if_none:""|upper}} </span></div>
+                     
+                     <hr>
                      <div class="">Almoxarife: <span style="font-weight: bold;color:gray">{{cautela_atual.almoxarifado|upper}} </span></div>
                      
                </div>
@@ -117,8 +161,9 @@
          </div>   
 
          <div class="card col-md-7 p-2">
-              
-               <div class="" style="font-size: 13pt;">
+          {% if ferramentas_acauteladas %}
+               <div style="font-size: 13pt;">
+                
                     
                     <table class="table table-sm table-bordered table-striped " style="font-size:8pt">
                       <thead class="text-white text-center" style="background:#39423b;">
@@ -136,7 +181,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      {% if ferramentas %}
+                     
                         {% for ferr in ferramentas_acauteladas  %}
                        <tr class=''>
                            <!-- Botao Modal VER FERRAMENTA DA CAUTELA -->
@@ -158,26 +203,29 @@
                       
                         </tr>
                         {% endfor %}
-                      {% else %}
-                           
-                      {% endif %}
+                      
+                     
                   
                     </tbody>
-            </table>
+             </table>
 
+                 
+            </div>
+            {% else %}
+            <div class="text-center fst-italic ">Sem Ferramentas. </div>          
 
-
-                     
-               </div>
-
+        {% endif %}   
    
          </div>   
    
    </div>
+
+
+
+
 </div>
 
 
-{% include "estoque_v2/fragmentos/modals/add_ferramenta_cautela_modal.html" %}
     
       
       

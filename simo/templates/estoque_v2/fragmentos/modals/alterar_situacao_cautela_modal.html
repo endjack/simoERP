@@ -1,0 +1,58 @@
+
+<div class="modal fade" id="alterarSituacaoCautelaEstoquev2{{cautela_atual.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content ">
+            <div class="modal-header p-3">
+                <div class="d-flex flex-column bd-highlight">
+                    <h5 style="color:black" class="bd-highlight">Alterar Situação de Cautela nº {{cautela_atual.pk}}</h5>
+                    
+                    
+                </div>  
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-5">
+                <!-- modal-body --> 
+
+                <form id="alterarSituacaoCautelaFerramenta"
+                    hx-post="{% url 'alterar_situacao_cautela' cautela_atual.pk %}" 
+                    hx-target="body" 
+                    hx-push-url="true"
+                    hx-indicator="#spinner"
+                    hx-swap="innerHTML" >
+
+
+                <label for="inputSituacao" class="fw-bold">Situação:</label><br>
+                <small class="">Selecione a situação da Cautela:</small>
+                <select id="" class="form-sm form-control"  name="situacao">
+                
+                    {% for i in situacoes_cautela %}
+                     {% if i.0 == cautela_atual.situacao.0 %}
+                     <option value="{{i.0}}" selected>{{i.1}}</option>
+                     {% else %}
+                     <option value="{{i.0}}">{{i.1}}</option>
+                     {% endif %}
+                    
+                    {% endfor %}      
+                </select>
+
+            </form>
+
+
+
+
+
+            
+
+                <!-- Fim modal-body -->
+            </div>
+            <div class="modal-footer form-control">
+                <small class="small-error" id="error_situacao_cautela"></small>
+                {% include "utils/load_htmx_centralizado.html" %}
+                <button class="btn btn-sm btn-success" form="alterarSituacaoCautelaFerramenta"><i class="fas fa-save"></i> Salvar </button>   
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            
+            </div>
+        </div>
+    </div>
+ </div>
+ <!-- Fim Modal --> 

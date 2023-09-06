@@ -11,6 +11,7 @@ from funcionarios.models import Funcionario
 from obras.models import Local, Obra
 from django.db.models import Sum, Count, F
 from requisicao.models import ItemRequisicao, Requisicao
+from django_htmx.http import HttpResponseClientRedirect
 
 
 @login_required(login_url='login/')
@@ -443,6 +444,51 @@ def buscar_cautelas(request, template_name = 'estoque_v2/ferramentas/buscar_caut
         }
         return render(request, template_name , context)
     
+@login_required(login_url='login/')
+@csrf_exempt
+def alterar_situacao_cautela(request, pk):
+
+      if request.method == 'POST':
+        cautela_atual= Cautela.objects.get(pk=pk)
+        situacao_atual = request.POST.get("situacao")
+        
+        cautela_atual.situacao = situacao_atual
+        cautela_atual.save()
+        print(f'------situcao alterada para: {cautela_atual.situacao}')
+        
+
+        return HttpResponseClientRedirect(reverse("detalhar_cautela_ferramenta", kwargs={'pk':cautela_atual.pk}))
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def alterar_obs_devolucao_cautela(request, pk):
+
+      if request.method == 'POST':
+        cautela_atual= Cautela.objects.get(pk=pk)
+        observacao_atual = request.POST.get("observacoes")
+        
+        cautela_atual.obs_devolucao = observacao_atual
+        cautela_atual.save()
+        print(f'------Obs de Devolucao alterada para: {cautela_atual.obs_devolucao}')
+        
+
+        return HttpResponseClientRedirect(reverse("detalhar_cautela_ferramenta", kwargs={'pk':cautela_atual.pk}))
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def alterar_data_devolucao_cautela(request, pk):
+
+      if request.method == 'POST':
+        cautela_atual= Cautela.objects.get(pk=pk)
+        data_devolucao_atual = request.POST.get("data_hora")
+        
+        cautela_atual.data_devolucao = data_devolucao_atual
+        cautela_atual.save()
+        print(f'------Data de Devolucao alterada para: {cautela_atual.data_devolucao}')
+        
+
+        return HttpResponseClientRedirect(reverse("detalhar_cautela_ferramenta", kwargs={'pk':cautela_atual.pk}))
+    
     
 @login_required(login_url='login/')
 @csrf_exempt
@@ -511,7 +557,7 @@ def add_nova_ferramenta_estoquev2(request):
     
 @login_required(login_url='login/')
 @csrf_exempt
-def criar_cautela_ferramenta(request):
+def criar_cautela_ferramenta(request, pk=None):
 
     if request.method == 'POST':
         print(f"---------------Solicitante ---{request.POST.get('solicitante')}")
@@ -542,12 +588,26 @@ def criar_cautela_ferramenta(request):
             
 
         #CRIAR CAUTELA
-        cautela_atual = Cautela.objects.create(solicitante = funcionario_atual,
-                            almoxarifado = request.user,
-                            obra = obra_atual,
-                            local = local_atual)
+        if pk == None:
+            cautela_atual = Cautela.objects.create(solicitante = funcionario_atual,
+                                almoxarifado = request.user,
+                                obra = obra_atual,
+                                local = local_atual)
+            print(f'-------------------Add Cautela: {cautela_atual.pk}')
+        #EDITAR CAUTELA    
+        else:
+            cautela_atual = Cautela.objects.get(pk=pk)
+            cautela_atual.solicitante = funcionario_atual
+            cautela_atual.almoxarifado = request.user
+            cautela_atual.obra = obra_atual
+            cautela_atual.local = local_atual
+            cautela_atual.save()
+            print(f'-------------------Editado Cautela: {cautela_atual.pk}')
         
-        return redirect('detalhar_cautela_ferramenta', pk = cautela_atual.pk) 
+        
+        
+
+        return HttpResponseClientRedirect(reverse("detalhar_cautela_ferramenta", kwargs={'pk':cautela_atual.pk}))
  
              
 
@@ -560,14 +620,22 @@ def detalhar_cautela_ferramenta(request, pk,  template_name = 'estoque_v2/ferram
         _menu_ativo = 'FERRAMENTAL'
     
         cautela_atual = Cautela.objects.get(pk=pk)
+        situacoes_cautela = Cautela.SITUACAO
         ferramentas = Ferramenta.objects.all()
         ferramentas_acauteladas = CautelaFerramenta.objects.filter(cautela = cautela_atual)
+        funcionarios_ativos = Funcionario.objects.all()
+        locais = Local.objects.all()
+        obras = Obra.objects.all()
          
         context = {
             'menu_ativo' : _menu_ativo,
             'cautela_atual' : cautela_atual,
             'ferramentas' : ferramentas,
             'ferramentas_acauteladas' : ferramentas_acauteladas,
+            'funcionarios_ativos' : funcionarios_ativos,
+            'locais' : locais,
+            'obras' : obras,
+            'situacoes_cautela' : situacoes_cautela,
          
         }
         return render(request, template_name , context) 
@@ -604,8 +672,8 @@ def inserir_ferramenta_em_cautela(request, pk, ferr, template_name = 'estoque_v2
         cau_ferr = CautelaFerramenta.objects.create(ferramenta = ferramenta_atual, cautela = cautela_atual)
         ferramenta_atual.acautelada = True
         ferramenta_atual.save()
-        cautela_atual.ativa = True
-        cautela_atual.save()
+        # cautela_atual.ativa = True
+        # cautela_atual.save()
         print(f'---------Acautelamento Criado com Sucesso: Id: {cau_ferr.pk}')
         
         return redirect('detalhar_cautela_ferramenta', pk = cautela_atual.pk) 
@@ -629,10 +697,10 @@ def retirar_ferramenta_cautela(request, pk, ferr):
         
         #verificar se a cautela está vazia
    
-        if not cautela_atual.get_ferramentas().exists():
+        # if not cautela_atual.get_ferramentas().exists():
            
-            cautela_atual.ativa = False
-            cautela_atual.save()
+        #     cautela_atual.ativa = False
+        #     cautela_atual.save()
         
         return redirect('detalhar_cautela_ferramenta', pk = cautela_atual.pk) 
             

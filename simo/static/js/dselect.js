@@ -99,7 +99,7 @@ function dselectUpdate(button, classElement, classToggler) {
     let size = el.dataset.dselectSize || option.size || defaultSize;
     size = size !== "" ? ` form-select-${size}` : "";
     const classToggler = `form-select${size}`;
-    const searchInput = search ? `<input onkeydown="return event.key !== 'Enter'" onkeyup="dselectSearch(event, this, '${classElement}', '${classToggler}', ${creatable})" type="text" class="form-control" placeholder="Search" autofocus>` : "";
+    const searchInput = search ? `<input onkeydown="return event.key !== 'Enter'" onkeyup="dselectSearch(event, this, '${classElement}', '${classToggler}', ${creatable})" type="text" class="form-control" placeholder="Buscar" autofocus>` : "";
     function attrBool(attr) {
       const attribute = `data-dselect-${attr}`;
       if (!el.hasAttribute(attribute))

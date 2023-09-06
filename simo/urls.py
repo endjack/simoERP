@@ -72,12 +72,16 @@ urlpatterns = [
     path('estoque/ferramental/inicio', ver_ferramental_estoquev2, name='ferramental_estoquev2'),
     path('estoque/ferramental/buscar', buscar_ferramentas, name='buscar_ferramentas'),
     path('estoque/ferramental/nova', add_nova_ferramenta_estoquev2, name='add_nova_ferramenta_estoquev2'),
-    path('estoque/ferramental/cautelas/criar', criar_cautela_ferramenta, name='criar_cautela_ferramenta'),
+    path('estoque/ferramental/cautelas/criar', criar_cautela_ferramenta, name='criar_cautela_ferramenta'), #criar
+    path('estoque/ferramental/cautelas/<int:pk>/editar', criar_cautela_ferramenta, name='criar_cautela_ferramenta'), #editar
     path('estoque/ferramental/cautelas/buscar', buscar_cautelas, name='buscar_cautelas'),
     path('estoque/ferramental/cautela/<int:pk>/detalhar', detalhar_cautela_ferramenta, name='detalhar_cautela_ferramenta'),
     path('estoque/ferramental/cautela/<int:pk>/excluir', excluir_cautela, name='excluir_cautela'),
     path('estoque/ferramental/cautela/<int:pk>/detalhar/<int:ferr>/inserir', inserir_ferramenta_em_cautela, name='inserir_ferramenta_em_cautela'),
     path('estoque/ferramental/cautela/<int:pk>/detalhar/<int:ferr>/retirar', retirar_ferramenta_cautela, name='retirar_ferramenta_cautela'),
+    path('estoque/ferramental/cautela/<int:pk>/situacao', alterar_situacao_cautela, name='alterar_situacao_cautela'),
+    path('estoque/ferramental/cautela/<int:pk>/obs-devolucao', alterar_obs_devolucao_cautela, name='alterar_obs_devolucao_cautela'),
+    path('estoque/ferramental/cautela/<int:pk>/data-devolucao', alterar_data_devolucao_cautela, name='alterar_data_devolucao_cautela'),
     
     #Procurar V2
     path('estoque/procurar', procurar_estoquev2, name='procurar_estoquev2'),
@@ -92,7 +96,7 @@ urlpatterns = [
     path('estoque/requisicao/<int:pk>/item/<int:item>/add', add_itemRequisicao_requisicao, name='add_itemRequisicao_requisicao'),
     path('estoque/requisicao/<int:pk>/item/<int:item>/excluir', excluir_item_requisicao_estoque, name='excluir_item_requisicao_estoque'),
 
-    #Itens 
+    #Itens v2
     path('estoque/cadastrar/itens', cadastrar_itens_estoquev2, name='cadastrar_itens_estoquev2'),
     path('estoque/cadastrar/itens/novo', add_novo_item_estoque, name='add_novo_item_estoquev2'),
     path('estoque/cadastrar/itens/filtrar', filtrar_itens_nao_estoque, name='filtrar_itens_nao_estoque'),

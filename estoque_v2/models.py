@@ -79,6 +79,10 @@ class Ferramenta(models.Model):
     
 class Cautela(models.Model):
     
+    SITUACAO = (
+        ('0', "EM ABERTO"),('1', "ATIVA"),('2', "ENTREGUE COM OBS"),('3', "ENTREGUE")
+        )
+    
     solicitante = models.ForeignKey(Funcionario, on_delete=models.SET_NULL, null=True, related_name='solicitante')
     almoxarifado = models.ForeignKey(User, on_delete=models.PROTECT)
     data_cautela = models.DateTimeField(default=timezone.now)
@@ -88,16 +92,21 @@ class Cautela(models.Model):
     obs_entrega =  models.CharField(max_length=300, null=True, blank=True)
     obs_devolucao =  models.CharField(max_length=300, null=True, blank=True)
     ativa = models.BooleanField(default=False)
+    situacao = models.CharField(max_length=50, choices=SITUACAO, default='0')
     
     def __str__(self) -> str:
         return f'Cautela {self.pk}'
     
     
     def get_situacao_label(self):
-        if self.ativa:
-            return '<span class="text-success">ATIVA</span>'
-        else:
+        if self.situacao == "0":
             return '<span class="text-secondary">EM ABERTO</span>'
+        elif self.situacao == "1":
+            return '<span class="text-success">ATIVA</span>'
+        elif self.situacao == "2":
+            return '<span class="text-danger">ENTREGUE COM OBS</span>'
+        else:
+            return '<span class="text-dark">ENTREGUE</span>'
         
     def get_ferramentas(self):
         return CautelaFerramenta.objects.filter(cautela = self)

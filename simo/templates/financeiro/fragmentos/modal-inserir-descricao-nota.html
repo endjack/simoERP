@@ -1,3 +1,6 @@
+{% load static %}
+
+
 <div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
 	<div class="modal-underlay" _="on click trigger closeModal"></div>
 	<div class="modal-content" style="max-width:900px; overflow:auto;">
@@ -13,7 +16,7 @@
     <div class="form-group row mb-2 ">
         <div class="col-6 ">
                 <label for="input-fornecedores" class="">Fornecedor: </label>
-                <select id="input-fornecedores" class="form-control js-example-basic-single"  name="fornecedor" required=required>
+                <select id="input-fornecedores" class="form-control-sm"  name="fornecedor" required=required>
                     {% for f in fornecedores %}
                         
                     <option value="{{f.pk}}" {% if f == descricao.fornecedor %}selected {% endif %}> {{f.template_options}}</option>
@@ -101,12 +104,24 @@
 </div>
 </div>
 
-{% block jquery %}
+
+
+
+
+
 <script>
    //htmx.logAll();
 
-   
-    $('.js-example-basic-single').select2();
+   var config = {
+    search: true, // Toggle search feature. Default: false
+    creatable: true, // Creatable selection. Default: false
+    clearable: true, // Clearable selection. Default: false
+    maxHeight: '360px', // Max height for showing scrollbar. Default: 360px
+    size: 'sm', // Can be "sm" or "lg". Default ''
+    }
+
+    dselect(document.querySelector('#input-fornecedores'), config)
+
+
 
 </script>
-{% endblock %}

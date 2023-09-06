@@ -1,0 +1,123 @@
+{% load static %}
+ 
+ <div class="modal fade" id="alterarDadosCautelaEstoquev2{{cautela_atual.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog  modal-lg">
+        <div class="modal-content ">
+            <div class="modal-header p-3">
+                <div class="d-flex flex-column bd-highlight">
+                    <h5 style="color:primary" class="bd-highlight text-primary">Editar Cautela de Ferramenta nº {{cautela_atual.pk}}: </h5>
+                    
+                    
+                </div>  
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body ">
+                    <!-- modal-body --> 
+                    <div class="container col-10">
+
+                      <form id="formInserirCautelaFerramenta"
+                      hx-post="{% url 'criar_cautela_ferramenta' cautela_atual.pk  %}" 
+                      hx-target="body" 
+                      hx-indicator="#spinner"
+                      hx-swap="innerHTML" >
+
+
+                          <div class="form-group row mb-2 ">
+                              <div class="">
+                               
+                                      <label for="inputDescricao" class="fw-bold"><i class="fas fa-hard-hat"></i> Funcionário:</label><br>
+                                        <small class="">Selecione o Funcionário que ficará responsável pela(s) ferramenta(s):</small>
+                                      <select id="selectFuncionarios" class=""  name="solicitante">
+                                      
+                                          {% for i in funcionarios_ativos %}
+                                          {% if i.pk == cautela_atual.solicitante.pk %}
+                                          <option value="{{i.pk}}" selected> {{i.nome}} - {{i.cargo}}</option>
+                                          {% else %}
+                                          <option value="{{i.pk}}"> {{i.nome}} - {{i.cargo}}</option>
+                                          {% endif %}
+                                          
+                                          {% endfor %}      
+                                      </select>
+           
+                              </div>
+                          </div>
+
+                          <div class="form-group row mb-2 ">
+                              <div class="">
+                               
+                                      <label for="inputDescricao" class="fw-bold"><i class="fas fa-map-marker-alt"></i> Local:</label><br>
+                                      <small class="">Selecione o local para onde o equipamento será destinado (no maior período):</small>
+                                        <select id="selectLocais" class=""  name="local" >
+                                           
+                                         {% for i in locais %}
+                                         {% if i.pk == cautela_atual.local.pk %}
+                                         <option value="{{i.pk}}" selected> {{i.local}} - {{i.endereco}}</option>
+                                         {% else %}
+                                         <option value="{{i.pk}}"> {{i.local}} - {{i.endereco}}</option>
+                                         {% endif %}
+                                         
+                                          {% endfor %}      
+                                      </select>
+           
+                              </div>
+                          </div>
+
+                          <div class="form-group row mb-2 ">
+                              <div class="">
+                               
+                                      <label for="inputDescricao" class="fw-bold"><i class="fas fa-file-contract"></i> Obra:</label>
+                                      <br>
+                                      <small class="">Selecione o Centro de Custo/Contrato/Obra onde o equipamento será destinado:</small>
+                                      <select id="selectObra" class=""  name="obra">
+                                        
+                                          {% for i in obras %}
+                                          {% if i.pk == cautela_atual.obra.pk %}
+                                          <option value="{{i.pk}}" selected> {{i.nome}} - Contrato: {{i.num_contrato}}</option>
+                                          {% else %}
+                                          <option value="{{i.pk}}"> {{i.nome}} - Contrato: {{i.num_contrato}}</option>
+                                          {% endif %}
+                                          
+                                          {% endfor %}      
+                                      </select>
+           
+                              </div>
+                          </div>
+
+
+                      </form>
+                
+                          
+                  </div>
+                    <!-- Fim modal-body -->
+                </div>
+                <div class="modal-footer form-control">
+                <small class="small-error" id="error_cautela"></small>
+                {% include "utils/load_htmx_centralizado.html" %}
+              
+              <button class="btn btn-sm btn-success" form="formInserirCautelaFerramenta"><i class="fas fa-save"></i> Salvar </button>   
+              <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          
+          </div>
+        </div>
+    </div>
+ </div>
+ <!-- Fim Modal --> 
+ <script src="{% static 'js/dselect.js' %}"></script>
+ 
+ <script>
+
+    var config = {
+        search: true, // Toggle search feature. Default: false
+        creatable: true, // Creatable selection. Default: false
+        clearable: true, // Clearable selection. Default: false
+        maxHeight: '360px', // Max height for showing scrollbar. Default: 360px
+        size: 'sm', // Can be "sm" or "lg". Default ''
+    }
+
+    dselect(document.querySelector('#selectFuncionarios'), config)
+    dselect(document.querySelector('#selectLocais'), config)
+    dselect(document.querySelector('#selectObra'), config)
+
+
+
+ </script>
