@@ -271,6 +271,7 @@ urlpatterns = [
     path('contas-a-pagar/inserir-itens-saida/nota/<int:pk>', inserir_itens_saida, name='inserir-itens-saida'),
     path('contas-a-pagar/salvar-itens-saida/nota/<int:pk>', salvar_itens_saida, name='salvar-itens-saida'),
     path('contas-a-pagar/salvar-itens-saida/<int:pk>/nota/<int:nota>', excluir_iten_saida, name='excluir-iten-saida'),
+    path('contas-a-pagar/nota/<int:pk>/inserir-desconto', inserir_desconto_conta_a_pagar, name='inserir_desconto-conta-a-pagar'),
     
     #validações [financeiro]
     path('contas-a-pagar/check-descricao-item-conta', check_descricao_item_conta, name='check-descricao-item-conta'),

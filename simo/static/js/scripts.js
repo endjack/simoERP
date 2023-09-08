@@ -7,6 +7,14 @@
 // Scripts
 // 
 
+
+  //DESATIVAR '.' (DOT) NOS INPUTS
+  $(".nodot").on("keypress", function(evt) {
+    var keycode = evt.charCode || evt.keyCode;
+    if (keycode == 46) {
+    return false;
+    }
+    });
  
 
 

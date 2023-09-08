@@ -13,8 +13,9 @@ from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.http.response import HttpResponseRedirect, HttpResponse
-from django_htmx.http import trigger_client_event
+from django_htmx.http import trigger_client_event, HttpResponseClientRedirect
 from .validations import validar_item_nota
+
 
 END_LOG = '\033[0;0m'
 LOG_DANGER= '\033[31m'
@@ -305,6 +306,8 @@ def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resul
         total_valor_notas = 0    
         if objectsNota:
             total_valor_notas = objectsNota.aggregate(total_valor = Sum('valor'))['total_valor']
+            total_valor_desconto = objectsNota.aggregate(total_valor = Sum('desconto'))['total_valor']
+            # total_valor_acres = objectsNota.filter(pago=True).aggregate(total_valor = Sum('acrescimo'))['total_valor']
               
         print(f'-----------------------------RESULTADO BOLETO {objectsConta}')
         print(f'-----------------------------RESULTADO NOTA {objectsNota}')
@@ -312,7 +315,8 @@ def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resul
         context = {
                 'boletos': objectsConta,
                 'contas': objectsNota,
-                'total_acresc': locale.currency(0, grouping=True), # fazer a Logica depois
+                # 'total_acresc': locale.currency(total_valor_acres, grouping=True), # fazer a Logica depois
+                'total_desconto': locale.currency(total_valor_desconto, grouping=True), # fazer a Logica depois
                 'total_valor_boletos': total_valor_boletos,
                 'total_valor_notas': total_valor_notas,
                 'total_geral': locale.currency((total_valor_boletos or 0 )+(total_valor_notas or 0), grouping=True),
@@ -1220,9 +1224,9 @@ def salvar_descricao_saida(request, template_name='financeiro/fragmentos/inserir
         'descricao' : nova_descricao,
         'nota_atual' : nota_atual,
     }
-    response = render(request, template_name, context)
+    response = HttpResponseClientRedirect(reverse("editar-saida", kwargs={'pk':nota_atual.pk}))
     response['HX-Trigger'] = 'closeModalDescricao'
-    response['HX-Push-Url'] = reverse('editar-saida',kwargs={'pk':nota_atual.pk})
+    # response['HX-Push-Url'] = reverse('editar-saida',kwargs={'pk':nota_atual.pk})
     return response
 
 
@@ -1272,9 +1276,8 @@ def salvar_editar_descricao_saida(request, pk, nota, template_name='financeiro/f
         'descricao' : descricao,
         'nota_atual' : nota_atual
     }
-    response = render(request, template_name, context)
+    response = HttpResponseClientRedirect(reverse("editar-saida", kwargs={'pk':nota_atual.pk}))
     response['HX-Trigger'] = 'closeModalDescricao'
-    response['HX-Push-Url'] = reverse('editar-saida',kwargs={'pk':nota_atual.pk})
     return response
 
 
@@ -1332,7 +1335,7 @@ def salvar_itens_saida(request, pk, template_name='financeiro/fragmentos/itens-n
             
         ) 
         nota_atual.itens.add(novo_item)
-        nota_atual.valor = nota_atual.itens.all().aggregate(total_itens = Sum(ExpressionWrapper(F("qtd") *  F("valor"),  output_field=DecimalField())))["total_itens"]
+        nota_atual.valor = nota_atual.get_valor_total_itens()
         nota_atual.save()
               
         print(F'------------------ ITEM {novo_item.pk} SALVO COM SUCESSO NA NOTA {nota_atual.pk}')
@@ -1357,7 +1360,7 @@ def excluir_iten_saida(request, pk, nota, template_name='financeiro/fragmentos/i
     item = ItensNota.objects.get(pk=pk)
     item.delete()
     nota_atual = NotaCompleta.objects.get(pk = nota)
-    nota_atual.valor = nota_atual.itens.all().aggregate(total_itens = Sum(ExpressionWrapper(F("qtd") *  F("valor"),  output_field=DecimalField())))["total_itens"]
+    nota_atual.valor = nota_atual.get_valor_total_itens() 
     nota_atual.save()
     
     context = {
@@ -1368,3 +1371,21 @@ def excluir_iten_saida(request, pk, nota, template_name='financeiro/fragmentos/i
     response['HX-Trigger'] = 'itemNotaExcluido'
     return response
    
+
+@login_required(login_url='login/')
+@csrf_exempt
+def inserir_desconto_conta_a_pagar(request, pk,):
+    
+    if request.method == 'GET':
+        desconto_atual = request.GET.get('desconto', 0)
+        nota_atual = NotaCompleta.objects.get(pk = pk)
+        nota_atual.desconto = Decimal(desconto_atual)
+        
+        nota_atual.valor = nota_atual.get_valor_total_itens() - nota_atual.desconto
+        
+        nota_atual.save()
+    
+        print(f'--------------Inserido Desconto de R$ {desconto_atual}')
+
+        return redirect("ver-nota-completa", pk=pk)
+    
