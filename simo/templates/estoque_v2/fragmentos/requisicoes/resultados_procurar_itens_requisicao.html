@@ -3,7 +3,7 @@
 
 <div class="texto-enfase text-end" style=""> Legenda:  <span class="text-success"> <i class="fas fa-square"></i></span> Suficiente -  <span class="text-warning"><i class="fas fa-square"></i></span> Insuficiente - <span class="text-danger"><i class="fas fa-square"></i></span> Zerado  </div>
     <div class="p-2" style="border-color: #093637;">
-        <table class="table table-sm table-bordered table-striped tabelaResultados" style="font-size:9pt">
+        <table class="table table-sm table-bordered table-striped tabelaResultados align-middle" style="font-size:9pt">
                 <thead class="text-white text-center" style="background:#39423b;">
                 <tr style="line-height: 12px;white-space: nowrap; ">
                 
@@ -23,7 +23,7 @@
                     {% for i in itens  %}
                 <tr class='linha_clicavel'>
                     <td class="text-center ">{{i.item.pk}}</td>
-                    <td class="">{{i.item.descricao|default_if_none:"-"}}</td>
+                    <td class="col-md-3">{{i.item.descricao|default_if_none:"-"}}</td>
                     <td class=" ">{{i.item.marca|default_if_none:"-"}}</td>
                     <td class="text-center ">{{i.item.categoria|default_if_none:"-"}}</td>
                     <td class="text-center ">{{i.item.qtd_minima|default_if_none:"-"}}</td>
@@ -32,17 +32,18 @@
                     <!-- Button adicionarQuantidadeItensRequisicaoAtual-->
                     {% if i.quantidade > 0 %}
                     <td class="text-center">
-                        <div style="" id="">
-                            <input type="number" step="any" min="0.1"  name="qntItemDeRequisicao{{i.pk}}">&nbsp;
-                        
-                    
-                            <a href="" class="text-primary"
+
+                    <div class="input-group input-group-sm">
+                        <input type="number" step="any" min="0.1" style="width:6rem" class="form-control form-control-sm" name="qntItemDeRequisicao{{i.pk}}">&nbsp;
+                        <button class="btn btn-outline-primary" type="button" id="button-addon2"
                                 hx-target="body"
                                 hx-include="[name='qntItemDeRequisicao{{i.pk}}']"
                                 hx-swap="innerHTML"
-                                hx-post="{% url 'add_itemRequisicao_requisicao' req_atual.pk i.pk %}"><i class="fas fa-plus"></i> Adicionar</a>
-                            <br><small><span id="erroQntItemRequisicao{{i.pk}}" style="color:red"></span></small>   
-                        </div>
+                                hx-post="{% url 'add_itemRequisicao_requisicao' req_atual.pk i.pk %}"><i class="fas fa-plus"></i></button>
+                      </div>
+                      <small><span id="erroQntItemRequisicao{{i.pk}}" style="color:red"></span></small>
+
+                       
                     </td>
 
                     {% comment %} <script>

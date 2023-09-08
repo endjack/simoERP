@@ -78,8 +78,8 @@
              <a  style="" class="btn btn-sm  btn-primary m-1 " data-bs-toggle="modal" data-bs-target="#AddFerramentaCautelaAtiva{{cautela_atual.pk}}" href="adicionar-cautela" 
              title="Adicionar Ferramenta a Cautela"><span style="margin-left:1rem;margin-right:1rem;"><i class="fas fa-plus"></i></i> Ferramenta</a></span>  
  
-             <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#" href="imprimir-cautela" 
-             title="Imprimir Cautela"><i class="fas fa-print"></i></i> Imprimir</a>
+             <a  style="" class="btn btn-sm  btn-danger m-1" target="_blank" href="{% url 'gerar_pdf_cautela_individual' cautela_atual.pk %}" 
+             title="Imprimir Cautela"><i class="fas fa-file-pdf"></i></i> Gerar PDF</a>
  
              <!-- Botao Modal ALTERAR DADOS DE CAUTELA -->
              <a  style="" class="btn btn-sm  btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#alterarDadosCautelaEstoquev2{{cautela_atual.pk}}" href="alterar-cautela"

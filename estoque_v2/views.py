@@ -1,17 +1,22 @@
 from datetime import timedelta
 from decimal import Decimal
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from estoque.models import *
 from django.views.decorators.csrf import csrf_exempt
 from estoque_v2.models import CategoriaFerramenta, Cautela, CautelaFerramenta, Ferramenta
 from funcionarios.models import Funcionario
 from obras.models import Local, Obra
-from django.db.models import Sum, Count, F
+from django.db.models import Sum, Count, F, Q
 from requisicao.models import ItemRequisicao, Requisicao
 from django_htmx.http import HttpResponseClientRedirect
+from django.core.cache import cache
+
+from simo.utils import gerar_pdf_by_template
+from django.contrib.sites.shortcuts import get_current_site
+
 
 
 @login_required(login_url='login/')
@@ -295,14 +300,14 @@ def add_itemRequisicao_requisicao(request, pk, item):
         
         if qtd_solicitada == "":
             response = HttpResponse('Valor Inválido!')
-            response['HX-Retarget'] = f'#erroQntItemRequisicao{item}'
+            response['HX-Retarget'] = f'#erroQntItemRequisicao{item.pk}'
             return response
         else:
             qtd_solicitada = float(qtd_solicitada) 
         
         if qtd_solicitada > qtd_item_no_estoque:
             response = HttpResponse('Qtd Insuficiente!')
-            response['HX-Retarget'] = f'#erroQntItemRequisicao{item}'
+            response['HX-Retarget'] = f'#erroQntItemRequisicao{item.pk}'
             return response
         else:
             item.quantidade  =   qtd_item_no_estoque - qtd_solicitada
@@ -431,8 +436,9 @@ def buscar_cautelas(request, template_name = 'estoque_v2/ferramentas/buscar_caut
 
       if request.method == 'GET':
         _menu_ativo = 'FERRAMENTAL'
-        cautelas = Cautela.objects.all()
-        
+        cautelas = Cautela.objects.filter(situacao = '1') #SITUACAO = ('0', "EM ABERTO"),('1', "ATIVA"),('2', "ENTREGUE COM OBS"),('3', "ENTREGUE")
+
+        cache.set('filtro_cautelas_cache', cautelas)
         
         
         context = {
@@ -704,7 +710,99 @@ def retirar_ferramenta_cautela(request, pk, ferr):
         
         return redirect('detalhar_cautela_ferramenta', pk = cautela_atual.pk) 
             
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def filtro_buscar_cautelas(request, template_name = 'estoque_v2/ferramentas/resultado_filtro_cautelas.html'):
 
+      if request.method == 'GET':
+        query = Q()
+        filtro = request.GET.getlist('CheckAtivo')
+        
+        #SE FILTRO ESTÁ VAZIO
+        if filtro == []:
+            context = {
+           'cautelas' : None
+            }
+            return render(request, template_name , context)
+        
+        #SE FILTRO TEM CHECKS ATIVOS
+        else:
+            if 'checked1' in filtro:
+                query |= Q(situacao='1')
+            
+            if'checked0' in filtro:
+                query |= Q(situacao='0')
+            
+            if 'checked23' in filtro:
+                query |= Q(situacao='2')
+                query |= Q(situacao='3')
+            
+  
+            cautelas = Cautela.objects.filter(query) 
+            cache.set('filtro_cautelas_cache', cautelas)
+
+            # print(f'\n------ Filtro: {filtro}\n')
+            # print(f'\n------ Cautelas: {query}\n')
+            
+            context = {
+            'cautelas' : cautelas          
+            }
+            
+            # request.session['export_cautelas'] = cautelas
+            return render(request, template_name , context)
+ 
+     
+# @login_required(login_url='login/')
+# @csrf_exempt
+# def imprimir_resultado_cautela(request, template_name='estoque_v2/impressoes/imprimir_busca_cautelas.html'):
+
+#     if request.method == 'GET':
+        
+#         cautelas = cache.get('filtro_cautelas_cache')
+#         context = {
+#             'cautelas' : cautelas,
+#         }
+        
+#         return render(request, template_name , context)    
+ 
+     
+@login_required(login_url='login/')
+@csrf_exempt
+def gerar_pdf_resultado_cautela(request, template_name='estoque_v2/impressoes/imprimir_busca_cautelas.html'):
+    
+    if request.method == 'GET':
+        current_domain = get_current_site(request).domain
+        context = {
+            'cautelas' : cache.get('filtro_cautelas_cache'),
+            'current_domain' : current_domain,
+        }
+        filename = 'cautelas.pdf'
+
+    
+        return gerar_pdf_by_template(template_name, context, filename)
+    
+    
+     
+@login_required(login_url='login/')
+@csrf_exempt
+def gerar_pdf_cautela_individual(request, pk, template_name='estoque_v2/impressoes/imprimir_cautela_individual.html'):
+    
+    if request.method == 'GET':
+        current_domain = get_current_site(request).domain
+        cautela_atual = Cautela.objects.get(pk=pk)
+        ferramentas_acauteladas = CautelaFerramenta.objects.filter(cautela = cautela_atual)
+        
+        context = {
+            'cautela_atual' : cautela_atual,
+            'ferramentas_acauteladas' : ferramentas_acauteladas,
+            'current_domain' : current_domain,
+        }
+        filename = f'cautela_id{cautela_atual.pk}.pdf'
+
+    
+        return gerar_pdf_by_template(template_name, context, filename)
+    
     
 
 #TODO ITENS DO ESTOQUE
@@ -729,6 +827,7 @@ def cadastrar_itens_estoquev2(request, template_name = 'estoque_v2/cadastrar_est
          
         }
         return render(request, template_name , context)
+    
     
 @login_required(login_url='login/')
 @csrf_exempt

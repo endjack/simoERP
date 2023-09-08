@@ -82,6 +82,11 @@ urlpatterns = [
     path('estoque/ferramental/cautela/<int:pk>/situacao', alterar_situacao_cautela, name='alterar_situacao_cautela'),
     path('estoque/ferramental/cautela/<int:pk>/obs-devolucao', alterar_obs_devolucao_cautela, name='alterar_obs_devolucao_cautela'),
     path('estoque/ferramental/cautela/<int:pk>/data-devolucao', alterar_data_devolucao_cautela, name='alterar_data_devolucao_cautela'),
+    path('hx/filtro/buscar-cautelas', filtro_buscar_cautelas, name='filtro_buscar_cautelas'),
+    
+    # path('estoque/imprimir/cautelas/', imprimir_resultado_cautela, name='imprimir_resultado_cautela'),
+    path('estoque/pdf/cautelas/', gerar_pdf_resultado_cautela, name='gerar_pdf_resultado_cautela'),
+    path('estoque/pdf/cautelas/<int:pk>', gerar_pdf_cautela_individual, name='gerar_pdf_cautela_individual'),
     
     #Procurar V2
     path('estoque/procurar', procurar_estoquev2, name='procurar_estoquev2'),
