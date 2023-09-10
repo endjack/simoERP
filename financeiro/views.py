@@ -15,6 +15,8 @@ from django.http import Http404
 from django.http.response import HttpResponseRedirect, HttpResponse
 from django_htmx.http import trigger_client_event, HttpResponseClientRedirect
 from .validations import validar_item_nota
+from simo.utils import gerar_pdf_by_template
+from django.contrib.sites.shortcuts import get_current_site
 
 
 END_LOG = '\033[0;0m'
@@ -78,6 +80,8 @@ def home_resumo_do_dia(request, template_name = 'financeiro/resumo-do-dia.html')
 @login_required(login_url='login/')
 def contas_a_pagar(request): 
     template_name = 'financeiro/contas-a-pagar.html'
+    
+    cache.delete('filtro_notas_boletos_cache')  
     
     if request.method == 'GET':
         try:
@@ -242,48 +246,65 @@ def add_descricao_nota(request):
 @csrf_exempt
 def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resultados-contas-a-pagar.html'):
              
-   
+                  
 
         check_pago = request.GET.get('check_pago') 
         check_nao_pago = request.GET.get('check_nao_pago') 
         
-        descricao = request.GET.get('descricao') or ''
-        valor_busca = request.GET.get('valor').replace(".","").replace(",",".")
-      
-        fornecedor = request.GET.get('fornecedor') or ''
-        
-        initial_date_aux = request.GET.get('data') or '0001-01-01' # datetime.min is 1
-        end_date_aux = request.GET.get('data_f') or '9999-12-31' # datetime.max is 9999
-        
-        initial_date = datetime.strptime(initial_date_aux, '%Y-%m-%d')    
-        end_date = datetime.strptime(end_date_aux, '%Y-%m-%d')   
-        
-        print(f'PESQUISA ------------------------ descricao/cod ---> {descricao}')
-        print(f'PESQUISA ------------------------ Valor ---> {valor_busca}')
-        print(f'PESQUISA ------------------------ data inicial ---> {initial_date}')
-        print(f'PESQUISA ------------------------ data final ---> {end_date}')
-        print(f'PESQUISA ------------------------ fornecedor ---> {fornecedor}')
-        
-        #NÃO BUSCAR COM CAMPOS VAZIOS
-        # if descricao == '' and valor_busca == '' and fornecedor == '' :
-        #     print(f'--------------------ENTROUUUUUUUUUUUUUUUUUUU----------------')
-        #     objectsConta = ContaBoleto.objects.none()
-        #     objectsNota = NotaCompleta.objects.none()
+        # descricao = request.GET.get('descricao') or ''
+        # valor_busca = request.GET.get('valor').replace(".","").replace(",",".")
+        # fornecedor = request.GET.get('fornecedor') or ''
+        # initial_date_aux = request.GET.get('data') or '0001-01-01' # datetime.min is 1
+        # end_date_aux = request.GET.get('data_f') or '9999-12-31' # datetime.max is 9999
        
-        # else:
-        #     objectsConta = ContaBoleto.objects.all()
-        #     objectsNota = NotaCompleta.objects.all()
+        queryConta = Q()
+        queryNota = Q()
+        
+        if request.GET.get('descricao') != "":
+            descricao = request.GET.get('descricao')
+            
+            queryConta &= Q(conta__saida__nota_fiscal__icontains=descricao) 
+            queryConta |= Q(doc__icontains=descricao) 
+            
+            queryNota &= Q(saida__nota_fiscal__icontains=descricao)
+            
+            print(f'PESQUISA ------------------------ descricao/cod ---> {descricao}')
+        
+        if request.GET.get('valor') != "":
+            valor_busca = request.GET.get('valor')
+            
+            queryConta &= Q(valor__icontains=valor_busca.replace(".","").replace(",","."))
+            
+            queryNota &= Q(valor__icontains=valor_busca)
+            
+            print(f'PESQUISA ------------------------ Valor ---> {valor_busca}')
+       
+        if request.GET.get('fornecedor')  != "": 
+            fornecedor = request.GET.get('fornecedor')  
+                   
+            queryConta &= Q(conta__saida__fornecedor__nome__icontains=fornecedor)
+            
+            queryNota &= Q(saida__fornecedor__nome__icontains=fornecedor)
+            
+            print(f'PESQUISA ------------------------ fornecedor ---> {fornecedor}')
+        
+        if request.GET.get('data') != "" and  request.GET.get('data_f') != "": 
+            initial_date_aux = request.GET.get('data') 
+            initial_date = datetime.strptime(initial_date_aux, '%Y-%m-%d')
+            end_date_aux = request.GET.get('data_f')
+            end_date = datetime.strptime(end_date_aux, '%Y-%m-%d')
+            
+            queryConta &= Q(data_vencimento__range=[initial_date, end_date])
+            
+            queryNota &= Q(saida__data_emissao__range=[initial_date, end_date])
+            
+            print(f'PESQUISA ------------------------ data inicial ---> {initial_date}')  
+            print(f'PESQUISA ------------------------ data final ---> {end_date}')              
+ 
         
         
-        objectsConta = ContaBoleto.objects.all().filter(Q(conta__saida__nota_fiscal__icontains=descricao) & 
-                                                                      Q(valor__icontains=valor_busca) & 
-                                                                      Q(conta__saida__fornecedor__nome__icontains=fornecedor) &
-                                                                      Q(conta__saida__descricao__icontains=descricao) &
-                                                                      Q(data_vencimento__range=[initial_date, end_date])).order_by('data_vencimento')
-        objectsNota = NotaCompleta.objects.all().filter(Q(saida__nota_fiscal__icontains=descricao) & 
-                                                                    Q(valor__icontains=valor_busca) & 
-                                                                    Q(saida__fornecedor__nome__icontains=fornecedor) &                                                                     
-                                                                    Q(saida__data_emissao__range=[initial_date, end_date])).order_by('-saida__data_emissao')
+        objectsConta = ContaBoleto.objects.all().filter(queryConta).order_by('data_vencimento')                                                          
+        objectsNota = NotaCompleta.objects.all().filter(queryNota).order_by('saida__data_emissao')  
         
                
         if check_pago == 'on' and check_nao_pago == None:
@@ -299,7 +320,10 @@ def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resul
                 objectsNota = objectsNota.filter(pago=False) 
 
                        
-        total_valor_boletos = 0             
+        total_valor_boletos = 0
+        total_valor_desconto = 0  
+        total_acresc = 0
+                   
         if objectsConta:
             total_valor_boletos = objectsConta.aggregate(total_valor = Sum('valor'))['total_valor']
         
@@ -321,11 +345,29 @@ def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resul
                 'total_valor_notas': total_valor_notas,
                 'total_geral': locale.currency((total_valor_boletos or 0 )+(total_valor_notas or 0), grouping=True),
                 }
-          
-  
+         
+        cache.set('filtro_notas_boletos_cache', context)      
+
+             
      
         return render(request, template_name , context)
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def gerar_pdf_resultado_contas_e_boletos(request, template_name="financeiro/impressoes/resultado_notas_e_boletos_pdf.html"):
     
+    if request.method == 'GET':
+        current_domain = get_current_site(request).domain
+        context = {
+            'context' : cache.get('filtro_notas_boletos_cache'),
+
+            'current_domain' : current_domain,
+        }
+        filename = 'resultados_notas_boletos.pdf'
+
+    
+        return gerar_pdf_by_template(template_name, context, filename) 
 
 
 @login_required(login_url='login/')
@@ -1144,6 +1186,7 @@ def excluir_pagamento_boleto_unico(request, pk, nota):
     boleto.pago = False
     boleto.save()
     return HttpResponseRedirect(f'/contas-a-pagar/nota/{nota}')
+
 
 @login_required(login_url='login/')
 @csrf_exempt
