@@ -1,9 +1,24 @@
-{% load static %}
+<style>
+    body{
+        font-size: 10px;
+    }
+    table{
+        font-size: 10px;
+    }
+    h6{
+        font-size: 12px;
+    }
+</style>
+
+
 <div class="row" ><span class="text-center">Resultados:</span></div>
-<div class="" style="margin-left:2em; margin-right:2em;">
+
+<div class="container">
+
+<div class="">
 Filtro: Boleto(s):
-<table class="table table-sm table-bordered dt-responsive tabela-listar" >
-    <thead style="border:solid 1px;border-color:silver;background:#0d6efd; color: white;">
+<table class="table table-sm table-bordered dt-responsive " >
+    <thead style="border-color:silver;background:#0d6efd; color: white;">
         <tr>
             <th scope="col" class="text-center">#</th>
             <th scope="col" class="text-center">Documento</th>
@@ -16,23 +31,23 @@ Filtro: Boleto(s):
             <th scope="col" class="text-center">Acrésc.</th>
             <th scope="col" class="text-center">Total</th>
             <th scope="col" class="text-center">Pago em</th>
-            <th scope="col" class="text-center">Opções</th>
+   
         </tr>
     </thead>
     <tbody>
-        {% if boletos and boletos.count > 0  %}
-        {% for item in boletos %}
+        {% if context.boletos and context.boletos.count > 0  %}
+        {% for item in context.boletos %}
         <tr>
             <td class="limitar_forloop text-center">{{forloop.counter}}</td>
             {% if item.doc %}<td class="text-center">{{item.doc}}</td>{% else %}<td class="text-center"> - </td>{% endif %}
            <td class="text-center">{{item.parcela}}/{{item.total_parcelas}}</td>
             {% if item.conta.saida.fornecedor %}<td class="limitar_td"
-                style="text-align: left; vertical-align:middle !important" title=""><a
-                    href="{% url 'detalhar-fornecedor' item.conta.saida.fornecedor.pk %}"
-                    title="">{{item.conta.saida.fornecedor}}</a></td>{% else %}<td> - </td>
+                style="text-align: left; vertical-align:middle !important" title=""></td>
+            {% else %}
+            <td> - </td>
             {% endif %}
             {% if item.conta.saida.fornecedor %}<td class="limitar_td" title="">{{item.conta.saida.fornecedor.doc}}</td>{% else %}<td> - </td>{% endif %}
-            {% if item.conta.saida.nota_fiscal %}<td class="text-center limitar_td"><a href="{% url 'ver-nota-completa' item.conta.pk %}" target="_blank" class="">{{item.conta.saida.nota_fiscal}}</a></td>{% else %}<td class="text-center"> - </td>{% endif %}
+            {% if item.conta.saida.nota_fiscal %}<td class="text-center limitar_td"></td>{% else %}<td class="text-center"> - </td>{% endif %}
 
             <td class="destaque-saida text-center">{{item.data_vencimento | date:"d/m/Y"}}
             </td>
@@ -48,7 +63,6 @@ Filtro: Boleto(s):
             <td class="text-center">{{item.valor_BR}}</td>
             <td class="text-center"> Aberto </td>
             {% endif %}
-            <td class="text-center"> <a href="{% url 'ver-nota-completa' item.conta.pk %}" target="_blank" class=""><i class="fas fa-chevron-circle-right"></i></a> </td>
         </tr>
         {% endfor %}
         {% else %}
@@ -58,9 +72,22 @@ Filtro: Boleto(s):
         {% endif %}
     </tbody>
 </table>
+
+
+    <div class="d-flex  justify-content-end  ">
+
+        <div class="col-md text-end p-2">
+            Total de Boletos: <h6 class="">{{context.boletos.count}}</h6>
+        </div>
+        <div class="col-md text-end p-2">
+            Total R$ Boleto: <h6 class="">R$ {{context.total_valor_boletos}}</h6>
+        </div>
+    </div>
+
+
 Filtro: Nota (s):
-<table class="table table-sm table-bordered dt-responsive tabela-listar" >
-    <thead style="border:solid 1px;border-color:silver;background:#0d6efd; color: white;">
+<table class="table table-sm table-bordered dt-responsive " >
+    <thead style="border-color:silver;background:#0d6efd; color: white;">
         <tr>
             <th scope="col" class="text-center">#</th>
             <th scope="col">Fornecedor</th>
@@ -72,21 +99,21 @@ Filtro: Nota (s):
             <th scope="col" class="text-center">Descon (-)</th>
             <th scope="col" class="text-center">Total (=)</th>
             <th scope="col" class="text-center">Pago em</th>
-            <th scope="col" class="text-center">Opções</th>
+           
         </tr>
     </thead>
     <tbody>
-        {% if contas and contas.count > 0  %}
-        {% for item in contas %}
+        {% if context.contas and context.contas.count > 0  %}
+        {% for item in context.contas %}
         <tr>
             <td class="limitar_forloop text-center">{{forloop.counter}}</td>
             {% if item.saida.fornecedor %}<td class="limitar_td"
-                style="text-align: left; vertical-align:middle !important" title=""><a
-                    href="{% url 'detalhar-fornecedor' item.saida.fornecedor.pk %}"
-                    title="">{{item.saida.fornecedor}}</a></td>{% else %}<td> - </td>
+                style="text-align: left; vertical-align:middle !important" title=""></td>
+            {% else %}
+                <td> - </td>
             {% endif %}
             {% if item.saida.fornecedor %}<td class="limitar_td" title="">{{item.saida.fornecedor.doc}}</td>{% else %}<td> - </td>{% endif %}
-            {% if item.saida.nota_fiscal %}<td class="text-center limitar_td"><a href="{% url 'ver-nota-completa' item.pk %}" target="_blank" class="">{{item.saida.nota_fiscal}}</a></td>{% else %}<td class="text-center"> - </td>{% endif %}
+            {% if item.saida.nota_fiscal %}<td class="text-center limitar_td"></td>{% else %}<td class="text-center"> - </td>{% endif %}
 
             <td class="destaque-saida text-center">{{item.saida.data_emissao | date:"d/m/Y"}}
             </td>
@@ -104,7 +131,6 @@ Filtro: Nota (s):
             <td class="text-center">{{item.valor_BR}}</td>
             <td class="text-center"> Aberto </td>
             {% endif %}
-            <td class="text-center"> <a href="{% url 'ver-nota-completa' item.pk %}" target="_blank" class=""><i class="fas fa-chevron-circle-right"></i></a> </td>
 
         </tr>
         {% endfor %}
@@ -115,82 +141,35 @@ Filtro: Nota (s):
         {% endif %}
     </tbody>
 </table>
-</div>
+
+   
+
+
+        <div class="d-flex  justify-content-end mt-1 ">
+                 <div class="col-md text-end p-2">
+                Total de Notas: <h6 class="">{{context.contas.count}}</h6>
+            </div>
+            <div class="col-md text-end p-2">
+                Total R$ Notas: <h6 class="">R$ {{context.total_valor_notas}}</h6>
+            </div>
+        </div>
+ 
+
     <ol class="list-group ">
         <li class="list-group-item d-flex  justify-content-end mt-1 ">
             <div class="col-3">
-                Resumo dos resultados:
+               
             </div>
-            
-            <div class="col-md text-end">
-                Total de Boletos: <h6 class="">{{boletos.count}}</h6>
+        
+            <div class="col-md text-end m-2">
+                Total Descontos: <h6 class="">{{context.total_desconto}}</h6>
             </div>
-            <div class="col-md text-end">
-                Total R$ Boleto: <h6 class="">R$ {{total_valor_boletos}}</h6>
+            <div class="col-md text-end m-2 fw-bold">
+                Total Geral: <h6 class="fw-bold">{{context.total_geral}}</h6>
             </div>
-
-            <div class="col-md text-end">
-                Total de Notas: <h6 class="">{{contas.count}}</h6>
-            </div>
-            <div class="col-md text-end">
-                Total R$ Notas: <h6 class="">R$ {{total_valor_notas}}</h6>
-            </div>
-            {% comment %} <div class="col-md text-end">
-                Total Acréscimos: <h6 class="">{{total_acresc}}</h6>
-            </div> {% endcomment %}
-            <div class="col-md text-end">
-                Total Descontos: <h6 class="">{{total_desconto}}</h6>
-            </div>
-            <div class="col-md text-end">
-                Total: <h6 class="">{{total_geral}}</h6>
-            </div>
-
-
         </li>
     </ol>
 
 
 
-<script src="{% static 'js/datatables.min.js' %}"></script>
-<script>
-    $(document).ready(function () {
-
-
-        $('.tabela-listar').DataTable({
-            responsive: true,
-            // "bSort": false,
-            "aaSorting": [],
-            "pageLength": 10,
-            "order": [
-                [0, "asc"]
-            ], //3º tabela em ordem decrescente
-            "language": {
-
-                "decimal": ",",
-                "emptyTable": "Sem registro",
-                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
-                "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
-                "infoFiltered": "(filtrado de _MAX_ registros no total)",
-                "infoPostFix": "",
-                "thousands": ".",
-                "lengthMenu": "Mostrar _MENU_ registros",
-                "loadingRecords": "A carregar dados...",
-                "processing": "A processar...",
-                "search": "Procurar:",
-                "zeroRecords": "Não foram encontrados resultados",
-                "paginate": {
-                    "first": "Primeiro",
-                    "last": "Último",
-                    "next": "Seguinte",
-                    "previous": "Anterior"
-                },
-                "aria": {
-                    "sortAscending": ": ordem crescente",
-                    "sortDescending": ": ordem decrescente"
-                }
-            }
-        });
-
-
-    });
-</script>
+</div>

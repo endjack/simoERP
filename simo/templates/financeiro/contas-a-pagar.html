@@ -70,49 +70,54 @@
           <label class="form-check-label" style="color:green" for="flexCheckChecked"> Pagos </label>
         </div>
         
+        
     </div>
              
     <div class="">
-        <div class="form-group row mb-2 ">
-          <div class="col-md">
-            <div class="col-12 ">
-              <label for="input1" class="">Busca por: nº NF</label>
-              <input type="text" class="form-control form-control-sm" id="input1" name="descricao" >
+        <div class="form-group d-flex flex-row align-items-center">
+          <div class="p-2">
+            <div class="">
+              <label for="input1" class="">NF ou Doc de Boleto</label>
+              <input type="text" class="form-control form-control-sm" id="input1" name="descricao" placeholder="Buscar...">
             </div>
-            <span class="help-block">*Mínimo de 3 dígitos para buscar</span>
+            <span class="help-block"></span>
           </div>
-          <div class="col-md">
-            <div class="col-12 ">
-              <label for="inputvalor" class="">Busca por: Valor</label>
-              <input type="number" step="any" min="0.1" class="form-control form-control-sm" id="inputvalor" name="valor" >
+          <div class="p-2">
+            <div class="">
+              <label for="inputvalor" class="">Valor</label>
+              <input type="number" step="any" min="0.1" class="form-control form-control-sm" id="inputvalor" name="valor" placeholder="R$" >
             </div>
-            <span class="help-block">*Mínimo de 3 dígitos para buscar</span>
+            <span class="help-block"></span>
           </div>
-          <div class="col-md">
-            <div class="col-12">
+          <div class="p-2">
+            <div class="">
               <label for="input2" class="">Vencimento/Data Inicial</label>
               <input type="date" class="form-control form-control-sm" id="input2" name="data" >
             </div>
           </div>
   
-          <div class="col-md">
-            <div class="col-12">
+          <div class="p-2">
+            <div class="">
               <label for="input3" class="">Vencimento/Data Final</label>
               <input type="date" class="form-control form-control-sm" id="input3" name="data_f" >
             </div>
           </div>
   
-          <div class="col-md">
-            <div class="col-12">
+          <div class="p-2">
+            <div class="">
               <label for="input4" class="">Fornecedor</label>
-              <input  type="text" class="form-control form-control-sm " id="input4" name="fornecedor" >
+              <input  type="text" class="form-control form-control-sm " id="input4" name="fornecedor" placeholder="Buscar...">
             </div>
             <span class="help-block"></span>
           </div>
 
-          <div class="col-md"> <br>
-            <button class="btn btn-p-sm btn-primary" form="form_filtro_contas_atrasadas">Buscar</button>
-            <a class="btn btn-p-sm btn-secondary m-2" href="{% url 'contas-a-pagar' %}">Limpar</a>
+          <div class="p-2 "> <br>
+            <button class="btn btn-p-sm btn-primary" form="form_filtro_contas_atrasadas"><i class="fas fa-search"></i> Buscar</button>
+            <a class="btn btn-p-sm btn-secondary m-2" href="{% url 'contas-a-pagar' %}"><i class="fas fa-broom"></i>  Limpar</a>
+            
+            <a  style="" class="btn btn-p-sm btn-danger m-1" target="_blank" href="{% url 'gerar_pdf_resultado_contas_e_boletos'  %}" 
+              title="Gerar PDF"><i class="fas fa-file-pdf"></i> Gerar PDF</a>
+          
   
           </div>
          
