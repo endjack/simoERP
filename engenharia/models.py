@@ -36,11 +36,16 @@ class OrdemServicoObras(models.Model):
             return "OS nº: " + str(self.numero_os) + " - Local: Indefinido" 
         
     def get_situacao(self):
-        for s in SITUAÇÃO:
-            if self.finalizado:
-                return 'Finalizado'
-            if self.situacao == s[0]:
-                return s[1]
+        
+        if self.finalizado:
+            return 'Finalizado'
+        
+        else:     
+            for s in SITUAÇÃO:
+                if self.situacao == s[0]:
+                    print('------------', s[0], ' e ', s[1])
+                    return s[1]
+                    
             
     def get_files_by_os(self):
         arquivos = DocumentoOS.objects.filter(ordem_servico=self)

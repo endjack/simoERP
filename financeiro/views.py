@@ -27,10 +27,6 @@ pode_salvar_boleto = False
 id_nota_em_processo = None
 
  
- #TODO excluir Nota Completa  <-----
- #TODO Excluir itens salvar editar não atualiza os itens
-
- #TODO Editar (colocar o itens para serem add no final)
 
 
 #GET /resumo-do-dia/
@@ -326,7 +322,6 @@ def filtro_contas_a_pagar(request,  template_name = 'financeiro/fragmentos/resul
      
         return render(request, template_name , context)
     
-
 
 @login_required(login_url='login/')
 @csrf_exempt

@@ -18,158 +18,165 @@
   
 </div>
 
-<div class="d-flex align-items-center flex-row bd-highlight mb-1 ">
-   
-    <div class="p-2 bd-highlight">
-        {% if not editar %}
-        <a class="btn btn-sm btn-secondary m-2" href="{% url 'home_obra_os' obra.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
-        {% else %}
-        <a class="btn btn-sm btn-secondary m-2" href="{% url 'obra_detalhar_os' obra.pk os.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
-        {% endif %}
+<div id="corpo-nova-Ordem" style="margin-left:5%">
+
+
+    <div class="">
+
+            <div class="d-flex align-items-center flex-row bd-highlight mb-1 ">
+            
+                <div class="p-2 bd-highlight">
+                    {% if not editar %}
+                    <a class="btn btn-sm btn-secondary m-2" href="{% url 'home_obra_os' obra.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
+                    {% else %}
+                    <a class="btn btn-sm btn-secondary m-2" href="{% url 'obra_detalhar_os' obra.pk os.pk %}"><i class="fas fa-arrow-left"></i> Voltar</a>
+                    {% endif %}
+
+                </div>
+                <div class="p-2 bd-highlight">   
+                    <h5> {% if not editar %}
+                        <div class="col-md"> <strong> Nova Ordem de Serviço: </strong> </div>
+                        {% else %}
+                        <div class="col-md"> <strong> Editar Ordem de Serviço nº {{os.numero_os}}</strong> </div>
+                        {% endif %} </h5> 
+                </div> 
+                <button hx-ext="disable-element" id="savarOrdemServicoBtt" title="Salvar Ordem de Serviço" type="submit" class="btn btn-sm btn-success m-2" form="FormaddOsObras"><i class="fas fa-save"></i> Salvar</button>
+                <button class="btn btn-sm btn-secondary m-2" href="#" title="Limpar Campos" disabled><i class=""></i> Limpar</button>
+
+            </div>
 
     </div>
-    <div class="p-2 bd-highlight">   
-        <h5> {% if not editar %}
-            <div class="col-md"> <strong> Nova Ordem de Serviço: </strong> </div>
-            {% else %}
-            <div class="col-md"> <strong> Editar Ordem de Serviço nº {{os.numero_os}}</strong> </div>
-            {% endif %} </h5> 
-    </div> 
-    <button hx-ext="disable-element" id="savarOrdemServicoBtt" title="Salvar Ordem de Serviço" type="submit" class="btn btn-sm btn-success m-2" form="FormaddOsObras"><i class="fas fa-save"></i> Salvar</button>
-    <button class="btn btn-sm btn-secondary m-2" href="#" title="Limpar Campos" disabled><i class=""></i> Limpar</button>
+            
+    <div class="container">      
+        <form id="FormaddOsObras" method="POST"  {% if editar %} action="{% url 'obra_salvar_editar_os' obra.pk  os.pk %}" {% else %} action="{% url 'obra_salvar_nova_os' obra.pk %}" {% endif %}> 
+            
+            <div class="form-group row mb-2">
+            
+                <div class="col-2">
+                    <label for="input4" class="">Data Recebida:</label>
+                    <input  {% if editar %} value="{{os.data_recebimento |date:'Y-m-d' }}" {% else %} value="{% now 'Y-m-d' %}" {% endif %} type="date" class="form-control form-control-sm date" name="data_recebida" id="input4" required="required">
+                    <small class="small-error" id="error_data_recebida"></small>
+                </div>
+                <div class="col-2">
+                    
+                    <label for="input0" class="">Situação:</label>
+                    <select id="input0" class="form-control form-control-sm"  name="situacao" >
+                        {% if editar %}
+                            {% for i in situacao %}
+                                {% if i.0|stringformat:'s' == os.situacao %}
+                                    <option value="{{i.0}}" selected> {{i.1}}</option>
+                                {% else %}
+                                    <option value="{{i.0}}"> {{i.1}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            {% for i in situacao %}
+                            <option value="{{i.0}}"> {{i.1}}</option>
+                            {% endfor %}
+                        {% endif %}        
+                    </select>
+                </div>
 
-</div>
-        
-<div class="container">      
-       <form id="FormaddOsObras" method="POST"  {% if editar %} action="{% url 'obra_salvar_editar_os' obra.pk  os.pk %}" {% else %} action="{% url 'obra_salvar_nova_os' obra.pk %}" {% endif %}> 
-        
-        <div class="form-group row mb-2">
-           
-            <div class="col-2">
-                <label for="input4" class="">Data Recebida:</label>
-                <input  {% if editar %} value="{{os.data_recebimento |date:'Y-m-d' }}" {% else %} value="{% now 'Y-m-d' %}" {% endif %} type="date" class="form-control form-control-sm date" name="data_recebida" id="input4" required="required">
-                <small class="small-error" id="error_data_recebida"></small>
             </div>
-            <div class="col-2">
+
+            <div class="form-group row mb-2">
+
+                <input type="hidden" name="num_obra" value="{{obra.pk}}">
+
+                <div class="col-2">
+                    <label for="input1" class="">OS número:</label>
+                    <input {% if editar %} value="{{os.numero_os }}" {% endif %} 
+                        type="number" class="form-control form-control-sm" name="num_os" id="input1" required="required"
+                        hx-get="{% url 'hx_verificar_numero_os' %}"
+                        hx-include="[name='num_os'], [name='num_obra']"
+                        hx-trigger="change"
+                        hx-ext="disable-element"
+                        hx-disable-element="#savarOrdemServicoBtt"
+                        hx-target="#error_num_os"
+                        hx-indicator="#htmx-indicator">
+                    <small class="small-error" id="error_num_os"></small>
+                </div>
+
+            
+                <div class="col-4">
+                    <label for="input3" class="">Local/Unidade:</label>
+                    <select id="input3" class="form-control form-control-sm"  name="local" 
+                        hx-get="{% url 'get_locais' %}"
+                        hx-include="[name='local']"
+                        hx-target="#inputEndereco"
+                        hx-indicator="#htmx-indicator">
+                        {% if editar %}
+                            {% for i in locais %}
+                                <option value="{{i.pk}}"  {% if i.pk == os.local.pk %} selected {% endif %}> {{i.local}}</option>
+                            {% endfor %}
+                        {% else %}
+                            {% for i in locais %}
+                            <option value="{{i.pk}}"> {{i.local}}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <div id="htmx-indicator"></div>
+                    <div id="local_selecionado"></div>
+                </div>
                 
-                <label for="input0" class="">Situação:</label>
-                <select id="input0" class="form-control form-control-sm"  name="situacao" >
-                    {% if editar %}
-                        {% for i in situacao %}
-                            {% if i.0|stringformat:'s' == os.situacao %}
-                                <option value="{{i.0}}" selected> {{i.1}}</option>
-                            {% else %}
-                                <option value="{{i.0}}"> {{i.1}}</option>
-                            {% endif %}
-                        {% endfor %}
-                    {% else %}
-                        {% for i in situacao %}
-                        <option value="{{i.0}}"> {{i.1}}</option>
-                        {% endfor %}
-                    {% endif %}        
-                </select>
+                
             </div>
 
-         </div>
+            <div class="form-group row mb-2">
+                <div class="col-6">
+                    <label for="input2" class="">Endereço:</label>
+                    {% include 'engenharia/fragmentos/endereco_input_fragment.html' %}
+                    <small class="small-error" id="error_endereço"></small>
+                </div>
 
-        <div class="form-group row mb-2">
-
-            <input type="hidden" name="num_obra" value="{{obra.pk}}">
-
-            <div class="col-2">
-                <label for="input1" class="">OS número:</label>
-                   <input {% if editar %} value="{{os.numero_os }}" {% endif %} 
-                    type="number" class="form-control form-control-sm" name="num_os" id="input1" required="required"
-                    hx-get="{% url 'hx_verificar_numero_os' %}"
-                    hx-include="[name='num_os'], [name='num_obra']"
-                    hx-trigger="change"
-                    hx-ext="disable-element"
-                    hx-disable-element="#savarOrdemServicoBtt"
-                    hx-target="#error_num_os"
-                    hx-indicator="#htmx-indicator">
-                   <small class="small-error" id="error_num_os"></small>
             </div>
 
-        
-            <div class="col-4">
-                <label for="input3" class="">Local/Unidade:</label>
-                <select id="input3" class="form-control form-control-sm"  name="local" 
-                    hx-get="{% url 'get_locais' %}"
-                    hx-include="[name='local']"
-                    hx-target="#inputEndereco"
-                    hx-indicator="#htmx-indicator">
-                    {% if editar %}
-                        {% for i in locais %}
-                            <option value="{{i.pk}}"  {% if i.pk == os.local.pk %} selected {% endif %}> {{i.local}}</option>
-                        {% endfor %}
-                    {% else %}
-                        {% for i in locais %}
-                        <option value="{{i.pk}}"> {{i.local}}</option>
-                        {% endfor %}
-                    {% endif %}
-                </select>
-                <div id="htmx-indicator"></div>
-                <div id="local_selecionado"></div>
-            </div>
-            
-            
-        </div>
+            <div class="form-group row mb-2">
+                <div class="col-6">
+                    <label for="input3" class="">Serviços à Executar:</label>
+                    <textarea id="input3" name="servicos" rows="5" cols="50" class="form-control form-control-sm">{% if editar %}{{os.servicos |safe}}{% endif %}</textarea>
+                    <small class="small-error" id="error_servicos"></small>
+                </div>
 
-        <div class="form-group row mb-2">
-            <div class="col-6">
-                <label for="input2" class="">Endereço:</label>
-                {% include 'engenharia/fragmentos/endereco_input_fragment.html' %}
-                   <small class="small-error" id="error_endereço"></small>
             </div>
 
-        </div>
+            <div class="form-group row mb-2">
+                
+                <div class="col-2">
+                    <label for="input5" class="">Data Início:</label>
+                    <input {% if editar %} value="{{os.data_inicio |date:'Y-m-d' }}" {% else %} value="{% now 'Y-m-d' %}" {% endif %} type="date" class="form-control form-control-sm date" name="data_inicio" id="input5" required="required">
+                    <small class="small-error" id="error_data_inicio"></small>
+                </div>
 
-        <div class="form-group row mb-2">
-            <div class="col-6">
-                <label for="input3" class="">Serviços à Executar:</label>
-                   <textarea id="input3" name="servicos" rows="5" cols="50" class="form-control form-control-sm">{% if editar %}{{os.servicos |safe}}{% endif %}</textarea>
-                   <small class="small-error" id="error_servicos"></small>
+                <div class="col-2">
+                    <label for="input6" class="">Prazo:</label>
+                    <input {% if editar %} value="{{os.data_prazo |date:'Y-m-d' }}" {% else %} value="{% now 'Y-m-d' %}" {% endif %} type="date" class="form-control form-control-sm date" name="data_prazo" id="input6" required="required">
+                    <small class="small-error" id="error_data_prazo"></small>
+                </div>
+
             </div>
 
-        </div>
+            <div class="form-group row mb-2">
+                <div class="col-6">
+                    <label for="input7" class="">Observações:</label>
+                    <textarea id="input7" name="obs" rows="2" cols="50" class="form-control form-control-sm">{% if editar %}{% if os.obs %}{{os.obs}}{% endif %}{% endif %}</textarea>
+                    <small class="small-error" id="error_obs"></small>
+                </div>
 
-        <div class="form-group row mb-2">
-            
-            <div class="col-2">
-                <label for="input5" class="">Data Início:</label>
-                <input {% if editar %} value="{{os.data_inicio |date:'Y-m-d' }}" {% else %} value="{% now 'Y-m-d' %}" {% endif %} type="date" class="form-control form-control-sm date" name="data_inicio" id="input5" required="required">
-                <small class="small-error" id="error_data_inicio"></small>
             </div>
 
-            <div class="col-2">
-                <label for="input6" class="">Prazo:</label>
-                <input {% if editar %} value="{{os.data_prazo |date:'Y-m-d' }}" {% else %} value="{% now 'Y-m-d' %}" {% endif %} type="date" class="form-control form-control-sm date" name="data_prazo" id="input6" required="required">
-                <small class="small-error" id="error_data_prazo"></small>
-            </div>
-
-        </div>
-
-        <div class="form-group row mb-2">
-            <div class="col-6">
-                <label for="input7" class="">Observações:</label>
-                   <textarea id="input7" name="obs" rows="2" cols="50" class="form-control form-control-sm">{% if editar %}{% if os.obs %}{{os.obs}}{% endif %}{% endif %}</textarea>
-                   <small class="small-error" id="error_obs"></small>
-            </div>
-
-        </div>
-
-            {% for error in field.errors %}
-            <span class="help-block">{{ error }}</span>
-            {% endfor %}
-    </form>
-</div> 
+                {% for error in field.errors %}
+                <span class="help-block">{{ error }}</span>
+                {% endfor %}
+        </form>
+    </div> 
 
 
     <div class="mb-4"></div>
 
 
 
-
+</div>
 {% endblock%}
 
 
