@@ -57,8 +57,10 @@ class NotaCompleta(models.Model):
             return self.itens.all().aggregate(total_itens = Sum(ExpressionWrapper(F("qtd") *  F("valor"),  output_field=DecimalField())))["total_itens"]
 
     def get_valor_total_itens_BR(self):
+        if self.get_valor_total_itens():
             return locale.currency(self.get_valor_total_itens(), grouping=True)
-    
+        else:
+          return locale.currency(0, grouping=True)  
     
     def valor_BR(self):
         if self.valor:

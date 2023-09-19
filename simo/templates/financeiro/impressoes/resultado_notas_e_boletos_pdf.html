@@ -30,7 +30,7 @@ Filtro: Boleto(s):
             <th scope="col" class="text-center">Valor Original</th>
             <th scope="col" class="text-center">Acrésc.</th>
             <th scope="col" class="text-center">Total</th>
-            <th scope="col" class="text-center">Pago em</th>
+            <th scope="col" class="text-center">Situação</th>
    
         </tr>
     </thead>
@@ -42,12 +42,12 @@ Filtro: Boleto(s):
             {% if item.doc %}<td class="text-center">{{item.doc}}</td>{% else %}<td class="text-center"> - </td>{% endif %}
            <td class="text-center">{{item.parcela}}/{{item.total_parcelas}}</td>
             {% if item.conta.saida.fornecedor %}<td class="limitar_td"
-                style="text-align: left; vertical-align:middle !important" title=""></td>
+                style="text-align: left; vertical-align:middle !important" title="">{{item.conta.saida.fornecedor.nome}}</td>
             {% else %}
             <td> - </td>
             {% endif %}
             {% if item.conta.saida.fornecedor %}<td class="limitar_td" title="">{{item.conta.saida.fornecedor.doc}}</td>{% else %}<td> - </td>{% endif %}
-            {% if item.conta.saida.nota_fiscal %}<td class="text-center limitar_td"></td>{% else %}<td class="text-center"> - </td>{% endif %}
+            {% if item.conta.saida.nota_fiscal %}<td class="text-center limitar_td">{{item.conta.saida.nota_fiscal}}</td>{% else %}<td class="text-center"> - </td>{% endif %}
 
             <td class="destaque-saida text-center">{{item.data_vencimento | date:"d/m/Y"}}
             </td>
@@ -98,7 +98,7 @@ Filtro: Nota (s):
             <th scope="col" class="text-center">Acrésc (+)</th>
             <th scope="col" class="text-center">Descon (-)</th>
             <th scope="col" class="text-center">Total (=)</th>
-            <th scope="col" class="text-center">Pago em</th>
+            <th scope="col" class="text-center">Situação</th>
            
         </tr>
     </thead>
@@ -108,12 +108,12 @@ Filtro: Nota (s):
         <tr>
             <td class="limitar_forloop text-center">{{forloop.counter}}</td>
             {% if item.saida.fornecedor %}<td class="limitar_td"
-                style="text-align: left; vertical-align:middle !important" title=""></td>
+                style="text-align: left; vertical-align:middle !important" title="">{{item.saida.fornecedor.nome}}</td>
             {% else %}
                 <td> - </td>
             {% endif %}
             {% if item.saida.fornecedor %}<td class="limitar_td" title="">{{item.saida.fornecedor.doc}}</td>{% else %}<td> - </td>{% endif %}
-            {% if item.saida.nota_fiscal %}<td class="text-center limitar_td"></td>{% else %}<td class="text-center"> - </td>{% endif %}
+            {% if item.saida.nota_fiscal %}<td class="text-center limitar_td">{{item.saida.nota_fiscal}}</td>{% else %}<td class="text-center"> - </td>{% endif %}
 
             <td class="destaque-saida text-center">{{item.saida.data_emissao | date:"d/m/Y"}}
             </td>
