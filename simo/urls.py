@@ -305,11 +305,11 @@ urlpatterns = [
 
     
     #urls Fornecedores
-     path('fornecedores/', ListarFornecedorView.as_view(), name='listar-fornecedores'),
-     path('fornecedor/<pk>', DetalharFornecedorView.as_view(), name='detalhar-fornecedor'),
-     path('fornecedores/inserir', InserirFornecedorView.as_view(), name='inserir-fornecedor'),
-     path('fornecedores/<pk>/editar', EditarFornecedorView.as_view(), name='editar-fornecedor'),
-     path('fornecedores/<pk>/excluir', ExcluirFornecedorView.as_view(), name='excluir-fornecedor'),
+    path('fornecedores/', ListarFornecedorView.as_view(), name='listar-fornecedores'),
+    path('fornecedor/<pk>', DetalharFornecedorView.as_view(), name='detalhar-fornecedor'),
+    path('fornecedores/inserir', InserirFornecedorView.as_view(), name='inserir-fornecedor'),
+    path('fornecedores/<pk>/editar', EditarFornecedorView.as_view(), name='editar-fornecedor'),
+    path('fornecedores/<pk>/excluir', ExcluirFornecedorView.as_view(), name='excluir-fornecedor'),
      
      
     path('fornecedores/get', get_fornecedores, name='get-fornecedores'),
@@ -317,21 +317,23 @@ urlpatterns = [
     
 
     #urls Funcionários
-     path('funcionarios/', InserirFuncionarioView.as_view(), name='inserir-funcionario'),
-     path('funcionarios/<pk>/editar', EditarFuncionarioView.as_view(), name='editar-funcionario'),
-     path('funcionarios/<pk>/excluir', ExcluirFuncionarioView.as_view(), name='excluir-funcionario'),
-     path('funcionario/<pk>', DetalharFuncionarioView.as_view(), name='detalhar-funcionario'),
-     path('cargos/', InserirCargoView.as_view(), name='inserir-cargo'),
-     path('cargos/<pk>/editar', EditarCargoView.as_view(), name='editar-cargo'),
-     path('cargos/<pk>/excluir', ExcluirCargoView.as_view(), name='excluir-cargo'),
-     path('cargo/<pk>', DetalharCargoView.as_view(), name='detalhar-cargo'),
+    path('', include("funcionarios.urls")),
+    
+    path('funcionarios/', InserirFuncionarioView.as_view(), name='inserir-funcionario'),
+    path('funcionarios/<pk>/editar', EditarFuncionarioView.as_view(), name='editar-funcionario'),
+    path('funcionarios/<pk>/excluir', ExcluirFuncionarioView.as_view(), name='excluir-funcionario'),
+    path('funcionario/<pk>', DetalharFuncionarioView.as_view(), name='detalhar-funcionario'),
+    path('cargos/', InserirCargoView.as_view(), name='inserir-cargo'),
+    path('cargos/<pk>/editar', EditarCargoView.as_view(), name='editar-cargo'),
+    path('cargos/<pk>/excluir', ExcluirCargoView.as_view(), name='excluir-cargo'),
+    path('cargo/<pk>', DetalharCargoView.as_view(), name='detalhar-cargo'),
 
-      #urls Faturamento
-     path('faturamentos/', FaturamentoView.as_view(), name='listar-faturamentos'),
-     path('faturamentos/inserir', InserirFaturamentoView.as_view(), name='inserir-faturamento'),
-     path('faturamentos/editar/<pk>', EditarFaturamentoView.as_view(), name='editar-faturamento'),
-     path('faturamentos/excluir/<pk>', ExcluirFaturamentoView.as_view(), name='excluir-faturamento'),
-     path('faturamentos/imprimir', ImprimirFaturamentoView.as_view(), name='imprimir-faturamento'),
+    #urls Faturamento
+    path('faturamentos/', FaturamentoView.as_view(), name='listar-faturamentos'),
+    path('faturamentos/inserir', InserirFaturamentoView.as_view(), name='inserir-faturamento'),
+    path('faturamentos/editar/<pk>', EditarFaturamentoView.as_view(), name='editar-faturamento'),
+    path('faturamentos/excluir/<pk>', ExcluirFaturamentoView.as_view(), name='excluir-faturamento'),
+    path('faturamentos/imprimir', ImprimirFaturamentoView.as_view(), name='imprimir-faturamento'),
 ]
 
 htmlx_urlpatterns = [     

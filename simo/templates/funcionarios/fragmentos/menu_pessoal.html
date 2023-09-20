@@ -1,0 +1,64 @@
+{% block styleHead %}
+<style>
+    ._menu:hover{
+        background-color:gray;
+    }
+
+    ._menu_ativo{
+        background-color:gray;
+    }
+    ._menu_ativo:hover{
+        background-color:gray;
+    }
+
+</style>
+{% endblock %}
+
+<div class="menu-estoque" style="background-color:white; margin-bottom:1rem">
+<div class="container">
+<div class="d-flex flex-row align-items-center justify-content-center text-center" >
+    <div class="" style="font-size:18pt">
+
+        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'PROCURAR' %} _menu_ativo{% endif %}" href="{% url 'procurar_pessoal' %}" 
+            title="Procurar">
+            <div class="d-flex flex-column">
+            <span style="width:5rem"><i class="fas fa-search"></i></span>
+            Procurar
+            </div>
+        </a>
+
+        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'CADASTRARFUNCIONARIOS' %} _menu_ativo{% endif %}" href="{% url 'cadastrar_funcionarios_pessoal' %}" 
+            title="Cadastrar Itens">
+            <div class="d-flex flex-column">
+            <span style="width:6rem"><i class="fas fa-user-alt"></i></span>
+            + Funcionário
+            </div>
+        </a>
+
+        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'CADASTRARCARGOS' %} _menu_ativo{% endif %}" href="{% url 'cadastrar_cargo_pessoal' %}" 
+            title="Cadastrar Categorias">
+            <div class="d-flex flex-column">
+            <span style="width:5rem"><i class="fas fa-hard-hat"></i></span>
+            + Cargos
+            </div>
+        </a>
+
+        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'IMPRESSÃO' %} _menu_ativo{% endif %}" href="{% url 'impressoes_pessoal' %}" 
+            title="Impressões">
+            <div class="d-flex flex-column">
+            <span style="width:5rem"><i class="fas fa-print"></i></span>
+            Impressões
+            </div>
+        </a>
+
+        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'RELATÓRIO' %} _menu_ativo{% endif %}" href="{% url 'relatorios_pessoal' %}" 
+            title="Relatório">
+            <div class="d-flex flex-column">
+            <span style="width:5rem"><i class="far fa-file-alt"></i></span>
+            Relatórios
+            </div>
+        </a>
+    </div>
+</div>
+</div> 
+</div>

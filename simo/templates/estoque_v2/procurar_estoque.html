@@ -48,7 +48,7 @@
       
       <div class="p-1">
         <form id="form_filtro" 
-        hx-post="{% url 'filtrar_itens_estoque' %}" 
+        hx-get="{% url 'filtrar_itens_estoque' %}" 
         hx-target="#resultados_filtro" 
         hx-swap="innerHTML" 
         hx-indicator="#spinner"
@@ -76,7 +76,7 @@
               <div class="col-12">
                 <label for="input0" class="">Categoria:</label>
                 <select id="input0" class="form-control form-control-sm"  name="categoria" >
-                        <option value="-1"> Todas as Categorias</option>
+                        <option value="todas"> Todas as Categorias</option>
                         {% for i in categorias %}
                         <option value="{{i.pk}}"> {{i.categoria}}</option>
                         {% endfor %}      

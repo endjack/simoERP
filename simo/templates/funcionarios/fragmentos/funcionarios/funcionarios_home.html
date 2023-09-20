@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styleHead %}
+<style>
+.form-label{
+    margin-bottom:0px;
+    
+}
+</style>
+{% endblock %}
+
+{% block conteudo %}
+    <!-- MENU PESSOAL --> 
+    {% include "funcionarios/fragmentos/menu_pessoal.html" %}
+
+
+    <div class="container">
+
+        <form action="">
+           
+                <small>Dados Pessoais</small>
+                <hr class="m-0 mb-3">
+          
+            <div class="row ">
+
+                   <div class="col-2 text-center">
+                    <div class="card" style="width: 10rem; height: 12rem;"><span style="position: absolute;top: 45%;left: 30%;color:gray;">Sem foto</span></div>
+                    <div class=""><a href="#" class="">Editar Foto</a></div>    
+                   </div>
+
+                   <div class="col-10 mt-2">
+                            
+
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <label for="nome" class="form-label">Nome:</label>
+                                    <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control form-control-sm" id="nome" name="nome">
+                                </div>
+
+                                <div class="col-3">
+                                    <label for="cpf" class="form-label">CPF:</label>
+                                    <input type="text" class="form-control form-control-sm" id="cpf" name="cpf">
+                                </div>
+
+                                <div class="col-3">
+                                    <label for="rg" class="form-label">RG:</label>
+                                    <input type="text" class="form-control form-control-sm" id="rg" name="rg">
+                                </div>
+
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-3">
+                                    <label for="ctps" class="form-label">CTPS:</label>
+                                    <input type="text" class="form-control form-control-sm" id="ctps" name="ctps">
+                                </div>
+
+                                <div class="col-3">
+                                    <label for="cpf" class="form-label">CNH/Habilitação:</label>
+                                    <input type="text" class="form-control form-control-sm" id="cpf" name="cpf">
+                                </div>
+                                <div class="col-2">
+                                    <label for="categoria_cnh"  class="form-label">Cat. CNH: <i class="fas fa-question-circle" title=" A-Moto | B-Carro | C,D,E-Carga"></i></label>
+                                    <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control form-control-sm" id="categoria_cnh" name="categoria_cnh">
+                                    
+                                </div>
+
+                                <div class="col-3">
+                                    <label for="data_nascimento" class="form-label">Data de Nascimento:</label>
+                                    <input type="date" class="form-control form-control-sm" id="data_nascimento" name="data_nascimento">
+                                </div>
+
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-2">
+                                    <label for="cep_endereco" class="form-label">CEP:</label>
+                                    <input type="text" class="form-control form-control-sm" id="cep_endereco" name="cep_endereco">
+                                </div>
+
+                                <div class="col-6">
+                                    <label for="endereco" class="form-label">Endereço:</label>
+                                    <input type="text" class="form-control form-control-sm" id="endereco" name="endereco">
+                                </div>
+                                <div class="col-2">
+                                    <label for="telefone1"  class="form-label">Tel 01: </label>
+                                    <input type="text" class="form-control form-control-sm" id="telefone1" name="telefone1">                                    
+                                </div>
+
+                                <div class="col-2">
+                                    <label for="telefone2" class="form-label">Tel 02:</label>
+                                    <input type="text" class="form-control form-control-sm" id="telefone2" name="telefone2">
+                                </div>
+
+                            </div>
+                    </div>
+            </div>
+
+            <br>
+            <small>Dados Contratuais</small>
+            <hr class="m-0 mb-3">
+
+
+            <div class="row">
+
+                <div class="row mb-2">
+                    <div class="col-2">
+                        <label for="matricula" class="form-label">Matrícula:</label>
+                        <input type="text" class="form-control form-control-sm" id="matricula" name="matricula">
+                    </div>
+
+                    <div class="col-4">
+                        <label for="situacao" class="form-label">Tipo de Contrato</label>
+                        <select class="form-select form-select-sm" aria-label="Default select example" id="situacao">
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                    </div>
+               
+            
+                    <div class="col-2">
+                        <label for="date1" class="form-label">Data Admissão:</label>
+                        <input type="date" class="form-control form-control-sm" id="date1" name="data_admissao" value="{% now 'Y-m-d' %}">
+                    </div>
+
+                    <div class="col-2">
+                        <label for="date2" class="form-label">Início Prorrogação:</label>
+                        <input type="date" class="form-control form-control-sm" id="date2" name="data_inicio_prorrogacao">
+                    </div>
+
+                    <div class="col-2">
+                        <label for="date3" class="form-label">Fim Prorrogação:</label>
+                        <input type="date" class="form-control form-control-sm" id="date3" name="data_fim_prorrogacao">
+                    </div>
+
+                </div>
+            </div>
+
+           
+            <div class="form-check mt-3">
+              <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" name="remember"> Responsável 
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+
+          </form>
+
+    </div>
+
+
+
+
+{% endblock %}
+
+
+{% block jquery %}
+{% endblock%}

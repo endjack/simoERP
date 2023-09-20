@@ -11,7 +11,7 @@ from funcionarios.models import Funcionario
 from obras.models import Local, Obra
 from django.db.models import Sum, Count, F, Q
 from requisicao.models import ItemRequisicao, Requisicao
-from django_htmx.http import HttpResponseClientRedirect
+from django_htmx.http import HttpResponseClientRedirect, push_url
 from django.core.cache import cache
 
 from simo.utils import gerar_pdf_by_template
@@ -140,28 +140,25 @@ def movimentar_item_de_estoque(request, pk):
 @csrf_exempt
 def filtrar_itens_estoque(request, template_name = 'estoque_v2/fragmentos/procurar/resultados_procurar.html'):
 
-    if request.method == 'POST':
+    if request.method == 'GET':
         
-        descricao = request.POST.get('descricao') or ''
-        marca = request.POST.get('marca') or ''
-        categoria = request.POST.get('categoria') or '-1'
+        descricao = request.GET.get('descricao') 
+        marca = request.GET.get('marca') 
+        categoria = request.GET.get('categoria')
 
-        if categoria == '-1':    
+        if categoria == 'todas':    
             itens = Estoque.objects.all().filter(item__descricao__icontains=descricao).filter(item__marca__icontains=marca)
         else:
             itens = Estoque.objects.all().filter(item__descricao__icontains=descricao).filter(item__marca__icontains=marca).filter(item__categoria__pk=int(categoria))
     
-        
-        # print(f'-------------RESULTADO DO FILTER ---> {itens}')
-       
         context = {
          
             'itens': itens
          
         }
      
- 
         return render(request, template_name , context)
+
  
 #TODO REQUISIÇÕES DO ESTOQUE
 # ------------------------------------------------------------  REQUISIÇÕES DO ESTOQUE ---------------------------------------------------

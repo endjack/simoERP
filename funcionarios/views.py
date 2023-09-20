@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.views.generic.base import TemplateView
 from funcionarios.forms import *
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -7,6 +8,96 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from funcionarios.models import *
 from django.shortcuts import render
 
+
+def procurar_pessoal(request, template_name="funcionarios/fragmentos/procurar/procurar_home.html"):
+    if request.method == 'GET':
+        menu_ativo = 'PROCURAR'
+        
+        context = {
+            'menu_ativo' : menu_ativo
+        }
+        return render(request, template_name, context)
+
+
+def cadastrar_funcionarios_pessoal(request, template_name= 'funcionarios/fragmentos/funcionarios/funcionarios_home.html'):
+    if request.method == 'GET':
+        menu_ativo = 'CADASTRARFUNCIONARIOS'
+        
+        context = {
+            'menu_ativo' : menu_ativo
+        }
+        return render(request, template_name, context)
+
+
+
+def cadastrar_cargo_pessoal(request, template_name= 'funcionarios/fragmentos/cargos/cargos_home.html'):
+    if request.method == 'GET':
+        menu_ativo = 'CADASTRARCARGOS'
+    
+        context = {
+            'menu_ativo' : menu_ativo
+        }
+        return render(request, template_name, context)
+
+
+def impressoes_pessoal(request, template_name= 'funcionarios/fragmentos/impressoes/impressoes_home.html'):
+    if request.method == 'GET':
+        menu_ativo = 'IMPRESSÃO'
+   
+        context = {
+            'menu_ativo' : menu_ativo
+        }
+        return render(request, template_name, context)
+
+
+def relatorios_pessoal(request, template_name= 'funcionarios/fragmentos/relatorios/relatorios_home.html'):
+    if request.method == 'GET':
+        menu_ativo = 'RELATÓRIO'
+    
+        context = {
+            'menu_ativo' : menu_ativo
+        }
+        return render(request, template_name, context)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#---------------------------------------------------------ANTIGO-----------------------------------------------#
 
 # FUNCIONÁRIOS.
 class InserirFuncionarioView(LoginRequiredMixin, CreateView):
