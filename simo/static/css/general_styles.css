@@ -1,7 +1,9 @@
+body { background: whitesmoke !important;  }
+
 .body-sm {
   font-size: small !important;
   line-height: normal !important;
-  background-color: whitesmoke !important; 
+  /* background-color: whitesmoke !important;  */
 }
 
 .small-error{

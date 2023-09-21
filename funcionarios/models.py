@@ -34,6 +34,13 @@ class FuncionarioV2(models.Model):
          CONTA_CORRENTE = 'CONTA-CORRENTE', 'Conta-Corrente'
          POUPANÇA = 'POUPANÇA', 'Poupança'
          CONTA_PAGAMENTO = 'CONTA-PAGAMENTO', 'Conta-pagamento'
+         
+    class TipoDemissao(models.TextChoices):
+         COM_JUSTA_CAUSA = 'COM_JUSTA_CAUSA', 'Demissão POR justa causa'
+         SEM_JUSTA_CAUSA = 'SEM_JUSTA_CAUSA', 'Demissão SEM justa causa'
+         PEDIDO_POR_JUSTA_CAUSA = 'PEDIDO_POR_JUSTA_CAUSA', 'Pedido de demissão POR justa causa'
+         PEDIDO_SEM_JUSTA_CAUSA = 'PEDIDO_SEM_JUSTA_CAUSA', 'Pedido de demissão SEM justa causa'
+
     
     class Situacao(models.TextChoices):
          ADMITIDO = "ADMITIDO", "Admitido"
@@ -68,21 +75,23 @@ class FuncionarioV2(models.Model):
     data_fim_prorrogacao = models.DateField(null=True, blank=True)
     matricula = models.CharField(max_length=20, blank=True, null=True)
     cargo = models.ForeignKey(Cargo, on_delete=models.SET_NULL, blank=True, null=True)
-    lotacao = models.ForeignKey(Obra, on_delete=models.SET_NULL, blank=True, null=True)
-    data_ultimo_exame = models.DateField(null=True, blank=True)
     salario = models.FloatField(max_length=20, default=0)
     adicional = models.FloatField(max_length=20, default=0)
-    
-    #outras informações
+    data_ultimo_exame = models.DateField(null=True, blank=True)
+    lotacao = models.ForeignKey(Obra, on_delete=models.SET_NULL, blank=True, null=True)
+    tipo_responsavel = models.BooleanField(default=False)
     data_inicio_afastamento = models.DateField(null=True, blank=True)
     data_fim_afastamento = models.DateField(null=True, blank=True)
     data_demissao = models.DateField(null=True, blank=True)
-    obs = models.TextField(max_length=200, null=True, blank=True)
+    tipo_demissao = models.CharField(max_length=50, choices=TipoDemissao.choices, default=TipoDemissao.COM_JUSTA_CAUSA)
+    
+    #outras informações
     analfabeto = models.BooleanField(default=False)
     esocial = models.CharField(max_length=20, blank=True, null=True)
-    tipo_responsavel = models.BooleanField(default=False)
     data_cadastro = models.DateField(auto_now=True)
     ativo = models.BooleanField(default=True)
+    obs = models.TextField(max_length=200, null=True, blank=True)
+    responsavel_direto = models.ForeignKey('ResponsávelObraFuncionariov2', on_delete=models.SET_NULL, blank=True, null=True)
     
     #dados bancários  
     banco = models.ForeignKey(Banco, on_delete=models.SET_NULL, blank=True, null=True)
@@ -92,6 +101,7 @@ class FuncionarioV2(models.Model):
     conta = models.CharField(max_length=10, blank=True, null=True)
     pix = models.CharField(max_length=10, blank=True, null=True)
     tipo_pix = models.CharField(max_length=50, choices=TipoPix.choices, default=TipoPix.CPF)
+   
     
 
     def __str__(self) -> str:
@@ -104,7 +114,9 @@ class DependenteFuncionariov2(models.Model):
     funcionario = models.ForeignKey(FuncionarioV2, on_delete=models.CASCADE, blank=True, null=True)       
        
        
-       
+class ResponsávelObraFuncionariov2(models.Model):
+    responsavel = models.ForeignKey(FuncionarioV2, on_delete=models.CASCADE, unique=True)        
+          
        
        
        

@@ -519,7 +519,7 @@ def add_nova_ferramenta_estoquev2(request):
         cor = request.POST.get('cor').upper()
         tamanho = request.POST.get('tamanho').upper()
         numeracao = request.POST.get('numeracao')
-        preco = request.POST.get('preco')
+        preco = request.POST.get('preco') or 0
         
         if request.POST.get('estado') == '-1':
             response = HttpResponse('Erro: Selecione um ESTADO.')

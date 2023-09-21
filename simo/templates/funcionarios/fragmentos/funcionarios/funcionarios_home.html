@@ -7,6 +7,16 @@
     margin-bottom:0px;
     
 }
+.tab-content-bc{
+    padding:1rem;
+    border-bottom: 1px solid #dee2e6;
+    border-left: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+    border-bottom-left-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+    background: white;
+    
+}
 </style>
 {% endblock %}
 
@@ -15,139 +25,346 @@
     {% include "funcionarios/fragmentos/menu_pessoal.html" %}
 
 
-    <div class="container">
+    <div class="container mb-3">
+        
+        <div class="d-flex flex-row mt-2">
+            <h6 class=""><i class="fas fa-plus"></i> Novo Registro de Funcionário</h6>
+            <div class="ms-auto ">
+                <button type="submit" class="btn btn-sm btn-success"><i class="fas fa-user-alt"></i> Salvar Funcionário</button>
+            </div>   
+        </div> 
 
-        <form action="">
-           
-                <small>Dados Pessoais</small>
-                <hr class="m-0 mb-3">
-          
-            <div class="row ">
 
-                   <div class="col-2 text-center">
-                    <div class="card" style="width: 10rem; height: 12rem;"><span style="position: absolute;top: 45%;left: 30%;color:gray;">Sem foto</span></div>
-                    <div class=""><a href="#" class="">Editar Foto</a></div>    
-                   </div>
+        <!--NAV-TABS FUNCIONÁRIOS-->
+        <ul class="nav nav-tabs" id="ex1" role="tablist">
+            <li class="nav-item" role="presentation">
+              <a
+                class="nav-link active"
+                id="ex1-tab-1"
+                data-bs-toggle="tab"
+                href="#ex1-tabs-1"
+                role="tab"
+                aria-controls="ex1-tabs-1"
+                aria-selected="true"
+                >Dados Pessoais</a
+              >
+            </li>
+            <li class="nav-item" role="presentation">
+              <a
+                class="nav-link"
+                id="ex1-tab-2"
+                data-bs-toggle="tab"
+                href="#ex1-tabs-2"
+                role="tab"
+                aria-controls="ex1-tabs-2"
+                aria-selected="false"
+                >Dados Contratuais</a
+              >
+            </li>
+            <li class="nav-item" role="presentation">
+              <a
+                class="nav-link"
+                id="ex1-tab-3"
+                data-bs-toggle="tab"
+                href="#ex1-tabs-3"
+                role="tab"
+                aria-controls="ex1-tabs-3"
+                aria-selected="false"
+                >Dados Bancários</a
+              >
+            </li>
+            <li class="nav-item" role="presentation">
+                <a
+                  class="nav-link"
+                  id="ex1-tab-4"
+                  data-bs-toggle="tab"
+                  href="#ex1-tabs-4"
+                  role="tab"
+                  aria-controls="ex1-tabs-4"
+                  aria-selected="false"
+                  >Outras Informações</a
+                >
+              </li>
+          </ul>
+          <div class="tab-content tab-content-bc" id="ex1-content">
+            <div
+              class="tab-pane fade show active"
+              id="ex1-tabs-1"
+              role="tabpanel"
+              aria-labelledby="ex1-tab-1"
+            >
+              
+            <!--DADOS PESSOAIS-->
+            <div class="row " >
 
-                   <div class="col-10 mt-2">
-                            
+                <div class="col-2 text-center">
+                 <a title="Adicionar Foto" href="#" class=""><div class="card" style="width: 10rem; height: 12rem;"><span style="position: absolute;top: 45%;left: 30%;color:gray;">Sem foto</span></div>
+                 <div class=""></div></a>    
+                </div>
 
-                            <div class="row mb-2">
-                                <div class="col-6">
-                                    <label for="nome" class="form-label">Nome:</label>
-                                    <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control form-control-sm" id="nome" name="nome">
-                                </div>
+                <div class="col-10 mt-2">
+                         
 
-                                <div class="col-3">
-                                    <label for="cpf" class="form-label">CPF:</label>
-                                    <input type="text" class="form-control form-control-sm" id="cpf" name="cpf">
-                                </div>
+                         <div class="row mb-2">
+                             <div class="col-6">
+                                 <label for="nome" class="form-label">Nome:</label>
+                                 <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control form-control-sm" id="nome" name="nome">
+                             </div>
 
-                                <div class="col-3">
-                                    <label for="rg" class="form-label">RG:</label>
-                                    <input type="text" class="form-control form-control-sm" id="rg" name="rg">
-                                </div>
+                             <div class="col-3">
+                                 <label for="cpf" class="form-label">CPF:</label>
+                                 <input type="text" class="form-control form-control-sm" id="cpf" name="cpf">
+                             </div>
 
-                            </div>
+                             <div class="col-3">
+                                 <label for="rg" class="form-label">RG:</label>
+                                 <input type="text" class="form-control form-control-sm" id="rg" name="rg">
+                             </div>
 
-                            <div class="row mb-2">
-                                <div class="col-3">
-                                    <label for="ctps" class="form-label">CTPS:</label>
-                                    <input type="text" class="form-control form-control-sm" id="ctps" name="ctps">
-                                </div>
+                         </div>
 
-                                <div class="col-3">
-                                    <label for="cpf" class="form-label">CNH/Habilitação:</label>
-                                    <input type="text" class="form-control form-control-sm" id="cpf" name="cpf">
-                                </div>
-                                <div class="col-2">
-                                    <label for="categoria_cnh"  class="form-label">Cat. CNH: <i class="fas fa-question-circle" title=" A-Moto | B-Carro | C,D,E-Carga"></i></label>
-                                    <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control form-control-sm" id="categoria_cnh" name="categoria_cnh">
-                                    
-                                </div>
+                         <div class="row mb-2">
+                             <div class="col-3">
+                                 <label for="ctps" class="form-label">CTPS:</label>
+                                 <input type="text" class="form-control form-control-sm" id="ctps" name="ctps">
+                             </div>
 
-                                <div class="col-3">
-                                    <label for="data_nascimento" class="form-label">Data de Nascimento:</label>
-                                    <input type="date" class="form-control form-control-sm" id="data_nascimento" name="data_nascimento">
-                                </div>
+                             <div class="col-3">
+                                 <label for="cpf" class="form-label">CNH/Habilitação:</label>
+                                 <input type="text" class="form-control form-control-sm" id="cpf" name="cpf">
+                             </div>
+                             <div class="col-2">
+                                 <label for="categoria_cnh"  class="form-label">Cat. CNH: <i class="fas fa-question-circle" title=" A-Moto | B-Carro | C,D,E-Carga"></i></label>
+                                 <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control form-control-sm" id="categoria_cnh" name="categoria_cnh">
+                                 
+                             </div>
 
-                            </div>
+                             <div class="col-3">
+                                 <label for="data_nascimento" class="form-label">Data de Nascimento:</label>
+                                 <input type="date" class="form-control form-control-sm" id="data_nascimento" name="data_nascimento">
+                             </div>
 
-                            <div class="row mb-2">
-                                <div class="col-2">
-                                    <label for="cep_endereco" class="form-label">CEP:</label>
-                                    <input type="text" class="form-control form-control-sm" id="cep_endereco" name="cep_endereco">
-                                </div>
+                         </div>
 
-                                <div class="col-6">
-                                    <label for="endereco" class="form-label">Endereço:</label>
-                                    <input type="text" class="form-control form-control-sm" id="endereco" name="endereco">
-                                </div>
-                                <div class="col-2">
-                                    <label for="telefone1"  class="form-label">Tel 01: </label>
-                                    <input type="text" class="form-control form-control-sm" id="telefone1" name="telefone1">                                    
-                                </div>
+                         <div class="row mb-2">
+                             <div class="col-2">
+                                 <label for="cep_endereco" class="form-label">CEP:</label>
+                                 <input type="text" class="form-control form-control-sm" id="cep_endereco" name="cep_endereco">
+                             </div>
 
-                                <div class="col-2">
-                                    <label for="telefone2" class="form-label">Tel 02:</label>
-                                    <input type="text" class="form-control form-control-sm" id="telefone2" name="telefone2">
-                                </div>
+                             <div class="col-6">
+                                 <label for="endereco" class="form-label">Endereço:</label>
+                                 <input type="text" class="form-control form-control-sm" id="endereco" name="endereco">
+                             </div>
+                             <div class="col-2">
+                                 <label for="telefone1"  class="form-label">Tel 01: </label>
+                                 <input type="text" class="form-control form-control-sm" id="telefone1" name="telefone1">                                    
+                             </div>
 
-                            </div>
-                    </div>
+                             <div class="col-2">
+                                 <label for="telefone2" class="form-label">Tel 02:</label>
+                                 <input type="text" class="form-control form-control-sm" id="telefone2" name="telefone2">
+                             </div>
+
+                         </div>
+                 </div>
             </div>
+            <!--FIM DADOS PESSOAIS-->
 
-            <br>
-            <small>Dados Contratuais</small>
-            <hr class="m-0 mb-3">
+            </div>
+            <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
+                
+                <!--DADOS CONTRATUAIS-->
+                <div class="row">
 
-
-            <div class="row">
-
-                <div class="row mb-2">
-                    <div class="col-2">
-                        <label for="matricula" class="form-label">Matrícula:</label>
-                        <input type="text" class="form-control form-control-sm" id="matricula" name="matricula">
+                    <div class="row mb-2">
+                        <div class="col-2">
+                            <label for="matricula" class="form-label">Matrícula:</label>
+                            <input type="text" class="form-control form-control-sm" id="matricula" name="matricula">
+                        </div>
+    
+                        <div class="col-4">
+                            <label for="tipo_contrato" class="form-label">Tipo de Contrato:</label>
+                            <select class="form-select form-select-sm" aria-label="Default select example" id="tipo_contrato" name="tipo_contrato">
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
+                               
+                        <div class="col-2">
+                            <label for="data_admissao" class="form-label">Data Admissão:</label>
+                            <input type="date" class="form-control form-control-sm" id="data_admissao" name="data_admissao" value="{% now 'Y-m-d' %}">
+                        </div>
+    
+                        <div class="col-2">
+                            <label for="data_inicio_prorrogacao" class="form-label">Início Prorrogação:</label>
+                            <input type="date" class="form-control form-control-sm" id="data_inicio_prorrogacao" name="data_inicio_prorrogacao">
+                        </div>
+    
+                        <div class="col-2">
+                            <label for="data_fim_prorrogacao" class="form-label">Fim Prorrogação:</label>
+                            <input type="date" class="form-control form-control-sm" id="data_fim_prorrogacao" name="data_fim_prorrogacao">
+                        </div>
+    
                     </div>
-
-                    <div class="col-4">
-                        <label for="situacao" class="form-label">Tipo de Contrato</label>
-                        <select class="form-select form-select-sm" aria-label="Default select example" id="situacao">
+    
+                    <div class="row mb-2">
+                        <div class="col-3">
+                            <label for="cargo" class="form-label">Cargo:</label>
+                            <select class="form-select form-select-sm" aria-label="Default select example" id="cargo" name="cargo">
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
+                               
+                        <div class="col-2">
+                            <label for="salario" class="form-label">Salário:</label>
+                            <input type="number" step="any" min="0" placeholder="R$ " class="form-control form-control-sm" id="salario" name="salario">
+                        </div>
+    
+                        <div class="col-2">
+                            <label for="adicional" class="form-label">Adicional:</label>
+                            <input type="number" step="any" min="0" placeholder="R$ " class="form-control form-control-sm" id="adicional" name="adicional">
+                        </div>
+    
+                        <div class="col-3">
+                            <label for="lotacao" class="form-label">Lotação/Centro de Custo:</label>
+                            <select class="form-select form-select-sm" aria-label="Default select example" id="lotacao" name="lotacao">
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check mt-3">
+                                <label class="form-check-label">
+                                <input class="form-check-input" type="checkbox" name="tipo_responsavel"> Responsável <i class="fas fa-question-circle" title="Pode exercer função de Responsável de Equipes"></i>
+                                </label>
+                            </div>    
+                        </div> 
+    
+                    </div>
+                </div>
+    
+                
+                <div class="row mb-2">
+    
+                    <div class="col-3">
+                            <label for="situacao" class="form-label">Situação:</label>
+                            <select class="form-select form-select-sm" aria-label="Default select example" id="situacao" name="situacao">
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                    </div>
+                    <div class="col-2">
+                        <label for="data_inicio_afastamento" class="form-label">Início Afastamento:</label>
+                        <input type="date" class="form-control form-control-sm" id="data_inicio_afastamento" name="data_inicio_afastamento">
+                    </div>
+    
+                    <div class="col-2">
+                        <label for="data_fim_afastamento" class="form-label">Fim Afastamento:</label>
+                        <input type="date" class="form-control form-control-sm" id="data_fim_afastamento" name="data_fim_afastamento">
+                    </div>
+    
+                    <div class="col-2">
+                        <label for="data_demissao" class="form-label">Data de Rescisão:</label>
+                        <input type="date" class="form-control form-control-sm" id="data_demissao" name="data_demissao">
+                    </div>
+    
+                    <div class="col-3">
+                        <label for="tipo_demissao" class="form-label">Tipo Rescisão:</label>
+                        <select class="form-select form-select-sm" aria-label="Default select example" id="tipo_demissao" name="tipo_demissao">
                             <option value="1">One</option>
                             <option value="2">Two</option>
                             <option value="3">Three</option>
                         </select>
                     </div>
-               
-            
-                    <div class="col-2">
-                        <label for="date1" class="form-label">Data Admissão:</label>
-                        <input type="date" class="form-control form-control-sm" id="date1" name="data_admissao" value="{% now 'Y-m-d' %}">
-                    </div>
-
-                    <div class="col-2">
-                        <label for="date2" class="form-label">Início Prorrogação:</label>
-                        <input type="date" class="form-control form-control-sm" id="date2" name="data_inicio_prorrogacao">
-                    </div>
-
-                    <div class="col-2">
-                        <label for="date3" class="form-label">Fim Prorrogação:</label>
-                        <input type="date" class="form-control form-control-sm" id="date3" name="data_fim_prorrogacao">
-                    </div>
-
+    
                 </div>
+                <!--FIM DADOS CONTRATUAIS-->
+
+
             </div>
+            <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
+              Dados Bancários
+            </div>
+
+
+            <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
+               
+                <!--OUTRAS INFORMAÇÕES-->
+                <div class="row mb-2">
+        
+                    <div class="col-3">
+                        <label for="esocial" class="form-label">E-Social:</label>
+                        <input type="text" class="form-control form-control-sm" id="esocial" name="esocial">
+                    </div>
+    
+                    <div class="col-2">
+                        <div class="form-check mt-3">
+                            <label class="form-check-label align-middle">
+                            <input class="form-check-input" type="checkbox" name="analfabeto"> Analfabeto ou Pouca Escolaridade
+                            </label>
+                        </div>    
+                    </div> 
+    
+                    <div class="col-3">
+                        <label for="responsavel_direto" class="form-label">Responsável Direto:</label>
+                        <select class="form-select form-select-sm" aria-label="Default select example" id="responsavel_direto" name="responsavel_direto">
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <label for="obs" class="form-label">Observações:</label>
+                        <textarea id="obs" name="obs" rows="1" cols="50" class="form-control form-control-sm"></textarea>
+                    </div>
+                    
+    
+                </div>
+    
+                <div class="d-flex flex-row ">
+            
+                    
+    
+                    <div class="col-2">
+                        <label for="data_demissao" class="form-label">Data Cadastro:</label>
+                        <input type="text" class="form-control form-control-sm" value="{% now 'd/m/Y' %}" disabled>
+                    </div>
+    
+                    <div class="col-2 p-2 align-self-center">
+                        <div class="form-check mt-3">
+                            <label class="form-check-label">
+                            <input class="form-check-input " type="checkbox" checked disabled> Cadastro Ativo <i class="fas fa-question-circle" title="Falar com o Admin para Desativar Cadastro"></i>
+                            </label>
+                        </div>    
+                    </div> 
+                   
+                </div> 
+                
+
+              </div>
+              <!--FIM OUTRAS INFORMAÇÕES-->
+
+          </div>
+            
+          
+          <form action="">
+        
+
+
 
            
-            <div class="form-check mt-3">
-              <label class="form-check-label">
-                <input class="form-check-input" type="checkbox" name="remember"> Responsável 
-              </label>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Submit</button>
+            
 
           </form>
+
+           
+     
 
     </div>
 
