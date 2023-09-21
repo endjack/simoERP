@@ -8,5 +8,7 @@ urlpatterns = [
     path('novo/cargo/', cadastrar_cargo_pessoal, name='cadastrar_cargo_pessoal'),
     path('impressoes/', impressoes_pessoal, name='impressoes_pessoal'),
     path('relatorios/', relatorios_pessoal, name='relatorios_pessoal'),
+    path('htmx/add_inputs_dependente/<int:id>/', add_inputs_dependente, name='add_inputs_dependente'),
+    path('htmx/clear_element/', clear_element, name='clear_element'),
     
 ]

@@ -22,9 +22,29 @@ def procurar_pessoal(request, template_name="funcionarios/fragmentos/procurar/pr
 def cadastrar_funcionarios_pessoal(request, template_name= 'funcionarios/fragmentos/funcionarios/funcionarios_home.html'):
     if request.method == 'GET':
         menu_ativo = 'CADASTRARFUNCIONARIOS'
+        tipo_contrato = FuncionarioV2.Contratos
+        tipo_demissao = FuncionarioV2.TipoDemissao
+        tipo_conta = FuncionarioV2.TipoConta
+        tipo_pix = FuncionarioV2.TipoPix
+        situacao = FuncionarioV2.Situacao
+        cargos = Cargo.objects.all()
+        obras = Obra.objects.all()
+        bancos = Banco.objects.all()
+        responsavel_direto = ResponsávelObraFuncionariov2.objects.all()
+        start_inputs_dependents = 1
         
         context = {
-            'menu_ativo' : menu_ativo
+            'menu_ativo' : menu_ativo,
+            'tipo_contrato' : tipo_contrato,
+            'tipo_demissao' : tipo_demissao,
+            'tipo_conta' : tipo_conta,
+            'tipo_pix' : tipo_pix,
+            'situacao' : situacao,
+            'cargos' : cargos,
+            'obras' : obras,
+            'bancos' : bancos,
+            'responsavel_direto' : responsavel_direto,
+            'start_inputs_dependents' : start_inputs_dependents,
         }
         return render(request, template_name, context)
 
@@ -58,6 +78,18 @@ def relatorios_pessoal(request, template_name= 'funcionarios/fragmentos/relatori
             'menu_ativo' : menu_ativo
         }
         return render(request, template_name, context)
+    
+    
+def add_inputs_dependente(request, id, template_name= 'funcionarios/fragmentos/funcionarios/novo_dependente.html'):
+    if request.method == 'GET':
+        context = {
+            'start_inputs_dependents' : id+1,
+            'anterior_inputs' : id
+        }
+        return render(request, template_name, context)
+    
+def clear_element(request):
+        return HttpResponse('')
 
 
 

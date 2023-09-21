@@ -36,10 +36,10 @@ class FuncionarioV2(models.Model):
          CONTA_PAGAMENTO = 'CONTA-PAGAMENTO', 'Conta-pagamento'
          
     class TipoDemissao(models.TextChoices):
-         COM_JUSTA_CAUSA = 'COM_JUSTA_CAUSA', 'Demissão POR justa causa'
-         SEM_JUSTA_CAUSA = 'SEM_JUSTA_CAUSA', 'Demissão SEM justa causa'
-         PEDIDO_POR_JUSTA_CAUSA = 'PEDIDO_POR_JUSTA_CAUSA', 'Pedido de demissão POR justa causa'
-         PEDIDO_SEM_JUSTA_CAUSA = 'PEDIDO_SEM_JUSTA_CAUSA', 'Pedido de demissão SEM justa causa'
+         COM_JUSTA_CAUSA = 'COM JUSTA CAUSA', 'Demissão POR justa causa'
+         SEM_JUSTA_CAUSA = 'SEM JUSTA CAUSA', 'Demissão SEM justa causa'
+         PEDIDO_POR_JUSTA_CAUSA = 'PEDIDO POR JUSTA_CAUSA', 'Pedido de demissão POR justa causa'
+         PEDIDO_SEM_JUSTA_CAUSA = 'PEDIDO SEM JUSTA_CAUSA', 'Pedido de demissão SEM justa causa'
 
     
     class Situacao(models.TextChoices):
@@ -97,8 +97,8 @@ class FuncionarioV2(models.Model):
     banco = models.ForeignKey(Banco, on_delete=models.SET_NULL, blank=True, null=True)
     agencia = models.CharField(max_length=10, blank=True, null=True)
     tipo_conta = models.CharField(max_length=50, choices=TipoConta.choices, default=TipoConta.CONTA_CORRENTE)
-    op = models.CharField(max_length=10, blank=True, null=True)
     conta = models.CharField(max_length=10, blank=True, null=True)
+    op = models.CharField(max_length=10, blank=True, null=True)
     pix = models.CharField(max_length=10, blank=True, null=True)
     tipo_pix = models.CharField(max_length=50, choices=TipoPix.choices, default=TipoPix.CPF)
    
@@ -115,7 +115,7 @@ class DependenteFuncionariov2(models.Model):
        
        
 class ResponsávelObraFuncionariov2(models.Model):
-    responsavel = models.ForeignKey(FuncionarioV2, on_delete=models.CASCADE, unique=True)        
+    responsavel = models.OneToOneField(FuncionarioV2, on_delete=models.CASCADE)        
           
        
        

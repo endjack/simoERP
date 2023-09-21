@@ -26,6 +26,7 @@
 
 
     <div class="container mb-3">
+
         
         <div class="d-flex flex-row mt-2">
             <h6 class=""><i class="fas fa-plus"></i> Novo Registro de Funcionário</h6>
@@ -34,7 +35,7 @@
             </div>   
         </div> 
 
-
+ <form action="">
         <!--NAV-TABS FUNCIONÁRIOS-->
         <ul class="nav nav-tabs" id="ex1" role="tablist">
             <li class="nav-item" role="presentation">
@@ -73,6 +74,7 @@
                 >Dados Bancários</a
               >
             </li>
+
             <li class="nav-item" role="presentation">
                 <a
                   class="nav-link"
@@ -82,11 +84,26 @@
                   role="tab"
                   aria-controls="ex1-tabs-4"
                   aria-selected="false"
+                  >Dependentes</a
+                >
+              </li>
+
+            <li class="nav-item" role="presentation">
+                <a
+                  class="nav-link"
+                  id="ex1-tab-5"
+                  data-bs-toggle="tab"
+                  href="#ex1-tabs-5"
+                  role="tab"
+                  aria-controls="ex1-tabs-5"
+                  aria-selected="false"
                   >Outras Informações</a
                 >
               </li>
           </ul>
-          <div class="tab-content tab-content-bc" id="ex1-content">
+
+<!--DADOS PESSOAIS-->      
+            <div class="tab-content tab-content-bc" id="ex1-content">
             <div
               class="tab-pane fade show active"
               id="ex1-tabs-1"
@@ -94,7 +111,7 @@
               aria-labelledby="ex1-tab-1"
             >
               
-            <!--DADOS PESSOAIS-->
+        
             <div class="row " >
 
                 <div class="col-2 text-center">
@@ -169,12 +186,11 @@
                          </div>
                  </div>
             </div>
-            <!--FIM DADOS PESSOAIS-->
-
             </div>
+<!--FIM DADOS PESSOAIS-->
+<!--DADOS CONTRATUAIS-->
             <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
                 
-                <!--DADOS CONTRATUAIS-->
                 <div class="row">
 
                     <div class="row mb-2">
@@ -186,9 +202,10 @@
                         <div class="col-4">
                             <label for="tipo_contrato" class="form-label">Tipo de Contrato:</label>
                             <select class="form-select form-select-sm" aria-label="Default select example" id="tipo_contrato" name="tipo_contrato">
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
+                                <option value="-1" disabled selected> Selecione</option>
+                                {% for i in tipo_contrato %}
+                                <option value="{{i}}"> {{i}}</option>
+                                {% endfor %}  
                             </select>
                         </div>
                                
@@ -213,9 +230,10 @@
                         <div class="col-3">
                             <label for="cargo" class="form-label">Cargo:</label>
                             <select class="form-select form-select-sm" aria-label="Default select example" id="cargo" name="cargo">
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
+                                <option value="-1" disabled selected> Selecione</option>
+                                {% for i in cargos %}
+                                <option value="{{i.pk}}"> {{i.cargo}}</option>
+                                {% endfor %}  
                             </select>
                         </div>
                                
@@ -232,9 +250,10 @@
                         <div class="col-3">
                             <label for="lotacao" class="form-label">Lotação/Centro de Custo:</label>
                             <select class="form-select form-select-sm" aria-label="Default select example" id="lotacao" name="lotacao">
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
+                                <option value="-1" disabled selected> Selecione</option>
+                                {% for i in obras %}
+                                <option value="{{i.pk}}"> {{i.nome}}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-2">
@@ -254,9 +273,16 @@
                     <div class="col-3">
                             <label for="situacao" class="form-label">Situação:</label>
                             <select class="form-select form-select-sm" aria-label="Default select example" id="situacao" name="situacao">
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
+                                
+                                {% for i in situacao %}
+                                
+                                    {% if i == 'ADMITIDO' %}
+                                    <option value="{{i}}" selected> {{i}}</option>
+                                    {% else %}
+                                    <option value="{{i}}"> {{i}}</option>
+                                    {% endif %}
+  
+                                {% endfor %}
                             </select>
                     </div>
                     <div class="col-2">
@@ -277,96 +303,163 @@
                     <div class="col-3">
                         <label for="tipo_demissao" class="form-label">Tipo Rescisão:</label>
                         <select class="form-select form-select-sm" aria-label="Default select example" id="tipo_demissao" name="tipo_demissao">
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
+                            <option value="-1" disabled selected> Selecione</option>
+                            {% for i in tipo_demissao %}
+                            <option value="{{i}}"> {{i}}</option>
+                            {% endfor %}
                         </select>
                     </div>
     
                 </div>
-                <!--FIM DADOS CONTRATUAIS-->
-
-
-            </div>
-            <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
-              Dados Bancários
-            </div>
-
-
-            <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
-               
-                <!--OUTRAS INFORMAÇÕES-->
-                <div class="row mb-2">
-        
-                    <div class="col-3">
-                        <label for="esocial" class="form-label">E-Social:</label>
-                        <input type="text" class="form-control form-control-sm" id="esocial" name="esocial">
-                    </div>
-    
-                    <div class="col-2">
-                        <div class="form-check mt-3">
-                            <label class="form-check-label align-middle">
-                            <input class="form-check-input" type="checkbox" name="analfabeto"> Analfabeto ou Pouca Escolaridade
-                            </label>
-                        </div>    
-                    </div> 
-    
-                    <div class="col-3">
-                        <label for="responsavel_direto" class="form-label">Responsável Direto:</label>
-                        <select class="form-select form-select-sm" aria-label="Default select example" id="responsavel_direto" name="responsavel_direto">
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
-                        </select>
-                    </div>
-                    <div class="col-4">
-                        <label for="obs" class="form-label">Observações:</label>
-                        <textarea id="obs" name="obs" rows="1" cols="50" class="form-control form-control-sm"></textarea>
-                    </div>
-                    
-    
-                </div>
-    
-                <div class="d-flex flex-row ">
-            
-                    
-    
-                    <div class="col-2">
-                        <label for="data_demissao" class="form-label">Data Cadastro:</label>
-                        <input type="text" class="form-control form-control-sm" value="{% now 'd/m/Y' %}" disabled>
-                    </div>
-    
-                    <div class="col-2 p-2 align-self-center">
-                        <div class="form-check mt-3">
-                            <label class="form-check-label">
-                            <input class="form-check-input " type="checkbox" checked disabled> Cadastro Ativo <i class="fas fa-question-circle" title="Falar com o Admin para Desativar Cadastro"></i>
-                            </label>
-                        </div>    
-                    </div> 
-                   
-                </div> 
                 
 
-              </div>
-              <!--FIM OUTRAS INFORMAÇÕES-->
 
-          </div>
-            
+            </div>
+<!--FIM DADOS CONTRATUAIS-->
+   <!--DADOS BANCÁRIOS -->
+            <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
+
+                 <div class="row mb-2">
+                    <div class="col-3">
+                        <label for="banco" class="form-label">Banco:</label>
+                        <select class="form-select form-select-sm" aria-label="Default select example" id="banco" name="banco">
+                            <option value="-1" disabled selected> Selecione</option>
+                            {% for i in bancos %}
+                            <option value="{{i.pk}}"> {{i.nome}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+        
+                    <div class="col-2">
+                        <label for="agencia" class="form-label">Ag:</label>
+                        <input type="text" class="form-control form-control-sm" id="agencia" name="agencia">
+                    </div>
+
+                    <div class="col-2">
+                        <label for="tipo_conta" class="form-label">Tipo de Conta:</label>
+                        <select class="form-select form-select-sm" aria-label="Default select example" id="tipo_conta" name="tipo_conta">
+                            <option value="-1" disabled selected> Selecione</option>
+                            {% for i in tipo_conta %}
+                            <option value="{{i}}"> {{i}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-2">
+                        <label for="conta" class="form-label">Conta:</label>
+                        <input type="text" class="form-control form-control-sm" id="conta" name="conta">
+                    </div>
+
+                    <div class="col-1">
+                        <label for="operacao" class="form-label">Op:</label>
+                        <input type="text" class="form-control form-control-sm" id="operacao" name="operacao">
+                    </div>
+
+                    </div>
+                    <div class="row mb-2">
+
+                            <div class="col-3">
+                                <label for="pix" class="form-label">Pix:</label>
+                                <input type="text" class="form-control form-control-sm" id="pix" name="pix">
+                            </div>
+
+                            <div class="col-2">
+                                <label for="tipo_pix" class="form-label">Tipo Pix:</label>
+                                <select class="form-select form-select-sm" aria-label="Default select example" id="tipo_pix" name="tipo_pix">
+                                    <option value="-1" disabled selected> Selecione</option>
+                                    {% for i in tipo_pix %}
+                                    <option value="{{i}}"> {{i}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                </div>
+            </div>
+<!--FIM DADOS BANCÁRIOS-->
+<!--DEPENDENTES-->            
+        <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
+               
           
-          <form action="">
+            <div class="row mb-2">
+
+                <div id="dependente_func">
+                
+                    {% include "funcionarios/fragmentos/funcionarios/novo_dependente.html" %}
+                
+                </div>
+    
+          </div>
+          
+
+        </div>
+<!--FIM DEPENDENTES-->    
+ <!--OUTRAS INFORMAÇÕES-->
+ <div class="tab-pane fade" id="ex1-tabs-5" role="tabpanel" aria-labelledby="ex1-tab-5">
+    
+    <div class="row mb-2">
+
+        <div class="col-3">
+            <label for="esocial" class="form-label">E-Social:</label>
+            <input type="text" class="form-control form-control-sm" id="esocial" name="esocial">
+        </div>
+
+        <div class="col-2">
+            <div class="form-check mt-3">
+                <label class="form-check-label align-middle">
+                <input class="form-check-input" type="checkbox" name="analfabeto"> Analfabeto ou Pouca Escolaridade
+                </label>
+            </div>    
+        </div> 
+
+        <div class="col-3">
+            <label for="responsavel_direto" class="form-label">Responsável Direto:</label>
+            <select class="form-select form-select-sm" aria-label="Default select example" id="responsavel_direto" name="responsavel_direto">
+                <option value="-1" disabled selected> Selecione</option>
+                {% for i in responsavel_direto %}
+                <option value="{{i.pk}}"> {{i.responsavel.nome}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-4">
+            <label for="obs" class="form-label">Observações:</label>
+            <textarea id="obs" name="obs" rows="1" cols="50" class="form-control form-control-sm"></textarea>
+        </div>
         
 
+    </div>
+
+    <div class="d-flex flex-row ">
+
+        
+
+        <div class="col-2">
+            <label for="data_demissao" class="form-label">Data Cadastro:</label>
+            <input type="text" class="form-control form-control-sm" value="{% now 'd/m/Y' %}" disabled>
+        </div>
+
+        <div class="col-2 p-2 align-self-center">
+            <div class="form-check mt-3">
+                <label class="form-check-label">
+                <input class="form-check-input " type="checkbox" checked disabled> Cadastro Ativo <i class="fas fa-question-circle" title="Falar com o Admin para Desativar Cadastro"></i>
+                </label>
+            </div>    
+        </div> 
+       
+    </div> 
+    
+
+  </div>
 
 
-           
-            
+</div>
+<!--FIM OUTRAS INFORMAÇÕES-->         
 
-          </form>
+
+    </form>
 
            
      
 
-    </div>
+</div>
 
 
 
