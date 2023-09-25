@@ -1,35 +1,28 @@
 
     
 
-<div id="dependende_id{{start_inputs_dependents}}">
+<div id="dependende_id">
 
-    {{anterior_inputs}}
-    {{start_inputs_dependents}}
-    
     
 
     <div class="d-flex flex-row align-items-center" >
         <div class="col-6 p-2">
-            <label for="nome_dependente" class="form-label">Nome do Dependente ({{start_inputs_dependents}}):</label>
+            <label for="nome_dependente" class="form-label">Nome do Dependente:</label>
             <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control form-control-sm" id="nome_dependente" name="nome_dependente">
         </div>
 
         <div class="col-3 p-2">
-            <label for="cpf_dependente" class="form-label">CPF do Dependente ({{start_inputs_dependents}}):</label>
+            <label for="cpf_dependente" class="form-label">CPF do Dependente:</label>
             <input type="text" class="form-control form-control-sm" id="cpf_dependente" name="cpf_dependente">
         </div>
 
-        <div class="">
-            {% if start_inputs_dependents != 1 %}
-            <button hx-get="{% url 'clear_element' %}"  hx-target="#dependende_id{{start_inputs_dependents}}" hx-swap="outerHTML" class="btn bg-transparent"><i class="fas fa-trash"></i></button>
-            {% endif %}
-        </div>    
+        <button class="btn bg-transparent" onClick="this.closest('#dependende_id').remove()"><i class="fas fa-trash"></i></button>
     </div>
     
-   
+    
 
 
 </div>
 
 
-<button hx-get="{% url 'add_inputs_dependente' start_inputs_dependents %}"  hx-target="#dependente_func" hx-swap="beforeend" class="btn bg-transparent {% if start_inputs_dependents != 1 %}d-none{% endif %}"><i class="fas fa-plus"></i></button>    
+ 
