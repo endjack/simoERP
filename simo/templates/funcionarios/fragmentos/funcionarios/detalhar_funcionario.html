@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styleHead %}
+<style>
+    .label_registro {
+        font-size:14px;
+        color:gray;
+ 
+    }
+    .registro{
+        font-size:18px;
+        font-weight:bold;
+    }
+    .div_rotation{
+        border: 1px solid gray;
+        width:2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;  
+        background-color: gray;
+        color: white;
+        writing-mode: tb-rl;
+        transform: rotate(-180deg);
+
+    }
+</style>
+{% endblock %}
+
+{% block conteudo %}
+<!-- MENU PESSOAL --> 
+{% include "funcionarios/fragmentos/menu_pessoal.html" %}
+<!-- FIM MENU PESSOAL --> 
+
+{% comment %} <h6 class="text-center">Detalhar Funcionário (ID: {{funcionario_atual.pk}}) | Nome: {{funcionario_atual.nome}}</h6> {% endcomment %}
+<div class="container mb-3 ">
+    
+    <small class="">Dados Pessoais:</small>
+    <hr style="margin:0px; padding:0px">
+
+    <div class="row mt-2">
+
+        <div class="col-2 text-center">
+            
+            <div class="card" style="width: 10rem; height: 13rem;">
+             {% if funcionario_atual.foto %}
+             <img src="{{funcionario_atual.foto.url}}"  width="100%" height="100%" style="padding:0.3rem;">   
+             {% else %}
+                <span style="padding-top:50%; color:gray;">Sem Foto!</span>
+             {% endif %}   
+            </div>
+
+        </div> 
+        <div class="col-10 mt-3">
+            <div class="row" >
+
+                <div class="d-flex flex-row justify-content-between align-items-center" style="border:1px solid #bbbcbd;">
+                    <div class="">
+                        <span class="label_registro">Nome: </span><br>
+                        <span class="registro">{{funcionario_atual.nome}}</span>
+                    </div>
+                    <div class="">
+                        <span class="label_registro">CPF: </span><br>
+                        <span class="registro">{{funcionario_atual.cpf}}</span>
+                    </div>
+                    <div class="">
+                        <span class="label_registro">Matrícula: </span><br>
+                        <span class="registro">{{funcionario_atual.matricula}}</span>
+                    </div>
+                    <div class="text-end">
+                        <span class="label_registro">ID-ERP: </span><br>
+                        <span class="registro text-end">{{funcionario_atual.pk}}</span>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-row justify-content-between align-items-center" style="border:1px solid #bbbcbd;">
+                    
+                    <div class="">
+                        <span class="label_registro">RG: </span><br>
+                        <span class="registro">{{funcionario_atual.rg}}</span>
+                    </div>
+                    <div class="">
+                        <span class="label_registro">CNH: </span><br>
+                        <span class="registro">{{funcionario_atual.cnh}}</span>
+                    </div>
+                    <div class="">
+                        <span class="label_registro">CAT. CNH:</span><br>
+                        <span class="registro">{{funcionario_atual.categoria_cnh}}</span>
+                    </div>
+                    <div class="">
+                        <span class="label_registro">Nacionalidade: </span><br>
+                        <span class="registro">TODO</span>
+                    </div>
+                    <div class="text-end">
+                        <span class="label_registro">Data de Nascimento: </span><br>
+                        <span class="registro">{{funcionario_atual.data_nascimento|date:'d/m/Y'}}</span>
+                    </div>
+     
+                </div>
+
+                <div class="d-flex flex-row justify-content-between align-items-center" style="border:1px solid #bbbcbd;">
+                    <div class="">
+                        <span class="label_registro">Endereço Completo: </span><br>
+                        <span class="registro">{{funcionario_atual.endereco}}</span>
+                    </div>
+
+                    <div class="">
+                        <span class="label_registro">Telefone 1: </span><br>
+                        <span class="registro">{{funcionario_atual.telefone1}}</span>
+                    </div>
+                
+                    <div class="text-end">
+                        <span class="label_registro">Telefone 2: </span><br>
+                        <span class="registro">{{funcionario_atual.telefone2}}</span>
+                    </div>
+     
+                </div>
+
+                <div class="d-flex flex-row justify-content-between align-items-center" style="border:1px solid #bbbcbd;">
+                    
+
+                    <div class="">
+                        <span class="label_registro">Estado Civil: </span><br>
+                        <span class="registro">TODO</span>
+                    </div>
+                
+                    <div class="text-end">
+                        <span class="label_registro">Nome da Mãe: </span><br>
+                        <span class="registro">TODO</span>
+                    </div>
+     
+                </div>
+                  
+               
+              
+               
+            </div>
+        </div>
+        
+    </div>
+
+</div>
+{% endblock %}
+
+
+
+{% block jquery %}
+<script>
+ 
+</script>
+{% endblock%}

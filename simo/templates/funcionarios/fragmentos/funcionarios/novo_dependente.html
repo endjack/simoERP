@@ -1,5 +1,5 @@
-
-    
+{% load static %}
+   
 
 <div id="dependende_id">
 
@@ -13,7 +13,7 @@
 
         <div class="col-3 p-2">
             <label for="cpf_dependente" class="form-label">CPF do Dependente:</label>
-            <input type="text" class="form-control form-control-sm" id="cpf_dependente" name="cpf_dependente">
+            <input type="text" class="form-control form-control-sm cpf" id="cpf_dependente" name="cpf_dependente">
         </div>
 
         <button class="btn bg-transparent" onClick="this.closest('#dependende_id').remove()"><i class="fas fa-trash"></i></button>
@@ -24,5 +24,12 @@
 
 </div>
 
+<script src="{% static 'js/jquery.mask.js' %}"></script>
+{% block jquery %}
+<script>
 
+    $('.cpf').mask('000.000.000-00', {reverse: true});
+ 
+ </script>
+{% endblock%}
  

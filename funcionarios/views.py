@@ -52,9 +52,9 @@ def cadastrar_funcionarios_pessoal(request, template_name= 'funcionarios/fragmen
 
 def add_funcionario_v2(request):
     
+    menu_ativo = 'CADASTRARFUNCIONARIOS'
+    
     if request.htmx:
-        menu_ativo = 'CADASTRARFUNCIONARIOS'
-        
         #validar Nome vazio
         if request.POST.get('nome') == "":
             context = {
@@ -244,6 +244,10 @@ def add_funcionario_v2(request):
             lotacao = Obra.objects.get(pk = int(request.POST.get('lotacao')))
             
         #validar Situacao
+        data_demissao = None
+        tipo_demissao = 'COM_JUSTA_CAUSA'
+        data_inicio_afastamento = None
+        data_fim_afastamento = None
         if request.POST.get('situacao') in ['','-1', None] :
             context = {
             'menu_ativo' : menu_ativo,
@@ -280,8 +284,6 @@ def add_funcionario_v2(request):
                     return response
                 else:
                     tipo_demissao = request.POST.get('tipo_demissao')
-                    data_inicio_afastamento = ''
-                    data_fim_afastamento = ''
                    
             elif situacao == 'AFASTADO INSS - POR DOENÇA' or situacao == 'AFASTADO INSS - POR ACIDENTE':
                  #validar data_inicio_afastamento
@@ -308,13 +310,7 @@ def add_funcionario_v2(request):
                     return response
                 else:
                     data_fim_afastamento = datetime.strptime(request.POST.get('data_fim_afastamento'), '%Y-%m-%d')
-                    data_demissao = ''
-                    tipo_demissao = ''
-            else:
-                data_demissao = ''
-                tipo_demissao = ''
-                data_inicio_afastamento = ''
-                data_fim_afastamento = ''
+
         
         #validar Responsavel direto
         if request.POST.get('responsavel_direto') in ['','-1', None]:
@@ -326,14 +322,16 @@ def add_funcionario_v2(request):
         if request.POST.get('banco') in ['','-1', None]:
             banco = None
         else:
-            responsavel_direto = Banco.objects.get(pk = int(request.POST.get('banco')))
+            banco = Banco.objects.get(pk = int(request.POST.get('banco')))
             
             
         #validar tipo_responsavel
         if request.POST.get('tipo_responsavel') == 'on':
             tipo_responsavel = True 
+            
+            
         else:
-            responsavel_direto = False
+            tipo_responsavel = False
             
         #validar analfabeto
         if request.POST.get('analfabeto') == 'on':
@@ -341,9 +339,19 @@ def add_funcionario_v2(request):
         else:
             analfabeto = False
             
-            
+        #validar adicional
+        if request.POST.get('adicional') == '':
+            adicional = 0
+        else:
+            adicional = float(request.POST.get('adicional').replace('.','').replace(',','.'))  
 
-                
+        
+        #validar foto
+        if request.FILES.get('imagem') not in ['', None]:
+            foto = request.FILES.get('imagem')
+        else:
+            foto = None 
+            
                
         rg = request.POST.get('rg', '')
         ctps = request.POST.get('ctps', '')
@@ -352,11 +360,7 @@ def add_funcionario_v2(request):
         cep_endereco = request.POST.get('cep_endereco', '')
         telefone1 = request.POST.get('telefone1', '')
         telefone2 = request.POST.get('telefone2', '')
-        
-        adicional = float(request.POST.get('adicional', '0').replace('.','').replace(',','.'))
-       
               
-        
         agencia = request.POST.get('agencia')
         tipo_conta = request.POST.get('tipo_conta')
         conta = request.POST.get('conta')
@@ -368,36 +372,35 @@ def add_funcionario_v2(request):
    
         obs = request.POST.get('obs')
         
-        nomes_dependentes = request.POST.getlist('nome_dependente')
-        cpfs_dependentes = request.POST.getlist('cpf_dependente')
- 
+    
             
         #CRIAR NOVO FUNCIONÁRIO
-        FuncionarioV2.objects.create(
+        funcionario_atual = FuncionarioV2.objects.create(
+            foto = foto,
             nome = nome,
             cpf = cpf,
             rg = rg,
             ctps = ctps,
             cnh = cnh,
             categoria_cnh = categoria_cnh,
-            # data_nascimento = data_nascimento,
+            data_nascimento = data_nascimento,
             endereco = f'{endereco} (CEP:{cep_endereco})',
             telefone1 = telefone1,
             telefone2 = telefone2,
             matricula = matricula,
             tipo_contrato = tipo_contrato,
-            # data_admissao = data_admissao,
-            # data_inicio_prorrogacao = data_inicio_prorrogacao,
-            # data_fim_prorrogacao = data_fim_prorrogacao,
+            data_admissao = data_admissao,
+            data_inicio_prorrogacao = data_inicio_prorrogacao,
+            data_fim_prorrogacao = data_fim_prorrogacao,
             cargo = cargo,
             salario = salario,
-            adicional = float(adicional),
+            adicional = adicional,
             lotacao = lotacao,
             tipo_responsavel = tipo_responsavel,
             situacao = situacao,
-            # data_inicio_afastamento = data_inicio_afastamento ,
-            # data_fim_afastamento = data_fim_afastamento,
-            # data_demissao = data_demissao,
+            data_inicio_afastamento = data_inicio_afastamento ,
+            data_fim_afastamento = data_fim_afastamento,
+            data_demissao = data_demissao,
             tipo_demissao = tipo_demissao,            
             banco = banco, 
             agencia = agencia,
@@ -412,9 +415,86 @@ def add_funcionario_v2(request):
             obs = obs,          
         )    
         
-        return redirect(reverse('procurar_pessoal'))  
+    print(f"----- CRIADO FUNCIONÁRIO COM SUCESSO ---- Nome: {nome}")   
+    
+    #validar Dependentes e CPF
+    
+    nomes_dependentes = request.POST.getlist('nome_dependente') 
+    cpfs_dependentes = request.POST.getlist('cpf_dependente')
+    
+    
+    for (nome_dependente, cpf_dependente) in zip(nomes_dependentes,cpfs_dependentes):
+
+        if nome_dependente != "":
+            if len(nome_dependente) <= 3:
+                context = {
+                'menu_ativo' : menu_ativo,
+                'text_error': "Campo 'Nome do Dependente' muito curto"
+                }
+                
+                response =  render(request, template_name='funcionarios/fragmentos/funcionarios/error_form_funcionario.html', context=context)
+                response['HX-Retarget'] = '#error-container'
+                return response
+            elif cpf_dependente == "" or len(cpf_dependente) != 14:
+                context = {
+                'menu_ativo' : menu_ativo,
+                'text_error': "Campo 'CPF do Dependente' Vazio ou Inválido"
+                }
+                
+                response =  render(request, template_name='funcionarios/fragmentos/funcionarios/error_form_funcionario.html', context=context)
+                response['HX-Retarget'] = '#error-container'
+                return response
+            else:
+                pass
+        
+        if cpf_dependente != "":
+            if nome_dependente == "" or len(nome_dependente) <= 3:
+                context = {
+                'menu_ativo' : menu_ativo,
+                'text_error': "Campo 'Nome do Dependente' Vazio ou muito curto"
+                }
+                
+                response =  render(request, template_name='funcionarios/fragmentos/funcionarios/error_form_funcionario.html', context=context)
+                response['HX-Retarget'] = '#error-container'
+                return response
+            elif cpf_dependente == "" or len(cpf_dependente) != 14:
+                context = {
+                'menu_ativo' : menu_ativo,
+                'text_error': "Campo 'CPF do Dependente' Vazio ou Inválido"
+                }
+                
+                response =  render(request, template_name='funcionarios/fragmentos/funcionarios/error_form_funcionario.html', context=context)
+                response['HX-Retarget'] = '#error-container'
+                return response  
+            else:
+                pass 
+               
+        # Criar DEPENDENTES no for
+        dep = DependenteFuncionariov2.objects.create(funcionario = funcionario_atual, 
+                                               nome = nome_dependente, 
+                                               cpf = cpf_dependente)      
+        print(f"----- CRIADO DEPENDENTE COM SUCESSO ---- Nome: {dep.nome}")  
+        
+    #Criar TIPO Responsável
+    if tipo_responsavel:
+        resp = ResponsávelObraFuncionariov2.objects.create(responsavel = funcionario_atual)
+        print(f"----- CRIADO RESPONSÁVEL COM SUCESSO ---- Nome: {resp.responsavel.nome}") 
+        
+        
+    return redirect(reverse('procurar_pessoal'))  
            
 
+def detalhar_funcionario_v2(request, pk, template_name= 'funcionarios/fragmentos/funcionarios/detalhar_funcionario.html'):
+    if request.method == 'GET':
+        menu_ativo = 'CADASTRARCARGOS'
+        funcionario_atual = FuncionarioV2.objects.get(pk = pk)
+    
+        context = {
+            'menu_ativo' : menu_ativo,
+            'funcionario_atual' : funcionario_atual,
+        }
+        return render(request, template_name, context)
+    
 def cadastrar_cargo_pessoal(request, template_name= 'funcionarios/fragmentos/cargos/cargos_home.html'):
     if request.method == 'GET':
         menu_ativo = 'CADASTRARCARGOS'

@@ -125,7 +125,7 @@
                 <div class="col-2 text-center">
                     
                 <!--Button Modal ADICIONARFOTO-->  
-                    <div class="card" style="width: 10rem; height: 12rem;">
+                    <div class="card" style="width: 10rem; height: 13rem;">
                     <a title="Adicionar Foto" data-bs-toggle="modal" data-bs-target="#modalAdicionarFoto" href="adicionar_Foto" title="Adicionar Foto de Funcionário" class="">
 
                     <span id="text-add-foto" style="position: absolute;top: 45%;left: 23%;color:gray;">Adicionar foto</span>
@@ -557,7 +557,7 @@
             var file = new FileReader();
         
             file.onload = function(e) {
-                $('#preview-image').css({width: '100%', height: '100%'});
+                $('#preview-image').css({width: '100%', height: '100%', 'padding': '0.5rem'});
                 $('#preview-image').attr('src',e.target.result);
                 $('#text-add-foto').remove();
          

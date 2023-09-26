@@ -99,7 +99,7 @@ class FuncionarioV2(models.Model):
     tipo_conta = models.CharField(max_length=50, choices=TipoConta.choices, default=TipoConta.CONTA_CORRENTE)
     conta = models.CharField(max_length=10, blank=True, null=True)
     op = models.CharField(max_length=10, blank=True, null=True)
-    pix = models.CharField(max_length=10, blank=True, null=True)
+    pix = models.CharField(max_length=50, blank=True, null=True)
     tipo_pix = models.CharField(max_length=50, choices=TipoPix.choices, default=TipoPix.CPF)
    
     
