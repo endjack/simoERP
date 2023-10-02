@@ -138,7 +138,7 @@
                    
                 </div> 
 
-                <div class="col-10 mt-2">
+                <div class="col-10">
                          
 
                          <div class="row mb-2">
@@ -203,6 +203,28 @@
                              </div>
 
                          </div>
+
+                         <div class="row mb-2">
+                            <div class="col-2">
+                                <label for="estado_civil" class="form-label">Estado Civil: <span class="text-danger fw-bold">*</span></label>
+                                <select class="form-select form-select-sm" aria-label="Default select example" id="estado_civil" name="estado_civil">
+                                    <option value="-1" disabled selected> Selecione</option>
+                                    {% for i in estado_civil %}
+                                    <option value="{{i}}"> {{i}}</option>
+                                    {% endfor %}  
+                                </select>
+                            </div>
+
+                            <div class="col-5">
+                                <label for="nome_mae" class="form-label">Nome da Mãe: </span></label>
+                                <input type="text" class="form-control form-control-sm" id="nome_mae" name="nome_mae">
+                            </div>
+                            <div class="col-5">
+                                <label for="nome_pai"  class="form-label">Nome do Pai: </label>
+                                <input type="text" class="form-control form-control-sm phoneBR" id="nome_pai" name="nome_pai">                                    
+                            </div>
+
+                        </div>
                  </div>
             </div>
             </div>

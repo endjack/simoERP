@@ -9,23 +9,77 @@ from django.urls.base import reverse_lazy
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from funcionarios.models import *
 from django.shortcuts import redirect, render
+from django.db.models import Q
 
 
 def procurar_pessoal(request, template_name="funcionarios/fragmentos/procurar/procurar_home.html"):
     if request.method == 'GET':
         menu_ativo = 'PROCURAR'
+        lotacoes = Obra.objects.all()
+        cargos = Cargo.objects.all()
+        situacoes = FuncionarioV2.Situacao
+        
         
         context = {
-            'menu_ativo' : menu_ativo
+            'menu_ativo' : menu_ativo,
+            'lotacoes' : lotacoes,
+            'cargos' : cargos,
+            'situacoes' : situacoes,
+     
         }
         return render(request, template_name, context)
+    
+def filtrar_funcionariosV2(request, template_name="funcionarios/fragmentos/procurar/resultados_procurar_funcionarios.html"):
+    if request.method == 'GET':
 
+
+        lotacao = request.GET.get('lotacao')
+        situacao = request.GET.get('situacao')
+        
+        queryFuncionario = Q()
+        
+        if request.GET.get('nome') not in ["", None]:
+            nome = request.GET.get('nome')
+            
+            queryFuncionario &= Q(nome__icontains=nome) 
+
+            print(f'PESQUISA ------------------------ Nome ---> {nome}') 
+       
+        if request.GET.get('cargo') not in ["", "-1", None]:
+            cargo = Cargo.objects.get(pk=int(request.GET.get('cargo')))
+            
+            queryFuncionario &= Q(cargo=cargo) 
+
+            print(f'PESQUISA ------------------------ Cargo ---> {cargo.cargo}')
+       
+        if request.GET.get('lotacao') not in ["", "-1", None]:
+            lotacao = Obra.objects.get(pk=int(request.GET.get('lotacao')))
+            
+            queryFuncionario &= Q(lotacao=lotacao) 
+
+            print(f'PESQUISA ------------------------ Lotação ---> {lotacao.nome}')
+       
+        if request.GET.get('situacao') not in ["", "-1", None]:
+            
+            queryFuncionario &= Q(situacao=situacao) 
+
+            print(f'PESQUISA ------------------------ Lotação ---> {situacao}')
+       
+        funcionarios = FuncionarioV2.objects.all().filter(queryFuncionario).order_by('nome')
+        
+        context = {
+
+            'funcionarios' : funcionarios,
+     
+        }
+        return render(request, template_name, context)
 
 def cadastrar_funcionarios_pessoal(request, template_name= 'funcionarios/fragmentos/funcionarios/funcionarios_home.html'):
     if request.method == 'GET':
         menu_ativo = 'CADASTRARFUNCIONARIOS'
         tipo_contrato = FuncionarioV2.Contratos
         tipo_demissao = FuncionarioV2.TipoDemissao
+        estado_civil = FuncionarioV2.EstadoCivil
         tipo_conta = FuncionarioV2.TipoConta
         tipo_pix = FuncionarioV2.TipoPix
         situacao = FuncionarioV2.Situacao
@@ -43,6 +97,7 @@ def cadastrar_funcionarios_pessoal(request, template_name= 'funcionarios/fragmen
             'tipo_pix' : tipo_pix,
             'situacao' : situacao,
             'cargos' : cargos,
+            'estado_civil' : estado_civil,
             'obras' : obras,
             'bancos' : bancos,
             'responsavel_direto' : responsavel_direto,
@@ -324,6 +379,12 @@ def add_funcionario_v2(request):
         else:
             banco = Banco.objects.get(pk = int(request.POST.get('banco')))
             
+        #validar estado_civil
+        if request.POST.get('estado_civil') in ['','-1', None]:
+            estado_civil = None
+        else:
+            estado_civil = request.POST.get('estado_civil')
+            
             
         #validar tipo_responsavel
         if request.POST.get('tipo_responsavel') == 'on':
@@ -354,6 +415,8 @@ def add_funcionario_v2(request):
             
                
         rg = request.POST.get('rg', '')
+        nome_mae = request.POST.get('nome_mae', '')
+        nome_pai = request.POST.get('nome_pai', '')
         ctps = request.POST.get('ctps', '')
         cnh = request.POST.get('cnh', '')
         categoria_cnh = request.POST.get('categoria_cnh', '')
@@ -380,6 +443,9 @@ def add_funcionario_v2(request):
             nome = nome,
             cpf = cpf,
             rg = rg,
+            nome_mae = nome_mae,
+            nome_pai = nome_pai,
+            estado_civil = estado_civil,
             ctps = ctps,
             cnh = cnh,
             categoria_cnh = categoria_cnh,
@@ -483,7 +549,6 @@ def add_funcionario_v2(request):
         
     return redirect(reverse('procurar_pessoal'))  
            
-
 def detalhar_funcionario_v2(request, pk, template_name= 'funcionarios/fragmentos/funcionarios/detalhar_funcionario.html'):
     if request.method == 'GET':
         menu_ativo = 'CADASTRARCARGOS'
@@ -504,7 +569,6 @@ def cadastrar_cargo_pessoal(request, template_name= 'funcionarios/fragmentos/car
         }
         return render(request, template_name, context)
 
-
 def impressoes_pessoal(request, template_name= 'funcionarios/fragmentos/impressoes/impressoes_home.html'):
     if request.method == 'GET':
         menu_ativo = 'IMPRESSÃO'
@@ -514,7 +578,6 @@ def impressoes_pessoal(request, template_name= 'funcionarios/fragmentos/impresso
         }
         return render(request, template_name, context)
 
-
 def relatorios_pessoal(request, template_name= 'funcionarios/fragmentos/relatorios/relatorios_home.html'):
     if request.method == 'GET':
         menu_ativo = 'RELATÓRIO'
@@ -523,8 +586,7 @@ def relatorios_pessoal(request, template_name= 'funcionarios/fragmentos/relatori
             'menu_ativo' : menu_ativo
         }
         return render(request, template_name, context)
-    
-    
+       
 def add_inputs_dependente(request, id, template_name= 'funcionarios/fragmentos/funcionarios/novo_dependente.html'):
     if request.method == 'GET':
         context = {

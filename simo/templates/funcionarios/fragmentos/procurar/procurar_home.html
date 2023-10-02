@@ -2,6 +2,40 @@
 {% load static %}
 
 {% block styleHead %}
+<style>
+    .htmx-indicator {
+        display:none;
+        opacity: 0;
+        transition: opacity 200ms ease-in;
+    }
+    .htmx-request {
+      display:block;
+      opacity: 1;
+      transition: opacity 200ms ease-in;
+    }
+    
+       table {
+        border-collapse: collapse;
+    
+      } 
+      
+      .linha_clicavel {
+        border: 1px solid black;
+        cursor: pointer;
+        
+      } 
+      
+      .linha_clicavel:hover {
+        background: #bad6f7 !important;
+     
+      }
+      td a, td a:hover{
+        text-decoration:none;
+        color:black;
+      }
+      
+    
+    </style>    
 {% endblock %}
 
 {% block conteudo %}
@@ -9,9 +43,84 @@
     {% include "funcionarios/fragmentos/menu_pessoal.html" %}
 
 
+    <div class="container mt-2">
+            <h4 class="me-auto"><i class="fas fa-search"></i> Buscar Funcionário: </h4>
+            
+            <div class="p-1">
+                <form id="form_filtro" 
+                hx-get="{% url 'filtrar_funcionariosV2' %}" 
+                hx-target="#resultados_filtro" 
+                hx-swap="innerHTML" 
+                hx-indicator="#spinner"
+                style="line-height: normal; font-size:9pt">
+                  {% csrf_token %}
+        
+        
+            
+                  <div class="form-group row mb-2 ">
+                    <div class="col-4">
+                      <div class="col-12 ">
+                        <label for="nome" class="">Nome: </label>
+                        <input type="text" class="form-control form-control-sm" name="nome">
+                      </div>
+            
+                    </div>
+                    <div class="col-2">
+                        <div class="col-12">
+                          <label for="cargo" class="">Cargo:</label>
+                          <select id="input1" class="form-control form-control-sm"  name="cargo" >
+                                  <option value="-1"> Todos os Cargos</option>
+                                  {% for i in cargos %}
+                                  <option value="{{i.pk}}"> {{i.cargo}}</option>
+                                  {% endfor %}      
+                          </select>
+                        </div>
+                      </div>
+            
+                    <div class="col-2">
+                      <div class="col-12">
+                        <label for="lotacao" class="">Lotação:</label>
+                        <select id="input2" class="form-control form-control-sm"  name="lotacao" >
+                                <option value="-1"> Todas as Lotações</option>
+                                {% for i in lotacoes %}
+                                <option value="{{i.pk}}"> {{i.nome}}</option>
+                                {% endfor %}      
+                        </select>
+                      </div>
+                    </div>   
+
+                    <div class="col-2">
+                        <div class="col-12">
+                          <label for="situacao" class="">Situação:</label>
+                          <select id="input3" class="form-control form-control-sm"  name="situacao" >
+                                  <option value="-1"> Todas as Situações</option>
+                                  {% for i in situacoes %}
+                                  <option value="{{i}}"> {{i}}</option>
+                                  {% endfor %}      
+                          </select>
+                        </div>
+                      </div>   
+                   
+            
+                    <div class="col-2 d-flex align-items-end">
+                      <button form="form_filtro" class="btn btn-sm btn-primary " title="Pesquisar"><i class="fas fa-search"></i> </button>
+                      <a class="btn btn-sm btn-secondary" href="{% url 'procurar_pessoal' %}" title="Limpar Campos" style="margin-left:1rem" ><i class="fas fa-broom"></i></a>
+                    </div>
+                    <span class="help-block">*Para ver todos os funcionários: filtrar com os campos vazios.</span>
+                  </div>
+            
+                </form>
+              </div>
+    
+    </div>
 
 
-
+    <div class="row text-center">
+        <img id="spinner" class="htmx-indicator" width="30px" height="30px" src="{% static 'imagens/bars.svg' %}"/>
+    </div>
+    <div class="container" id="resultados_filtro">
+        {% include "funcionarios/fragmentos/procurar/resultados_procurar_funcionarios.html" %}
+    </div>
 
 
 {% endblock %}

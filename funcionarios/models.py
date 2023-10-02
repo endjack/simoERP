@@ -29,6 +29,13 @@ class FuncionarioV2(models.Model):
          TELEFONE = 'TELEFONE', 'Telefone'
          EMAIL = 'E-MAIL', 'E-mail'
          ALEATÓRIO = 'ALEATÓRIO', 'Aleatório'
+         
+    class EstadoCivil(models.TextChoices):
+         SOLTEIRO = 'SOLTEIRO', 'SOLTEIRO'
+         CASADO = 'CASADO', 'CASADO'
+         SEPARADO = 'SEPARADO', 'SEPARADO'
+         DIVORCIADO = 'DIVORCIADO', 'DIVORCIADO'
+         VIUVO = 'VIÚVO', 'VIÚVO'
     
     class TipoConta(models.TextChoices):
          CONTA_CORRENTE = 'CONTA-CORRENTE', 'Conta-Corrente'
@@ -66,6 +73,10 @@ class FuncionarioV2(models.Model):
     endereco = models.CharField(max_length=200, blank=True, null=True)
     telefone1 = models.CharField(max_length=20, blank=True, null=True)
     telefone2 = models.CharField(max_length=20, blank=True, null=True)
+    estado_civil = models.CharField(max_length=50, choices=EstadoCivil.choices, default=EstadoCivil.SOLTEIRO)
+    nome_mae = models.CharField(max_length=200,  blank=True, null=True)
+    nome_pai = models.CharField(max_length=200,  blank=True, null=True)
+    nacionalidade = models.CharField(max_length=200,  blank=True, null=True)
     
     #dados contratuais  
     situacao = models.CharField(max_length=50, choices=Situacao.choices, default=Situacao.ADMITIDO) #

@@ -1,0 +1,83 @@
+{% load static %}
+
+  <div class="p-2" style="border-color: #093637;">
+      <table class="table table-sm table-bordered table-striped tabelaResultados" style="font-size:9pt">
+              <thead class="text-white text-center" style="background:#39423b;">
+              <tr style="line-height: 12px;white-space: nowrap; ">
+               
+                <th scope="col">Matrícula</th>
+                <th scope="col" style="text-align: left;">Nome</th>
+                <th scope="col" style="text-align: left;">Cargo</th>
+                <th scope="col">Situação</th>
+                <th scope="col">Tipo de Contrato</th>
+                <th scope="col">Data Admissão</th>
+                <th scope="col">Data Prorrogação</th>
+                <th scope="col">Fim Prorrogação</th>
+                <th scope="col">Data Demissão</th>
+           
+
+              </tr>
+            </thead>
+            <tbody>
+              {% if funcionarios %}
+                {% for i in funcionarios  %}
+               <tr class='linha_clicavel'>
+                <td class="text-center "><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.matricula}}</div></a></td>
+                <td class=""><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.nome|default_if_none:"-"}}</div></a></td>
+                  <td class=""><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.cargo|default_if_none:"-"}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.situacao|default_if_none:"-"}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.tipo_contrato|default_if_none:"-"}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.data_admissao|date:'d/m/y'|default:"-"}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.data_inicio_prorrogacao|date:'d/m/y'|default:"-"}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.data_fim_prorrogacao|date:'d/m/y'|default:"-"}}</div></a></td>
+                  <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.data_demissao|date:'d/m/y'|default:"-"}}</div></a></td>
+                
+                </tr>
+                {% endfor %}
+              {% else %}
+                   
+              {% endif %}
+          
+            </tbody>
+    </table>
+</div>
+
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>  
+<script src="{% static 'js/datatables.min.js' %}"></script>        
+{% block jquery %}
+<script>
+
+
+$('.tabelaResultados').DataTable({
+responsive: true,
+// "bSort": false,
+"aaSorting": [],
+"pageLength": 10,
+"language": {
+
+  "decimal": "",
+  "emptyTable": "Sem resultados.",
+  "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+  "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+  "infoFiltered": "(filtrado de _MAX_ registros no total)",
+  "infoPostFix": "",
+  "thousands": ",",
+  "lengthMenu": "Mostrar _MENU_ registros",
+  "loadingRecords": "A carregar dados...",
+  "processing": "A processar...",
+  "search": "Busca nos resultados:",
+  "zeroRecords": "Não foram encontrados resultados",
+  "paginate": {
+      "first": "Primeiro",
+      "last": "Último",
+      "next": "Seguinte",
+      "previous": "Anterior"
+  },
+  "aria": {
+      "sortAscending": ": ordem crescente",
+      "sortDescending": ": ordem decrescente"
+  }
+}
+});
+</script>
+{% endblock%}
