@@ -1,0 +1,51 @@
+
+ <div class="modal fade" id="alterarOBSdevolucaoCautelaEstoquev2{{cautela_atual.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content ">
+            <div class="modal-header p-3">
+                <div class="d-flex flex-column bd-highlight">
+                    <h5 style="color:black" class="bd-highlight">Alterar Observações de devolução (Cautela nº {{cautela_atual.pk}}) </h5>
+                    
+                    
+                </div>  
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <!-- modal-body --> 
+                <form id="alterarObsDevolucaoCautelaFerramenta"
+                        hx-post="{% url 'alterar_obs_devolucao_cautela' cautela_atual.pk %}"
+                        hx-target="body" 
+                        hx-push-url="true"
+                        hx-indicator="#spinner"
+                        hx-swap="innerHTML" >
+
+
+                        <div class="row">
+                            <div class="col-12">
+                                <strong>Observações:</strong>
+                                <br>
+                                <small class="">Indicar as observações sobre as ferramentas no ato da devolução.</small>
+                                <textarea name="observacoes" rows="3" cols="50" class="form-control form-control-sm">{{cautela_atual.obs_devolucao|default_if_none:""}}</textarea>
+                        
+                            </div>
+                        </div>
+
+
+                </form>
+
+
+            
+
+                <!-- Fim modal-body -->
+            </div>
+            <div class="modal-footer form-control">
+                <small class="small-error" id="error_obs_cautela"></small>
+                {% include "utils/load_htmx_centralizado.html" %}
+                <button class="btn btn-sm btn-success" form="alterarObsDevolucaoCautelaFerramenta"><i class="fas fa-save"></i> Salvar </button>  
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            
+            </div>
+        </div>
+    </div>
+ </div>
+ <!-- Fim Modal --> 

@@ -29,7 +29,7 @@ class Ferramenta(models.Model):
             raise ValidationError("Tamanho máximo da Imagem é %sMB" % str(megabyte_limit))
         
     ESTADO = (
-        (0, "NOVA"),(1, "USADA"),(3, "COM DEFEITO"),
+        ('0', "NOVA"),('1', "USADA"),('2', "COM DEFEITO"),
         )
 
     
@@ -41,17 +41,47 @@ class Ferramenta(models.Model):
     cor = models.CharField(max_length=50, blank=True, null=True)
     tamanho = models.CharField(max_length=50, blank=True, null=True)
     numeracao = models.CharField(max_length=50, blank=True, null=True)
-    estado = models.CharField(max_length=50, choices=ESTADO, default=1)
-    reservada = models.BooleanField(default=False)
+    estado = models.CharField(max_length=50, choices=ESTADO, default='1')
     ativa = models.BooleanField(default=False)
     manutencao = models.BooleanField(default=False)
     data_inclusao = models.DateTimeField(default=timezone.now)
     obs =  models.CharField(max_length=300, null=True, blank=True)
+    acautelada = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f'Ferramenta: {self.pk} - {self.descricao}'
     
+    
+    def get_situacao_label(self):
+        if self.manutencao:
+            return '<span class="text-secondary">EM MANUTENÇÃO</span>'
+        else:
+            if self.acautelada:
+                return '<span class="text-danger">RESERVADA</span>'
+            else:
+                return '<span class="text-success">LIVRE</span>'
+    
+    def get_situacao(self):
+        if self.manutencao:
+            return 'manutencao'
+        else:
+            if self.acautelada:
+                return 'reservada'
+            else:
+                return 'livre'
+            
+    def get_cautela_by_ferramenta(self):
+        if self.acautelada:
+            cautelaFerr = CautelaFerramenta.objects.get(ferramenta = self)
+            return cautelaFerr.cautela
+        else:
+            None
+    
 class Cautela(models.Model):
+    
+    SITUACAO = (
+        ('0', "EM ABERTO"),('1', "ATIVA"),('2', "ENTREGUE COM OBS"),('3', "ENTREGUE")
+        )
     
     solicitante = models.ForeignKey(Funcionario, on_delete=models.SET_NULL, null=True, related_name='solicitante')
     almoxarifado = models.ForeignKey(User, on_delete=models.PROTECT)
@@ -61,9 +91,25 @@ class Cautela(models.Model):
     local = models.ForeignKey(Local, on_delete=models.SET_NULL, null=True, blank=True)
     obs_entrega =  models.CharField(max_length=300, null=True, blank=True)
     obs_devolucao =  models.CharField(max_length=300, null=True, blank=True)
+    ativa = models.BooleanField(default=False)
+    situacao = models.CharField(max_length=50, choices=SITUACAO, default='0')
     
     def __str__(self) -> str:
         return f'Cautela {self.pk}'
+    
+    
+    def get_situacao_label(self):
+        if self.situacao == "0":
+            return '<span class="text-secondary">EM ABERTO</span>'
+        elif self.situacao == "1":
+            return '<span class="text-success">ATIVA</span>'
+        elif self.situacao == "2":
+            return '<span class="text-danger">ENTREGUE COM OBS</span>'
+        else:
+            return '<span class="text-dark">ENTREGUE</span>'
+        
+    def get_ferramentas(self):
+        return CautelaFerramenta.objects.filter(cautela = self)
     
 class CautelaFerramenta(models.Model):
     

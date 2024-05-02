@@ -1,0 +1,81 @@
+{% load static %}
+
+{% block styleHead %}
+ 
+{% endblock %}
+
+{% block conteudo %}
+
+
+<div class="container mt-2">
+ 
+<div class="card">
+
+<div class="row mt-2">
+
+      <div class="col-3 ">
+            {% if item.imagem %}
+            <img src="{{item.imagem.url}}" class="card-img-top m-1" style="width: 100%; height: auto;">
+            {% else %}
+            <img src="{% static 'imagens/sem_imagem.png' %}" class="card-img-top m-1" style="width: 100%; height: auto;">
+            {% endif %}
+            
+      </div>
+
+      <div class="col-6" style="font-size: 14pt;">
+            <div class="">Descrição: <span style="font-weight: bold;">{{item.descricao}} </span></div>
+            <div class="">Marca: <span style="font-weight: bold;">{{item.marca|default_if_none:"-"}} </span></div>
+            <div class="">Categoria: <span style="font-weight: bold;">{{item.categoria}} </span></div>
+            <div class="">Peso: <span style="font-weight: bold;">{{item.peso |default_if_none:"-"}} </span></div>
+            <div class="">Fornecedor: <span style="font-weight: bold;">{{item.fornecedor.nome|default_if_none:"-"}} </span></div>
+            <div class="">Preço R$: <span style="font-weight: bold;">{{item.preco|default_if_none:"-" }} </span></div>
+      </div>
+
+      <div class="col-3">
+        <br>
+        <div class="text-start">
+            {% if not item.estocado %}   
+            <div>Ao estocar o item, ele iniciará no Estoque com <span class="text-danger fw-bold">0 {{item.unid_medida}}</span></div>
+            {% endif %}
+      
+        <br>
+        <div class="">Quant. Mínima: <span style="font-weight: bold;">{{item.qtd_minima}} {{item.unid_medida}}</span></div>
+      </div>
+
+</div>   
+
+</div>
+</div>
+
+
+       
+{% endblock%}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>  
+{% block jquery %}
+
+
+<script>
+$(document).ready(function () {
+
+
+      $("#tipo").change( function() {
+          if ($("#tipo").val() == 'ENTRADA') {
+            $("#labelButton").html('Acrescentar (+): ').css("color", "blue");
+            $(".bgMovimentar").removeClass("btn-danger");
+            $(".bgMovimentar").addClass( "btn-primary" );
+          } else {
+              $("#labelButton").html('Retirar (-): ').css("color", "red");
+              $(".bgMovimentar").removeClass( "btn-primary" );
+              $(".bgMovimentar").addClass( "btn-danger" );
+          }
+      });
+
+
+
+
+
+   
+});
+</script>
+{% endblock%}
+

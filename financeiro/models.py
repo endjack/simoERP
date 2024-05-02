@@ -1,4 +1,4 @@
-from django.db.models import F
+from django.db.models import F, ExpressionWrapper, Sum, DecimalField
 from datetime import datetime
 from django.db.models.deletion import CASCADE, PROTECT, DO_NOTHING
 from fornecedores.models import Fornecedor
@@ -40,15 +40,27 @@ class NotaCompleta(models.Model):
     saida = models.ForeignKey(DescricaoNota, on_delete=CASCADE, null=True, blank=True)
     itens = models.ManyToManyField(ItensNota)
     valor = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True)
+    desconto = models.DecimalField(max_digits=20, decimal_places=2, default=0)
     pago = models.BooleanField(default=False)
     forma_pagamento = models.IntegerField(default=0, blank=True)  # 0 = Em aberto | 1 = A vista | 2 = Boleto
     usuario = models.ForeignKey(User, on_delete=PROTECT, null=True)
 
     def valor_Total_itens_BR(self):
         total = 0
+        
         for v in self.itens.all():
             total +=  float(v.qtd) * float(v.valor)
+          
         return locale.currency(total, grouping=True)
+    
+    def get_valor_total_itens(self):
+            return self.itens.all().aggregate(total_itens = Sum(ExpressionWrapper(F("qtd") *  F("valor"),  output_field=DecimalField())))["total_itens"]
+
+    def get_valor_total_itens_BR(self):
+        if self.get_valor_total_itens():
+            return locale.currency(self.get_valor_total_itens(), grouping=True)
+        else:
+          return locale.currency(0, grouping=True)  
     
     def valor_BR(self):
         if self.valor:

@@ -65,13 +65,28 @@ urlpatterns = [
     path('estoque/inicio', procurar_estoquev2, name='inicio_estoquev2'),
     path('estoque/item_estoque/<int:pk>', detalhar_item_de_estoque, name='detalhar_item_de_estoque'),
     path('estoque/item_estoque/<int:pk>/movimentar', movimentar_item_de_estoque, name='movimentar_item_de_estoque'),
+    path('estoque/item_estoque/<int:pk>/excluir', excluir_item_de_estoque, name='excluir_item_de_estoque'),
     path('hx/<int:pk>/hx_calcular_saldo_estoque', hx_calcular_saldo_estoque, name='hx_calcular_saldo_estoque'),
     
-    #ferramental_estoquev2
+    #ferramental e Cautelas _estoquev2
     path('estoque/ferramental/inicio', ver_ferramental_estoquev2, name='ferramental_estoquev2'),
+    path('estoque/ferramental/buscar', buscar_ferramentas, name='buscar_ferramentas'),
     path('estoque/ferramental/nova', add_nova_ferramenta_estoquev2, name='add_nova_ferramenta_estoquev2'),
-    path('estoque/ferramental/cautelas/criar', criar_cautela_ferramenta, name='criar_cautela_ferramenta'),
-    path('estoque/ferramental/cautelas/<int:pk>/detalhar', detalhar_cautela_ferramenta, name='detalhar_cautela_ferramenta'),
+    path('estoque/ferramental/cautelas/criar', criar_cautela_ferramenta, name='criar_cautela_ferramenta'), #criar
+    path('estoque/ferramental/cautelas/<int:pk>/editar', criar_cautela_ferramenta, name='criar_cautela_ferramenta'), #editar
+    path('estoque/ferramental/cautelas/buscar', buscar_cautelas, name='buscar_cautelas'),
+    path('estoque/ferramental/cautela/<int:pk>/detalhar', detalhar_cautela_ferramenta, name='detalhar_cautela_ferramenta'),
+    path('estoque/ferramental/cautela/<int:pk>/excluir', excluir_cautela, name='excluir_cautela'),
+    path('estoque/ferramental/cautela/<int:pk>/detalhar/<int:ferr>/inserir', inserir_ferramenta_em_cautela, name='inserir_ferramenta_em_cautela'),
+    path('estoque/ferramental/cautela/<int:pk>/detalhar/<int:ferr>/retirar', retirar_ferramenta_cautela, name='retirar_ferramenta_cautela'),
+    path('estoque/ferramental/cautela/<int:pk>/situacao', alterar_situacao_cautela, name='alterar_situacao_cautela'),
+    path('estoque/ferramental/cautela/<int:pk>/obs-devolucao', alterar_obs_devolucao_cautela, name='alterar_obs_devolucao_cautela'),
+    path('estoque/ferramental/cautela/<int:pk>/data-devolucao', alterar_data_devolucao_cautela, name='alterar_data_devolucao_cautela'),
+    path('hx/filtro/buscar-cautelas', filtro_buscar_cautelas, name='filtro_buscar_cautelas'),
+    
+    # path('estoque/imprimir/cautelas/', imprimir_resultado_cautela, name='imprimir_resultado_cautela'),
+    path('estoque/pdf/cautelas/', gerar_pdf_resultado_cautela, name='gerar_pdf_resultado_cautela'),
+    path('estoque/pdf/cautelas/<int:pk>', gerar_pdf_cautela_individual, name='gerar_pdf_cautela_individual'),
     
     #Procurar V2
     path('estoque/procurar', procurar_estoquev2, name='procurar_estoquev2'),
@@ -85,11 +100,16 @@ urlpatterns = [
     path('estoque/requisicao/<int:pk>/buscar-itens', filtrar_itens_estoque_requisicao, name='filtrar_itens_estoque_requisicao'),
     path('estoque/requisicao/<int:pk>/item/<int:item>/add', add_itemRequisicao_requisicao, name='add_itemRequisicao_requisicao'),
     path('estoque/requisicao/<int:pk>/item/<int:item>/excluir', excluir_item_requisicao_estoque, name='excluir_item_requisicao_estoque'),
+    path('estoque/requisicao/<int:pk>/imprimir', imprimir_requisicao_de_estoque, name='imprimir_requisicao_estoque'),
 
-    #Itens 
+    #Itens v2
     path('estoque/cadastrar/itens', cadastrar_itens_estoquev2, name='cadastrar_itens_estoquev2'),
     path('estoque/cadastrar/itens/novo', add_novo_item_estoque, name='add_novo_item_estoquev2'),
     path('estoque/cadastrar/itens/filtrar', filtrar_itens_nao_estoque, name='filtrar_itens_nao_estoque'),
+    path('estoque/cadastrar/itens/<int:pk>/detalhar', detalhar_item_nao_estoquev2, name='detalhar_item_nao_estoquev2'),
+    path('estoque/cadastrar/itens/<int:pk>/estocar', estocar_item_nao_estoquev2, name='estocar_item_nao_estoquev2'),
+    path('estoque/cadastrar/itens/<int:pk>/editar', editar_dados_item_estoquev2, name='editar_dados_item_estoquev2'),
+    path('estoque/cadastrar/itens/<int:pk>/excluir', excluir_item_nao_estocado, name='excluir_item_nao_estocado'),
     
     #Categorias v2
     path('estoque/cadastrar/categorias', cadastrar_categoria_estoquev2, name='cadastrar_categoria_estoquev2'),
@@ -180,6 +200,7 @@ urlpatterns = [
     path('engenharia/obra/<int:pk>/os/<int:os>/salvar', obras_salvar_editar_orden_servico, name='obra_salvar_editar_os'),
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar', obras_detalhar_orden_servico, name='obra_detalhar_os'),
     path('engenharia/obra/<int:pk>/os/<int:os>/finalizar', obras_finalizar_orden_servico, name='obras_finalizar_orden_servico'),
+    path('engenharia/obra/<int:pk>/os/<int:os>/excluir', obra_excluir_os, name='obra_excluir_os'),
     path('engenharia/obra/<int:pk>/os/<int:os>/mudar_finalizar', obras_mudar_finalizar_orden_servico, name='obras_mudar_finalizar_orden_servico'),
     #urls Engenharia Imagens v.2
     path('engenharia/obra/<int:pk>/os/<int:os>/detalhar/imagens', obras_imagens_orden_servico, name='obra_imagens_os'),
@@ -243,6 +264,8 @@ urlpatterns = [
     path('contas-a-pagar/pagar-boleto-unico/<int:pk>/nota/<int:nota>', pagar_boleto_unico, name='pagar-boleto-unico'),
     path('contas-a-pagar/salvar-pagar-boleto-unico/<int:pk>/nota/<int:nota>', salvar_pagar_boleto_unico, name='salvar-pagamento-boleto-unico'),
     path('contas-a-pagar/excluir-pagamento-boleto-unico/<int:pk>/nota/<int:nota>', excluir_pagamento_boleto_unico, name='excluir-pagamento-boleto-unico'),
+    path('contas-a-pagar/gerar_pdf_resultado_contas_e_boletos', gerar_pdf_resultado_contas_e_boletos, name='gerar_pdf_resultado_contas_e_boletos'),
+    
     
     #inserir_nota_saida
     path('contas-a-pagar/inserir-descricao-saida', inserir_descricao_saida, name='inserir-descricao-saida'),
@@ -252,6 +275,7 @@ urlpatterns = [
     path('contas-a-pagar/inserir-itens-saida/nota/<int:pk>', inserir_itens_saida, name='inserir-itens-saida'),
     path('contas-a-pagar/salvar-itens-saida/nota/<int:pk>', salvar_itens_saida, name='salvar-itens-saida'),
     path('contas-a-pagar/salvar-itens-saida/<int:pk>/nota/<int:nota>', excluir_iten_saida, name='excluir-iten-saida'),
+    path('contas-a-pagar/nota/<int:pk>/inserir-desconto', inserir_desconto_conta_a_pagar, name='inserir_desconto-conta-a-pagar'),
     
     #validações [financeiro]
     path('contas-a-pagar/check-descricao-item-conta', check_descricao_item_conta, name='check-descricao-item-conta'),
@@ -282,11 +306,11 @@ urlpatterns = [
 
     
     #urls Fornecedores
-     path('fornecedores/', ListarFornecedorView.as_view(), name='listar-fornecedores'),
-     path('fornecedor/<pk>', DetalharFornecedorView.as_view(), name='detalhar-fornecedor'),
-     path('fornecedores/inserir', InserirFornecedorView.as_view(), name='inserir-fornecedor'),
-     path('fornecedores/<pk>/editar', EditarFornecedorView.as_view(), name='editar-fornecedor'),
-     path('fornecedores/<pk>/excluir', ExcluirFornecedorView.as_view(), name='excluir-fornecedor'),
+    path('fornecedores/', ListarFornecedorView.as_view(), name='listar-fornecedores'),
+    path('fornecedor/<pk>', DetalharFornecedorView.as_view(), name='detalhar-fornecedor'),
+    path('fornecedores/inserir', InserirFornecedorView.as_view(), name='inserir-fornecedor'),
+    path('fornecedores/<pk>/editar', EditarFornecedorView.as_view(), name='editar-fornecedor'),
+    path('fornecedores/<pk>/excluir', ExcluirFornecedorView.as_view(), name='excluir-fornecedor'),
      
      
     path('fornecedores/get', get_fornecedores, name='get-fornecedores'),
@@ -294,21 +318,23 @@ urlpatterns = [
     
 
     #urls Funcionários
-     path('funcionarios/', InserirFuncionarioView.as_view(), name='inserir-funcionario'),
-     path('funcionarios/<pk>/editar', EditarFuncionarioView.as_view(), name='editar-funcionario'),
-     path('funcionarios/<pk>/excluir', ExcluirFuncionarioView.as_view(), name='excluir-funcionario'),
-     path('funcionario/<pk>', DetalharFuncionarioView.as_view(), name='detalhar-funcionario'),
-     path('cargos/', InserirCargoView.as_view(), name='inserir-cargo'),
-     path('cargos/<pk>/editar', EditarCargoView.as_view(), name='editar-cargo'),
-     path('cargos/<pk>/excluir', ExcluirCargoView.as_view(), name='excluir-cargo'),
-     path('cargo/<pk>', DetalharCargoView.as_view(), name='detalhar-cargo'),
+    path('', include("funcionarios.urls")),
+    
+    path('funcionarios/', InserirFuncionarioView.as_view(), name='inserir-funcionario'),
+    path('funcionarios/<pk>/editar', EditarFuncionarioView.as_view(), name='editar-funcionario'),
+    path('funcionarios/<pk>/excluir', ExcluirFuncionarioView.as_view(), name='excluir-funcionario'),
+    path('funcionario/<pk>', DetalharFuncionarioView.as_view(), name='detalhar-funcionario'),
+    path('cargos/', InserirCargoView.as_view(), name='inserir-cargo'),
+    path('cargos/<pk>/editar', EditarCargoView.as_view(), name='editar-cargo'),
+    path('cargos/<pk>/excluir', ExcluirCargoView.as_view(), name='excluir-cargo'),
+    path('cargo/<pk>', DetalharCargoView.as_view(), name='detalhar-cargo'),
 
-      #urls Faturamento
-     path('faturamentos/', FaturamentoView.as_view(), name='listar-faturamentos'),
-     path('faturamentos/inserir', InserirFaturamentoView.as_view(), name='inserir-faturamento'),
-     path('faturamentos/editar/<pk>', EditarFaturamentoView.as_view(), name='editar-faturamento'),
-     path('faturamentos/excluir/<pk>', ExcluirFaturamentoView.as_view(), name='excluir-faturamento'),
-     path('faturamentos/imprimir', ImprimirFaturamentoView.as_view(), name='imprimir-faturamento'),
+    #urls Faturamento
+    path('faturamentos/', FaturamentoView.as_view(), name='listar-faturamentos'),
+    path('faturamentos/inserir', InserirFaturamentoView.as_view(), name='inserir-faturamento'),
+    path('faturamentos/editar/<pk>', EditarFaturamentoView.as_view(), name='editar-faturamento'),
+    path('faturamentos/excluir/<pk>', ExcluirFaturamentoView.as_view(), name='excluir-faturamento'),
+    path('faturamentos/imprimir', ImprimirFaturamentoView.as_view(), name='imprimir-faturamento'),
 ]
 
 htmlx_urlpatterns = [     

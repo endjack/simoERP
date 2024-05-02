@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styleHead %}
+<style>
+    .htmx-indicator {
+        display:none;
+        opacity: 0;
+        transition: opacity 200ms ease-in;
+    }
+    .htmx-request {
+      display:block;
+      opacity: 1;
+      transition: opacity 200ms ease-in;
+    }
+    
+       table {
+        border-collapse: collapse;
+    
+      } 
+      
+      .linha_clicavel {
+        border: 1px solid black;
+        cursor: pointer;
+        
+      } 
+      
+      .linha_clicavel:hover {
+        background: #bad6f7 !important;
+     
+      }
+      td a, td a:hover{
+        text-decoration:none;
+        color:black;
+      }
+
+
+      div.dataTables_filter input{
+        width:40rem !important;
+        margin-bottom:1rem;
+     }
+ 
+     .pull-left{
+         float:left !important;
+     }
+ 
+     .pull-right{
+         float:right !important;
+     }
+      
+    
+    </style>  
+ 
+{% endblock %}
+
+{% block conteudo %}
+
+{% include "estoque_v2/fragmentos/menu_estoque.html" %}
+
+
+<div class="container mt-2">
+
+    <div class="d-flex flex-row align-items-center" >
+         <div class="d-flex flex-row me-auto">
+          <h4 class="align-self-center"><i class="fas fa-search"></i> <i class="fas fa-user-clock"></i> Buscar Cautelas: </h4>
+             
+          <div class="align-self-center" style="margin-left:3rem"
+            hx-get="{% url 'filtro_buscar_cautelas' %}"
+            hx-trigger="change"
+            hx-target="#resultados-cautelas"
+            hx-swap="innerHTML"
+            hx-include="this"
+            hx-indicator="#spinner">
+            
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="CheckAtivo" value="checked1" checked >
+              <label class="form-check-label" for="inlineCheckbox1">ATIVA</label>
+            </div>
+             <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="CheckAtivo" value="checked0">
+              <label class="form-check-label" for="inlineCheckbox2">EM ABERTO</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="CheckAtivo" value="checked23">
+              <label class="form-check-label" for="inlineCheckbox3">ENTREGUE</label>
+            </div>
+            
+          </div>
+
+        </div>
+
+        <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'ferramental_estoquev2' %}" 
+        title="Voltar"><i class="fas fa-arrow-left"></i></i> Voltar </a>
+
+        {% comment %} <a  style="" class="btn btn-sm btn-dark m-1" target="_blank" href="{% url 'imprimir_resultado_cautela'  %}" 
+        title="Imprimir Resultados"><i class="fas fa-print"></i></i> Imprimir </a> {% endcomment %}
+
+        <a  style="" class="btn btn-sm btn-danger m-1" target="_blank" href="{% url 'gerar_pdf_resultado_cautela'  %}" 
+        title="Gerar PDF"><i class="fas fa-file-pdf"></i></i> Gerar PDF </a>
+
+   
+    </div>
+
+   
+
+</div>
+
+{% include "utils/load_htmx_centralizado.html" %}
+
+<div class="container mt-2">
+  <div id="resultados-cautelas"> 
+    {% include "estoque_v2/ferramentas/resultado_filtro_cautelas.html" %}
+                     
+  </div>
+</div>
+
+
+
+{% endblock%}

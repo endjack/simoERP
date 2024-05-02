@@ -1,0 +1,103 @@
+{% load static %}
+<div class="container mt-2">
+    <div class="d-flex flex-row align-items-center" >
+        <h6 class="me-auto"><i class="fas fa-search"></i> Ferramentas Acauteladas: </h6>
+    
+    </div>
+  
+  
+    <hr>
+  <div class="p-2" style="border-color: #093637;">
+    <table class="table table-sm table-bordered table-striped tabelaResultados" style="font-size:9pt;vertical-align: middle;">
+        <thead class="text-white text-center" style="background:#39423b;">
+              <tr style="line-height: 12px;white-space: nowrap; ">
+               
+                <th scope="col">#</th>
+                <th scope="col" style="text-align: left;">Ferramenta <i class="fas fa-wrench"></i> </th>
+                <th scope="col">Data Inicio</th>
+                <th scope="col" style="text-align: left;">Solicitante</th>
+                <th scope="col" style="text-align: left;">Local</th>
+                <th scope="col" style="text-align: left;">Obra</th>
+                <th scope="col" >Cautela</th>
+  
+              </tr>
+            </thead>
+            <tbody>
+              {% if acauteladas %}
+                {% for i in acauteladas  %}
+  
+               <tr class=''>
+  
+                  <td class="text-center">{{forloop.counter}}</td>
+                  <td class="text-start"><a class="text-primary fw-bold" title="Ver Ferramenta" data-bs-toggle="modal" data-bs-target="#detalharFerramentaEstoquev2{{i.ferramenta.pk}}" href="ver-ferramenta">{{i.ferramenta.descricao|default_if_none:"-"}} </a></span></td>
+                  <td class="text-center">{{i.cautela.data_cautela|default_if_none:"-"|date:'d/m/Y'}}</td>
+                  <td class="text-start">{{i.cautela.solicitante.nome|default_if_none:"-"}}</td>
+                  <td class="text-start">{{i.cautela.local.local|default_if_none:"-"}}</td>
+                  <td class="text-start">{{i.cautela.obra.nome|default_if_none:"-"}}</td>
+                  <td class="text-center">
+                    <a class="text-primary" title="Ver Cautela" href="{% url 'detalhar_cautela_ferramenta' i.cautela.pk %}"><i class="fas fa-user-clock"></i></a>
+                    
+                  </td>
+                
+                
+                </tr>
+
+                {% with i.ferramenta as ferramenta %}
+                {% include "estoque_v2/ferramentas/detalhar_ferramenta.html" %}
+                {% endwith %}
+
+
+                {% endfor %}
+              {% else %}
+                   
+              {% endif %}
+          
+            </tbody>
+    </table>
+  </div>
+  
+  
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/datatables.min.js' %}"></script>
+{% block jquery %}
+
+<script>
+    $(document).ready(function () {
+        $('.tabelaResultados').DataTable({
+            responsive: true,
+            'dom':'<"pull-left"f><"pull-right"l>tip',
+            "aaSorting": [],
+            "pageLength": 10,
+            "order": [
+                [0, "asc"]
+            ], 
+            "language": {
+
+                "decimal": ",",
+                "emptyTable": "Sem registro",
+                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+                "infoFiltered": "(filtrado de _MAX_ registros no total)",
+                "infoPostFix": "",
+                "thousands": ".",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "loadingRecords": "A carregar dados...",
+                "processing": "A processar...",
+                "search": "Buscar ",
+                "zeroRecords": "Não foram encontrados resultados",
+                "paginate": {
+                    "first": "Primeiro",
+                    "last": "Último",
+                    "next": "Seguinte",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": ordem crescente",
+                    "sortDescending": ": ordem decrescente"
+                }
+            }
+        });
+
+    });
+</script>
+{% endblock%}

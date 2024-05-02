@@ -1,15 +1,22 @@
 from datetime import timedelta
 from decimal import Decimal
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from estoque.models import *
 from django.views.decorators.csrf import csrf_exempt
-from estoque_v2.models import CategoriaFerramenta, Cautela, Ferramenta
+from estoque_v2.models import CategoriaFerramenta, Cautela, CautelaFerramenta, Ferramenta
 from funcionarios.models import Funcionario
 from obras.models import Local, Obra
-from django.db.models import Sum, Count, F
+from django.db.models import Sum, Count, F, Q
 from requisicao.models import ItemRequisicao, Requisicao
+from django_htmx.http import HttpResponseClientRedirect, push_url
+from django.core.cache import cache
+
+from simo.utils import gerar_pdf_by_template
+from django.contrib.sites.shortcuts import get_current_site
+
 
 
 @login_required(login_url='login/')
@@ -76,6 +83,20 @@ def detalhar_item_de_estoque(request, pk, template_name = 'estoque_v2/detalhar_i
     
 @login_required(login_url='login/')
 @csrf_exempt
+def excluir_item_de_estoque(request, pk):
+
+    if request.method == 'GET':
+        item_estoque = Estoque.objects.get(pk=pk)
+        item = item_estoque.item
+        
+        item_estoque.delete()
+        item.estocado = False
+        item.save()
+       
+        return redirect('inicio_estoquev2')
+    
+@login_required(login_url='login/')
+@csrf_exempt
 def movimentar_item_de_estoque(request, pk):
 
     if request.method == 'POST':
@@ -119,28 +140,25 @@ def movimentar_item_de_estoque(request, pk):
 @csrf_exempt
 def filtrar_itens_estoque(request, template_name = 'estoque_v2/fragmentos/procurar/resultados_procurar.html'):
 
-    if request.method == 'POST':
+    if request.method == 'GET':
         
-        descricao = request.POST.get('descricao') or ''
-        marca = request.POST.get('marca') or ''
-        categoria = request.POST.get('categoria') or '-1'
+        descricao = request.GET.get('descricao') 
+        marca = request.GET.get('marca') 
+        categoria = request.GET.get('categoria')
 
-        if categoria == '-1':    
+        if categoria == 'todas':    
             itens = Estoque.objects.all().filter(item__descricao__icontains=descricao).filter(item__marca__icontains=marca)
         else:
             itens = Estoque.objects.all().filter(item__descricao__icontains=descricao).filter(item__marca__icontains=marca).filter(item__categoria__pk=int(categoria))
     
-        
-        # print(f'-------------RESULTADO DO FILTER ---> {itens}')
-       
         context = {
          
             'itens': itens
          
         }
      
- 
         return render(request, template_name , context)
+
  
 #TODO REQUISIÇÕES DO ESTOQUE
 # ------------------------------------------------------------  REQUISIÇÕES DO ESTOQUE ---------------------------------------------------
@@ -279,14 +297,14 @@ def add_itemRequisicao_requisicao(request, pk, item):
         
         if qtd_solicitada == "":
             response = HttpResponse('Valor Inválido!')
-            response['HX-Retarget'] = f'#erroQntItemRequisicao{item}'
+            response['HX-Retarget'] = f'#erroQntItemRequisicao{item.pk}'
             return response
         else:
             qtd_solicitada = float(qtd_solicitada) 
         
         if qtd_solicitada > qtd_item_no_estoque:
             response = HttpResponse('Qtd Insuficiente!')
-            response['HX-Retarget'] = f'#erroQntItemRequisicao{item}'
+            response['HX-Retarget'] = f'#erroQntItemRequisicao{item.pk}'
             return response
         else:
             item.quantidade  =   qtd_item_no_estoque - qtd_solicitada
@@ -324,7 +342,23 @@ def detalhar_requisicao_de_estoque(request, pk, template_name = 'estoque_v2/deta
          
         }
         return render(request, template_name , context)
-        
+ 
+@login_required(login_url='login/')
+@csrf_exempt
+def imprimir_requisicao_de_estoque(request, pk, template_name = 'estoque_v2/requisicoes/imprimir_requisicao_de_estoque.html'):
+
+    if request.method == 'GET':
+        _menu_ativo = 'REQUISIÇÃO'
+        req_atual = Requisicao.objects.get(pk=pk)      
+        itensRequisicao = ItemRequisicao.objects.filter(requisicao=req_atual)
+     
+        context = {
+            'menu_ativo' : _menu_ativo,
+            'req_atual' : req_atual,
+            'itensRequisicao' : itensRequisicao,       
+        }
+        return render(request, template_name , context)
+       
     
 @login_required(login_url='login/')
 @csrf_exempt
@@ -355,6 +389,38 @@ def ver_ferramental_estoquev2(request, template_name = 'estoque_v2/ferramental_e
       if request.method == 'GET':
         _menu_ativo = 'FERRAMENTAL'
         
+        #TODO COLOCAR AS FERRAMENTAS ACAUTELADAS PRIMEIRO E DEPOIS AS NÃO ACAUTELADAS EM LISTA
+        acauteladas = CautelaFerramenta.objects.all()
+        
+        ferramentas = Ferramenta.objects.filter(acautelada=False)
+        categorias_ferramentas = CategoriaFerramenta.objects.all()
+        estados = Ferramenta.ESTADO
+        funcionarios_ativos = Funcionario.objects.all()
+        locais = Local.objects.all()
+        obras = Obra.objects.all()
+        
+        
+        context = {
+            'menu_ativo' : _menu_ativo,
+            'ferramentas' : ferramentas,
+            'acauteladas' : acauteladas,
+            'categorias_ferramentas' : categorias_ferramentas,
+            'estados' : estados,
+            'funcionarios_ativos' : funcionarios_ativos,
+            'locais' : locais,
+            'obras' : obras,
+            
+         
+        }
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def buscar_ferramentas(request, template_name = 'estoque_v2/ferramentas/buscar_ferramentas.html'):
+
+      if request.method == 'GET':
+        _menu_ativo = 'FERRAMENTAL'
+        
         ferramentas = Ferramenta.objects.all()
         categorias_ferramentas = CategoriaFerramenta.objects.all()
         estados = Ferramenta.ESTADO
@@ -375,6 +441,72 @@ def ver_ferramental_estoquev2(request, template_name = 'estoque_v2/ferramental_e
          
         }
         return render(request, template_name , context)
+    
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def buscar_cautelas(request, template_name = 'estoque_v2/ferramentas/buscar_cautelas.html'):
+
+      if request.method == 'GET':
+        _menu_ativo = 'FERRAMENTAL'
+        cautelas = Cautela.objects.filter(situacao = '1') #SITUACAO = ('0', "EM ABERTO"),('1', "ATIVA"),('2', "ENTREGUE COM OBS"),('3', "ENTREGUE")
+
+        cache.set('filtro_cautelas_cache', cautelas)
+        
+        
+        context = {
+            'menu_ativo' : _menu_ativo,
+            'cautelas' : cautelas,
+           
+            
+         
+        }
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def alterar_situacao_cautela(request, pk):
+
+      if request.method == 'POST':
+        cautela_atual= Cautela.objects.get(pk=pk)
+        situacao_atual = request.POST.get("situacao")
+        
+        cautela_atual.situacao = situacao_atual
+        cautela_atual.save()
+        print(f'------situcao alterada para: {cautela_atual.situacao}')
+        
+
+        return HttpResponseClientRedirect(reverse("detalhar_cautela_ferramenta", kwargs={'pk':cautela_atual.pk}))
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def alterar_obs_devolucao_cautela(request, pk):
+
+      if request.method == 'POST':
+        cautela_atual= Cautela.objects.get(pk=pk)
+        observacao_atual = request.POST.get("observacoes")
+        
+        cautela_atual.obs_devolucao = observacao_atual
+        cautela_atual.save()
+        print(f'------Obs de Devolucao alterada para: {cautela_atual.obs_devolucao}')
+        
+
+        return HttpResponseClientRedirect(reverse("detalhar_cautela_ferramenta", kwargs={'pk':cautela_atual.pk}))
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def alterar_data_devolucao_cautela(request, pk):
+
+      if request.method == 'POST':
+        cautela_atual= Cautela.objects.get(pk=pk)
+        data_devolucao_atual = request.POST.get("data_hora")
+        
+        cautela_atual.data_devolucao = data_devolucao_atual
+        cautela_atual.save()
+        print(f'------Data de Devolucao alterada para: {cautela_atual.data_devolucao}')
+        
+
+        return HttpResponseClientRedirect(reverse("detalhar_cautela_ferramenta", kwargs={'pk':cautela_atual.pk}))
     
     
 @login_required(login_url='login/')
@@ -403,7 +535,7 @@ def add_nova_ferramenta_estoquev2(request):
         cor = request.POST.get('cor').upper()
         tamanho = request.POST.get('tamanho').upper()
         numeracao = request.POST.get('numeracao')
-        preco = request.POST.get('preco')
+        preco = request.POST.get('preco') or 0
         
         if request.POST.get('estado') == '-1':
             response = HttpResponse('Erro: Selecione um ESTADO.')
@@ -444,26 +576,29 @@ def add_nova_ferramenta_estoquev2(request):
     
 @login_required(login_url='login/')
 @csrf_exempt
-def criar_cautela_ferramenta(request):
+def criar_cautela_ferramenta(request, pk=None):
 
     if request.method == 'POST':
+        print(f"---------------Solicitante ---{request.POST.get('solicitante')}")
+        print(f"---------------local ---{request.POST.get('local')}")
         
         #VALIDAÇÕES
-        if request.POST.get('solicitante') == '-1':
+        if request.POST.get('solicitante') == '-1' or request.POST.get('solicitante') == "":
             response = HttpResponse('Erro: Selecione um FUNCIONÁRIO.')
             response['HX-Retarget'] = '#error_cautela'
             return response
         else:
             funcionario_atual = Funcionario.objects.get(pk = int(request.POST.get('solicitante')))
         
-        if request.POST.get('local') == '-1':
+        if request.POST.get('local') == '-1' or request.POST.get('local') == "":
+            
             response = HttpResponse('Erro: Selecione um LOCAL.')
             response['HX-Retarget'] = '#error_cautela'
             return response
         else:
             local_atual = Local.objects.get(pk = int(request.POST.get('local')))
         
-        if request.POST.get('obra') == '-1':
+        if request.POST.get('obra') == '-1' or request.POST.get('obra') == "":
             response = HttpResponse('Erro: Selecione uma OBRA.')
             response['HX-Retarget'] = '#error_cautela'
             return response
@@ -472,33 +607,215 @@ def criar_cautela_ferramenta(request):
             
 
         #CRIAR CAUTELA
-        cautela_atual = Cautela.objects.create(solicitante = funcionario_atual,
-                            almoxarifado = request.user,
-                            obra = obra_atual,
-                            local = local_atual)
-         
-        return redirect('detalhar_cautela_ferramenta', pk = cautela_atual.pk) 
-         
-         
-    return redirect('ferramental_estoquev2')
+        if pk == None:
+            cautela_atual = Cautela.objects.create(solicitante = funcionario_atual,
+                                almoxarifado = request.user,
+                                obra = obra_atual,
+                                local = local_atual)
+            print(f'-------------------Add Cautela: {cautela_atual.pk}')
+        #EDITAR CAUTELA    
+        else:
+            cautela_atual = Cautela.objects.get(pk=pk)
+            cautela_atual.solicitante = funcionario_atual
+            cautela_atual.almoxarifado = request.user
+            cautela_atual.obra = obra_atual
+            cautela_atual.local = local_atual
+            cautela_atual.save()
+            print(f'-------------------Editado Cautela: {cautela_atual.pk}')
+        
+        
+        
+
+        return HttpResponseClientRedirect(reverse("detalhar_cautela_ferramenta", kwargs={'pk':cautela_atual.pk}))
+ 
+             
+
     
 @login_required(login_url='login/')
 @csrf_exempt
-def detalhar_cautela_ferramenta(request, pk,  template_name = 'estoque_v2/detalhar_cautela.html'):
+def detalhar_cautela_ferramenta(request, pk,  template_name = 'estoque_v2/ferramentas/detalhar_cautela.html'):
 
     if request.method == 'GET':
         _menu_ativo = 'FERRAMENTAL'
     
         cautela_atual = Cautela.objects.get(pk=pk)
+        situacoes_cautela = Cautela.SITUACAO
+        ferramentas = Ferramenta.objects.all()
+        ferramentas_acauteladas = CautelaFerramenta.objects.filter(cautela = cautela_atual)
+        funcionarios_ativos = Funcionario.objects.all()
+        locais = Local.objects.all()
+        obras = Obra.objects.all()
          
         context = {
             'menu_ativo' : _menu_ativo,
             'cautela_atual' : cautela_atual,
+            'ferramentas' : ferramentas,
+            'ferramentas_acauteladas' : ferramentas_acauteladas,
+            'funcionarios_ativos' : funcionarios_ativos,
+            'locais' : locais,
+            'obras' : obras,
+            'situacoes_cautela' : situacoes_cautela,
          
         }
         return render(request, template_name , context) 
-         
 
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def excluir_cautela(request, pk):
+
+    if request.method == 'GET':
+        _menu_ativo = 'FERRAMENTAL'
+    
+        cautela_atual = Cautela.objects.get(pk=pk)
+        
+        if not cautela_atual.get_ferramentas().exists(): 
+            cautela_atual.delete()
+        
+        return redirect('buscar_cautelas')
+         
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def inserir_ferramenta_em_cautela(request, pk, ferr, template_name = 'estoque_v2/ferramentas/detalhar_cautela.html'):
+
+    if request.method == 'GET':
+        cautela_atual = Cautela.objects.get(pk=pk)
+        ferramenta_atual = Ferramenta.objects.get(pk=ferr)
+        
+        print(f'---------Cautela: {cautela_atual}')
+        print(f'---------Ferramenta: {ferramenta_atual}')
+        
+        #Criar CautelaFerramenta
+        
+        cau_ferr = CautelaFerramenta.objects.create(ferramenta = ferramenta_atual, cautela = cautela_atual)
+        ferramenta_atual.acautelada = True
+        ferramenta_atual.save()
+        # cautela_atual.ativa = True
+        # cautela_atual.save()
+        print(f'---------Acautelamento Criado com Sucesso: Id: {cau_ferr.pk}')
+        
+        return redirect('detalhar_cautela_ferramenta', pk = cautela_atual.pk) 
+            
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def retirar_ferramenta_cautela(request, pk, ferr):
+
+    if request.method == 'GET':
+        ferr = CautelaFerramenta.objects.get(pk=ferr)
+        ferramenta_atual = ferr.ferramenta
+        cautela_atual = ferr.cautela
+        
+        #retirar CautelaFerramenta
+        ferr.delete()
+        
+        ferramenta_atual.acautelada = False
+        ferramenta_atual.save()
+        
+        
+        #verificar se a cautela está vazia
+   
+        # if not cautela_atual.get_ferramentas().exists():
+           
+        #     cautela_atual.ativa = False
+        #     cautela_atual.save()
+        
+        return redirect('detalhar_cautela_ferramenta', pk = cautela_atual.pk) 
+            
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def filtro_buscar_cautelas(request, template_name = 'estoque_v2/ferramentas/resultado_filtro_cautelas.html'):
+
+      if request.method == 'GET':
+        query = Q()
+        filtro = request.GET.getlist('CheckAtivo')
+        
+        #SE FILTRO ESTÁ VAZIO
+        if filtro == []:
+            context = {
+           'cautelas' : None
+            }
+            return render(request, template_name , context)
+        
+        #SE FILTRO TEM CHECKS ATIVOS
+        else:
+            if 'checked1' in filtro:
+                query |= Q(situacao='1')
+            
+            if'checked0' in filtro:
+                query |= Q(situacao='0')
+            
+            if 'checked23' in filtro:
+                query |= Q(situacao='2')
+                query |= Q(situacao='3')
+            
+  
+            cautelas = Cautela.objects.filter(query) 
+            cache.set('filtro_cautelas_cache', cautelas)
+
+            # print(f'\n------ Filtro: {filtro}\n')
+            # print(f'\n------ Cautelas: {query}\n')
+            
+            context = {
+            'cautelas' : cautelas          
+            }
+            
+            # request.session['export_cautelas'] = cautelas
+            return render(request, template_name , context)
+ 
+     
+# @login_required(login_url='login/')
+# @csrf_exempt
+# def imprimir_resultado_cautela(request, template_name='estoque_v2/impressoes/imprimir_busca_cautelas.html'):
+
+#     if request.method == 'GET':
+        
+#         cautelas = cache.get('filtro_cautelas_cache')
+#         context = {
+#             'cautelas' : cautelas,
+#         }
+        
+#         return render(request, template_name , context)    
+ 
+     
+@login_required(login_url='login/')
+@csrf_exempt
+def gerar_pdf_resultado_cautela(request, template_name='estoque_v2/impressoes/imprimir_busca_cautelas.html'):
+    
+    if request.method == 'GET':
+        current_domain = get_current_site(request).domain
+        context = {
+            'cautelas' : cache.get('filtro_cautelas_cache'),
+            'current_domain' : current_domain,
+        }
+        filename = 'cautelas.pdf'
+
+    
+        return gerar_pdf_by_template(template_name, context, filename)
+    
+    
+     
+@login_required(login_url='login/')
+@csrf_exempt
+def gerar_pdf_cautela_individual(request, pk, template_name='estoque_v2/impressoes/imprimir_cautela_individual.html'):
+    
+    if request.method == 'GET':
+        current_domain = get_current_site(request).domain
+        cautela_atual = Cautela.objects.get(pk=pk)
+        ferramentas_acauteladas = CautelaFerramenta.objects.filter(cautela = cautela_atual)
+        
+        context = {
+            'cautela_atual' : cautela_atual,
+            'ferramentas_acauteladas' : ferramentas_acauteladas,
+            'current_domain' : current_domain,
+        }
+        filename = f'cautela_id{cautela_atual.pk}.pdf'
+
+    
+        return gerar_pdf_by_template(template_name, context, filename)
+    
     
 
 #TODO ITENS DO ESTOQUE
@@ -524,6 +841,7 @@ def cadastrar_itens_estoquev2(request, template_name = 'estoque_v2/cadastrar_est
         }
         return render(request, template_name , context)
     
+    
 @login_required(login_url='login/')
 @csrf_exempt
 def filtrar_itens_nao_estoque(request, template_name = 'estoque_v2/itens/resultados_procurar_itens.html'):
@@ -534,9 +852,9 @@ def filtrar_itens_nao_estoque(request, template_name = 'estoque_v2/itens/resulta
         categoria = request.POST.get('categoria') or '-1'
 
         if categoria == '-1':    
-            itens = Item.objects.all().filter(descricao__icontains=descricao).filter(marca__icontains=marca)
+            itens = Item.objects.all().filter(estocado=False).filter(descricao__icontains=descricao).filter(marca__icontains=marca)
         else:
-            itens = Item.objects.all().filter(descricao__icontains=descricao).filter(marca__icontains=marca).filter(categoria__pk=int(categoria))
+            itens = Item.objects.all().filter(estocado=False).filter(descricao__icontains=descricao).filter(marca__icontains=marca).filter(categoria__pk=int(categoria))
     
         
         # print(f'-------------RESULTADO DO FILTER ---> {itens}')
@@ -550,12 +868,89 @@ def filtrar_itens_nao_estoque(request, template_name = 'estoque_v2/itens/resulta
  
         return render(request, template_name , context)
     
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def detalhar_item_nao_estoquev2(request, pk, template_name = 'estoque_v2/itens/detalhar_item_nao_estoque.html'):
+
+    if request.method == 'GET':
+       
+        item_atual = Item.objects.get(pk=pk)
+    
+       
+        context = {
+         
+            'item': item_atual,
+            
+         
+        }
+     
+ 
+        return render(request, template_name , context)
+    
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def editar_dados_item_estoquev2(request, pk, template_name = 'estoque_v2/itens/editar_item_estoque.html'):
+
+    if request.method == 'GET':
+        item_atual = Item.objects.get(pk=pk)
+        categorias_itens = Categoria.objects.all()
+        unid_medidas = Item.UNIDADES
+        fornecedores = Fornecedor.objects.all()
+       
+        context = {
+         
+            'item': item_atual,
+            'categorias_itens': categorias_itens,
+            'unid_medidas': unid_medidas,
+            'fornecedores': fornecedores,
+        }
+     
+ 
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def excluir_item_nao_estocado(request, pk):
+
+    if request.method == 'GET':
+        item_atual = Item.objects.get(pk=pk)  
+        item_atual.delete()      
+ 
+        return redirect('cadastrar_itens_estoquev2')
+    
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def estocar_item_nao_estoquev2(request, pk):
+
+    if request.method == 'POST':
+        item_atual = Item.objects.get(pk=pk)
+        
+        estocar = Estoque.objects.create(item=item_atual,
+                                            quantidade=0)
+        item_atual.estocado = True
+        item_atual.save()
+  
+        return redirect('detalhar_item_de_estoque', pk=estocar.pk)
+    
 @login_required(login_url='login/')
 @csrf_exempt
 def add_novo_item_estoque(request):
 
     if request.method == 'POST':
+        
+        action = request.POST.get('action')
+        
+        
+        #validação Descricao
         descricao = request.POST.get('descricao')
+        if descricao == "" or descricao == None:
+            response = HttpResponse('Erro: Insira uma DESCRIÇÃO')
+            response['HX-Retarget'] = '#error_item'
+            return response
+        
         marca = request.POST.get('marca')
         
         #validação Categoria
@@ -567,11 +962,23 @@ def add_novo_item_estoque(request):
         else:
             categoria = Categoria.objects.get(pk=int(categoria))    
         
+        
+        #Peso
         peso = request.POST.get('peso')
+        if not peso == "":
+            peso = float(peso)
+        else:
+            peso = 0
         
         unid_medida = request.POST.get('unid_medida')
         
+        #Preço
         preco = request.POST.get('preco')
+        if not preco == "":
+            preco = Decimal(preco)
+        else:
+            preco = 0
+        
         
         #validação fornecedor
         fornecedor = request.POST.get('fornecedor')
@@ -580,10 +987,36 @@ def add_novo_item_estoque(request):
         else:
             fornecedor = Fornecedor.objects.get(pk=int(fornecedor))
         
+        #Qtd_minima
         qtd_minima = request.POST.get('qtd_minima')
-        imagemItem = request.FILES.getlist('imagemItem') or None
-
-        Item.objects.create(
+        if qtd_minima == ""  or qtd_minima == '0':
+            response = HttpResponse('Erro: Inclua uma QUANTIDADE MÍNIMA > 0.')
+            response['HX-Retarget'] = '#error_item'
+            return response
+            
+        else:
+            qtd_minima = Decimal(qtd_minima)
+        
+        imagemItem = request.FILES.get('imagemItem')
+        print(f'----------------------------{request.FILES}--------------------------')
+        
+        if action == "Editar":
+            
+            item_atual = Item.objects.get(pk=int(request.POST.get('pkEditar')))
+            item_atual.descricao=descricao
+            item_atual.marca=marca
+            item_atual.categoria=categoria
+            item_atual.peso=peso
+            item_atual.unid_medida=unid_medida
+            item_atual.preco=preco
+            item_atual.fornecedor=fornecedor
+            item_atual.qtd_minima=qtd_minima
+            item_atual.imagem=imagemItem
+            item_atual.save()
+            
+            return redirect('detalhar_item_nao_estoquev2', pk=item_atual.pk)
+         
+        item_atual = Item.objects.create(
             descricao=descricao,
             marca=marca,
             categoria=categoria,
@@ -596,7 +1029,16 @@ def add_novo_item_estoque(request):
             
         )
         
-        return redirect('cadastrar_itens_estoquev2')
+        if action == "Salvar":
+            return redirect('cadastrar_itens_estoquev2')
+        else:   
+            estocar = Estoque.objects.create(item=item_atual,
+                                                quantidade=0)
+            item_atual.estocado = True
+            item_atual.save()
+    
+            return redirect('detalhar_item_de_estoque', pk=estocar.pk)
+            
 
 #TODO CATEGORIAS
 # ------------------------------------------------------------  CATEGORIAS---------------------------------------------------

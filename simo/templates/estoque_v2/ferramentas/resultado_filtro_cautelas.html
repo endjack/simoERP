@@ -1,0 +1,88 @@
+{% load static %}   
+
+<div class="p-2" style="border-color: #093637;">
+    <table class="table table-sm table-bordered table-striped tabelaResultados" style="font-size:9pt">
+            <thead class="text-white text-center" style="background:#39423b;">
+            <tr style="line-height: 12px;white-space: nowrap; ">
+            
+              <th scope="col">Cód</th>
+              <th scope="col" style="text-align: left;">Solicitante</th>
+              <th scope="col" style="text-align: left;">Data</th>
+              <th scope="col">Local</th>
+              <th scope="col">Obra</th>
+              <th scope="col">Situação</th>
+
+            </tr>
+          </thead>
+          <tbody>
+
+                {% if cautelas %}
+                {% for i in cautelas  %}
+                <tr class='linha_clicavel'>
+                <td class="text-center "><a href="{% url 'detalhar_cautela_ferramenta' i.pk %}"><div style="height:100%;width:100%">{{i.pk}}</div></a></td>
+                <td class=""><a href="{% url 'detalhar_cautela_ferramenta' i.pk %}"><div style="height:100%;width:100%">{{i.solicitante.nome|default_if_none:"-"}}</div></a></td>
+                <td class=""><a href="{% url 'detalhar_cautela_ferramenta' i.pk %}"><div style="height:100%;width:100%">{{i.data_cautela.date|default_if_none:"-"}}</div></a></td>
+                <td class="text-center"><a href="{% url 'detalhar_cautela_ferramenta' i.pk %}"><div style="height:100%;width:100%">{{i.local.local|default_if_none:""}}</div></a></td>
+                <td class="text-center"><a href="{% url 'detalhar_cautela_ferramenta' i.pk %}"><div style="height:100%;width:100%">{{i.obra.nome|default_if_none:"-"}}</div></a></td>
+                <td class="text-center fw-bold"><a href="{% url 'detalhar_cautela_ferramenta' i.pk %}"><div style="height:100%;width:100%">{{i.get_situacao_label|default_if_none:"-"|safe}}</div></a></td>
+
+                </tr>
+                {% endfor %}
+                {% else %}
+                
+                {% endif %}
+
+            </tbody>
+    </table>
+
+</div>
+
+
+
+
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/datatables.min.js' %}"></script>
+{% block jquery %}
+
+<script>
+    $(document).ready(function () {
+        $('.tabelaResultados').DataTable({
+            responsive: true,
+            'dom':'<"pull-left"f><"pull-right"l>tip',
+            "aaSorting": [],
+            "pageLength": 10,
+            "order": [
+                [0, "asc"]
+            ], 
+            "language": {
+
+                "decimal": ",",
+                "emptyTable": "Sem registro",
+                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+                "infoFiltered": "(filtrado de _MAX_ registros no total)",
+                "infoPostFix": "",
+                "thousands": ".",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "loadingRecords": "A carregar dados...",
+                "processing": "A processar...",
+                "search": "Buscar ",
+                "zeroRecords": "Não foram encontrados resultados",
+                "paginate": {
+                    "first": "Primeiro",
+                    "last": "Último",
+                    "next": "Seguinte",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": ordem crescente",
+                    "sortDescending": ": ordem decrescente"
+                }
+            }
+        });
+
+    });
+</script>
+{% endblock%}
+
+

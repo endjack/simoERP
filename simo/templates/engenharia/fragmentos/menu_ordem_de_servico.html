@@ -8,13 +8,14 @@
 
     <!-- Button FINALIZAR-->
     {% if ordem_atual.finalizado %}
-        <a  class="btn btn-sm btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#RetirarFinalizarOs" href="modal" title="Retirar Serviço Finalizado"><span style=""><i class="fas fa-times"></i></span></a>
+        <a  class="btn btn-sm btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#RetirarFinalizarOs" href="retirar_finalizar" title="Retirar Serviço Finalizado"><span style=""><i class="fas fa-times"></i></span></a>
     {% else %}
-        <a  class="btn btn-sm btn-success m-1" data-bs-toggle="modal" data-bs-target="#finalizar_os" href="modal" title="Finalizar Serviço"><span style=""><i class="fas fa-check"></i></span></a>
+        <a  class="btn btn-sm btn-success m-1" data-bs-toggle="modal" data-bs-target="#finalizar_os" href="finalizar_os" title="Finalizar Serviço"><span style=""><i class="fas fa-check"></i></span></a>
     {% endif %}
-    <!-- Button -->
+    <!-- Button EDITAR -->
     <a  class="btn btn-sm btn-primary m-1" href="{% url 'obra_editar_os' obra.pk ordem_atual.pk %}" title="Editar OS"><span style=""><i class="fas fa-edit"></i></span></a>
-    <a  class="btn btn-sm btn-danger m-1" href="#" target="_blank" title="Excluir OS"><span style=""><i class="fas fa-trash"></i></span></a>
+    <!-- Button EXCLUIR -->
+    <a  class="btn btn-sm btn-danger m-1" data-bs-toggle="modal" data-bs-target="#excluirOS" href="excluir_os"  title="Excluir OS"><span style=""><i class="fas fa-trash"></i></span></a>
 </div>
 
  <!-- Modal FINALIZAR -->
@@ -86,6 +87,42 @@
             <div class="modal-footer form-control">
                 <a class="btn btn-sm btn-dark" href="{% url 'obras_mudar_finalizar_orden_servico' obra.pk ordem_atual.pk %}"><i class="fas fa-times"></i> Mudar </a>   
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            
+            </div>
+        </div>
+    </div>
+ </div>
+ <!-- Fim Modal -->                       
+
+<!-- Modal EXCLUIR -->
+  <div class="modal fade" id="excluirOS" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content ">
+            <div class="modal-header p-3">
+                <div class="d-flex flex-column bd-highlight">
+                    <h5 style="color:green" class="text-danger">Excluir Ordem de Serviço</h5>
+                    <h6 class="bd-highlight">Número: {{ordem_atual.numero_os}}</h6>
+                    
+                </div>  
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+            <h6 class="">Resumo:</h6>
+            <ul class="">
+                <li class="">{{ordem_atual.get_funcionarios_by_os.count}} Funcionário(s)</li>
+                <li class="">{{ordem_atual.get_imagens_by_os.count}} Foto(s)</li>
+                <li class="">{{ordem_atual.get_files_by_os.count}} Arquivo(s)</li>
+                <li class="">{{ordem_atual.get_rdos_by_os.count}} Diário(s) de Obra</li>
+            </ul>
+
+            <h6 class="text-danger">Atenção! Ao excluir a Ordem de Serviço atual, tudo será excluído:</h6>      
+
+
+                    
+            </div>
+            <div class="modal-footer form-control">
+                <a class="btn btn-sm btn-danger" href="{% url 'obra_excluir_os' obra.pk ordem_atual.pk %}"><i class="fas fa-trash"></i> Excluir Tudo</a>   
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
             
             </div>
         </div>

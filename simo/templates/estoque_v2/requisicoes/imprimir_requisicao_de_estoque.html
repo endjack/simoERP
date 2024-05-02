@@ -1,0 +1,227 @@
+{% load static %}
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <title>Imprimir Requisição</title>
+        <style>
+        @page {
+            size: portrait;
+            margin: 1cm;
+        }
+
+
+        @media print {
+
+            html,
+            body {
+                height: 99%;
+            }
+            .dados{ page-break-inside:avoid; }
+        }
+
+        * {
+            color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        td {
+            width: auto;
+        }
+        
+        td.min {
+            width: 1%;
+            white-space: nowrap;
+        }
+        
+        .centralizar {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .wrapper {
+        min-width: 10em; /* Will be AT LEAST 20em wide */
+        }
+        </style>
+</head>
+
+<body style="font-family: sans-serif;">
+
+<div class="d-flex flex-row bd-highlight mt-1" style="margin: 10px 15px;font-size:10px;">
+  <div class="col-6 d-flex justify-content-start">BRASIL CONSTRUÇÃO LTDA - {% now "SHORT_DATETIME_FORMAT" %}</div>
+  <div class="col-6 d-flex justify-content-end">Usuário: {{user.get_username}} - Versão SOLICITANTE</div>
+</div>
+
+<div class="row" style="mt-2">
+    <div class="d-flex justify-content-center">
+        <div class="p-2 bd-highlight">
+            <img src="{% static 'imagens/logo1.png' %}" alt="" height="50" width="75">
+        </div>
+        <div class="p-2 bd-highlight" style="border-right: 4px solid gray;"></div>&emsp;
+        <div class="p-2 bd-highlight">
+            BRASIL CONSTRUÇÃO LTDA <br>
+            CNPJ: 09.235.353/0001-45 <br>
+        </div>
+    </div>
+</div>
+<div class="d-flex justify-content-center mt-1"><h5>REQUISIÇÃO DE MATERIAIS Nº {{req_atual.pk}}</h5></div>
+
+<ol class="list-group" style="font-size:10pt">
+    Dados:
+    <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
+        <div class="ms-1 me-auto">
+            <span class="fw-bold">Solicitante:</span>
+            {{req_atual.solicitante}} 
+        </div>
+    </li>
+
+    <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
+        <div class="ms-1 me-auto">
+            <span class="fw-bold">Obra:</span>
+            {{req_atual.obra.nome}}
+        </div>
+        <div class="ms-1 me-auto">
+            <span class="fw-bold">Local:</span>
+            {{req_atual.local.local}}
+        </div>
+    </li>
+
+    <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
+        <div class="ms-1 me-auto">
+            <span class="fw-bold">Almoxarife:</span>
+            {{req_atual.almoxarife.get_full_name}}
+        </div>
+        <div class="ms-1 me-auto">
+            <span class="fw-bold">Data:</span>
+            {{req_atual.data}}
+        </div>
+    </li>
+</ol>
+<span style="font-size:10pt">Itens:</span>
+    <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px; border-color:gray">
+        <thead class="centralizar"
+            style="border:solid 2px;border-color:white;background:MidnightBlue; color: white;">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Cód</th>
+                <th scope="col">Descricao</th>
+                <th scope="col">Quantidade</th>
+                <th scope="col">Unid</th>
+                <th scope="col">Obs</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in itensRequisicao %}
+            <tr>
+                <td class="centralizar min">{{forloop.counter}}</td>
+                <td class="centralizar min">{{item.item.item.pk}}</td>
+                {% if item.item.item.descricao %} <td class="min">{{item.item.item.descricao}}</td>{%else%}<td>-</td>{%endif%}
+                {% if item.quantidade > 0 %} <td class="centralizar min">{{item.quantidade}}</td>{%else%}<td style="color:red">0</td>{%endif%}
+                <td class="min"> {{item.item.item.unid_medida}}</td>
+                <td class="centralizar"> {{Obs}}</td>       
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="rodape row mt-5">
+  <div class= "col-6">
+    <p style="text-align:center;">__________________________________<br>
+    Almoxarife: {{ req_atual.almoxarife.get_full_name }}</p>
+  </div>
+  <div class="col-6 ">
+    <p style="text-align:center;">__________________________________<br>
+    Solicitante: {{ req_atual.solicitante }}</p>
+  </div>
+</div>
+
+<hr style="border-top: 1px dotted black;">
+<div class="dados">
+<div class="d-flex flex-row bd-highlight mt-1" style="margin: 10px 15px;font-size:10px;">
+    <div class="col-6 d-flex justify-content-start">BRASIL CONSTRUÇÃO LTDA - {% now "SHORT_DATETIME_FORMAT" %}</div>
+    <div class="col-6 d-flex justify-content-end">Usuário: {{user.get_username}} - Versão ALMOXARIFE</div>
+</div>
+<div class="d-flex justify-content-center mt-1 "><h5>REQUISIÇÃO DE MATERIAIS Nº {{req_atual.pk}}</h5></div>
+<ol class="list-group" style="font-size:10pt">
+    Dados:
+    <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
+        <div class="ms-1 me-auto">
+            <span class="fw-bold">Solicitante:</span>
+            {{req_atual.solicitante}} 
+        </div>
+    </li>
+
+    <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
+        <div class="ms-1 me-auto">
+            <span class="fw-bold">Obra:</span>
+            {{req_atual.obra.nome}}
+        </div>
+        <div class="ms-1 me-auto">
+            <span class="fw-bold">Local:</span>
+            {{req_atual.local.local}}
+        </div>
+    </li>
+
+    <li class="list-group-item d-flex justify-content-between align-items-start border-dark">
+        <div class="ms-1 me-auto">
+            <span class="fw-bold">Almoxarife:</span>
+            {{req_atual.almoxarife.get_full_name}}
+        </div>
+        <div class="ms-1 me-auto">
+            <span class="fw-bold">Data:</span>
+            {{req_atual.data}}
+        </div>
+    </li>
+</ol>
+<span style="font-size:10pt">Itens:</span>
+    <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px; border-color:gray">
+        <thead class="centralizar"
+            style="border:solid 2px;border-color:white;background:MidnightBlue; color: white;">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Cód</th>
+                <th scope="col">Descricao</th>
+                <th scope="col">Quantidade</th>
+                <th scope="col">Unid</th>
+                <th scope="col">Obs</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in itensRequisicao %}
+            <tr>
+                <td class="centralizar min">{{forloop.counter}}</td>
+                <td class="centralizar min">{{item.item.item.pk}}</td>
+                {% if item.item.item.descricao %} <td class="min">{{item.item.item.descricao}}</td>{%else%}<td>-</td>{%endif%}
+                {% if item.quantidade > 0 %} <td class="centralizar min">{{item.quantidade}}</td>{%else%}<td style="color:red">0</td>{%endif%}
+                <td class="min"> {{item.item.item.unid_medida}}</td>
+                <td class="centralizar"> {{Obs}}</td>       
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="rodape row mt-5">
+  <div class= "col-6">
+    <p style="text-align:center;">__________________________________<br>
+    Almoxarife: {{ req_atual.almoxarife.get_full_name }}</p>
+  </div>
+  <div class="col-6 ">
+    <p style="text-align:center;">__________________________________<br>
+    Solicitante: {{ req_atual.solicitante }}</p>
+  </div>
+</div>
+</div>
+
+    <script>
+        (function () {
+            window.print();
+        })();
+    </script>
+
+
+</body>
+
+</html>

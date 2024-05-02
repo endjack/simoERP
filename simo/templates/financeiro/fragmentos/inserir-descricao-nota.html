@@ -1,3 +1,4 @@
+
 <form id="formInserirSaida" style="font-size:9pt;" >
                      
     
@@ -7,7 +8,7 @@
        
                 <label for="input-fornecedores" class="">Fornecedor: </label>
 
-                <select id="input-fornecedores" class="form-control js-example-basic-single"  name="fornecedor" required=required>
+                <select id="input-fornecedor_novo" class="form-control js-example-basic-single"  name="fornecedor" required=required>
                         {% include 'financeiro/fragmentos/options-select-fornecedores.html' %}
                  </select>
                 <small class="small-error" id="error_fornecedor"></small> 
@@ -30,7 +31,7 @@
     <div class="row mb-3" style="font-size:9pt;">
         <div class="col-5">
                 <label for="input4centroDeCusto" class="">Centro de Custo:</label>
-                <select id="input-centro-de-custo" class="form-control js-example-basic-single"  name="centro-de-custo" required=required>
+                <select id="input-centro-de-custo" class="form-control form-control-sm"  name="centro-de-custo" required=required>
                     {% for f in centros_custo %}
                     <option value="{{f.pk}}"> {{f.nome}}</option>
                 
@@ -50,7 +51,7 @@
             hx-trigger="click"
             hx-target="body"
             hx-swap="outerHTML"
-            >Adiionar Descrição Nota</button>
+            >Adicionar Descrição Nota</button>
     
       </div>
      

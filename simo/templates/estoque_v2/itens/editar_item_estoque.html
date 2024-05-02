@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styleHead %}
+<style>
+.htmx-indicator {
+    display:none;
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+.htmx-request {
+  display:block;
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+}
+
+
+</style>    
+{% endblock %}
+
+{% block conteudo %}
+
+{% include "estoque_v2/fragmentos/menu_estoque.html" %}
+
+
+<div class="container mt-2">
+ 
+          <div class="d-flex flex-row align-items-center" >
+                <h4 class="me-auto"><i class="fas fa-edit"></i> Editar Item (Id: {{item.pk}}) </h4>
+                <small class="small-error" id="error_item"></small>
+                {% include "utils/load_htmx_centralizado.html" %}
+                <button class="btn btn-sm btn-success" form='formEditarItemEstoque'><i class="fas fa-plus" ></i> Salvar</button>   
+                <a style="" class="btn  btn-sm btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
+                      title="Início"><i class="fas fa-trash"></i> Excluir</a>
+          </div>
+</div>
+<div class="container">                 
+                      
+                     
+    <form id="formEditarItemEstoque"  style="line-height: normal; font-size:9pt" enctype="multipart/form-data"
+                    hx-post="{% url 'add_novo_item_estoquev2' %}" 
+                    hx-target="body" 
+                    hx-indicator="#spinner"
+                    hx-vals='{"action": "Editar","pkEditar": "{{item.pk}}"} '>
+      {% csrf_token %}
+
+
+   
+    <div class="form-group row ">
+        <strong>Dados:</strong>
+  
+        <div class="col-5">
+         
+            <label for="inputDescricao" class="">Descrição:<span class="text-danger">*</span></label>
+            <input type="text" class="form-control form-control-sm" name="descricao" value="{{item.descricao}}" required>
+          
+
+        </div>
+        <div class="col-4">
+         
+            <label for="inputmarca" class="">Marca:</label>
+            <input type="text" class="form-control form-control-sm" name="marca" value="{{item.marca}}">
+         
+        </div>
+
+        <div class="col-3">
+            
+                <label for="input0" class="">Categoria:<span class="text-danger">*</span></label>
+                <select id="input0" class="form-control form-control-sm"  name="categoria" >
+                        {% for i in categorias_itens %}
+                           {% if i.pk == item.categoria.pk %}
+                           <option value="{{i.pk}}" selected> {{i.categoria}}</option>
+                           {% else %}
+                           <option value="{{i.pk}}"> {{i.categoria}}</option>
+                           {% endif %}
+                        
+                        {% endfor %}      
+                </select>
+           
+        </div>
+    </div> 
+    <div class="form-group row mt-2">
+        <strong>Características:</strong>
+            <div class="col-2">
+             
+                <label for="inputCor" class="">Peso:</label>
+                <input type="number" step="any" min="0" class="form-control form-control-sm" name="peso" value="{{item.peso|stringformat:'s'}}">
+
+              
+    
+            </div>
+            <div class="col-2">
+             
+                <label for="inputTamanho" class="">Unid. de Medida:<span class="text-danger">*</span></label>
+                <select id="inputTamanho" class="form-control form-control-sm"  name="unid_medida" required>
+                    {% for i in unid_medidas %} 
+                    {% if i.0 == item.unid_medida.0 %}
+                    <option value="{{i.0}}" selected> {{i.1}}</option>
+                    {% else %}
+                    <option value="{{i.0}}"> {{i.1}}</option>
+                    {% endif %}                    
+                    {% endfor %}      
+            </select>
+             
+            </div>
+            <div class="col-2">
+             
+                <label for="inputPreço" class="">Preço:</label>
+                <input type="number" step="any" min="0" class="form-control form-control-sm" name="preco" value="{{item.preco|stringformat:'s'}}">
+             
+            </div>
+            <div class="col-6">
+             
+                <label for="inputEstado" class="">Fornecedor:</label>
+                <select id="inputEstado" class="form-control form-control-sm"  name="fornecedor" >
+                        <option value="-1" disabled selected> Selecione</option>
+                        {% for i in fornecedores %}
+                        {% if i.pk == item.fornecedor.pk %}
+                        <option value="{{i.pk}}" selected> {{i.nome}} - {{i.doc}}</option>
+                        {% else %}
+                        <option value="{{i.pk}}"> {{i.nome}} - {{i.doc}}</option>
+                        {% endif %}        
+                        {% endfor %}      
+                </select>
+             
+            </div>
+    </div>
+    
+    <div class=" form-group row mt-2">
+        <strong>Configurações para o Estoque:</strong>
+            <div class="col-2">
+             
+                <label for="inputCor" class="">Qtd Mínima:<span class="text-danger">*</span></label>
+                <input type="number" step="any" min="0" class="form-control form-control-sm" name="qtd_minima" value="{{item.qtd_minima|stringformat:'s'}}" required>
+
+              
+    
+            </div>
+
+    </div>
+    <div class=" form-group row mt-2">
+        <strong>Imagem do Item:</strong>
+        <div class="col-3 ">
+            {% if item.imagem %}
+            <img src="{{item.imagem.url}}" class="card-img-top m-1" style="width: 100%; height: auto;">
+            {% else %}
+            <img src="{% static 'imagens/sem_imagem.png' %}" class="card-img-top m-1" style="width: 100%; height: auto;">
+            {% endif %}
+            
+      </div>
+            <div class="col-5">
+                <div class="col-md">
+                    <label for="imagemItem" class="">Alterar Imagem:</label>
+                    <input type="file" name="imagemItem" class="form-control form-control-sm" accept="image/*" /> 
+
+                </div>
+            </div>
+            
+    </div>
+    
+
+    <div class=" form-group row mt-2" style="opacity:0.5">
+        <strong>QRCode do Item:</strong>
+        <div class="col-3 ">
+            {% if item.qr_code %}
+            <img src="{{item.qr_code.url}}" class="card-img-top m-1" style="width: 100%; height: auto;">
+            {% else %}
+            <img src="{% static 'imagens/sem_imagem.png' %}" class="card-img-top m-1" style="width: 100%; height: auto;">
+            {% endif %}
+            
+      </div>
+                      
+      <div class="col-5" >
+        <div class="col-md">
+            <label for="inputQrcode" class="">QR Code: <small class="text-danger">(Desativado)</small></label>
+            <input type="file" name="qr-code-Item" class="form-control form-control-sm" accept="image/*" disabled/> 
+
+        </div>
+    </div>
+            
+    </div>
+    
+
+</form>
+
+</div>
+      
+   
+{% endblock%}
+

@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styleHead %}
+<style>
+    .label_registro {
+        font-size:12px;
+        color:gray;
+ 
+    }
+    .registro{
+        font-size:16px;
+        font-weight:bold;
+    }
+    .div_rotation{
+        border: 1px solid gray;
+        width:2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;  
+        background-color: gray;
+        color: white;
+        writing-mode: tb-rl;
+        transform: rotate(-180deg);
+
+    }
+</style>
+{% endblock %}
+
+{% block conteudo %}
+<!-- MENU PESSOAL --> 
+{% include "funcionarios/fragmentos/menu_pessoal.html" %}
+<!-- FIM MENU PESSOAL --> 
+
+<div class="container mt-2">
+
+    <div class="d-flex flex-row align-items-center" >
+        <h4 class="me-auto"><i class="far fa-file-alt"></i> Dados Funcionário (ID:{{funcionario_atual.pk}}): </h4>
+
+        <a  style="" class="btn btn-sm  btn-primary m-1" href="{% url 'editar_funcionarios_pessoal' funcionario_atual.pk %}" 
+        title="Editar Funcionário"><i class="fas fa-edit"></i></i> Editar </a>
+        <a  style="" class="btn btn-sm  btn-danger m-1" href="#" 
+        title="Excluir Funcionários"><i class="fas fa-trash"></i></i> Excluir </a>
+    </div>
+
+   
+
+</div>
+
+<div class="container mb-3 ">
+    
+
+    <div class="row  mb-2">
+        
+        <div class="col-2 text-center">
+            
+            <div class="card" style="width: 10rem; height: 13rem;">
+             {% if funcionario_atual.foto %}
+             <img src="{{funcionario_atual.foto.url}}"  width="100%" height="100%" style="padding:0.3rem;">   
+             {% else %}
+                <span style="padding-top:50%; color:gray;">Sem Foto!</span>
+             {% endif %}   
+            </div>
+
+        </div> 
+        <div class="col-10 mt-1">
+            <small style="margin:0px; padding:0px">Dados Pessoais:</small>
+
+            <div class="row" >
+
+                <div class="d-flex flex-row justify-content-between align-items-center" style="border:1px solid #bbbcbd;">
+                    <div class="">
+                        <span class="label_registro">Nome: </span><br>
+                        <span class="registro">{{funcionario_atual.nome}}</span>
+                    </div>
+                    <div class="">
+                        <span class="label_registro">CPF: </span><br>
+                        <span class="registro">{{funcionario_atual.cpf}}</span>
+                    </div>
+                    
+                    <div class="text-end">
+                        <span class="label_registro">ID-ERP: </span><br>
+                        <span class="registro text-end">{{funcionario_atual.pk}}</span>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-row justify-content-between align-items-center" style="border:1px solid #bbbcbd;">
+                    
+                    <div class="">
+                        <span class="label_registro">RG: </span><br>
+                        <span class="registro">{{funcionario_atual.rg|default:"-"}}</span>
+                    </div>
+                    <div class="">
+                        <span class="label_registro">CNH: </span><br>
+                        <span class="registro">{{funcionario_atual.cnh|default:"-"}}</span>
+                    </div>
+                    <div class="">
+                        <span class="label_registro">CAT. CNH:</span><br>
+                        <span class="registro">{{funcionario_atual.categoria_cnh|default:"-"}}</span>
+                    </div>
+                    <div class="">
+                        <span class="label_registro">Nacionalidade: </span><br>
+                        <span class="registro">{{funcionario_atual.nacionalidade|default:"-"}}</span>
+                    </div>
+                    <div class="text-end">
+                        <span class="label_registro">Data de Nascimento: </span><br>
+                        <span class="registro">{{funcionario_atual.data_nascimento|date:'d/m/Y'|default:"-"}}</span>
+                    </div>
+     
+                </div>
+
+                <div class="d-flex flex-row justify-content-between align-items-center" style="border:1px solid #bbbcbd;">
+                    <div class="">
+                        <span class="label_registro">Endereço Completo: </span><br>
+                        <span class="registro">{{funcionario_atual.endereco|default:"-"}}</span>
+                    </div>
+
+                    <div class="">
+                        <span class="label_registro">Telefone 1: </span><br>
+                        <span class="registro">{{funcionario_atual.telefone1|default:"-"}}</span>
+                    </div>
+                
+                    <div class="text-end">
+                        <span class="label_registro">Telefone 2: </span><br>
+                        <span class="registro">{{funcionario_atual.telefone2|default:"-"}}</span>
+                    </div>
+     
+                </div>
+
+                <div class="d-flex flex-row justify-content-between align-items-center" style="border:1px solid #bbbcbd;">
+                    
+
+                    <div class="">
+                        <span class="label_registro">Estado Civil: </span><br>
+                        <span class="registro">{{funcionario_atual.estado_civil}}</span>
+                    </div>
+                
+                    <div class="">
+                        <span class="label_registro">Nome da Mãe: </span><br>
+                        <span class="registro">{{funcionario_atual.nome_mae|default:"-"}}</span>
+                    </div>
+
+                    <div class="text-end">
+                        <span class="label_registro">Nome do Pai: </span><br>
+                        <span class="registro">{{funcionario_atual.nome_pai|default:"-"}}</span>
+                    </div>
+     
+                </div>
+                  
+               
+              
+               
+            </div>
+        </div>
+        
+    </div>
+
+
+    <div class="row mt-2 mb-2">
+
+        <small style="margin:0px; padding:0px">Dados Contratuais:</small>
+
+        <div class="col-12">
+            <div class="row" >
+
+                <div class="d-flex flex-row justify-content-between align-items-center" style="border:1px solid #bbbcbd;">
+                    <div class="">
+                        <span class="label_registro">Matrícula: </span><br>
+                        <span class="registro">{{funcionario_atual.matricula|default_if_none:"-"}}</span>
+                    </div>
+                    <div class="">
+                        <span class="label_registro">Tipo de Contrato: </span><br>
+                        <span class="registro">{{funcionario_atual.tipo_contrato}}</span>
+                    </div>
+                   
+                    <div class="">
+                        <span class="label_registro">Data de Admissão: </span><br>
+                        <span class="registro text-end">{{funcionario_atual.data_admissao|date:"d/m/Y"|default:"-"}}</span>
+                    </div>
+
+                    <div class="">
+                        <span class="label_registro">Início Prorrogação: </span><br>
+                        <span class="registro text-end">{{funcionario_atual.data_fim_prorrogacao|date:"d/m/Y"|default:"-"}}</span>
+                    </div>
+                    <div class="text-end">
+                        <span class="label_registro">Fim Prorrogação: </span><br>
+                        <span class="registro text-end">{{funcionario_atual.data_inicio_prorrogacao|date:"d/m/Y"|default:"-"}}</span>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-row justify-content-between align-items-center" style="border:1px solid #bbbcbd;">
+                    
+                    <div class="">
+                        <span class="label_registro">Situação Atual: </span><br>
+                        <span class="registro">{{funcionario_atual.situacao}}</span>
+                    </div>
+                    <div class="">
+                        <span class="label_registro">Início Afastamento: </span><br>
+                        <span class="registro">{{funcionario_atual.data_inicio_afastamento|date:"d/m/Y"|default:"-"}}</span>
+                    </div>
+                    <div class="">
+                        <span class="label_registro">Fim Afastamento:</span><br>
+                        <span class="registro">{{funcionario_atual.data_fim_afastamento|date:"d/m/Y"|default:"-"}}</span>
+                    </div>
+                    <div class="">
+                        <span class="label_registro">Data de Demissão: </span><br>
+                        <span class="registro">{{funcionario_atual.data_demissao|date:"d/m/Y"|default:"-"}}</span>
+                    </div>
+                    <div class="text-end">
+                        <span class="label_registro">Tipo de Demissão: </span><br>
+                        <span class="registro">{{funcionario_atual.tipo_demissao}}</span>
+                    </div>
+     
+                </div>
+
+                <div class="d-flex flex-row justify-content-between align-items-center" style="border:1px solid #bbbcbd;">
+                    <div class="">
+                        <span class="label_registro">Cargo: </span><br>
+                        <span class="registro">{{funcionario_atual.cargo}}</span>
+                    </div>
+
+                    <div class="">
+                        <span class="label_registro">Salário R$: </span><br>
+                        <span class="registro">{{funcionario_atual.salario}}</span>
+                    </div>
+                
+                    <div class="">
+                        <span class="label_registro">Adicional R$: </span><br>
+                        <span class="registro">{{funcionario_atual.adicional}}</span>
+                    </div>
+                    <div class="text-end">
+                        <span class="label_registro">Data Último Exame: </span><br>
+                        <span class="registro">{{funcionario_atual.data_ultimo_exame|date:"d/m/Y"|default:"-"}}</span>
+                    </div>
+     
+                </div>
+
+                <div class="d-flex flex-row justify-content-between align-items-center" style="border:1px solid #bbbcbd;">
+                    
+
+                    <div class="">
+                        <span class="label_registro">Lotação: </span><br>
+                        <span class="registro">{{funcionario_atual.lotacao.nome}}</span>
+                    </div>
+                
+                    <div class="text-end">
+                        <span class="label_registro">Responsável: </span><br>
+                        <span class="registro">{{funcionario_atual.responsavel_direto.nome}}</span>
+                    </div>
+
+                    
+     
+                </div>
+                  
+            </div>
+        </div>
+    
+    </div>
+
+    <div class="row mt-2 mb-2">
+
+        <small style="margin:0px; padding:0px">Dados Bancários:</small>
+          
+        <div class="col-12">
+            <div class="row" >
+
+                <div class="d-flex flex-row justify-content-between align-items-center" style="border:1px solid #bbbcbd;">
+                    <div class="">
+                        <span class="label_registro">Banco: </span><br>
+                        <span class="registro">{{funcionario_atual.banco.nome}}</span>
+                    </div>
+                    <div class="">
+                        <span class="label_registro">Agência: </span><br>
+                        <span class="registro">{{funcionario_atual.agencia|default_if_none:"-"}}</span>
+                    </div>
+                    
+                    <div class="">
+                        <span class="label_registro">Tipo de Conta: </span><br>
+                        <span class="registro text-end">{{funcionario_atual.tipo_conta|default_if_none:"-"}}</span>
+                    </div>
+                    <div class="">
+                        <span class="label_registro">Operação: </span><br>
+                        <span class="registro text-end">{{funcionario_atual.op|default_if_none:"-"}}</span>
+                    </div>
+
+                    <div class="text-end">
+                        <span class="label_registro">Nº Conta: </span><br>
+                        <span class="registro text-end">{{funcionario_atual.conta|default_if_none:"-"}}</span>
+                    </div>
+                   
+                </div>
+
+                <div class="d-flex flex-row justify-content-between align-items-center" style="border:1px solid #bbbcbd;">
+                    
+                    <div class="col-4">
+                        <span class="label_registro">Tipo PIX: </span><br>
+                        <span class="registro">{{funcionario_atual.tipo_pix|default_if_none:"-"}}</span>
+                    </div>
+                    <div class="col-8">
+                        <span class="label_registro">PIX: </span><br>
+                        <span class="registro">{{funcionario_atual.pix|default_if_none:"-"}}</span>
+                    </div>
+                
+        
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="row mt-2 mb-2">
+
+        <small style="margin:0px; padding:0px">Outras Informações:</small>
+          
+        <div class="col-12">
+            <div class="row" >
+
+                <div class="d-flex flex-row justify-content-between align-items-center" style="border:1px solid #bbbcbd;">
+                    <div class="col-4">
+                        <span class="label_registro">E-Social: </span><br>
+                        <span class="registro">{{funcionario_atual.esocial|default_if_none:"-"}}</span>
+                    </div>
+                    <div class="col-4">
+                        <span class="label_registro">Analfabeto: </span><br>
+                        <span class="registro">
+                        {% if funcionario_atual.analfabeto %}
+                            Sim
+                        {% else %}
+                            Não
+                        {% endif %}
+                            </span>
+                    </div>
+
+                    <div class="text-end text-muted">
+                        <span class="label_registro ">Data de Cadastro: </span><br>
+                        <span class="registro text-end ">{{funcionario_atual.data_cadastro|date:"d/m/Y"}}</span>
+                    </div>
+                   
+                </div>
+
+            </div>
+        </div>
+        
+    </div>
+
+
+
+</div>
+{% endblock %}
+
+
+
+{% block jquery %}
+<script>
+ 
+</script>
+{% endblock%}

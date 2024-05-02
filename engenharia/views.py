@@ -101,7 +101,7 @@ def obras_nova_orden_servico(request, pk, template_name = 'engenharia/nova_ordem
     
 @login_required(login_url='login/')
 @csrf_exempt
-def obras_salvar_nova_orden_servico(request, pk, template_name = 'engenharia/detalhar_ordem.html'):
+def obras_salvar_nova_orden_servico(request, pk):
     
     
     date = datetime.now()
@@ -136,18 +136,8 @@ def obras_salvar_nova_orden_servico(request, pk, template_name = 'engenharia/det
                                          obs=obs,
                                          )       
         
-    ordens = OrdemServicoObras.objects.filter(obra=obra)
-    categorias = CategoriaImagem.objects.filter(ordem_servico = nova_ordem).order_by('categoria')     
-    
-    context = {
-    'date': date,
-    'obra': obra,
-    'ordens': ordens,
-    'ordem_atual': nova_ordem,
-    'categorias': categorias,
-    }
-        
-    return render(request, template_name , context)
+          
+    return redirect('obra_detalhar_os', pk=pk, os=nova_ordem.pk)
     
 @login_required(login_url='login/')
 @csrf_exempt
@@ -174,11 +164,11 @@ def obras_editar_orden_servico(request, pk, os, template_name = 'engenharia/nova
     
 @login_required(login_url='login/')
 @csrf_exempt
-def obras_salvar_editar_orden_servico(request, pk, os, template_name = 'engenharia/detalhar_ordem.html'):
+def obras_salvar_editar_orden_servico(request, pk, os):
    
     obra = Obra.objects.get(pk=pk)
     os_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
-    categorias = CategoriaImagem.objects.filter(ordem_servico = os_atual).order_by('categoria')
+
     
     if request.method == 'POST':
         
@@ -210,16 +200,23 @@ def obras_salvar_editar_orden_servico(request, pk, os, template_name = 'engenhar
         os_atual.save()
                                                 
         
-             
-    context = {
-        
-        'obra': obra,
-        'ordem_atual': os_atual,
-        'categorias': categorias,
     
-    }
+    return redirect('obra_detalhar_os', pk=pk, os=os)
     
-    return render(request, template_name , context)
+@login_required(login_url='login/')
+@csrf_exempt
+def obra_excluir_os(request, pk, os):
+    
+    if request.method == 'GET':
+        obra = Obra.objects.get(pk=pk)
+        os_atual = OrdemServicoObras.objects.get(obra=obra,pk=os)
+        os_atual.get_funcionarios_by_os().delete()
+        os_atual.get_imagens_by_os().delete()
+        os_atual.get_files_by_os().delete()
+        os_atual.get_rdos_by_os().delete()
+        os_atual.delete()            
+    
+        return redirect('home_obra_os', pk=pk)
 
 @login_required(login_url='login/')
 @csrf_exempt

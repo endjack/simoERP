@@ -12,7 +12,7 @@ Filtro: Boleto(s):
             <th scope="col">CPF/CNPJ</th>
             <th scope="col" class="text-center">NF nº</th>
             <th scope="col" class="text-center">Vencimento</th>
-            <th scope="col" class="text-center">Valor</th>
+            <th scope="col" class="text-center">Valor Original</th>
             <th scope="col" class="text-center">Acrésc.</th>
             <th scope="col" class="text-center">Total</th>
             <th scope="col" class="text-center">Pago em</th>
@@ -67,9 +67,10 @@ Filtro: Nota (s):
             <th scope="col">CPF/CNPJ</th>
             <th scope="col" class="text-center">NF nº</th>
             <th scope="col" class="text-center">Emissão</th>
-            <th scope="col" class="text-center">Valor</th>
-            <th scope="col" class="text-center">Acrésc.</th>
-            <th scope="col" class="text-center">Total</th>
+            <th scope="col" class="text-center">Valor Original</th>
+            <th scope="col" class="text-center">Acrésc (+)</th>
+            <th scope="col" class="text-center">Descon (-)</th>
+            <th scope="col" class="text-center">Total (=)</th>
             <th scope="col" class="text-center">Pago em</th>
             <th scope="col" class="text-center">Opções</th>
         </tr>
@@ -89,15 +90,17 @@ Filtro: Nota (s):
 
             <td class="destaque-saida text-center">{{item.saida.data_emissao | date:"d/m/Y"}}
             </td>
-            <td class="destaque-saida text-center">{{item.valor_BR}}</td>
+            <td class="destaque-saida text-center">{{item.get_valor_total_itens_BR}}</td>
             {% if item.pagamentovista_set.all.count > 0%}
                 {% for pagamento in item.pagamentovista_set.all %}
                 <td class="text-center">R$ {{pagamento.acrescimo}}</td>
+                <td class="text-center">R$ {{pagamento.conta.desconto}}</td>
                 <td class="text-center">{{pagamento.valor_total_BR}}</td>
                 <td class="text-center"> Pago em {{pagamento.data_pagamento | date:'d/m/Y'}} </td>
                 {% endfor %}
             {% else %}
             <td class="text-center"> - </td>
+            <td class="text-center">R$ {{item.desconto}}</td>
             <td class="text-center">{{item.valor_BR}}</td>
             <td class="text-center"> Aberto </td>
             {% endif %}
@@ -107,7 +110,7 @@ Filtro: Nota (s):
         {% endfor %}
         {% else %}
         <tr>
-            <td style="text-align: center; color: gray;" colspan="10">Nenhum registro</td>
+            <td style="text-align: center; color: gray;" colspan="11">Nenhum registro</td>
         </tr>
         {% endif %}
     </tbody>
@@ -132,8 +135,11 @@ Filtro: Nota (s):
             <div class="col-md text-end">
                 Total R$ Notas: <h6 class="">R$ {{total_valor_notas}}</h6>
             </div>
-            <div class="col-md text-end">
+            {% comment %} <div class="col-md text-end">
                 Total Acréscimos: <h6 class="">{{total_acresc}}</h6>
+            </div> {% endcomment %}
+            <div class="col-md text-end">
+                Total Descontos: <h6 class="">{{total_desconto}}</h6>
             </div>
             <div class="col-md text-end">
                 Total: <h6 class="">{{total_geral}}</h6>

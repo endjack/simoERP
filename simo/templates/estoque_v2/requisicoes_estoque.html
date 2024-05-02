@@ -75,7 +75,7 @@
                 <th scope="col">Data</th>
                 <th scope="col" style="text-align: left;">Solicitante</th>
                 <th scope="col" style="text-align: left;">Local</th>
-                <th scope="col">Obra</th>
+                <th scope="col" style="text-align: left;">Obra</th>
                 <th scope="col">Almoxarife</th>
 
               </tr>
@@ -88,9 +88,9 @@
 
                   <td class="text-center"><a href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{forloop.counter}}</div></a></td>
                   <td class="text-center"><a href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.data|default_if_none:"-"|date:'d/m/Y'}}</div></a></td>
-                  <td class="text-center"><a href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.solicitante.nome|default_if_none:"-"}}</div></a></td>
-                  <td class="text-center"><a href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.local.local|default_if_none:"-"}}</div></a></td>
-                  <td class="text-center"><a href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.obra.nome|default_if_none:"-"}}</div></a></td>
+                  <td class="text-start"><a href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.solicitante.nome|default_if_none:"-"}}</div></a></td>
+                  <td class="text-start"><a href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.local.local|default_if_none:"-"}}</div></a></td>
+                  <td class="text-start"><a href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.obra.nome|default_if_none:"-"}}</div></a></td>
                   <td class="text-center"><a href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.almoxarife.get_full_name|default_if_none:"-"}}</div></a></td>
                 
                 </tr>

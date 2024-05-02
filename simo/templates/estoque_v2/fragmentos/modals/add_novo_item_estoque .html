@@ -20,12 +20,8 @@
                 <div class="container">                 
                       
                      
-                        <form id="formAddNovoItemEstoque" 
-                        hx-post="{% url 'add_novo_item_estoquev2' %}" 
-                        hx-target="body" 
-                        hx-swap="innerHTML" 
-                        hx-indicator="#spinner"
-                        style="line-height: normal; font-size:9pt" enctype="multipart/form-data">
+                        <form name="formAddNovoItemEstoque" 
+                              style="line-height: normal; font-size:9pt" enctype="multipart/form-data">
                           {% csrf_token %}
                 
                 
@@ -115,7 +111,7 @@
     
                                     </div>
                                 </div>
-                                <div class="col-5">
+                                <div class="col-5" style="opacity:0.5">
                                     <div class="col-md">
                                         <label for="inputQrcode" class="">QR Code: <small class="text-danger">(Desativado)</small></label>
                                         <input type="file" name="qr-code-Item" class="form-control form-control-sm" accept="image/*" disabled/> 
@@ -128,19 +124,33 @@
                     </form>
                     
                 </div>
-            
-              
-                    
-                    
-                              
+                  
 
                 <!-- Fim modal-body -->
             </div>
             <div class="modal-footer form-control" style="background-color:#edeef5">
                 <small class="small-error" id="error_item"></small>
                 {% include "utils/load_htmx_centralizado.html" %}
-                <button class="btn btn-sm btn-success" form="formAddNovoItemEstoque"><i class="fas fa-plus"></i> Salvar </button>   
-                <button class="btn btn-sm btn-primary" form="formAddNovoItemEstoque"><i class="fas fa-cart-plus"></i> Salvar e Movimentar </button>   
+                <button class="btn btn-sm btn-success"  
+                    hx-post="{% url 'add_novo_item_estoquev2' %}" 
+                    hx-target="body" 
+                    hx-trigger="click"
+                    hx-include="[name='formAddNovoItemEstoque']"
+                    hx-swap="innerHTML" 
+                    hx-indicator="#spinner"
+                    hx-vals='{"action": "Salvar"}'>
+                    <i class="fas fa-plus" ></i> Salvar 
+                </button>   
+                <button class="btn btn-sm btn-primary" 
+                    hx-post="{% url 'add_novo_item_estoquev2' %}" 
+                    hx-target="body" 
+                    hx-trigger="click"
+                    hx-include="[name='formAddNovoItemEstoque']"
+                    hx-swap="innerHTML" 
+                    hx-indicator="#spinner"
+                    hx-vals='{"action": "Movimentar"}'>
+                    <i class="fas fa-cart-plus"></i> Salvar e Movimentar 
+                </button>   
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
             
             </div>

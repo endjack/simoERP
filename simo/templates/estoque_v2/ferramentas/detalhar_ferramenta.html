@@ -1,0 +1,72 @@
+{% load static %}
+ <!-- Modal DETALHAR FERRAMENTA-->
+ <div class="modal fade" id="detalharFerramentaEstoquev2{{ferramenta.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl">
+      <div class="modal-content ">
+          <div class="modal-header p-3">
+              <div class="d-flex flex-column bd-highlight">
+                  <h5 style="color:black" class="bd-highlight">Detalhar Ferramenta/Máquina:</h5>
+                  
+                  
+              </div>  
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-5">
+              <!-- modal-body --> 
+
+                    
+                      <div class="card">
+                      
+                      <div class="row mt-2">
+                      
+                            <div class="col-2 ">
+                                  {% if ferramenta.imagem %}
+                                  <img src="{{ferramenta.imagem.url}}" class="card-img-top m-1" style="width: 100%; height: auto;">
+                                  {% else %}
+                                  <img src="{% static 'imagens/sem_imagem.png' %}" class="card-img-top m-1" style="width: 100%; height: auto;">
+                                  {% endif %}
+                                  
+                            </div>
+                      
+                            <div class="col-5" style="font-size: 12pt;">
+                                  <div style="font-size: 16pt;" class="text-start"><span style="font-weight: bold;">{{ferramenta.descricao}} </span></div>
+                                  <div class="text-start">Marca: <span style="font-weight: bold;">{{ferramenta.marca|default_if_none:"-"}} </span></div>
+                                  <div class="text-start">Categoria: <span style="font-weight: bold;">{{ferramenta.categoria.categoria}} </span></div>
+                                  <div class="text-start">Cor: <span style="font-weight: bold;">{{ferramenta.cor |default_if_none:"-"}} </span></div>
+                                  <div class="text-start">Tamanho: <span style="font-weight: bold;">{{ferramenta.tamanho |default_if_none:"-"}} </span></div>
+                                  <div class="text-start">Código/Série: <span style="font-weight: bold;">{{ferramenta.numeracao|default_if_none:"-" }} </span></div>
+                            </div>
+                      
+                            <div class="col-5" style="font-size: 12pt;">
+                                <div style="font-size: 16pt;" class="text-start">Situação: <span style="font-weight: bold;">{{ferramenta.get_situacao_label|default_if_none:"-"|safe}} </span></div>
+
+                                {% if ferramenta.get_situacao == "reservada" %}
+                                    {% with ferramenta.get_cautela_by_ferramenta as cautela %}
+                                        <div class="text-start">Solicitante: <span style="font-weight: bold;">{{cautela.solicitante.nome|default_if_none:"-"}} </span></div>
+                                        <div class="text-start">Data: <span style="font-weight: bold;">{{cautela.data_cautela}} </span></div>
+                                        <div class="text-start">Local: <span style="font-weight: bold;">{{cautela.local.local |default_if_none:"-"}} </span></div>
+                                        <div class="text-start">Obra: <span style="font-weight: bold;">{{cautela.obra.nome |default_if_none:"-"}} </span></div>
+                                    {% endwith %}
+
+                                {% endif %}
+                               
+                            </div>
+                      
+                      </div>   
+                      
+                      </div>
+         
+
+       
+
+                <!-- Fim modal-body -->
+              </div>
+              <div class="modal-footer form-control">
+                  <a class="btn btn-sm btn-primary" href=""><i class="fas fa-edit"></i> Editar </a>   
+                  <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Sair</button>
+              
+              </div>
+          </div>
+      </div>
+   </div>
+   <!-- Fim Modal --> 

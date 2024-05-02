@@ -1,3 +1,6 @@
+{% load static %}
+
+
 <div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
 	<div class="modal-underlay" _="on click trigger closeModal"></div>
 	<div class="modal-content" style="max-width:900px; overflow:auto;">
@@ -12,8 +15,8 @@
     _="on closeModalDescricao trigger closeModal">      
     <div class="form-group row mb-2 ">
         <div class="col-6 ">
-                <label for="input-fornecedores" class="">Fornecedor: </label>
-                <select id="input-fornecedores" class="form-control js-example-basic-single"  name="fornecedor" required=required>
+                <label for="input-fornecedores-editar" class="">Fornecedor: </label>
+                <select id="input-fornecedor" class=""  name="fornecedor" required=required>
                     {% for f in fornecedores %}
                         
                     <option value="{{f.pk}}" {% if f == descricao.fornecedor %}selected {% endif %}> {{f.template_options}}</option>
@@ -35,7 +38,7 @@
     <div class="row mb-3" style="font-size:9pt;">
         <div class="col-5">
                 <label for="input4centroDeCusto" class="">Centro de Custo:</label>
-                <select id="input-centro-de-custo" class="form-control js-example-basic-single"  name="centro-de-custo" required=required>
+                <select id="input-centro-de-custo" class="form-control form-control-sm"  name="centro-de-custo" required=required>
                     {% for f in centros_custo %}
                         
                     <option value="{{f.pk}}" {% if f == descricao.centro_de_custo %}selected {% endif %}> {{f.nome}}</option>
@@ -59,8 +62,8 @@
     _="on closeModalDescricao trigger closeModal">      
     <div class="form-group row mb-2 ">
         <div class="col-6 ">
-                <label for="input-fornecedores" class="">Fornecedor: </label>
-                <select id="input-fornecedores" class="form-control js-example-basic-single"  name="fornecedor" required=required>
+                <label for="input-fornecedor" class="">Fornecedor: </label>
+                <select id="input-fornecedor" class=""  name="fornecedor" required=required>
                         {% include 'financeiro/fragmentos/options-select-fornecedores.html' %}
                  </select>
                 <small class="small-error" id="error_fornecedor"></small> 
@@ -71,14 +74,14 @@
         </div>
         <div class="col-3">
                 <label for="input3DataEmissao" class="">Emissão:</label>
-                <input type="date" class="form-control form-control-sm" id="input3DataEmissao" name="data_emissao">
+                <input type="date" class="form-control form-control-sm" id="input3DataEmissao" name="data_emissao" value="{% now 'Y-m-d' %}">
             <small class="small-error" id="error_data_emissao"></small>
         </div>
     </div>
     <div class="row mb-3" style="font-size:9pt;">
         <div class="col-5">
                 <label for="input4centroDeCusto" class="">Centro de Custo:</label>
-                <select id="input-centro-de-custo" class="form-control js-example-basic-single"  name="centro-de-custo" required=required>
+                <select id="input-centro-de-custo" class="form-control form-control-sm"  name="centro-de-custo" required=required>
                     {% for f in centros_custo %}
                     <option value="{{f.pk}}"> {{f.nome}}</option>
                 
@@ -101,12 +104,18 @@
 </div>
 </div>
 
-{% block jquery %}
+
 <script>
-   //htmx.logAll();
-
-   
-    $('.js-example-basic-single').select2();
-
+    
+    var config = {
+        search: true, // Toggle search feature. Default: false
+        creatable: true, // Creatable selection. Default: false
+        clearable: true, // Clearable selection. Default: false
+        maxHeight: '360px', // Max height for showing scrollbar. Default: 360px
+        size: 'sm', // Can be "sm" or "lg". Default ''
+        }
+    
+        dselect(document.querySelector('#input-fornecedor'), config)
+        
+        dselect(document.querySelector('#input-fornecedores'), config)
 </script>
-{% endblock %}

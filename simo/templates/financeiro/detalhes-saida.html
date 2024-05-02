@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
 
+
 {% block breadcrumb %}
 <div class="row">
     <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/resumo-do-dia/">Financeiro</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Detralhar Nota nº {{nota_atual.pk}}</li>
+            <li class="breadcrumb-item active" aria-current="page">Detalhar Nota nº {{nota_atual.pk}}</li>
         </ol>
     </nav>
 </div>
@@ -56,6 +57,48 @@
     
   {% endif %}
     <a class="m-1 btn btn-p-sm btn-success" href="{% url 'inserir-conta-a-pagar' %}">Nova Nota</a>
+
+    <!-- Button Modal desconto-->
+    <a class="m-1 btn btn-p-sm btn-primary" data-bs-toggle="modal" data-bs-target="#inserirDescontoNotaCompleta{{nota_atual.pk}}" href="desconto">Desconto</a>
+
+     <!-- Modal desconto-->
+      <div class="modal fade" id="inserirDescontoNotaCompleta{{nota_atual.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog ">
+            <div class="modal-content ">
+                <div class="modal-header p-3">
+                    <div class="d-flex flex-column bd-highlight">
+                        <h5 style="color:black" class="bd-highlight">Inserir Desconto Nota nº {{nota_atual.pk}} </h5>
+                        
+                        
+                    </div>  
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-5">
+                    <!-- modal-body --> 
+
+                    <form method="GET" action="{% url 'inserir_desconto-conta-a-pagar' nota_atual.pk  %}" id="formDescontoNotaCompleta">
+                    
+                        <div class="col-8">
+                        <label for="input4" class="fw-bold">Desconto R$:</label>
+                        <input class="form-control form-control-sm nodot" name="desconto" type="number" step="any" min="0" id="input4" type="text" autocomplete="off" required>
+                      </div>
+
+                    </form>
+
+               
+
+                    <!-- Fim modal-body -->
+                </div>
+                <div class="modal-footer form-control">
+                    <button class="btn btn-sm btn-success" form="formDescontoNotaCompleta"><i class="fas fa-save"></i> Salvar </button>   
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                
+                </div>
+            </div>
+        </div>
+      </div>
+      <!-- Fim Modal --> 
+
     </div>
     
     <div class="ms-auto bd-highlight">
@@ -255,25 +298,24 @@
             Centro de Custo:
               <div class="titulo-p-forte" >{{nota_atual.saida.centro_de_custo}}</div>
           </div>
-          {% if pagamento %}
+   
+            <div class="ms-2 flex-fill text-end">
+              Valor Original:
+                <div style="font-size:14pt">{{nota_atual.valor_Total_itens_BR|default_if_none:'0,00'}}</div>
+            </div>
+            <div class="ms-2 flex-fill text-end">
+              Acréscimos (+):
+                <div style="font-size:14pt">{{pagamento.acrescimo_BR}}</div>
+            </div>
               <div class="ms-2 flex-fill text-end">
-                Valor Original:
-                  <div style="font-size:14pt">{{nota_atual.valor_BR}}</div>
-              </div>
-              <div class="ms-2 flex-fill text-end">
-                Acréscimos (+):
-                  <div style="font-size:14pt">{{pagamento.acrescimo_BR}}</div>
+                Descontos (-):
+                  <div style="font-size:14pt">R$ {{nota_atual.desconto}}</div>
               </div>
               <div class="ms-2 flex-fill text-end">
                 Valor Total da Nota (=):
-                  <div style="font-size:14pt;color:green"><strong>{{pagamento.valor_pago_BR}}</strong></div>
+                  <div style="font-size:14pt"><strong>{{nota_atual.valor_BR}}</strong></div>
               </div>
-          {% else %}
-              <div class="ms-2 flex-fill text-end">
-                Valor Total da Nota (=):
-                  <div style="font-size:14pt"><strong>{{nota_atual.valor_Total_itens_BR}}</strong></div>
-              </div>
-          {% endif %}
+    
         
     </li>
     
@@ -281,10 +323,19 @@
 <div class="" style="margin-left:2em; margin-right:2em;"><i>Saida Cód.: {{nota_atual.pk}} | {% if pagamento %} Pagamento Cód.: {{pagamento.pk}} | {% else %}{% endif %}  Cadastrado por: {{nota_atual.usuario.username}}</i></div>
 
 {% endblock%}
-
 {% block jquery %}
+<script>
+  //DESATIVAR '.' (DOT) NOS INPUTS
+  $(".nodot").on("keypress", function(evt) {
+   var keycode = evt.charCode || evt.keyCode;
+   if (keycode == 46) {
+   return false;
+   }
+   });
+</script>
 
-{% endblock %}
+{% endblock%}
+
 
 
 

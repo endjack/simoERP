@@ -1,0 +1,186 @@
+
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Imprimir Cautela</title>
+        <style>
+        @page {
+            size: portrait;
+            margin: 1cm;
+        }
+
+
+        @media print {
+
+            html,
+            body {
+                height: 99%;
+            }
+            .dados{ page-break-inside:avoid; }
+        }
+
+        * {
+            color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        td {
+            width: auto;
+        }
+        
+        td.min {
+            width: 1%;
+            white-space: nowrap;
+        }
+        
+        .centralizar {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .wrapper {
+        min-width: 10em; /* Will be AT LEAST 20em wide */
+        }
+        </style>
+</head>
+
+<body class="container" style="font-family: sans-serif;">
+
+  
+
+<div class="row" style="">
+        <div class="d-flex justify-content-center">
+            <div class="p-2 bd-highlight">
+                <img src="http://{{current_domain}}/static/imagens/logo1.png" alt="" height="80" >
+            </div>
+            <div class="p-2 bd-highlight" style="border-right: 4px solid gray;"></div>&emsp;
+            <div class="p-2 bd-highlight" style="font-size:10pt;">
+                BRASIL CONSTRUÇÃO LTDA <br>
+                CNPJ: 09.235.353/0001-45 <br>
+                brasilconstrucao3@gmail.com <br>
+                (84) 4103-0176
+            </div>
+        </div>
+    </div>
+
+<div class="card col-md-12 mt-2">
+  <div class="text-center  p-2">
+   <h5 class="fw-bold">CAUTELA Nº {{cautela_atual.pk}}</h5> 
+  </div>
+</div>
+
+
+
+
+<div class="col-5 fw-bold mt-2">Dados da Cautela:</div>
+
+   <div class="card col-md-12 p-2">
+  
+         <div class="" style="font-size: 13pt;">
+               <div class="">Data/Hora: <span style="font-weight: bold;">{{cautela_atual.data_cautela}} </span></div>
+               <div class="">Solicitante: <span style="font-weight: bold;">{{cautela_atual.solicitante.nome|upper}} </span></div>
+               <hr>
+               <div class="">Local/Unidade: <span style="font-weight: bold;">{{cautela_atual.local.local}} </span></div>
+               <div class="">Endereço: <span style="font-weight: bold;">{{cautela_atual.local.endereco|default_if_none:"-"}} </span></div>
+               <div class="">Obra: <span style="font-weight: bold;">{{cautela_atual.obra.nome|default_if_none:"-"}} </span></div>
+               <hr>
+               <div class="">Observações: <span style="font-weight: bold;color:gray">{{cautela_atual.obs_entrega|default_if_none:""|upper}} </span></div>
+               
+               <hr>
+               <div class="">Almoxarife: <span style="font-weight: bold;color:gray">{{cautela_atual.almoxarifado|upper}} </span></div>
+               
+         </div>
+
+
+   </div>   
+   
+   <div class="col-7  fw-bold mt-2">Ferramentas Acauteladas:</div>
+
+   <div class="card col-md-12 p-2">
+    {% if ferramentas_acauteladas %}
+         <div style="font-size: 13pt;">
+          
+              
+              <table class="table table-sm table-bordered table-striped " style="font-size:8pt">
+                <thead class="text-white text-center" style="background:#39423b;">
+                <tr style="line-height: 12px;white-space: nowrap; ">
+                 
+                
+                  <th scope="col" style="text-align: left;">Descrição</th>
+                  <th scope="col" style="text-align: left;">Marca</th>
+                  <th scope="col">Características</th>
+                  <th scope="col">Numeração</th>
+      
+                
+
+  
+                </tr>
+              </thead>
+              <tbody>
+               
+                  {% for ferr in ferramentas_acauteladas  %}
+                 <tr class=''>
+                   
+                    <td class="">{{ferr.ferramenta.descricao|default_if_none:"-"}}</td>
+                    <td class="">{{ferr.ferramenta.marca|default_if_none:"-"}}</td>
+                    <td class="text-center">Cor: {{ferr.ferramenta.cor|default_if_none:""}}</td>
+                    <td class="text-center">{{ferr.ferramenta.numeracao|default_if_none:"-"}}</td>
+                                    
+                  </tr>
+                  {% endfor %}
+                
+               
+            
+              </tbody>
+       </table>
+
+           
+    </div>
+      {% else %}
+        <div class="text-center fst-italic ">Sem Ferramentas. </div>          
+
+    {% endif %}   
+
+   </div>   
+
+
+
+
+   {% if cautela_atual.situacao == '2' or cautela_atual.situacao == '3' %}
+
+   <div class="col-5  fw-bold mt-2" >Dados da Entrega:</div>
+   
+   <div class="card col-md-12 p-2">
+       
+     <div class="" style="font-size: 13pt;">
+         
+           <div class="">Data/Hora da Devolução: <span style="font-weight: bold;"> {{cautela_atual.data_devolucao}} </span></div>
+         
+           <div class="">Observações da Devolução: <span style="font-weight: bold"> {{cautela_atual.obs_devolucao|default_if_none:""|upper}} 
+           </span></div>
+           <hr>
+           <div class="">Recebente: <span style="font-weight: bold;color:gray"> {{cautela_atual.almoxarifado|upper}} </span></div>   
+     </div>
+   </div>   
+ 
+   
+   {% endif %}
+
+
+
+
+
+
+
+    {% comment %} <script>
+        (function () {
+            window.print();
+        })();
+    </script> {% endcomment %}
+
+
+</body>
+
+</html>

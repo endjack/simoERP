@@ -62,6 +62,7 @@
                         <th scope="col" class="limitar">Data Recebimento</th>
                         <th scope="col">Serviço(s)</th>
                         <th scope="col" class="limitar">Local</th>
+                        <th scope="col" class="limitar">Obs</th>
                         <th scope="col" class="limitar">Situação</th>
                         {% comment %} <th scope="col">Opções</th> {% endcomment %}
                     </tr>
@@ -76,6 +77,7 @@
                         {% if item.data_recebimento %}<td class="limitar"><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.data_recebimento}}</a></td>{% else %}<td> - </td>{% endif %}
                         {% if item.servicos %}<td class="text-start limitar"><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.servicos}}</td>{% else %}</a><td> - </td>{% endif %}
                         {% if item.local %}<td class="text-start limitar"><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.local.local}}</td>{% else %}</a><td> - </td>{% endif %}
+                        {% if item.obs %}<td class="text-center limitar"><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.obs}}</td>{% else %}</a><td> - </td>{% endif %}
                         {% if item.situacao %}<td class="limitar"><a class="link_os" href="{% url 'obra_detalhar_os' obra.pk item.pk %}">{{item.get_situacao}}</td>{% else %}</a><td> - </td>{% endif %}               
                         {% comment %} <td><a href="#" title="Ver OS: #"><span style="color: DodgerBlue;"><i class="fas fa-pen-square fa-lg"></i></span></a></td>    {% endcomment %}
                     </tr>
