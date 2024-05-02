@@ -70,6 +70,7 @@ class FuncionarioV2(models.Model):
     categoria_cnh = models.CharField(max_length=20, blank=True, null=True)
     data_nascimento = models.DateField(null=True, blank=True)
     foto = models.ImageField(upload_to='funcionarios/', validators=[validate_image], blank=True, null=True)
+    cep_endereco = models.CharField(max_length=20, blank=True, null=True)
     endereco = models.CharField(max_length=200, blank=True, null=True)
     telefone1 = models.CharField(max_length=20, blank=True, null=True)
     telefone2 = models.CharField(max_length=20, blank=True, null=True)

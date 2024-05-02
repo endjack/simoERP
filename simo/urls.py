@@ -100,6 +100,7 @@ urlpatterns = [
     path('estoque/requisicao/<int:pk>/buscar-itens', filtrar_itens_estoque_requisicao, name='filtrar_itens_estoque_requisicao'),
     path('estoque/requisicao/<int:pk>/item/<int:item>/add', add_itemRequisicao_requisicao, name='add_itemRequisicao_requisicao'),
     path('estoque/requisicao/<int:pk>/item/<int:item>/excluir', excluir_item_requisicao_estoque, name='excluir_item_requisicao_estoque'),
+    path('estoque/requisicao/<int:pk>/imprimir', imprimir_requisicao_de_estoque, name='imprimir_requisicao_estoque'),
 
     #Itens v2
     path('estoque/cadastrar/itens', cadastrar_itens_estoquev2, name='cadastrar_itens_estoquev2'),

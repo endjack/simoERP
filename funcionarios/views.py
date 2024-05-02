@@ -74,8 +74,9 @@ def filtrar_funcionariosV2(request, template_name="funcionarios/fragmentos/procu
         }
         return render(request, template_name, context)
 
-def cadastrar_funcionarios_pessoal(request, template_name= 'funcionarios/fragmentos/funcionarios/funcionarios_home.html'):
+def cadastrar_funcionarios_pessoal(request, pk=None, template_name= 'funcionarios/fragmentos/funcionarios/funcionarios_home.html'):
     if request.method == 'GET':
+        #CADASTRAR NOVO
         menu_ativo = 'CADASTRARFUNCIONARIOS'
         tipo_contrato = FuncionarioV2.Contratos
         tipo_demissao = FuncionarioV2.TipoDemissao
@@ -88,6 +89,11 @@ def cadastrar_funcionarios_pessoal(request, template_name= 'funcionarios/fragmen
         bancos = Banco.objects.all()
         responsavel_direto = ResponsávelObraFuncionariov2.objects.all()
         start_inputs_dependents = 1
+        
+        #EDITAR FUNCIONÁRIO,
+        funcionario_atual = None
+        if pk:
+          funcionario_atual = FuncionarioV2.objects.get(pk=pk)
         
         context = {
             'menu_ativo' : menu_ativo,
@@ -102,10 +108,11 @@ def cadastrar_funcionarios_pessoal(request, template_name= 'funcionarios/fragmen
             'bancos' : bancos,
             'responsavel_direto' : responsavel_direto,
             'start_inputs_dependents' : start_inputs_dependents,
+            'funcionario_atual' : funcionario_atual,
         }
         return render(request, template_name, context)
 
-def add_funcionario_v2(request):
+def add_funcionario_v2(request, pk=None):
     
     menu_ativo = 'CADASTRARFUNCIONARIOS'
     
@@ -186,6 +193,20 @@ def add_funcionario_v2(request):
         else:
             endereco = request.POST.get('endereco')
                
+         
+        #validar estado_civil
+        if request.POST.get('estado_civil') in ['','-1', None]:
+             context = {
+            'menu_ativo' : menu_ativo,
+            'text_error': "Selecione um 'Estado Civil'"
+            }
+            
+             response =  render(request, template_name='funcionarios/fragmentos/funcionarios/error_form_funcionario.html', context=context)
+             response['HX-Retarget'] = '#error-container'
+             return response
+        else:
+            estado_civil = request.POST.get('estado_civil')
+         
          
         #validar Matricula
         if request.POST.get('matricula') == "":
@@ -379,11 +400,7 @@ def add_funcionario_v2(request):
         else:
             banco = Banco.objects.get(pk = int(request.POST.get('banco')))
             
-        #validar estado_civil
-        if request.POST.get('estado_civil') in ['','-1', None]:
-            estado_civil = None
-        else:
-            estado_civil = request.POST.get('estado_civil')
+       
             
             
         #validar tipo_responsavel
@@ -435,53 +452,62 @@ def add_funcionario_v2(request):
    
         obs = request.POST.get('obs')
         
-    
-            
-        #CRIAR NOVO FUNCIONÁRIO
-        funcionario_atual = FuncionarioV2.objects.create(
-            foto = foto,
-            nome = nome,
-            cpf = cpf,
-            rg = rg,
-            nome_mae = nome_mae,
-            nome_pai = nome_pai,
-            estado_civil = estado_civil,
-            ctps = ctps,
-            cnh = cnh,
-            categoria_cnh = categoria_cnh,
-            data_nascimento = data_nascimento,
-            endereco = f'{endereco} (CEP:{cep_endereco})',
-            telefone1 = telefone1,
-            telefone2 = telefone2,
-            matricula = matricula,
-            tipo_contrato = tipo_contrato,
-            data_admissao = data_admissao,
-            data_inicio_prorrogacao = data_inicio_prorrogacao,
-            data_fim_prorrogacao = data_fim_prorrogacao,
-            cargo = cargo,
-            salario = salario,
-            adicional = adicional,
-            lotacao = lotacao,
-            tipo_responsavel = tipo_responsavel,
-            situacao = situacao,
-            data_inicio_afastamento = data_inicio_afastamento ,
-            data_fim_afastamento = data_fim_afastamento,
-            data_demissao = data_demissao,
-            tipo_demissao = tipo_demissao,            
-            banco = banco, 
-            agencia = agencia,
-            tipo_conta = tipo_conta,
-            conta = conta,
-            op = operacao,
-            pix = pix,
-            tipo_pix = tipo_pix,
-            esocial = esocial,
-            analfabeto = analfabeto,
-            responsavel_direto = responsavel_direto,
-            obs = obs,          
-        )    
         
-    print(f"----- CRIADO FUNCIONÁRIO COM SUCESSO ---- Nome: {nome}")   
+        form_values = {
+            'foto' : foto,
+            'nome' : nome,
+            'cpf' : cpf,
+            'rg' : rg,
+            'nome_mae' : nome_mae,
+            'nome_pai' : nome_pai,
+            'estado_civil' : estado_civil,
+            'ctps' : ctps,
+            'cnh' : cnh,
+            'categoria_cnh' : categoria_cnh,
+            'data_nascimento' : data_nascimento,
+            'endereco' : endereco,
+            'cep_endereco' : cep_endereco,
+            'telefone1' : telefone1,
+            'telefone2' : telefone2,
+            'matricula' : matricula,
+            'tipo_contrato' : tipo_contrato,
+            'data_admissao' : data_admissao,
+            'data_inicio_prorrogacao' : data_inicio_prorrogacao,
+            'data_fim_prorrogacao' : data_fim_prorrogacao,
+            'cargo' : cargo,
+            'salario' : salario,
+            'adicional' : adicional,
+            'lotacao' : lotacao,
+            'tipo_responsavel' : tipo_responsavel,
+            'situacao' : situacao,
+            'data_inicio_afastamento' : data_inicio_afastamento ,
+            'data_fim_afastamento' : data_fim_afastamento,
+            'data_demissao' : data_demissao,
+            'tipo_demissao' : tipo_demissao,            
+            'banco' : banco, 
+            'agencia' : agencia,
+            'tipo_conta' : tipo_conta,
+            'conta' : conta,
+            'op' : operacao,
+            'pix' : pix,
+            'tipo_pix' : tipo_pix,
+            'esocial' : esocial,
+            'analfabeto' : analfabeto,
+            'responsavel_direto' : responsavel_direto,
+            'obs' : obs,          
+        }
+        
+        
+
+        #CRIAR OU EDITAR NOVO FUNCIONÁRIO
+        funcionario_atual, created = FuncionarioV2.objects.update_or_create(pk=pk)
+           
+        if created:
+           funcionario_atual = FuncionarioV2.objects.create(**form_values)
+        
+        
+        
+    print(f"----- CRIADO (EDIT:{created}) FUNCIONÁRIO COM SUCESSO ---- Nome: {nome}")   
     
     #validar Dependentes e CPF
     
@@ -536,15 +562,15 @@ def add_funcionario_v2(request):
                 pass 
                
         # Criar DEPENDENTES no for
-        dep = DependenteFuncionariov2.objects.create(funcionario = funcionario_atual, 
+        dep, created = DependenteFuncionariov2.objects.update_or_create(funcionario = funcionario_atual, 
                                                nome = nome_dependente, 
                                                cpf = cpf_dependente)      
-        print(f"----- CRIADO DEPENDENTE COM SUCESSO ---- Nome: {dep.nome}")  
+        print(f"----- CRIADO (EDIT:{created}) DEPENDENTE COM SUCESSO ---- Nome: {dep.nome}")  
         
     #Criar TIPO Responsável
     if tipo_responsavel:
-        resp = ResponsávelObraFuncionariov2.objects.create(responsavel = funcionario_atual)
-        print(f"----- CRIADO RESPONSÁVEL COM SUCESSO ---- Nome: {resp.responsavel.nome}") 
+        resp, created = ResponsávelObraFuncionariov2.objects.update_or_create(responsavel = funcionario_atual)
+        print(f"----- CRIADO (EDIT:{created}) RESPONSÁVEL COM SUCESSO ---- Nome: {resp.responsavel.nome}") 
         
         
     return redirect(reverse('procurar_pessoal'))  

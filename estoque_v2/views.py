@@ -342,7 +342,23 @@ def detalhar_requisicao_de_estoque(request, pk, template_name = 'estoque_v2/deta
          
         }
         return render(request, template_name , context)
-        
+ 
+@login_required(login_url='login/')
+@csrf_exempt
+def imprimir_requisicao_de_estoque(request, pk, template_name = 'estoque_v2/requisicoes/imprimir_requisicao_de_estoque.html'):
+
+    if request.method == 'GET':
+        _menu_ativo = 'REQUISIÇÃO'
+        req_atual = Requisicao.objects.get(pk=pk)      
+        itensRequisicao = ItemRequisicao.objects.filter(requisicao=req_atual)
+     
+        context = {
+            'menu_ativo' : _menu_ativo,
+            'req_atual' : req_atual,
+            'itensRequisicao' : itensRequisicao,       
+        }
+        return render(request, template_name , context)
+       
     
 @login_required(login_url='login/')
 @csrf_exempt

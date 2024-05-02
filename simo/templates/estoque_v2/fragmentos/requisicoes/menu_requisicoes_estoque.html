@@ -10,8 +10,8 @@
             <a  style="" class="btn btn-sm  btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#modalDadosRequisicaoEstoquev2" href="modal" 
             title="Editar Dados da Requisição"><i class="fas fa-edit"></i> Alterar Dados</a>
             
-            <a  style="" class="btn btn-sm  btn-danger m-1" href="#" 
-            title="Gerar PDF de Requisição"><i class="fas fa-file-pdf"></i> Gerar PDF</a>
+            <a  style="" class="btn btn-sm  btn-danger m-1" href="{% url 'imprimir_requisicao_estoque' req_atual.pk %}" target="_blank" rel="noreferrer noopener"
+            title="Imprimir de Requisição"><i class="fas fa-print"></i> Imprimir</a>
             
             <a  style="" class="btn  btn-sm btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
             title="Excluir Requisição"><i class="fas fa-trash"></i> Excluir</a>

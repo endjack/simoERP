@@ -32,7 +32,21 @@
 {% include "funcionarios/fragmentos/menu_pessoal.html" %}
 <!-- FIM MENU PESSOAL --> 
 
-{% comment %} <h6 class="text-center">Detalhar Funcionário (ID: {{funcionario_atual.pk}}) | Nome: {{funcionario_atual.nome}}</h6> {% endcomment %}
+<div class="container mt-2">
+
+    <div class="d-flex flex-row align-items-center" >
+        <h4 class="me-auto"><i class="far fa-file-alt"></i> Dados Funcionário (ID:{{funcionario_atual.pk}}): </h4>
+
+        <a  style="" class="btn btn-sm  btn-primary m-1" href="{% url 'editar_funcionarios_pessoal' funcionario_atual.pk %}" 
+        title="Editar Funcionário"><i class="fas fa-edit"></i></i> Editar </a>
+        <a  style="" class="btn btn-sm  btn-danger m-1" href="#" 
+        title="Excluir Funcionários"><i class="fas fa-trash"></i></i> Excluir </a>
+    </div>
+
+   
+
+</div>
+
 <div class="container mb-3 ">
     
 
@@ -50,7 +64,6 @@
 
         </div> 
         <div class="col-10 mt-1">
-
             <small style="margin:0px; padding:0px">Dados Pessoais:</small>
 
             <div class="row" >

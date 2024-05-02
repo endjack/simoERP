@@ -30,19 +30,32 @@
 
         
         <div class="d-flex flex-row mt-2">
-            <h6 class=""><i class="fas fa-plus"></i> Novo Registro de Funcionário</h6>
+            
+            {% if funcionario_atual %}
+                <h6 class=""><i class="fas fa-edit"></i> Editar Funcionário (ID: {{funcionario_atual.pk}})</h6> 
+            {% else %}
+                <h6 class=""><i class="fas fa-plus"></i> Novo Registro de Funcionário</h6> 
+            {% endif %}
+                
+            
+            
             <div class="ms-auto ">
                 
                 <span id="error-container">
                     {% include "funcionarios/fragmentos/funcionarios/error_form_funcionario.html" %}
                 </span>
                 
-                <button form="addFormFuncionariov2" class="btn btn-sm btn-success"><i class="fas fa-save"></i> Salvar Funcionário</button>
+                {% if funcionario_atual %}
+                    <button form="addFormFuncionariov2" class="btn btn-sm btn-primary"><i class="fas fa-save"></i> Editar Funcionário</button>
+                {% else %}
+                    <button form="addFormFuncionariov2" class="btn btn-sm btn-success"><i class="fas fa-save"></i> Salvar Funcionário</button>
+                {% endif %}
+               
                 
             </div>   
         </div> 
 
- <form id="addFormFuncionariov2" hx-post="{% url 'add_funcionario_v2' %}" hx-target="body" hx-trigger="submit">
+ <form id="addFormFuncionariov2" hx-post="{% url 'add_funcionario_v2' funcionario_atual.pk %}" hx-target="body" hx-trigger="submit">
 
         <!--NAV-TABS FUNCIONÁRIOS-->
         <ul class="nav nav-tabs" id="ex1" role="tablist">
@@ -126,10 +139,17 @@
                     
                 <!--Button Modal ADICIONARFOTO-->  
                     <div class="card" style="width: 10rem; height: 13rem;">
+
+                    {% if funcionario_atual.foto %}
+                        <a title="Trocar Foto" data-bs-toggle="modal" data-bs-target="#modalAdicionarFoto" href="trocar_Foto" title="Trocar Foto de Funcionário" class="">
+
+                        <img id="preview-image" src="{{funcionario_atual.foto.url}}"  width="100%" height="100%" style="padding:0.3rem;">  
+                    {% else %}
                     <a title="Adicionar Foto" data-bs-toggle="modal" data-bs-target="#modalAdicionarFoto" href="adicionar_Foto" title="Adicionar Foto de Funcionário" class="">
 
-                    <span id="text-add-foto" style="position: absolute;top: 45%;left: 23%;color:gray;">Adicionar foto</span>
-                    <img id="preview-image" src="" >   
+                        <span id="text-add-foto" style="position: absolute;top: 45%;left: 23%;color:gray;">Adicionar foto</span>
+                        <img id="preview-image" src="" >  
+                    {% endif %} 
                     </a> 
                     </div>
                     
@@ -144,17 +164,20 @@
                          <div class="row mb-2">
                              <div class="col-6">
                                  <label for="nome" class="form-label">Nome: <span class="text-danger fw-bold">*</span></label>
-                                 <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control form-control-sm" id="nome" name="nome">
+                                 <input value="{% if funcionario_atual.nome %}{{funcionario_atual.nome}}{% endif %}"
+                                        type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control form-control-sm" id="nome" name="nome">
                              </div>
 
                              <div class="col-3">
                                  <label for="cpf" class="form-label">CPF: <span class="text-danger fw-bold">*</span></label>
-                                 <input type="text" class="form-control form-control-sm cpf" id="cpf" name="cpf">
+                                 <input value="{% if funcionario_atual.cpf %}{{funcionario_atual.cpf}}{% endif %}"
+                                    type="text" class="form-control form-control-sm cpf" id="cpf" name="cpf">
                              </div>
 
                              <div class="col-3">
                                  <label for="rg" class="form-label">RG:</label>
-                                 <input type="text" class="form-control form-control-sm" id="rg" name="rg">
+                                 <input value="{% if funcionario_atual.rg %}{{funcionario_atual.rg}}{% endif %}"
+                                    type="text" class="form-control form-control-sm" id="rg" name="rg">
                              </div>
 
                          </div>
@@ -162,22 +185,26 @@
                          <div class="row mb-2">
                              <div class="col-3">
                                  <label for="ctps" class="form-label">CTPS:</label>
-                                 <input type="text" class="form-control form-control-sm" id="ctps" name="ctps">
+                                 <input value="{% if funcionario_atual.ctps %}{{funcionario_atual.ctps}}{% endif %}"
+                                    type="text" class="form-control form-control-sm" id="ctps" name="ctps">
                              </div>
 
                              <div class="col-3">
                                  <label for="cnh" class="form-label">CNH/Habilitação:</label>
-                                 <input type="text" class="form-control form-control-sm" id="cnh" name="cnh">
+                                 <input value="{% if funcionario_atual.cnh %}{{funcionario_atual.cnh}}{% endif %}"
+                                    type="text" class="form-control form-control-sm" id="cnh" name="cnh">
                              </div>
                              <div class="col-2">
                                  <label for="categoria_cnh"  class="form-label">Cat. CNH: <i class="fas fa-question-circle" title=" A-Moto | B-Carro | C,D,E-Carga"></i></label>
-                                 <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control form-control-sm" id="categoria_cnh" name="categoria_cnh">
+                                 <input value="{% if funcionario_atual.categoria_cnh %}{{funcionario_atual.categoria_cnh}}{% endif %}"
+                                    type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control form-control-sm" id="categoria_cnh" name="categoria_cnh">
                                  
                              </div>
 
                              <div class="col-3">
                                  <label for="data_nascimento" class="form-label">Data de Nascimento: <span class="text-danger fw-bold">*</span></label>
-                                 <input type="date" class="form-control form-control-sm" id="data_nascimento" name="data_nascimento">
+                                 <input value="{% if funcionario_atual.data_nascimento %}{{funcionario_atual.data_nascimento|date:'Y-m-d'}}{% endif %}"
+                                    type="date" class="form-control form-control-sm" id="data_nascimento" name="data_nascimento">
                              </div>
 
                          </div>
@@ -185,21 +212,25 @@
                          <div class="row mb-2">
                              <div class="col-2">
                                  <label for="cep_endereco" class="form-label">CEP:</label>
-                                 <input type="text" class="form-control form-control-sm cep" id="cep_endereco" name="cep_endereco">
+                                 <input value="{% if funcionario_atual.cep_endereco %}{{funcionario_atual.cep_endereco}}{% endif %}"
+                                    type="text" class="form-control form-control-sm cep" id="cep_endereco" name="cep_endereco">
                              </div>
 
                              <div class="col-6">
                                  <label for="endereco" class="form-label">Endereço: <span class="text-danger fw-bold">*</span></label>
-                                 <input type="text" class="form-control form-control-sm" id="endereco" name="endereco">
+                                 <input value="{% if funcionario_atual.endereco %}{{funcionario_atual.endereco}}{% endif %}"
+                                    type="text" class="form-control form-control-sm" id="endereco" name="endereco">
                              </div>
                              <div class="col-2">
                                  <label for="telefone1"  class="form-label">Tel 01: </label>
-                                 <input type="text" class="form-control form-control-sm phoneBR" id="telefone1" name="telefone1">                                    
+                                 <input value="{% if funcionario_atual.telefone1 %}{{funcionario_atual.telefone1}}{% endif %}"
+                                    type="text" class="form-control form-control-sm phoneBR" id="telefone1" name="telefone1">                                    
                              </div>
 
                              <div class="col-2">
                                  <label for="telefone2" class="form-label">Tel 02:</label>
-                                 <input type="text" class="form-control form-control-sm phoneBR" id="telefone2" name="telefone2">
+                                 <input value="{% if funcionario_atual.telefone2 %}{{funcionario_atual.telefone2}}{% endif %}" 
+                                    type="text" class="form-control form-control-sm phoneBR" id="telefone2" name="telefone2">
                              </div>
 
                          </div>
@@ -210,18 +241,20 @@
                                 <select class="form-select form-select-sm" aria-label="Default select example" id="estado_civil" name="estado_civil">
                                     <option value="-1" disabled selected> Selecione</option>
                                     {% for i in estado_civil %}
-                                    <option value="{{i}}"> {{i}}</option>
+                                    <option value="{{i}}" {% if funcionario_atual.estado_civil == i %}selected{% endif %}> {{i}}</option>
                                     {% endfor %}  
                                 </select>
                             </div>
 
                             <div class="col-5">
                                 <label for="nome_mae" class="form-label">Nome da Mãe: </span></label>
-                                <input type="text" class="form-control form-control-sm" id="nome_mae" name="nome_mae">
+                                <input value="{% if funcionario_atual.nome_mae %}{{funcionario_atual.nome_mae}}{% endif %}"
+                                    type="text" class="form-control form-control-sm" id="nome_mae" name="nome_mae">
                             </div>
                             <div class="col-5">
                                 <label for="nome_pai"  class="form-label">Nome do Pai: </label>
-                                <input type="text" class="form-control form-control-sm phoneBR" id="nome_pai" name="nome_pai">                                    
+                                <input value="{% if funcionario_atual.nome_pai %}{{funcionario_atual.nome_pai}}{% endif %}"
+                                    type="text" class="form-control form-control-sm phoneBR" id="nome_pai" name="nome_pai">                                    
                             </div>
 
                         </div>
@@ -237,7 +270,8 @@
                     <div class="row mb-2">
                         <div class="col-2">
                             <label for="matricula" class="form-label">Matrícula: <span class="text-danger fw-bold">*</span></label>
-                            <input type="text" class="form-control form-control-sm" id="matricula" name="matricula">
+                            <input value="{% if funcionario_atual.matricula %}{{funcionario_atual.matricula}}{% endif %}"
+                                type="text" class="form-control form-control-sm" id="matricula" name="matricula">
                         </div>
     
                         <div class="col-4">
@@ -245,24 +279,29 @@
                             <select class="form-select form-select-sm" aria-label="Default select example" id="tipo_contrato" name="tipo_contrato">
                                 <option value="-1" disabled selected> Selecione</option>
                                 {% for i in tipo_contrato %}
-                                <option value="{{i}}"> {{i}}</option>
+                                <option value="{{i}}" {% if funcionario_atual.tipo_contrato == i %}selected{% endif %}>{{i}}</option>
                                 {% endfor %}  
                             </select>
                         </div>
                                
                         <div class="col-2">
                             <label for="data_admissao" class="form-label">Data Admissão: <span class="text-danger fw-bold">*</span></label>
-                            <input type="date" class="form-control form-control-sm" id="data_admissao" name="data_admissao" value="{% now 'Y-m-d' %}">
+                            <input value="{% if funcionario_atual.data_admissao %}{{funcionario_atual.data_admissao|date:'Y-m-d'}}{% else %}{% now 'Y-m-d' %}{% endif %}"
+                                type="date" class="form-control form-control-sm" id="data_admissao" name="data_admissao">
                         </div>
     
                         <div class="col-2">
                             <label for="data_inicio_prorrogacao" class="form-label">Início Prorrogação: <span class="text-danger fw-bold">*</span></label>
-                            <input type="date" class="form-control form-control-sm" id="data_inicio_prorrogacao" name="data_inicio_prorrogacao" disabled>
+                            <input value="{% if funcionario_atual.data_inicio_prorrogacao %}{{funcionario_atual.data_inicio_prorrogacao|date:'Y-m-d'}}{% endif %}"
+                                type="date" class="form-control form-control-sm" id="data_inicio_prorrogacao" name="data_inicio_prorrogacao" 
+                                {% if tipo_contrato == 'INDETERMINADO' %}disabled{% endif %}>
                         </div>
     
                         <div class="col-2">
                             <label for="data_fim_prorrogacao" class="form-label">Fim Prorrogação: <span class="text-danger fw-bold">*</span></label>
-                            <input type="date" class="form-control form-control-sm" id="data_fim_prorrogacao" name="data_fim_prorrogacao" disabled>
+                            <input value="{% if funcionario_atual.data_fim_prorrogacao %}{{funcionario_atual.data_fim_prorrogacao|date:'Y-m-d'}}{% endif %}"
+                            type="date" class="form-control form-control-sm" id="data_fim_prorrogacao" name="data_fim_prorrogacao" 
+                            {% if tipo_contrato == 'INDETERMINADO' %}disabled{% endif %}>
                         </div>
     
                     </div>
@@ -273,19 +312,21 @@
                             <select class="form-select form-select-sm" aria-label="Default select example" id="cargo" name="cargo">
                                 <option value="-1" disabled selected> Selecione</option>
                                 {% for i in cargos %}
-                                <option value="{{i.pk}}"> {{i.cargo}}</option>
+                            <option value="{{i.pk}}" {% if funcionario_atual.cargo == i %}selected{% endif %}> {{i.cargo}}</option>
                                 {% endfor %}  
                             </select>
                         </div>
                                
                         <div class="col-2">
                             <label for="salario" class="form-label">Salário: <span class="text-danger fw-bold">*</span></label>
-                            <input type="text" placeholder="R$ " class="form-control form-control-sm money" id="salario" name="salario">
+                            <input value="{% if funcionario_atual.salario %}{{funcionario_atual.salario}}{% endif %}"
+                                type="text" placeholder="R$ " class="form-control form-control-sm money" id="salario" name="salario">
                         </div>
     
                         <div class="col-2">
                             <label for="adicional" class="form-label">Adicional:</label>
-                            <input type="text" placeholder="R$ " class="form-control form-control-sm money" id="adicional" name="adicional">
+                            <input value="{% if funcionario_atual.adicional %}{{funcionario_atual.adicional}}{% endif %}"
+                                type="text" placeholder="R$ " class="form-control form-control-sm money" id="adicional" name="adicional">
                         </div>
     
                         <div class="col-3">
@@ -293,14 +334,15 @@
                             <select class="form-select form-select-sm" aria-label="Default select example" id="lotacao" name="lotacao">
                                 <option value="-1" disabled selected> Selecione</option>
                                 {% for i in obras %}
-                                <option value="{{i.pk}}"> {{i.nome}}</option>
+                                <option value="{{i.pk}}" {% if funcionario_atual.lotacao == i %}selected{% endif %}> {{i.nome}}</option>
                                 {% endfor %}
                             </select>
                         </div>
                         <div class="col-2">
                             <div class="form-check mt-3">
                                 <label class="form-check-label">
-                                <input class="form-check-input" type="checkbox" name="tipo_responsavel"> Responsável <i class="fas fa-question-circle" title="Pode exercer função de Responsável de Equipes"></i>
+                                <input class="form-check-input" type="checkbox" name="tipo_responsavel" {% if funcionario_atual.tipo_responsavel %}checked{% endif %}> 
+                                Responsável <i class="fas fa-question-circle" title="Pode exercer função de Responsável de Equipes"></i>
                                 </label>
                             </div>    
                         </div> 
@@ -316,29 +358,42 @@
                             <select class="form-select form-select-sm" aria-label="Default select example" id="situacao" name="situacao">
                                 
                                 {% for i in situacao %}
-                                
-                                    {% if i == 'ADMITIDO' %}
-                                    <option value="{{i}}" selected> {{i}}</option>
+
+                                    
+                                    {% if funcionario_atual.situacao %}
+
+                                        <option value="{{funcionario_atual.situacao}}" selected> {{funcionario_atual.situacao}}</option>
+                                        
                                     {% else %}
-                                    <option value="{{i}}"> {{i}}</option>
+
+                                        {% if i == 'ADMITIDO' %}
+                                        <option value="{{i}}" selected> {{i}}</option>
+                                        {% else %}
+                                        <option value="{{i}}"> {{i}}</option>
+                                        {% endif %}
+                                        
                                     {% endif %}
-  
+                                        
+                                    
                                 {% endfor %}
                             </select>
                     </div>
                     <div class="col-2">
                         <label for="data_inicio_afastamento" class="form-label">Início Afastamento: <span class="text-danger fw-bold">*</span></label>
-                        <input type="date" class="form-control form-control-sm" id="data_inicio_afastamento" name="data_inicio_afastamento" disabled>
+                        <input value="{% if funcionario_atual.data_inicio_afastamento %}{{funcionario_atual.data_inicio_afastamento|date:'Y-m-d'}}{% endif %}"
+                            type="date" class="form-control form-control-sm" id="data_inicio_afastamento" name="data_inicio_afastamento" disabled>
                     </div>
     
                     <div class="col-2">
                         <label for="data_fim_afastamento" class="form-label">Fim Afastamento: <span class="text-danger fw-bold">*</span></label>
-                        <input type="date" class="form-control form-control-sm" id="data_fim_afastamento" name="data_fim_afastamento" disabled>
+                        <input value="{% if funcionario_atual.data_fim_afastamento %}{{funcionario_atual.data_fim_afastamento|date:'Y-m-d'}}{% endif %}"
+                            type="date" class="form-control form-control-sm" id="data_fim_afastamento" name="data_fim_afastamento" disabled>
                     </div>
     
                     <div class="col-2">
                         <label for="data_demissao" class="form-label">Data de Rescisão: <span class="text-danger fw-bold">*</span></label>
-                        <input type="date" class="form-control form-control-sm" id="data_demissao" name="data_demissao" disabled>
+                        <input value="{% if funcionario_atual.data_demissao %}{{funcionario_atual.data_demissao|date:'Y-m-d'}}{% endif %}"
+                            type="date" class="form-control form-control-sm" id="data_demissao" name="data_demissao" disabled>
                     </div>
     
                     <div class="col-3">
@@ -346,7 +401,7 @@
                         <select class="form-select form-select-sm" aria-label="Default select example" id="tipo_demissao" name="tipo_demissao" disabled>
                             <option value="-1" disabled selected> Selecione</option>
                             {% for i in tipo_demissao %}
-                            <option value="{{i}}"> {{i}}</option>
+                            <option value="{{i}}" {% if funcionario_atual.tipo_demissao == i %}selected{% endif %}> {{i}}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -366,14 +421,15 @@
                         <select class="form-select form-select-sm" aria-label="Default select example" id="banco" name="banco">
                             <option value="-1" disabled selected> Selecione</option>
                             {% for i in bancos %}
-                            <option value="{{i.pk}}"> {{i.nome}}</option>
+                            <option value="{{i.pk}}" {% if funcionario_atual.banco == i %}selected{% endif %}> {{i.nome}}</option>
                             {% endfor %}
                         </select>
                     </div>
         
                     <div class="col-2">
                         <label for="agencia" class="form-label">Ag:</label>
-                        <input type="text" class="form-control form-control-sm" id="agencia" name="agencia">
+                        <input value="{% if funcionario_atual.agencia %}{{funcionario_atual.agencia}}{% endif %}"
+                            type="text" class="form-control form-control-sm" id="agencia" name="agencia">
                     </div>
 
                     <div class="col-2">
@@ -381,19 +437,21 @@
                         <select class="form-select form-select-sm" aria-label="Default select example" id="tipo_conta" name="tipo_conta">
                             <option value="-1" disabled selected> Selecione</option>
                             {% for i in tipo_conta %}
-                            <option value="{{i}}"> {{i}}</option>
+                            <option value="{{i}}" {% if funcionario_atual.tipo_conta == i %}selected{% endif %}> {{i}}</option>
                             {% endfor %}
                         </select>
                     </div>
 
                     <div class="col-2">
                         <label for="conta" class="form-label">Conta:</label>
-                        <input type="text" class="form-control form-control-sm" id="conta" name="conta">
+                        <input value="{% if funcionario_atual.conta %}{{funcionario_atual.conta}}{% endif %}"
+                            type="text" class="form-control form-control-sm" id="conta" name="conta">
                     </div>
 
                     <div class="col-1">
                         <label for="operacao" class="form-label">Op:</label>
-                        <input type="text" class="form-control form-control-sm" id="operacao" name="operacao">
+                        <input value="{% if funcionario_atual.op %}{{funcionario_atual.op}}{% endif %}"
+                            type="text" class="form-control form-control-sm" id="operacao" name="operacao">
                     </div>
 
                     </div>
@@ -401,7 +459,8 @@
 
                             <div class="col-3">
                                 <label for="pix" class="form-label">Pix:</label>
-                                <input type="text" class="form-control form-control-sm" id="pix" name="pix">
+                                <input value="{% if funcionario_atual.pix %}{{funcionario_atual.pix}}{% endif %}"
+                                    type="text" class="form-control form-control-sm" id="pix" name="pix">
                             </div>
 
                             <div class="col-2">
@@ -409,7 +468,7 @@
                                 <select class="form-select form-select-sm" aria-label="Default select example" id="tipo_pix" name="tipo_pix">
                                     <option value="-1" disabled selected> Selecione</option>
                                     {% for i in tipo_pix %}
-                                    <option value="{{i}}"> {{i}}</option>
+                                    <option value="{{i}}" {% if funcionario_atual.tipo_pix == i %}selected{% endif %}> {{i}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -446,13 +505,14 @@
 
         <div class="col-3">
             <label for="esocial" class="form-label">E-Social:</label>
-            <input type="text" class="form-control form-control-sm" id="esocial" name="esocial">
+            <input value="{% if funcionario_atual.esocial %}{{funcionario_atual.esocial}}{% endif %}"
+                type="text" class="form-control form-control-sm" id="esocial" name="esocial">
         </div>
 
         <div class="col-2">
             <div class="form-check mt-3">
                 <label class="form-check-label align-middle">
-                <input class="form-check-input" type="checkbox" name="analfabeto"> Analfabeto ou Pouca Escolaridade
+                <input class="form-check-input" type="checkbox" name="analfabeto" {% if funcionario_atual.analfabeto %}checked{% endif %}> Analfabeto ou Pouca Escolaridade
                 </label>
             </div>    
         </div> 
@@ -462,13 +522,13 @@
             <select class="form-select form-select-sm" aria-label="Default select example" id="responsavel_direto" name="responsavel_direto">
                 <option value="-1" disabled selected> Selecione</option>
                 {% for i in responsavel_direto %}
-                <option value="{{i.pk}}"> {{i.responsavel.nome}}</option>
+                <option value="{{i.pk}}" {% if funcionario_atual.responsavel_direto == i %}selected{% endif %}> {{i.responsavel.nome}}</option>
                 {% endfor %}
             </select>
         </div>
         <div class="col-4">
             <label for="obs" class="form-label">Observações:</label>
-            <textarea id="obs" name="obs" rows="1" cols="50" class="form-control form-control-sm"></textarea>
+            <textarea id="obs" name="obs" rows="1" cols="50" class="form-control form-control-sm">{% if funcionario_atual.obs %}{{funcionario_atual.obs}}{% endif %}</textarea>
         </div>
         
 
@@ -486,7 +546,7 @@
         <div class="col-2 p-2 align-self-center">
             <div class="form-check mt-3">
                 <label class="form-check-label">
-                <input class="form-check-input " type="checkbox" checked disabled> Cadastro Ativo <i class="fas fa-question-circle" title="Falar com o Admin para Desativar Cadastro"></i>
+                <input class="form-check-input " type="checkbox" {% if funcionario_atual.ativo %}checked{% endif %} disabled> Cadastro Ativo <i class="fas fa-question-circle" title="Falar com o Admin para Desativar Cadastro"></i>
                 </label>
             </div>    
         </div> 
