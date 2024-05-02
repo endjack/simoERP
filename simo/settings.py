@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'multiselectfield',
     'django_htmx',
     'django_select2',
+    'migration_fixer',
 
     #apps SIMO
     'estoque.apps.EstoqueConfig',
