@@ -19,5 +19,5 @@ class Migration(migrations.Migration):
             model_name='ordemservicoobras',
             name='data_recebimento',
             field=models.DateField(blank=True, default='05/10/2023', null=True),
-        ),
+        ), 
     ]
