@@ -45,8 +45,7 @@ class OrdemServicoObras(models.Model):
                 if self.situacao == s[0]:
                     print('------------', s[0], ' e ', s[1])
                     return s[1]
-                    
-            
+                          
     def get_files_by_os(self):
         arquivos = DocumentoOS.objects.filter(ordem_servico=self)
         return arquivos
@@ -84,8 +83,6 @@ class CategoriaImagem(models.Model):
     
     def __str__(self) -> str:
         return self.categoria
-
-
 
 
 def def_pasta_upload_imagem(instance, name):

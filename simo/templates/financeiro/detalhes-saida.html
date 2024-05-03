@@ -59,10 +59,10 @@
     <a class="m-1 btn btn-p-sm btn-success" href="{% url 'inserir-conta-a-pagar' %}">Nova Nota</a>
 
     <!-- Button Modal desconto-->
-    <a class="m-1 btn btn-p-sm btn-primary" data-bs-toggle="modal" data-bs-target="#inserirDescontoNotaCompleta{{nota_atual.pk}}" href="desconto">Desconto</a>
+    <a class="m-1 btn btn-p-sm btn-primary" data-bs-toggle="modal" data-bs-target="#inserirDescontoNotaCompleta" href="desconto">Desconto</a>
   <small> Para resetar o desconto, coloque '0' (zero) como valor.</small>
      <!-- Modal desconto-->
-      <div class="modal fade" id="inserirDescontoNotaCompleta{{nota_atual.pk}}" tabindex="-9999999" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade" id="inserirDescontoNotaCompleta" tabindex="-9999999" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog ">
             <div class="modal-content ">
                 <div class="modal-header p-3">
