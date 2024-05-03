@@ -997,8 +997,12 @@ def add_novo_item_estoque(request):
         else:
             qtd_minima = Decimal(qtd_minima)
         
+        
+        #imagem
         imagemItem = request.FILES.get('imagemItem')
-        print(f'----------------------------{request.FILES}--------------------------')
+        
+            
+        print(f'----------------------------imagemItem = {imagemItem} --------------------------')
         
         if action == "Editar":
             
@@ -1011,7 +1015,11 @@ def add_novo_item_estoque(request):
             item_atual.preco=preco
             item_atual.fornecedor=fornecedor
             item_atual.qtd_minima=qtd_minima
-            item_atual.imagem=imagemItem
+            
+            if imagemItem != None:
+                print(f'----------------------------IMAGEM JÁ CADASTRADA --------------------------')
+                item_atual.imagem=imagemItem
+           
             item_atual.save()
             
             return redirect('detalhar_item_nao_estoquev2', pk=item_atual.pk)
