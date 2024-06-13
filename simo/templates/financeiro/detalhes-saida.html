@@ -80,7 +80,7 @@
                     
                         <div class="col-8">
                         <label for="input4" class="fw-bold">Desconto R$:</label>
-                        <input class="form-control form-control-sm nodot" name="desconto" type="number" step="any" min="0" id="input4" type="text" autocomplete="off" required>
+                        <input class="form-control form-control-sm money nodot" name="desconto"  id="input4" type="text" autocomplete="off" required>
                       </div>
 
                     </form>
@@ -324,13 +324,22 @@
 <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>  
 {% block jquery %}
 <script>
-  //DESATIVAR '.' (DOT) NOS INPUTS
-  $(".nodot").on("keypress", function(evt) {
-   var keycode = evt.charCode || evt.keyCode;
-   if (keycode == 46) {
-   return false;
-   }
-   });
+  $(document).ready(function () {
+    //masks
+    $('.money').mask('000.000.000,00', {
+      reverse: true
+    });
+
+
+    //DESATIVAR '.' (DOT) NOS INPUTS
+    $(".nodot").on("keypress", function(evt) {
+    var keycode = evt.charCode || evt.keyCode;
+    if (keycode == 46) {
+    return false;
+    }
+    });
+
+  });
 </script>
 
 {% endblock%}
