@@ -51,11 +51,21 @@
                     <td class="text-center"><div style="height:100%;width:100%">{{i.categoria|default_if_none:"-"}}</div></td>
                     <td class="text-center">
                       <div style="height:100%;width:100%"> 
-                        {% if i.get_situacao == 'reservada' %}
-                        <a href="{% url 'detalhar_cautela_ferramenta' i.get_cautela_by_ferramenta.pk %}" class="">{{i.get_situacao_label|safe}}</a> 
+                        {% if i.get_cautela_by_ferramenta.pk %}
+
+                            {% if i.get_situacao == 'reservada' %}
+                            <a href="{% url 'detalhar_cautela_ferramenta' i.get_cautela_by_ferramenta.pk %}" class="">{{i.get_situacao_label|safe}}</a> 
+                            {% else %}
+                            {{i.get_situacao_label|safe}}
+                            {% endif %}
+                        
                         {% else %}
-                        {{i.get_situacao_label|safe}}
+
+                            <a href="#" class="">Error</a>
+
                         {% endif %}
+
+                        
                       </div>
                     </td>
                   </tr>
