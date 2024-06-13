@@ -35,8 +35,11 @@
                   <td class="text-start">{{i.cautela.local.local|default_if_none:"-"}}</td>
                   <td class="text-start">{{i.cautela.obra.nome|default_if_none:"-"}}</td>
                   <td class="text-center">
-                    <a class="text-primary" title="Ver Cautela" href="{% url 'detalhar_cautela_ferramenta' i.cautela.pk %}"><i class="fas fa-user-clock"></i></a>
-                    
+                    {% if i.cautela.pk %}
+                      <a class="text-primary" title="Ver Cautela" href="{% url 'detalhar_cautela_ferramenta' i.cautela.pk %}"><i class="fas fa-user-clock"></i></a>
+                    {% else %}
+                    <a class="text-primary" title="Ver Cautela" href="#">Error</a>
+                    {% endif %}
                   </td>
                 
                 
