@@ -27,12 +27,12 @@
           <div class="d-flex flex-row align-items-center" >
                 <h4 class="me-auto"><i class="fas fa-info-circle"></i> Detalhar Item de Estoque (Id: {{item_estoque.pk}})</h4>
                 <!-- Button movimentar-->
-                <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#movimentaritemdeestoque{{item_estoque.pk}}" href="modal" 
+                <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#movimentaritemdeestoquev2" href="modal" 
                       title="Início"><i class="fas fa-box-open"></i></i> Movimentar</a>
                 <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'editar_dados_item_estoquev2' item_estoque.item.pk %}" 
                       title="Início"><i class="fas fa-edit"></i></i> Alterar</a>
                 <!-- Button Excluir-->
-                  <a  style="" class="btn  btn-sm btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#excluirItemDeEstoque{{item_estoque.pk}}" href="modal" 
+                  <a  style="" class="btn  btn-sm btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#excluirItemDeEstoque" href="modal" 
                       title="Início"><i class="fas fa-trash"></i> Excluir</a>
           </div>
 </div>
@@ -41,7 +41,7 @@
 {% include "estoque_v2/item_de_estoque.html" %}
 
 <!-- Modal Excluir-->
-<div class="modal fade" id="excluirItemDeEstoque{{item_estoque.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="excluirItemDeEstoque" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
           <div class="modal-content ">
               <div class="modal-header p-3">

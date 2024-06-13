@@ -34,7 +34,7 @@
       <div class="col-3">
             Tem no estoque: <br>
             <!-- Button Modal -->
-            <a style="width:80%;"  class="btn btn-{{item_estoque.get_situacao}} m-1 " data-bs-toggle="modal" data-bs-target="#movimentaritemdeestoque{{item_estoque.pk}}" href="modal" 
+            <a style="width:80%;"  class="btn btn-{{item_estoque.get_situacao}} m-1 " data-bs-toggle="modal" data-bs-target="#movimentaritemdeestoquev2" href="modal" 
             title="Movimentar Item">
             <span style="font-size: 14pt;">{{item_estoque.quantidade}}</span>
             <span style="font-size: 10pt;">{{item_estoque.item.unid_medida}}</span>
@@ -54,7 +54,7 @@
 </div>
 
 <!-- Inicio Modal -->
-<div class="modal fade" id="movimentaritemdeestoque{{item_estoque.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="movimentaritemdeestoquev2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg">
       <div class="modal-content" style="background-color:#edeef5">
           <div class="modal-header">
