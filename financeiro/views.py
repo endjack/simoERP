@@ -1417,7 +1417,7 @@ def inserir_desconto_conta_a_pagar(request, pk,):
     if request.method == 'GET':
         desconto_atual = request.GET.get('desconto', 0)
         nota_atual = NotaCompleta.objects.get(pk = pk)
-        nota_atual.desconto = Decimal(desconto_atual)
+        nota_atual.desconto = Decimal(desconto_atual.replace(".","").replace(",","."))
         
         nota_atual.valor = nota_atual.get_valor_total_itens() - nota_atual.desconto
         
