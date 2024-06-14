@@ -285,13 +285,17 @@ def filtrar_itens_estoque_requisicao(request, pk, template_name = 'estoque_v2/fr
 def add_itemRequisicao_requisicao(request, pk, item):
 
     if request.method == 'POST':
+    
         _input_qtd = f'qntItemDeRequisicao{item}'
         qtd_solicitada = request.POST.getlist(_input_qtd)[0]
         item = Estoque.objects.get(pk=item)
         qtd_item_no_estoque = item.quantidade
         
+        
+        print(f'-------------ITEM ID: {item.pk}')
         print(f'-------------QTD SOLICITADA: {qtd_solicitada}')
         print(f'-------------QTD NO ESTOQUE: {qtd_item_no_estoque}')
+   
         
         #VALIDAÇÕES
         

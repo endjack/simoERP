@@ -1,4 +1,5 @@
 {% load static %}
+{% load l10n %}
 <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>  
 
 <div class="texto-enfase text-end" style=""> Legenda:  <span class="text-success"> <i class="fas fa-square"></i></span> Suficiente -  <span class="text-warning"><i class="fas fa-square"></i></span> Insuficiente - <span class="text-danger"><i class="fas fa-square"></i></span> Zerado  </div>
@@ -29,34 +30,23 @@
                     <td class="text-center ">{{i.item.qtd_minima|default_if_none:"-"}}</td>
                     <td class="text-center "><div class="text-center bg-{{i.get_situacao}}"><span style="font-size:10pt; font-weight:bold">{{i.quantidade|default_if_none:"-"}}</span></div></td>
                     <td class="text-center ">{{i.item.unid_medida|default_if_none:"-"}}</div></td>
+                   
                     <!-- Button adicionarQuantidadeItensRequisicaoAtual-->
                     {% if i.quantidade > 0 %}
                     <td class="text-center">
 
                     <div class="input-group input-group-sm">
-                        <input type="number" step="any" min="0.1" style="width:6rem" class="form-control form-control-sm" name="qntItemDeRequisicao{{i.pk}}">&nbsp;
+                        <input type="number" step="any" min="0.1" style="width:6rem" class="form-control form-control-sm" name="qntItemDeRequisicao{{i.pk|unlocalize}}">&nbsp;
                         <button class="btn btn-outline-primary" type="button" id="button-addon2"
                                 hx-target="body"
-                                hx-include="[name='qntItemDeRequisicao{{i.pk}}']"
+                                hx-include="[name='qntItemDeRequisicao{{i.pk|unlocalize}}']"
                                 hx-swap="innerHTML"
                                 hx-post="{% url 'add_itemRequisicao_requisicao' req_atual.pk i.pk %}"><i class="fas fa-plus"></i></button>
                       </div>
-                      <small><span id="erroQntItemRequisicao{{i.pk}}" style="color:red"></span></small>
+                      <small><span id="erroQntItemRequisicao{{i.pk|unlocalize}}" style="color:red"></span></small>
 
                        
                     </td>
-
-                    {% comment %} <script>
-                     
-                        $(document).ready(function() {
-                            $('.divItem{{i.pk}}').click(function() {
-                                $('#inputItem{{i.pk}}').show("slide");
-                                
-                           });
-                        });
-                    
-                            
-                     </script> {% endcomment %}
                    
                     {% else %}
                     <td class="text-center">Insuficiente.</td>
