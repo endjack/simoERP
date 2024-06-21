@@ -266,8 +266,13 @@ urlpatterns = [
     path('contas-a-pagar/excluir-pagamento-boleto-unico/<int:pk>/nota/<int:nota>', excluir_pagamento_boleto_unico, name='excluir-pagamento-boleto-unico'),
     path('contas-a-pagar/gerar_pdf_resultado_contas_e_boletos', gerar_pdf_resultado_contas_e_boletos, name='gerar_pdf_resultado_contas_e_boletos'),
     
+    #relatorios[financeiro]
+    path('contas-a-pagar/relatorios', relatorios_inicio, name='relatorios-inicio'),
+    path('contas-a-pagar/get-relatorios', get_relatorio_selecionado, name='get-relatorio-selecionado'),
+    path('contas-a-pagar/get-itens-por-descricao', get_itens_por_descricao, name='get-itens-nota-fiscal'),
+   
     
-    #inserir_nota_saida
+    #inserir_nota_saida[financeiro]
     path('contas-a-pagar/inserir-descricao-saida', inserir_descricao_saida, name='inserir-descricao-saida'),
     path('contas-a-pagar/editar-descricao-saida/<int:pk>/nota/<int:nota>', editar_descricao_saida, name='editar-descricao-saida'),
     path('contas-a-pagar/salvar-descricao-saida', salvar_descricao_saida, name='salvar-descricao-saida'),

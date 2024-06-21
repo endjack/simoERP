@@ -1,0 +1,36 @@
+<div class="m-3">
+
+    <form id="form_busca_item_descricao_nota_fiscal" style="font-size:9pt;" 
+            hx-indicator="#spinner" 
+            hx-swap="innerHTML" 
+            hx-target="#resultados-itens-nota-fiscal" 
+            hx-get="{% url 'get-itens-nota-fiscal' %}" 
+            hx-trigger="submit" >
+        
+                
+        <div class="col-6">
+
+            <label for="input1" class="">Descrição do Item: <span class="text-danger fw-bold">*</span> </label>
+
+            <div class="form-group d-flex align-items-center flex-row bd-highlight"> 
+
+                <div class="p-2 flex-fill bd-highlight">  
+                    <input type="text" class="form-control form-control-sm" id="input1" name="descricao" placeholder="Nome do item maior que 3 letras...">
+                    <span class="help-block"></span>
+                </div>
+
+                <div class="p-2 bd-highlight">
+                    <button class="btn btn-p-sm btn-primary" form="form_busca_item_descricao_nota_fiscal"><i class="fas fa-search"></i> Buscar</button>  
+                </div>
+
+            </div>
+        </div>
+
+    </form>
+
+    <div class="" id="resultados-itens-nota-fiscal">
+        {% include 'financeiro/relatorios/fragmentos/resultados-relatorio-itens.html' %} 
+
+    </div>
+
+</div>

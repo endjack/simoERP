@@ -72,7 +72,8 @@ class Ferramenta(models.Model):
             
     def get_cautela_by_ferramenta(self):
         if self.acautelada:
-            cautelaFerr = CautelaFerramenta.objects.get(ferramenta = self)
+            # cautelaFerr = CautelaFerramenta.objects.get(ferramenta = self)
+            cautelaFerr = CautelaFerramenta.objects.filter(ferramenta = self).first()
             return cautelaFerr.cautela
         else:
             None

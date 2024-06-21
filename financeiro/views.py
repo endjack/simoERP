@@ -1426,4 +1426,64 @@ def inserir_desconto_conta_a_pagar(request, pk,):
         print(f'--------------Inserido Desconto de R$ {desconto_atual}')
 
         return redirect("ver-nota-completa", pk=pk)
+
+
+##RELATÓRIOS FINANCEIRO
+
+@login_required(login_url='login/')
+@csrf_exempt
+def relatorios_inicio(request, template_name='financeiro/relatorios/relatorios-inicio.html'):
     
+    if request.method == 'GET':
+
+        context = {
+ 
+        }
+        return render(request, template_name, context)
+    
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def get_relatorio_selecionado(request):
+    
+    if request.method == 'GET':
+
+        relatorio_escolhido = request.GET.get('select-relatorios')
+    
+
+        if relatorio_escolhido == '1':
+            template_name = 'financeiro/relatorios/fragmentos/busca-item-avancado.html'
+            print(F'------------------ RELATÓRIO POR ITEM AVANÇADO')
+            
+        elif relatorio_escolhido == '2':
+            template_name = 'financeiro/relatorios/fragmentos/relatorio-fornecedor.html'
+            print(F'------------------ RELATÓRIO FORNECEDOR')
+            
+        elif relatorio_escolhido == '3':
+            template_name = 'financeiro/relatorios/fragmentos/relatorio-periodo-especifico.html'
+            print(F'------------------ RELATÓRIO POR PERÍODO')
+                  
+        else:
+            template_name = 'financeiro/relatorios/fragmentos/busca-item-avancado.html'
+            print(F'------------------ OUTRO RELATÓRIO')
+           
+            
+        context = {
+      
+        } 
+            
+        return render(request, template_name, context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def get_itens_por_descricao(request, template_name='financeiro/relatorios/fragmentos/resultados-relatorio-itens.html'):
+    
+    if request.method == 'GET':
+        
+        query = request.GET.get('descricao')
+        itens = ItensNota.objects.filter(descricao__icontains=query).only('descricao')
+
+        context = {
+            'itens' : itens
+        }
+        return render(request, template_name, context)
