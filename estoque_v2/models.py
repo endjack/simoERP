@@ -72,7 +72,7 @@ class Ferramenta(models.Model):
             
     def get_cautela_by_ferramenta(self):
         if self.acautelada:
-            cautelaFerr = CautelaFerramenta.objects.get(ferramenta = self)
+            cautelaFerr = CautelaFerramenta.objects.filter(ferramenta = self)[0]
             
             if cautelaFerr is not None:
                 return cautelaFerr.cautela
