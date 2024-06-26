@@ -39,7 +39,7 @@
 
         <a  style="" class="btn btn-sm  btn-primary m-1" href="{% url 'editar_funcionarios_pessoal' funcionario_atual.pk %}" 
         title="Editar Funcionário"><i class="fas fa-edit"></i></i> Editar </a>
-        <a  style="" class="btn btn-sm  btn-danger m-1" href="#" 
+        <a  style="" class="btn btn-sm  btn-danger m-1" href="{% url 'excluir_funcionarios_pessoal' funcionario_atual.pk %}" 
         title="Excluir Funcionários"><i class="fas fa-trash"></i></i> Excluir </a>
     </div>
 
@@ -54,7 +54,7 @@
         
         <div class="col-2 text-center">
             
-            <div class="card" style="width: 10rem; height: 13rem;">
+            <div class="card" style="width: 9rem; height: 13rem;">
              {% if funcionario_atual.foto %}
              <img src="{{funcionario_atual.foto.url}}"  width="100%" height="100%" style="padding:0.3rem;">   
              {% else %}

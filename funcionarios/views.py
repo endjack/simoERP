@@ -112,6 +112,15 @@ def cadastrar_funcionarios_pessoal(request, pk=None, template_name= 'funcionario
         }
         return render(request, template_name, context)
 
+    
+#EXCLUIR FUNCIONÁRIO NA PAGINA DE EDITAR    
+def excluir_funcionarios_pessoal(request, pk):
+    if request.method == 'GET':
+        FuncionarioV2.objects.get(pk=pk).delete()
+        return redirect(reverse('procurar_pessoal'))  
+    
+    
+
 def add_funcionario_v2(request, pk=None):
     
     menu_ativo = 'CADASTRARFUNCIONARIOS'
@@ -261,8 +270,8 @@ def add_funcionario_v2(request, pk=None):
                 else:
                     data_fim_prorrogacao = datetime.strptime(request.POST.get('data_fim_prorrogacao'), '%Y-%m-%d')
             else:
-                data_inicio_prorrogacao = ''
-                data_fim_prorrogacao = ''
+                data_inicio_prorrogacao = None
+                data_fim_prorrogacao = None
 
         #validar Data de Admissão
         if request.POST.get('data_admissao') == "":
@@ -321,7 +330,7 @@ def add_funcionario_v2(request, pk=None):
             
         #validar Situacao
         data_demissao = None
-        tipo_demissao = 'COM_JUSTA_CAUSA'
+        tipo_demissao = '-' #DEFAULT
         data_inicio_afastamento = None
         data_fim_afastamento = None
         if request.POST.get('situacao') in ['','-1', None] :
@@ -399,9 +408,7 @@ def add_funcionario_v2(request, pk=None):
             banco = None
         else:
             banco = Banco.objects.get(pk = int(request.POST.get('banco')))
-            
-       
-            
+             
             
         #validar tipo_responsavel
         if request.POST.get('tipo_responsavel') == 'on':
@@ -429,7 +436,17 @@ def add_funcionario_v2(request, pk=None):
             foto = request.FILES.get('imagem')
         else:
             foto = None 
+        
+        #validar tipo de Conta
+        tipo_conta = request.POST.get('tipo_conta')
+        if tipo_conta in [-1, '-1', None]:
+            tipo_conta = ''
             
+            
+        #validar tipo PIX
+        tipo_pix = request.POST.get('tipo_pix')
+        if tipo_pix in [ -1, '-1', None]:
+            tipo_pix = ''
                
         rg = request.POST.get('rg', '')
         nome_mae = request.POST.get('nome_mae', '')
@@ -442,11 +459,11 @@ def add_funcionario_v2(request, pk=None):
         telefone2 = request.POST.get('telefone2', '')
               
         agencia = request.POST.get('agencia')
-        tipo_conta = request.POST.get('tipo_conta')
+        
         conta = request.POST.get('conta')
         operacao = request.POST.get('operacao')
         pix = request.POST.get('pix')
-        tipo_pix = request.POST.get('tipo_pix')
+        
         
         esocial = request.POST.get('esocial')
    
@@ -500,14 +517,17 @@ def add_funcionario_v2(request, pk=None):
         
 
         #CRIAR OU EDITAR NOVO FUNCIONÁRIO
-        funcionario_atual, created = FuncionarioV2.objects.update_or_create(pk=pk)
-           
-        if created:
+        funcionario_atual, created = FuncionarioV2.objects.update_or_create(pk=pk,
+                                                                            defaults= {**form_values})
+        #SE 'created' FOR TRUE: CRIA UM NOVO FUNCIONÁRIO   
+        if created:   
            funcionario_atual = FuncionarioV2.objects.create(**form_values)
+           print(f"----- CRIADO FUNCIONÁRIO COM SUCESSO ---- Nome: {nome}")   
+        else:
+           print(f"----- EDITADO FUNCIONÁRIO COM SUCESSO ---- Nome: {nome}")  
         
         
-        
-    print(f"----- CRIADO (EDIT:{created}) FUNCIONÁRIO COM SUCESSO ---- Nome: {nome}")   
+    
     
     #validar Dependentes e CPF
     
