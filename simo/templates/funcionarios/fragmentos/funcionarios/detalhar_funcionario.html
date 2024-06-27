@@ -39,8 +39,10 @@
 
         <a  style="" class="btn btn-sm  btn-primary m-1" href="{% url 'editar_funcionarios_pessoal' funcionario_atual.pk %}" 
         title="Editar Funcionário"><i class="fas fa-edit"></i></i> Editar </a>
-        <a  style="" class="btn btn-sm  btn-danger m-1" href="{% url 'excluir_funcionarios_pessoal' funcionario_atual.pk %}" 
-        title="Excluir Funcionários"><i class="fas fa-trash"></i></i> Excluir </a>
+        <button  style="" class="btn btn-sm  btn-danger m-1" href="{% url 'excluir_funcionarios_pessoal' funcionario_atual.pk %}" 
+        title="Excluir Funcionário" disabled><i class="fas fa-trash"></i></i> Excluir </button>
+        <button  style="" class="btn btn-sm  btn-dark m-1" href="#" 
+        title="Imprimir Funcionário" disabled><i class="fas fa-print"></i></i> Imprimir </button>
     </div>
 
    
@@ -99,7 +101,7 @@
                         <span class="registro">{{funcionario_atual.categoria_cnh|default:"-"}}</span>
                     </div>
                     <div class="">
-                        <span class="label_registro">Nacionalidade: </span><br>
+                        <span class="label_registro">Nacionalidade: <i class="fas fa-question-circle" title=" Em construção..."></i> </span><br>
                         <span class="registro">{{funcionario_atual.nacionalidade|default:"-"}}</span>
                     </div>
                     <div class="text-end">
@@ -221,12 +223,12 @@
 
                     <div class="">
                         <span class="label_registro">Salário R$: </span><br>
-                        <span class="registro">{{funcionario_atual.salario}}</span>
+                        <span class="registro">{{funcionario_atual.salario|floatformat:2}}</span>
                     </div>
                 
                     <div class="">
                         <span class="label_registro">Adicional R$: </span><br>
-                        <span class="registro">{{funcionario_atual.adicional}}</span>
+                        <span class="registro">{{funcionario_atual.adicional|floatformat:2}}</span>
                     </div>
                     <div class="text-end">
                         <span class="label_registro">Data Último Exame: </span><br>
@@ -308,6 +310,58 @@
         
     </div>
 
+
+    <div class="row mt-2 mb-2">
+
+        <small style="margin:0px; padding:0px">Dependentes/Filhos:</small>
+          
+        <div class="col-12">
+            <div class="row" >
+
+                {% if not dependentes %}
+                <div class="" style="border:1px solid #bbbcbd;padding-top:0.8em;padding-bottom:0.8em">
+                    <span style="color:gray">Sem dependente.</span>
+                </div>
+                {% else %}
+                
+                
+                <div class="" style="border:1px solid #bbbcbd;">
+                    
+                    {% for dependente in dependentes %}
+
+                    {% if forloop == 0 %}
+                        <div class="d-flex flex-row justify-content-between align-items-center">
+                            <div class="col-4">
+                                <span class="label_registro">Nome: </span><br>
+                            
+                            </div>
+                            <div class="col-4">
+                                <span class="label_registro">CPF: </span><br>
+                              
+                            </div>
+                        </div>
+                    {% endif %}
+                        <div class="d-flex flex-row justify-content-between align-items-center">
+                            <div class="col-4">
+                              
+                                <span class="registro">{{dependente.nome}}</span>
+                            </div>
+                            <div class="col-4">
+                            
+                                <span class="registro">{{dependente.cpf}}</span>
+                            </div>
+                        </div>
+
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+    </div>
+
+
+
     <div class="row mt-2 mb-2">
 
         <small style="margin:0px; padding:0px">Outras Informações:</small>
@@ -338,11 +392,22 @@
                    
                 </div>
 
+                <div class="d-flex flex-row justify-content-between align-items-center" style="border:1px solid #bbbcbd;">
+                    <div class="col-4">
+                        <span class="label_registro">Observações: </span><br>
+                        <span class="registro">{{funcionario_atual.obs}}</span>
+                    </div>
+                    
+                   
+                </div>
+
             </div>
         </div>
         
     </div>
 
+    
+ 
 
 
 </div>

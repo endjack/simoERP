@@ -10,6 +10,10 @@
     ._menu_ativo:hover{
         background-color:gray;
     }
+    span.disable-links {
+        pointer-events: none;
+        opacity:0.2;
+    }
 
 </style>
 {% endblock %}
@@ -35,7 +39,7 @@
             </div>
         </a>
 
-        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'CADASTRARCARGOS' %} _menu_ativo{% endif %}" href="{% url 'cadastrar_cargo_pessoal' %}" 
+        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'CADASTRARCARGOS' %} _menu_ativo{% endif %}" href="{% url 'inserir-cargo' %}" 
             title="Cadastrar Categorias">
             <div class="d-flex flex-column">
             <span style="width:5rem"><i class="fas fa-hard-hat"></i></span>
@@ -43,21 +47,21 @@
             </div>
         </a>
 
-        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'IMPRESSÃO' %} _menu_ativo{% endif %}" href="{% url 'impressoes_pessoal' %}" 
+        <span class="disable-links"> <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'IMPRESSÃO' %} _menu_ativo{% endif %}" href="{% url 'impressoes_pessoal' %}" 
             title="Impressões">
             <div class="d-flex flex-column">
             <span style="width:5rem"><i class="fas fa-print"></i></span>
             Impressões
             </div>
-        </a>
+        </a></span>
 
-        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'RELATÓRIO' %} _menu_ativo{% endif %}" href="{% url 'relatorios_pessoal' %}" 
+        <span class="disable-links"> <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'RELATÓRIO' %} _menu_ativo{% endif %}" href="{% url 'relatorios_pessoal' %}" 
             title="Relatório">
             <div class="d-flex flex-column">
             <span style="width:5rem"><i class="far fa-file-alt"></i></span>
             Relatórios
             </div>
-        </a>
+        </a></span>
     </div>
 </div>
 </div> 

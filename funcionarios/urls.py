@@ -7,6 +7,7 @@ urlpatterns = [
     path('funcionario/novo', cadastrar_funcionarios_pessoal, name='cadastrar_funcionarios_pessoal'),
     path('funcionario/<int:pk>/editar', cadastrar_funcionarios_pessoal, name='editar_funcionarios_pessoal'),
     path('funcionario/<int:pk>/excluir', excluir_funcionarios_pessoal, name='excluir_funcionarios_pessoal'),
+    path('funcionario/<int:pk>/dependente/<int:pkDep>/excluir', excluir_dependente, name='excluir_dependente'),
     path('funcionario/<int:pk>/salvar', add_funcionario_v2, name='add_funcionario_v2'),
     path('funcionario/salvar', add_funcionario_v2, name='add_funcionario_v2'),
     path('funcionario/<int:pk>/detalhar', detalhar_funcionario_v2, name='detalhar_funcionario_v2'),
