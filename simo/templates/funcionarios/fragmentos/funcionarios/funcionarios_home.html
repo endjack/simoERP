@@ -18,18 +18,31 @@
     
 }
 
+.htmx-indicator{
+    display:none;
+}
+.htmx-request .htmx-indicator{
+    display:inline;
+}
+.htmx-request.htmx-indicator{
+    display:inline;
+}
+
 </style>
 {% endblock %}
 
 {% block conteudo %}
+    
+    
+
     <!-- MENU PESSOAL --> 
     {% include "funcionarios/fragmentos/menu_pessoal.html" %}
 
 
-    <div class="container mb-3">
+    <div class="container content mb-3">
 
-        
         <div class="d-flex flex-row mt-2">
+            
             
             {% if funcionario_atual %}
                 <h6 class=""><i class="fas fa-edit"></i> Editar Funcionário (ID: {{funcionario_atual.pk}})</h6> 
@@ -45,10 +58,13 @@
                     {% include "funcionarios/fragmentos/funcionarios/error_form_funcionario.html" %}
                 </span>
                 
+                <img class="htmx-indicator" id="indicator" src="{% static 'imagens/bars.svg' %}">
                 {% if funcionario_atual %}
-                    <button form="addFormFuncionariov2" class="btn btn-sm btn-primary"><i class="fas fa-save"></i> Salvar Edição Funcionário</button>
+                    
+                    <button form="editFormFuncionariov2"  class="btn btn-sm btn-primary" name="btt_save_edit_func"><i class="fas fa-save"></i> Salvar Edição Funcionário</button>
                 {% else %}
-                    <button form="addFormFuncionariov2" class="btn btn-sm btn-success"><i class="fas fa-save"></i> Salvar Funcionário</button>
+                
+                    <button form="addFormFuncionariov2"  class="btn btn-sm btn-success" name="btt_save_func"><i class="fas fa-save"></i> Salvar Funcionário</button>
                 {% endif %}
                
                 
@@ -57,19 +73,25 @@
 
         <!-- INÍCIO FORMULÁRIO DE CADASTRO DE FUNCIONÁRIOS-->
         {% if funcionario_atual %}
-            <form id="addFormFuncionariov2" 
+            <form id="editFormFuncionariov2" 
                 hx-post="{% url 'add_funcionario_v2' funcionario_atual.pk %}" 
                 hx-target="body" 
-                hx-trigger="submit"
+                hx-trigger="submit throttle:1s"
                 hx-include="[name='imagem']" 
-                enctype="multipart/form-data">
+                hx-indicator="#indicator"
+                hx-sync="closest form:abort"
+                enctype="multipart/form-data"
+                >
         {% else %}
             <form id="addFormFuncionariov2" 
                 hx-post="{% url 'add_funcionario_v2' %}" 
                 hx-target="body" 
-                hx-trigger="submit"
-                hx-include="[name='imagem']"  
-                enctype="multipart/form-data">
+                hx-trigger="submit throttle:1s"
+                hx-include="[name='imagem']"
+                hx-indicator="#indicator"  
+                hx-sync="closest form:abort"
+                enctype="multipart/form-data"
+                >
         {% endif %}
 
         <!--NAV-TABS FUNCIONÁRIOS-->
@@ -659,6 +681,8 @@
 <script src="{% static 'js/jquery.mask.js' %}"></script>
 {% block jquery %}
 <script>
+
+
     
     //mantém o refresh da pagina na mesma TAB ATIVA
     $(document).ready(function () {

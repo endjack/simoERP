@@ -562,7 +562,7 @@ def add_funcionario_v2(request, pk=None):
                                                                             defaults= {**form_values})
         #SE 'created' FOR TRUE: CRIA UM NOVO FUNCIONÁRIO   
         if created:   
-           funcionario_atual = FuncionarioV2.objects.create(**form_values)
+        #    funcionario_atual = FuncionarioV2.objects.create(**form_values)
            print(f"----- CRIADO FUNCIONÁRIO COM SUCESSO ---- Nome: {nome}")   
         else:
            print(f"----- EDITADO FUNCIONÁRIO COM SUCESSO ---- Nome: {nome}")  
