@@ -39,8 +39,8 @@
 
         <a  style="" class="btn btn-sm  btn-primary m-1" href="{% url 'editar_funcionarios_pessoal' funcionario_atual.pk %}" 
         title="Editar Funcionário"><i class="fas fa-edit"></i></i> Editar </a>
-        <button  style="" class="btn btn-sm  btn-danger m-1" href="{% url 'excluir_funcionarios_pessoal' funcionario_atual.pk %}" 
-        title="Excluir Funcionário" disabled><i class="fas fa-trash"></i></i> Excluir </button>
+        <a  style="" class="btn btn-sm  btn-danger m-1" href="{% url 'excluir_funcionarios_pessoal' funcionario_atual.pk %}" 
+        title="Excluir Funcionário" ><i class="fas fa-trash"></i></i> Excluir </a>
         <button  style="" class="btn btn-sm  btn-dark m-1" href="#" 
         title="Imprimir Funcionário" disabled><i class="fas fa-print"></i></i> Imprimir </button>
     </div>

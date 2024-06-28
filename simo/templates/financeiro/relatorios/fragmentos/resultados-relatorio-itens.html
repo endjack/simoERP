@@ -1,5 +1,63 @@
 Resultados: 
 
 {% for item in itens %}
-    {{item.descricao}} <br>
+    {{item.descricao}}
+    {{item.get_nota_by_item.saida.nota_fiscal}} <br>
 {% endfor %}
+
+
+<table class="table table-sm table-bordered dt-responsive tabela-listar" >
+    <thead style="border:solid 1px;border-color:silver;background:#0d6efd; color: white;">
+        <tr>
+            <th scope="col" class="text-center">#</th>
+            <th scope="col">Item/Descrição</th>
+            <th scope="col">Qtd</th>
+            <th scope="col">Und</th>
+            <th scope="col">Valor</th>
+            <th scope="col">Nota Fiscal</th>
+            <th scope="col" class="text-center">Fornecedor</th>
+            <th scope="col" class="text-center">Dt Emissão</th>
+            <th scope="col" class="text-center">Valor Original</th>
+            <th scope="col" class="text-center">Opções</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if contas and contas.count > 0  %}
+        {% for item in contas %}
+        <tr>
+            <td class="limitar_forloop text-center">{{forloop.counter}}</td>
+            {% if item.saida.fornecedor %}<td class="limitar_td"
+                style="text-align: left; vertical-align:middle !important" title=""><a
+                    href="{% url 'detalhar-fornecedor' item.saida.fornecedor.pk %}"
+                    title="">{{item.saida.fornecedor}}</a></td>{% else %}<td> - </td>
+            {% endif %}
+            {% if item.saida.fornecedor %}<td class="limitar_td" title="">{{item.saida.fornecedor.doc}}</td>{% else %}<td> - </td>{% endif %}
+            {% if item.saida.nota_fiscal %}<td class="text-center limitar_td"><a href="{% url 'ver-nota-completa' item.pk %}" target="_blank" class="">{{item.saida.nota_fiscal}}</a></td>{% else %}<td class="text-center"> - </td>{% endif %}
+
+            <td class="destaque-saida text-center">{{item.saida.data_emissao | date:"d/m/Y"}}
+            </td>
+            <td class="destaque-saida text-center">{{item.get_valor_total_itens_BR}}</td>
+            {% if item.pagamentovista_set.all.count > 0%}
+                {% for pagamento in item.pagamentovista_set.all %}
+                <td class="text-center">R$ {{pagamento.acrescimo}}</td>
+                <td class="text-center">R$ {{pagamento.conta.desconto}}</td>
+                <td class="text-center">{{pagamento.valor_total_BR}}</td>
+                <td class="text-center"> Pago em {{pagamento.data_pagamento | date:'d/m/Y'}} </td>
+                {% endfor %}
+            {% else %}
+            <td class="text-center"> - </td>
+            <td class="text-center">R$ {{item.desconto}}</td>
+            <td class="text-center">{{item.valor_BR}}</td>
+            <td class="text-center"> Aberto </td>
+            {% endif %}
+            <td class="text-center"> <a href="{% url 'ver-nota-completa' item.pk %}" target="_blank" class=""><i class="fas fa-chevron-circle-right"></i></a> </td>
+
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td style="text-align: center; color: gray;" colspan="11">Nenhum registro</td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>

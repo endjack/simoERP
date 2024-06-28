@@ -21,6 +21,7 @@ def procurar_pessoal(request, template_name="funcionarios/fragmentos/procurar/pr
         lotacoes = Obra.objects.all()
         cargos = Cargo.objects.all()
         situacoes = FuncionarioV2.Situacao
+        funcionarios = FuncionarioV2.objects.all().filter(situacao='ADMITIDO').order_by('nome')
         
         
         context = {
@@ -28,6 +29,7 @@ def procurar_pessoal(request, template_name="funcionarios/fragmentos/procurar/pr
             'lotacoes' : lotacoes,
             'cargos' : cargos,
             'situacoes' : situacoes,
+            'funcionarios' : funcionarios,
      
         }
         return render(request, template_name, context)
@@ -126,8 +128,9 @@ def cadastrar_funcionarios_pessoal(request, pk=None, template_name= 'funcionario
 @login_required(login_url='login/')
 @csrf_exempt   
 def excluir_funcionarios_pessoal(request, pk):
-    if request.method == 'GET':
-        FuncionarioV2.objects.get(pk=pk).delete()
+    
+    FuncionarioV2.objects.get(pk=pk).delete()
+    print(f'-------------EXCLUIDO FUNCIONÁRIO')
     
     return redirect(reverse('procurar_pessoal'))  
     
@@ -148,6 +151,11 @@ def excluir_dependente(request, pkDep, pk):
 def add_funcionario_v2(request, pk=None):
     
     menu_ativo = 'CADASTRARFUNCIONARIOS'
+    if pk:
+        funcionario_atual = FuncionarioV2.objects.get(pk=pk)
+    else:
+        funcionario_atual = None
+    
     
     if request.htmx:
         #validar Nome vazio
@@ -456,18 +464,19 @@ def add_funcionario_v2(request, pk=None):
 
         print(f"-------------------------- Adicional = {adicional}")
         
+        
         #validar foto
-        funcionario_atual = FuncionarioV2.objects.get(pk=pk)
-        
-        if funcionario_atual.foto is None and request.FILES.get('imagem') not in ['', None]:
-            foto = request.FILES.get('imagem')
-        elif funcionario_atual.foto is not None and request.FILES.get('imagem') not in ['', None]:
-            foto = request.FILES.get('imagem')        
-        elif funcionario_atual.foto is None and request.FILES.get('imagem') in ['', None]:
-            foto = None
+        if funcionario_atual is not None:
+            if funcionario_atual.foto is None and request.FILES.get('imagem') not in ['', None]:
+                foto = request.FILES.get('imagem')
+            elif funcionario_atual.foto is not None and request.FILES.get('imagem') not in ['', None]:
+                foto = request.FILES.get('imagem')        
+            elif funcionario_atual.foto is None and request.FILES.get('imagem') in ['', None]:
+                foto = None
+            else:
+                foto = funcionario_atual.foto
         else:
-            foto = funcionario_atual.foto
-        
+                foto = request.FILES.get('imagem')   
         
         #validar tipo de Conta
         tipo_conta = request.POST.get('tipo_conta')

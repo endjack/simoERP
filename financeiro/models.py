@@ -28,6 +28,10 @@ class ItensNota(models.Model):
     unid_medida = models.CharField(max_length=50, choices=UNIDADES, default="UNID")
     valor = models.DecimalField(max_digits=20, decimal_places=2, default=0, null=True, blank=True)
     
+    
+    def get_nota_by_item(self):
+        return self.notacompleta_set.all().first()
+    
     def valor_BR(self):
         return locale.currency(self.valor, grouping=True)
     
@@ -70,6 +74,9 @@ class NotaCompleta(models.Model):
         
     def get_all_itens_by_nota(self):
         return ItensNota.objects.filter(pk= self.pk).values()
+    
+    def __str__(self) -> str:
+        return f"{self.pk} - {self.saida.nota_fiscal}"
 
 
 class PagamentoVista(models.Model):
