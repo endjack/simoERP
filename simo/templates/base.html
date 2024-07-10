@@ -129,7 +129,7 @@
 
           {% comment %} RECURSOS HUMAMOS {% endcomment %}
           {% if request.user|has_group:"RecursosHumanos" or request.user|has_group:"Financeiro" or  request.user|has_group:"Administrador" %}
-          <li class="nav-item dropdown">
+          {% comment %} <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle titulo-menu" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Pessoal
             </a>
@@ -140,6 +140,9 @@
               <li><a class="dropdown-item" href="{% url 'procurar_pessoal' %}">Pessoal v.2</a></li>
 
             </ul>
+          </li> {% endcomment %}
+          <li class="nav-item">
+            <a class="nav-link titulo-menu" href="{% url 'procurar_pessoal' %}" tabindex="-1" aria-disabled="true">Pessoal</a>
           </li>
           {% endif %}
 

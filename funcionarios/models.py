@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from obras.models import Obra
+from obras.models import Local, Obra
 from fornecedores.models import Banco
 from django.db.models import F
 
@@ -114,8 +114,25 @@ class FuncionarioV2(models.Model):
     pix = models.CharField(max_length=50, blank=True, null=True)
     tipo_pix = models.CharField(max_length=50, choices=TipoPix.choices, default=TipoPix.CPF)
    
+   
+    def get_local_de_trabalho_by_funcionario(self):
+        local = LocalDeTrabalhoFuncionario.objects.get(funcionario = self)
+     
+        if local:
+            return local
+        else:
+            return None
+   
+     
+    def get_funcionarios_livres():
+       
+        funcionarios = FuncionarioV2.objects.all().values_list('id', flat=True)
+        locais_de_trabalho = LocalDeTrabalhoFuncionario.objects.all().values_list('funcionario__id', flat=True)
+        
+        livres_ids = list(funcionarios.difference(locais_de_trabalho))
+        
+        return FuncionarioV2.objects.filter(pk__in=livres_ids)
     
-
     def __str__(self) -> str:
         return self.nome + ' - '+ str(self.cargo.cargo)
 
@@ -128,12 +145,14 @@ class DependenteFuncionariov2(models.Model):
        
 class ResponsávelObraFuncionariov2(models.Model):
     responsavel = models.OneToOneField(FuncionarioV2, on_delete=models.CASCADE)        
-          
+                
        
+class LocalDeTrabalhoFuncionario(models.Model):
+    local = models.ForeignKey(Local, on_delete=models.CASCADE)      
+    funcionario = models.OneToOneField(FuncionarioV2, on_delete=models.CASCADE)    
        
-       
-       
-       
+    def __str__(self) -> str:
+        return self.funcionario.nome +' - '+ str(self.local.local)   
        
        
        

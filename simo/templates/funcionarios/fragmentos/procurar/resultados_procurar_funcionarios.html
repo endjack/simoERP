@@ -13,7 +13,7 @@
                 <th scope="col">Data Admissão</th>
                 <th scope="col">Data Prorrogação</th>
                 <th scope="col">Fim Prorrogação</th>
-                <th scope="col">Data Demissão</th>
+        
            
 
               </tr>
@@ -30,7 +30,7 @@
                   <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.data_admissao|date:'d/m/y'|default:"-"}}</div></a></td>
                   <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.data_inicio_prorrogacao|date:'d/m/y'|default:"-"}}</div></a></td>
                   <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.data_fim_prorrogacao|date:'d/m/y'|default:"-"}}</div></a></td>
-                  <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.data_demissao|date:'d/m/y'|default:"-"}}</div></a></td>
+                  
                 
                 </tr>
                 {% endfor %}

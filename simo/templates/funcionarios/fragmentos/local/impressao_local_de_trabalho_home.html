@@ -1,0 +1,205 @@
+{% load static %}
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <title>Imprimir Locais</title>
+      
+    <style>
+        @page {
+            size: portrait;
+            margin: 0.8cm;
+        }
+
+
+
+        @media print {
+
+            html,
+            body {
+                height: 99%;
+            }
+            .dados{ page-break-inside:avoid; }
+
+            a {
+                text-decoration: none;
+                
+            }
+        }
+
+        * {
+            color:black;
+            color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        td {
+            width: auto;
+        }
+        
+        td.min {
+            width: 1%;
+            white-space: nowrap;
+        }
+        
+        .centralizar {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .wrapper {
+        min-width: 10em; /* Will be AT LEAST 20em wide */
+        }
+        </style>
+</head>
+
+<body style="font-family: sans-serif;">
+
+
+    {% for local in localidades_distintas %}   
+    <div class="row text-center" style="background-color:#b9babd">    
+      <span style="font-size:12pt;font-weight:bold">Local: {{local.0}} </span>
+    </div>  
+    
+    <table class="table table-sm table-bordered " style="font-size:9pt">
+      <thead class="text-black text-center" style="">
+        <tr style="line-height: 12px;white-space: nowrap">
+          
+          <th scope="col">Matrícula</th>
+          <th scope="col" style="text-align: left;">Nome</th>
+          <th scope="col" style="text-align: left;">Cargo</th>
+          <th scope="col">Situação</th>
+          <th scope="col">Tipo de Contrato</th>
+          <th scope="col">Data Admissão</th>
+          <th scope="col">Data Prorrogação</th>
+          <th scope="col">Fim Prorrogação</th>
+      
+    
+        </tr>
+      </thead>
+      <tbody>
+        
+        {% for i in funcionarios %}
+        {% if i.get_local_de_trabalho_by_funcionario.local.local == local.0 %}  
+      
+          
+        <tr class='linha_clicavel'>
+          <td class="text-center "><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.matricula}}</div></a></td>
+          <td class=""><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.nome|default_if_none:"-"}}</div></a></td>
+            <td class=""><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.cargo|default_if_none:"-"}}</div></a></td>
+            <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.situacao|default_if_none:"-"}}</div></a></td>
+            <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.tipo_contrato|default_if_none:"-"}}</div></a></td>
+            <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.data_admissao|date:'d/m/y'|default:"-"}}</div></a></td>
+            <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.data_inicio_prorrogacao|date:'d/m/y'|default:"-"}}</div></a></td>
+            <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.data_fim_prorrogacao|date:'d/m/y'|default:"-"}}</div></a></td>
+            
+          
+          </tr>
+        
+        {% endif %}
+        
+        
+        {% endfor %}
+          
+        
+              
+      </tbody>
+    </table>
+    
+                
+    
+    {% endfor %}
+    <div class="row text-center" style="background-color:#f09281">    
+      <span style="font-size:12pt;font-weight:bold">Funcionários sem Local Definido</span>
+    </div> 
+    
+      <table class="table table-sm table-bordered " style="font-size:9pt">
+        <thead class="text-black text-center" style="">
+          <tr style="line-height: 12px;white-space: nowrap; ">
+           
+            <th scope="col">Matrícula</th>
+            <th scope="col" style="text-align: left;">Nome</th>
+            <th scope="col" style="text-align: left;">Cargo</th>
+            <th scope="col">Situação</th>
+            <th scope="col">Tipo de Contrato</th>
+            <th scope="col">Data Admissão</th>
+            <th scope="col">Data Prorrogação</th>
+            <th scope="col">Fim Prorrogação</th>
+       
+    
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in funcionarios_livres %}
+           
+          <tr class='linha_clicavel'>
+            <td class="text-center "><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.matricula}}</div></a></td>
+            <td class=""><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.nome|default_if_none:"-"}}</div></a></td>
+              <td class=""><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.cargo|default_if_none:"-"}}</div></a></td>
+              <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.situacao|default_if_none:"-"}}</div></a></td>
+              <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.tipo_contrato|default_if_none:"-"}}</div></a></td>
+              <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.data_admissao|date:'d/m/y'|default:"-"}}</div></a></td>
+              <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.data_inicio_prorrogacao|date:'d/m/y'|default:"-"}}</div></a></td>
+              <td class="text-center"><a href="{% url 'detalhar_funcionario_v2' i.pk %}"><div style="height:100%;width:100%">{{i.data_fim_prorrogacao|date:'d/m/y'|default:"-"}}</div></a></td>
+              
+            
+            </tr>
+         
+          {% endfor %}
+              
+          
+                
+        </tbody>
+    </table>
+    
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>  
+    <script src="{% static 'js/datatables.min.js' %}"></script>        
+    <script>
+    
+    
+    $('.tabelaResultados').DataTable({
+    responsive: true,
+    // "bSort": false,
+    "aaSorting": [],
+    "pageLength": 25,
+    "language": {
+    
+      "decimal": "",
+      "emptyTable": "Sem resultados.",
+      "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+      "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+      "infoFiltered": "(filtrado de _MAX_ registros no total)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "Mostrar _MENU_ registros",
+      "loadingRecords": "A carregar dados...",
+      "processing": "A processar...",
+      "search": "Busca nos resultados:",
+      "zeroRecords": "Não foram encontrados resultados",
+      "paginate": {
+          "first": "Primeiro",
+          "last": "Último",
+          "next": "Seguinte",
+          "previous": "Anterior"
+      },
+      "aria": {
+          "sortAscending": ": ordem crescente",
+          "sortDescending": ": ordem decrescente"
+      }
+    }
+    });
+    </script>
+
+
+<script>
+    (function () {
+        window.print();
+    })();
+</script>
+
+</body>
+
+</html>

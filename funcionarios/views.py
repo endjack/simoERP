@@ -36,7 +36,13 @@ def procurar_pessoal(request, template_name="funcionarios/fragmentos/procurar/pr
 
 @login_required(login_url='login/')
 @csrf_exempt   
-def filtrar_funcionariosV2(request, template_name="funcionarios/fragmentos/procurar/resultados_procurar_funcionarios.html"):
+def filtrar_funcionariosV2(request):
+    
+    if request.GET.get('filter') == 'local':
+        template_name="funcionarios/fragmentos/local/resultados_procurar_local.html"
+    else:
+        template_name="funcionarios/fragmentos/procurar/resultados_procurar_funcionarios.html"
+    
     if request.method == 'GET':
 
 
@@ -656,6 +662,98 @@ def detalhar_funcionario_v2(request, pk, template_name= 'funcionarios/fragmentos
         }
         return render(request, template_name, context)
 
+
+
+@login_required(login_url='login/')
+@csrf_exempt    
+def local_trabalho_pessoal(request, template_name= 'funcionarios/fragmentos/local/local_de_trabalho_home.html'):
+    if request.method == 'GET':
+        menu_ativo = 'LOCALDETRABALHO'
+        funcionarios = FuncionarioV2.objects.all()
+        localidades_distintas = LocalDeTrabalhoFuncionario.objects.values_list('local__local').distinct()
+        localidades = Local.objects.all()
+        
+        funcionarios_livres = FuncionarioV2.get_funcionarios_livres()
+
+        context = {
+            'menu_ativo' : menu_ativo,
+            'localidades' : localidades,
+            'funcionarios' : funcionarios,
+            'localidades_distintas' : localidades_distintas,
+            'funcionarios_livres' : funcionarios_livres,
+        }
+        return render(request, template_name, context)
+    
+@login_required(login_url='login/')
+@csrf_exempt    
+def associar_funcionario_local(request, template_name= 'funcionarios/fragmentos/local/local_de_trabalho_home.html'):
+    
+    if request.method == 'POST':
+        menu_ativo = 'LOCALDETRABALHO'
+        
+        funcionario_aux = request.POST['funcionario'] 
+        local_aux = request.POST['local'] 
+        print(f"{funcionario_aux} - {local_aux}")
+        funcionario_atual = None
+        local_atual = None
+        
+        
+        if funcionario_aux not in ['', '-1', None]:
+            funcionario_atual = FuncionarioV2.objects.get(pk=int(funcionario_aux))
+            
+            
+                
+            #CHECK-BOX SEM LOCAL DEFINIDO
+            sem_local_definido_checkbox = request.POST.get('sem_local_definido_checkbox', False)
+            
+            if sem_local_definido_checkbox is False and local_aux not in ['', '-1', None]:
+                local_atual = Local.objects.get(pk=int(local_aux))    
+                #ASSOCIAR
+                if LocalDeTrabalhoFuncionario.objects.filter(funcionario=funcionario_atual).exists():
+                    update_func = LocalDeTrabalhoFuncionario.objects.get(funcionario= funcionario_atual)
+                    update_func.local = local_atual
+                    update_func.save()
+                
+                else:
+                    LocalDeTrabalhoFuncionario.objects.create(funcionario= funcionario_atual, local = local_atual)
+                
+            
+            elif sem_local_definido_checkbox is not False:
+                    update_func = LocalDeTrabalhoFuncionario.objects.get(funcionario= funcionario_atual)
+                    update_func.delete()
+            else:
+                return HttpResponse("Erro: Local não Encontrado!")
+                
+        else:
+            return HttpResponse("Erro: Funcionário não Encontrado!")
+        
+        context = {
+            'menu_ativo' : menu_ativo
+        }
+        return redirect(reverse('local_trabalho_pessoal'))  
+
+       
+@login_required(login_url='login/')
+@csrf_exempt    
+def imprimir_locais_funcionarios(request, template_name= 'funcionarios/fragmentos/local/impressao_local_de_trabalho_home.html'):
+    if request.method == 'GET':
+        menu_ativo = 'LOCALDETRABALHO'
+        funcionarios = FuncionarioV2.objects.all()
+        localidades_distintas = LocalDeTrabalhoFuncionario.objects.values_list('local__local').distinct()
+        localidades = Local.objects.all()
+        
+        funcionarios_livres = FuncionarioV2.get_funcionarios_livres()
+
+        context = {
+            'menu_ativo' : menu_ativo,
+            'localidades' : localidades,
+            'funcionarios' : funcionarios,
+            'localidades_distintas' : localidades_distintas,
+            'funcionarios_livres' : funcionarios_livres,
+        }
+        return render(request, template_name, context)
+    
+    
 @login_required(login_url='login/')
 @csrf_exempt    
 def cadastrar_cargo_pessoal(request, template_name= 'funcionarios/fragmentos/cargos/cargos_home.html'):
