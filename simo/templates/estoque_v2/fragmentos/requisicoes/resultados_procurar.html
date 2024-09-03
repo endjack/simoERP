@@ -1,0 +1,77 @@
+{% load static %}
+<div class="p-2" style="border-color: #093637;">
+    <table class="table table-sm table-bordered table-striped tabelaResultados" style="font-size:9pt">
+            <thead class="text-white text-center" style="background:#39423b;">
+            <tr style="line-height: 12px;white-space: nowrap; ">
+             
+              <th scope="col">#</th>
+              <th scope="col">Data</th>
+              <th scope="col" style="text-align: left;">Solicitante</th>
+              <th scope="col" style="text-align: left;">Local</th>
+              <th scope="col" style="text-align: left;">Obra</th>
+              <th scope="col">Almoxarife</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            {% if requisicoes_filtro %}
+              {% for i in requisicoes_filtro  %}
+
+             <tr class='linha_clicavel'>
+
+                <td class="text-center"><a target="_blank" href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{forloop.counter}}</div></a></td>
+                <td class="text-center"><a target="_blank" href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.data|default_if_none:"-"|date:'d/m/Y'}}</div></a></td>
+                <td class="text-start"><a target="_blank" href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.solicitante.nome|default_if_none:"-"}}</div></a></td>
+                <td class="text-start"><a target="_blank" href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.local.local|default_if_none:"-"}}</div></a></td>
+                <td class="text-start"><a target="_blank" href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.obra.nome|default_if_none:"-"}}</div></a></td>
+                <td class="text-center"><a target="_blank" href="{% url 'detalhar_requisicao_de_estoque' i.pk %}"><div style="height:100%;width:100%">{{i.almoxarife.get_full_name|default_if_none:"-"}}</div></a></td>
+              
+              </tr>
+              {% endfor %}
+            {% else %}
+                 
+            {% endif %}
+        
+          </tbody>
+  </table>
+</div>
+
+</div>
+        
+
+
+<script>
+
+    $('.tabelaResultados').DataTable({
+    responsive: true,
+    // "bSort": false,
+    "aaSorting": [],
+    "pageLength": 10,
+    "language": {
+
+      "decimal": "",
+      "emptyTable": "Vazio.",
+      "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+      "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+      "infoFiltered": "(filtrado de _MAX_ registros no total)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "Mostrar _MENU_ registros",
+      "loadingRecords": "A carregar dados...",
+      "processing": "A processar...",
+      "search": "Busca nos resultados:",
+      "zeroRecords": "Não foram encontrados resultados",
+      "paginate": {
+          "first": "Primeiro",
+          "last": "Último",
+          "next": "Seguinte",
+          "previous": "Anterior"
+      },
+      "aria": {
+          "sortAscending": ": ordem crescente",
+          "sortDescending": ": ordem decrescente"
+      }
+    }
+});
+</script>
+

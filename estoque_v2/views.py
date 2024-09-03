@@ -191,6 +191,88 @@ def requisicoes_estoquev2(request, template_name = 'estoque_v2/requisicoes_estoq
          
         }
         return render(request, template_name , context)
+
+@login_required(login_url='login/')
+@csrf_exempt    
+def buscar_requisicao_estoquev2(request, template_name = 'estoque_v2/requisicoes/buscar_requisicao_estoque.html'):
+
+    if request.method == 'GET':
+        _menu_ativo = 'REQUISIÇÃO'
+        
+        from datetime import date
+        data_hoje = datetime.now().date()
+        requisicoes_do_dia = Requisicao.objects.filter(data__date = data_hoje)
+        funcionarios_ativos = Funcionario.objects.all()
+        locais = Local.objects.all()
+        obras = Obra.objects.all()
+              
+     
+        context = {
+            'menu_ativo' : _menu_ativo,
+            'requisicoes_filtro' : requisicoes_do_dia,
+            'funcionarios_ativos' : funcionarios_ativos,
+            'locais' : locais,
+            'obras' : obras,
+            
+         
+        }
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt    
+def filtrar_requisicoes_estoquev2(request, template_name = 'estoque_v2/fragmentos/requisicoes/resultados_procurar.html'):
+
+    if request.method == 'POST':
+        _menu_ativo = 'REQUISIÇÃO'
+        
+        from datetime import date
+        funcionarios_ativos = Funcionario.objects.all()
+        locais = Local.objects.all()
+
+        
+        filtro_data = request.POST.get('data_requisicao')
+        print(f'------------ Filtro Data ({filtro_data}):')
+        filtro_funcionario = request.POST.get('funcionario_requisicao')
+        print(f'------------ Filtro Funcionário ({filtro_funcionario}):')
+        filtro_local = request.POST.get('local_requisicao')
+        print(f'------------ Filtro Local ({filtro_local}):')
+        
+        if filtro_data in [None, ''] and filtro_funcionario in [None, '', 'todas'] and filtro_local in [None, '', 'todas']:
+            requisicoes_filtro = Requisicao.objects.all()
+        
+        elif filtro_data in [None, ''] and filtro_funcionario not in [None, '', 'todas'] and filtro_local in [None, '', 'todas']:
+            funcionario = Funcionario.objects.get(pk=int(filtro_funcionario))
+            requisicoes_filtro = Requisicao.objects.filter(solicitante = funcionario)
+        
+        elif filtro_data not in [None, ''] and filtro_funcionario not in [None, '', 'todas'] and filtro_local in [None, '', 'todas']:
+            funcionario = Funcionario.objects.get(pk=int(filtro_funcionario))
+            requisicoes_filtro = Requisicao.objects.filter(data__date = filtro_data).filter(solicitante = funcionario)
+        
+        elif filtro_data not in [None, ''] and filtro_funcionario in [None, '', 'todas'] and filtro_local not in [None, '', 'todas']:
+            local = Local.objects.get(pk=int(filtro_local))
+            requisicoes_filtro = Requisicao.objects.filter(data__date = filtro_data).filter(local = local)
+            
+        elif filtro_data  in [None, ''] and filtro_funcionario in [None, '', 'todas'] and filtro_local not in [None, '', 'todas']:
+            local = Local.objects.get(pk=int(filtro_local))
+            requisicoes_filtro = Requisicao.objects.filter(local = local)
+        
+        elif filtro_data in [None, ''] and filtro_funcionario not in [None, '', 'todas'] and filtro_local not in [None, '', 'todas']:
+            funcionario = Funcionario.objects.get(pk=int(filtro_funcionario))
+            local = Local.objects.get(pk=int(filtro_local))
+            requisicoes_filtro = Requisicao.objects.filter(solicitante = funcionario).filter(local = local)
+        
+        else: 
+            requisicoes_filtro = Requisicao.objects.filter(data__date = filtro_data)
+        
+        
+        
+        context = {
+            'menu_ativo' : _menu_ativo,
+            'requisicoes_filtro' : requisicoes_filtro,
+
+            
+        }
+        return render(request, template_name , context)
     
 @login_required(login_url='login/')
 @csrf_exempt

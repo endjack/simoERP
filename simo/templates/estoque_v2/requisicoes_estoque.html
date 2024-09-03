@@ -49,11 +49,10 @@
         <h4 class="me-auto"><i class="fas fa-cart-arrow-down"></i> Requisições do Estoque: </h4>
 
         <!-- Button Modal ADD REQUISIÇÃO -->
-        <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#novaRequisicaoEstoquev2" href="modal" 
-              title="Início"><i class="fas fa-plus"></i>  Nova Requisição</a>
+        <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#novaRequisicaoEstoquev2" href="novarequisicao" 
+              title="Nova Requisição de Estoque"><i class="fas fa-plus"></i>  Nova Requisição</a>
 
-        <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
-              title="Início"><i class="fas fa-search"></i></i> Buscar </a>
+        <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'buscar_requisicao_estoquev2' %}" title="Buscar Requisição de Estoque"><i class="fas fa-search"></i></i> Buscar Anteriores</a>
 
         {% comment %} <a  style="" class="btn  btn-sm btn-secondary m-1" href="{% url 'inicio_estoquev2' %}" 
               title="Início"><i class="fas fa-trash"></i> Excluir</a> {% endcomment %}

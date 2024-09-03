@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styleHead %}
+<style>
+    .htmx-indicator {
+        display:none;
+        opacity: 0;
+        transition: opacity 200ms ease-in;
+    }
+    .htmx-request {
+      display:block;
+      opacity: 1;
+      transition: opacity 200ms ease-in;
+    }
+    
+       table {
+        border-collapse: collapse;
+    
+      } 
+      
+      .linha_clicavel {
+        border: 1px solid black;
+        cursor: pointer;
+        
+      } 
+      
+      .linha_clicavel:hover {
+        background: #bad6f7 !important;
+     
+      }
+      td a, td a:hover{
+        text-decoration:none;
+        color:black;
+      }
+      
+    
+    </style>  
+ 
+{% endblock %}
+
+{% block conteudo %}
+
+{% include "estoque_v2/fragmentos/menu_estoque.html" %}
+
+
+<div class="container mt-2">
+    <div class="d-flex flex-row align-items-center" >
+        <h4 class="me-auto"><i class="fas fa-search"></i> Buscar Requisições do Estoque: </h4>
+    
+    </div>
+
+</div>
+
+<div class="container">
+    Filtrado inicialmente pelas requisições de hoje ({% now "d/m/Y" %}): 
+
+    <hr>
+
+    <div class="p-1">
+        <form id="form_filtro" 
+        hx-post="{% url 'filtrar_requisicoes_estoquev2' %}" 
+        hx-target="#resultados_filtro" 
+        hx-swap="innerHTML" 
+        hx-indicator="#spinner"
+        style="line-height: normal; font-size:9pt">
+          {% csrf_token %}
+
+
+          <div class="form-group row mb-2 ">
+            <div class="col-2">
+              <div class="col-12 ">
+                <label for="inputDescricao" class="">Data:</label>
+                <input type="date" class="form-control form-control-sm" name="data_requisicao" value='{% now "Y-m-d"  %}'>
+              </div>
+    
+            </div>
+            <div class="col-4">
+              <div class="col-12">
+                <label for="inputmarca" class="">Funcionário:</label>
+                <select id="input0" class="form-control form-control-sm"  name="funcionario_requisicao" >
+                    <option value="todas"> Todos os Funcionários</option>
+                    {% for i in funcionarios_ativos %}
+                    <option value="{{i.pk}}"> {{i.nome}}</option>
+                    {% endfor %}      
+            </select>
+              </div>
+            </div>
+    
+            <div class="col-4">
+              <div class="col-12">
+                <label for="input0" class="">Local:</label>
+                <select id="input0" class="form-control form-control-sm"  name="local_requisicao" >
+                        <option value="todas"> Todos os Locais</option>
+                        {% for i in locais %}
+                        <option value="{{i.pk}}"> {{i.local}}</option>
+                        {% endfor %}      
+                </select>
+              </div>
+            </div>   
+           
+    
+            <div class="col-2 d-flex align-items-end">
+              <button form="form_filtro" class="btn btn-sm btn-primary "><i class="fas fa-search"></i> Filtrar </button>
+              <a class="btn btn-sm btn-light " style="margin-left:1rem" href="{% url 'buscar_requisicao_estoquev2' %}">Limpar</a>
+            </div>
+            <span class="help-block">*Para ver todas requisições de estoque: filtrar com os campos vazios.</span>
+          </div>
+    
+        </form>
+      </div>
+   
+
+    <div class="row text-center">
+        <img id="spinner" class="htmx-indicator" width="30px" height="30px" src="{% static 'imagens/bars.svg' %}"/>
+    </div>
+
+    <div class="container" id="resultados_filtro">
+        {% include "estoque_v2/fragmentos/requisicoes/resultados_procurar.html" %}
+    </div>
+
+</div>
+          
+
+
+{% endblock%}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>  
+{% block jquery %}
+<script>
+
+   
+
+
+    $('.tabelaResultados').DataTable({
+    responsive: true,
+    // "bSort": false,
+    "aaSorting": [],
+    "pageLength": 10,
+    "language": {
+
+      "decimal": "",
+      "emptyTable": "Vazio.",
+      "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+      "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+      "infoFiltered": "(filtrado de _MAX_ registros no total)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "Mostrar _MENU_ registros",
+      "loadingRecords": "A carregar dados...",
+      "processing": "A processar...",
+      "search": "Busca nos resultados:",
+      "zeroRecords": "Não foram encontrados resultados",
+      "paginate": {
+          "first": "Primeiro",
+          "last": "Último",
+          "next": "Seguinte",
+          "previous": "Anterior"
+      },
+      "aria": {
+          "sortAscending": ": ordem crescente",
+          "sortDescending": ": ordem decrescente"
+      }
+    }
+});
+</script>
+{% endblock%}
+
+
+
+
+
