@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styleHead %}
+
+<style>
+  .card-header{
+    background-color: #d5e4f5  !important;
+    padding: 0px;
+    text-align: center;
+  }
+  .textheader{
+    font-weight: bold;
+  }
+    .camposTable{
+        padding:0px;
+    }
+    </style>
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="cabecalho-contas mb-2">
+
+    
+    {% include "engenharia/fragmentos/cabecalho_resumo_obras.html" %}
+
+    <div class="d-flex align-items-center flex-row bd-highlight mb-1">
+   
+        <div class="p-2 bd-highlight">
+            <a class="btn btn-sm btn-secondary " href="{% url 'ver_diario_obra_contrato' obra.pk  %}"><i class="fas fa-arrow-left"></i> Voltar</a>
+    
+        </div>
+        
+
+        <div class="p-2 bd-highlight">
+            <a  class="btn btn-sm btn-dark " href="#" target="_blank" title="Imprimir Relatório"><span><i class="fas fa-print"></i> Imprimir</span></a>
+
+        </div>
+
+        <div class="p-2 bd-highlight">
+            <a  class="btn btn-sm btn-danger " href="#" target="_blank" title="Gerar PDF"><span><i class="far fa-file-pdf"></i> PDF</span></a>
+
+        </div>
+
+        <div class="p-2 bd-highlight">
+            <a  class="btn btn-sm btn-danger " data-bs-toggle="modal" data-bs-target="#ExcluirRDO" href="modal" title="Excluir Diário de Obra"><span><i class="fa fa-trash-alt"></i> Excluir</span></a>
+
+        </div>
+
+   
+    </div>
+
+
+<div class="row card col-md-8 m-2">
+
+    <div class="row">
+        <div class="col-10">
+            <h5 class="">PREFEITURA MUNICIPAL DE PARNAMIRIM</h5>
+            <h6 class="">SECRETARIA MUNICIPAL DE SERVIÇOS URBANOS - SEMSUR</h6>
+            <h6 class="">COORDENAÇÃO DE INFRAESTRUTURA</h6>
+            <h6 class="">SETOR DE MANUTENÇÃO DAS UNIDADES PREDIAIS E LOGRADOUROS</h6>
+        </div>
+        <div class="col-2">
+            Logo Parnamirim
+        </div>
+    </div>
+
+    <hr>
+    
+    <div class="row mb-2">
+        <div class="row">
+            <div class="col-5"><h6 class="">DIÁRIO DE SERVIÇOS</h6></div>
+            <div class="col-5"><h6 class="">DATA: <input type="date" value="{{do_atual.data|date:'Y-m-d'}}"></h6></div>
+            
+        </div>
+        <div class="row">
+            <div class="col-4"><strong>CONTRATO Nº</strong> {{obra.num_contrato}}</div>
+            <div class="col-4 text-center"><strong>EMPRESA:</strong> BRASIL CONSTRUÇÃO LTDA</div>
+            <div class="col-4 text-center"><strong>TEMPO:</strong> <input type="text" value="{{do.tempo_manha|default:'Ensolarado'}}"></div>
+        </div>
+    </div>
+    
+    <hr>
+
+    <div class="row">
+        <span class="text-center"> <strong>Serviços</strong> <!-- Button EDITAR--> <a data-bs-toggle="modal" data-bs-target="#AdicionarServiçoDO" href="modal" title="Adicionar Serviço"><span><i class="fas fa-plus"></i></span></a> <!-- Button --> 
+    </span>
+    </div>   
+
+
+</div>
+
+
+ <!-- Modal EDITAR-->
+ <div class="modal fade" id="AdicionarServiçoDO" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-scrollable modal-lg">
+ <div class="modal-content" style="background-color:#edeef5">
+     <div class="modal-header">
+         <div class="d-flex flex-column bd-highlight">
+             <h6 class="bd-highlight">Adicionar Serviço ao Diário de Obra{{do_atual.pk}}:</h6>
+             Relatório Diário de Obra 
+         </div>  
+     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+     </div>
+     <div class="modal-body">
+
+         <form id="formEditarRDO" class="row g-2" method="POST" action="#">
+             
+         </form>
+             
+     </div>
+     <div class="modal-footer form-control" style="background-color:#edeef5">
+     <button class="btn btn-sm btn-success" form="AdicionarServiçoDO">Salvar</button>   
+     <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+     
+     </div>
+ </div>
+ </div>
+ </div>
+ <!-- Fim Modal -->  
+
+ <!-- Modal EXCLUIR-->
+ <div class="modal fade" id="ExcluirRDO" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+    <div class="modal-content" style="">
+        <div class="modal-header">
+            <div class="d-flex flex-column bd-highlight">
+                <h6 class="bd-highlight" style="color:red">Excluir RDO nº 000{{rdo_atual.pk}}:</h6>
+                
+            </div>  
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+            <form id="formExcluirRDO" class="row g-2" method="GET" action="#">
+               
+                {% if rdo_atual.fotos %}
+                    Atenção: Existem fotos neste RDO.
+                    <div style="margin-left:5rem" class=" form-check">
+                    <input name="excluir_fotos" class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                     <strong>DESEJA EXCLUIR FOTOS?</strong>
+                    </label>
+                  </div>
+                
+                {% else %}
+                <strong>NÃO HÁ FOTOS!</strong>
+
+                {% endif %}
+               
+
+            </form>
+   
+                           
+        </div>
+        <div class="modal-footer form-control" style="background-color:#edeef5">
+            <button class="btn btn-sm btn-danger" form="formExcluirRDO">Excluir</button>     
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        
+        </div>
+    </div>
+    </div>
+    </div>
+    <!-- Fim Modal -->  
+
+
+<div class="mb-4"></div>
+
+
+
+{% endblock%}
+
+
+{% block jquery %}
+<script>
+
+
+</script>
+{% endblock%}

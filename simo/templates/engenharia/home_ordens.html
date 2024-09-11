@@ -42,8 +42,9 @@
                 <a class="btn btn-sm btn-secondary m-2" href="{% url 'home_engenharia' %}"><i class="fas fa-arrow-left"></i> Voltar</a>
                 <a class="btn btn-sm btn-success m-2" href="{% url 'obra_nova_os' obra.pk %}"><i class="fas fa-plus"></i> Nova OS</a>
                 <a class="btn btn-sm btn-primary m-2" href="{% url 'ver_todas_os_por_obra' obra.pk %}"><i class="fas fa-angle-double-right"></i> Ver Todas</a>
-                <a class="btn btn-sm btn-secondary m-2" href="#"><i class="fas fa-search"></i> Procurar</a>
-                <a class="btn btn-sm btn-secondary m-2" href="#"><i class="far fa-file-alt"></i> Relatórios</a>
+                <a class="btn btn-sm btn-secondary m-2 disabled" href="#"><i class="fas fa-search"></i> Procurar</a>
+                <a class="btn btn-sm btn-secondary m-2 disabled" href="#"><i class="far fa-file-alt"></i> Relatórios</a>
+                <a class="btn btn-sm btn-primary m-2" href="{% url 'ver_diario_obra_contrato' obra.pk %}" title="Diário de Obra Geral do Contrato"><i class="far fa-file-alt"></i> Diário de Obra Contrato</a>
             </div>
         </li>
     </ol>

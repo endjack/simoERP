@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block titleHead %}Lista: {{lista_atual.titulo}} {% endblock %}
+{% block styleHead %}
+<style>
+
+    @page {
+        size: portrait;
+        margin: 1cm;
+    }
+
+
+    @media print {
+
+        html,
+        body {
+            height: 99%;
+        }
+        .dados{ page-break-inside:avoid; }
+    }
+
+   
+    
+       table {
+        border-collapse: collapse;
+    
+      } 
+      
+     
+     
+ 
+      td a, td a:hover{
+        text-decoration:none;
+        color:black;
+      }
+      
+    
+    </style>  
+ 
+{% endblock %}
+
+{% block conteudo %}
+
+
+<div>
+    <div class="d-flex flex-row align-items-center" >
+        <h4 class="me-auto"><i class="fas fa-list-alt"></i><span style="color:gray"></span> Lista: {{lista_atual.titulo}}  </h4>
+    
+       
+    </div>
+
+    <hr>
+   
+    <div  id="lista_itens">
+        <div class="texto-enfase text-start" style=""> ({{itens_na_lista.count|default_if_none:'0'}}) Itens na Lista:  </div>
+
+
+        <div style="border-color: #093637;">
+                <table class="table table-sm table-bordered table-striped tabelaLista" style="font-size:9pt">
+                        <thead class="text-white text-center" style="background:#39423b;">
+                        <tr style="line-height: 12px;white-space: nowrap; ">
+                          
+                          <th scope="col">#</th>
+                          <th scope="col">Item</th>
+                          <th scope="col">Marca</th>
+                          <th scope="col">Categoria</th>
+                          <th scope="col">Preço</th>
+                          <th scope="col">Qtd No Estoque</th>
+                          <th scope="col" >Qtd Requisitada</th>
+                          <th scope="col">Obs</th>
+                    
+                          
+          
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% if itens_na_lista %}
+                          {% for i in itens_na_lista  %}
+                            <tr class='linha_clicavel'>
+                              <td class="text-center"><a target="_blank" href="{% url 'detalhar_item_nao_estoquev2' i.item.pk %}"><div style="height:100%;width:100%">{{forloop.counter}}</div></a></td>
+                              <td class="text-center"><a target="_blank" href="{% url 'detalhar_item_nao_estoquev2' i.item.pk %}"><div style="height:100%;width:100%">{{i.item.descricao}}</div></a></td>
+                              <td class="text-center"><a target="_blank" href="{% url 'detalhar_item_nao_estoquev2' i.item.pk %}"><div style="height:100%;width:100%">{{i.item.marca}}</div></a></td>
+                              <td class="text-center"><a target="_blank" href="{% url 'detalhar_item_nao_estoquev2' i.item.pk %}"><div style="height:100%;width:100%">{{i.item.categoria}}</div></a></td>
+                              <td class="text-center"><div style="height:100%;width:100%">{{i.item.preco|default_if_none:"-"}}</div></td>
+                              <td class="text-center"><a target="_blank" href="{% url 'detalhar_item_nao_estoquev2' i.item.pk %}"><div style="height:100%;width:100%">{{i.qtd_estoque}}</div></a></td>
+                              
+                              <td class="text-center" style="border:2px black solid;">
+                                
+                                    
+                                    
+                                <strong>{{i.qtd_requisitada}}<strong>
+                                    
+                                   
+                              
+                              </td>
+                              
+                              <td class="text-center" >
+                               
+                                  
+                                    
+                               {{i.obs|default_if_none:" - "}}
+                                    
+                                      
+                                       
+        
+                              </td>
+                              
+                             
+                              
+                            </tr>
+        
+                          {% endfor %}
+                  
+                        {% else %}
+                           
+                        {% endif %}  
+                      </tbody>
+              </table>
+        </div>
+        
+        
+        
+    </div>
+
+</div>
+
+
+
+{% endblock%}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>  
+{% block jquery %}
+<script>
+    (function () {
+        window.print();
+    })();
+
+    $('.tabelaResultados').DataTable({
+    responsive: true,
+    // "bSort": false,
+    "aaSorting": [],
+    "pageLength": 10,
+    "language": {
+
+      "decimal": "",
+      "emptyTable": "Vazio.",
+      "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+      "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+      "infoFiltered": "(filtrado de _MAX_ registros no total)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "Mostrar _MENU_ registros",
+      "loadingRecords": "A carregar dados...",
+      "processing": "A processar...",
+      "search": "Busca nos resultados:",
+      "zeroRecords": "Não foram encontrados resultados",
+      "paginate": {
+          "first": "Primeiro",
+          "last": "Último",
+          "next": "Seguinte",
+          "previous": "Anterior"
+      },
+      "aria": {
+          "sortAscending": ": ordem crescente",
+          "sortDescending": ": ordem decrescente"
+      }
+    }
+});
+</script>
+{% endblock%}
+
+
+
+
+
+
+

@@ -120,7 +120,19 @@ urlpatterns = [
     path('estoque/cadastrar/categorias/<int:pk>/excluir/<str:className>', excluir_categoria_estoquev2, name='excluir_categoria_estoquev2'),
     path('estoque/cadastrar/categorias/<int:pk>/editar/<str:className>', editar_categoria_estoquev2, name='editar_categoria_estoquev2'),
     
-    path('estoque/impressoes', impressoes_estoquev2, name='impressoes_estoquev2'),
+    #Listas v2
+    path('estoque/listas', listas_estoquev2, name='listas_estoquev2'),
+    path('estoque/listas/criar', criarlista_estoquev2, name='criarlista_estoquev2'),
+    path('estoque/listas/detalhar/<int:pk>', detalhar_lista_estoquev2, name='detalhar_lista_estoquev2'),
+    path('estoque/listas/imprimir/<int:pk>', imprimir_lista_estoquev2, name='imprimir_lista_estoquev2'),
+    path('estoque/listas/excluir/<int:pk>', excluirlista_estoquev2, name='excluirlista_estoquev2'),
+    path('estoque/listas/detalhar/<int:pk>/additem/<int:item>', add_item_lista_estoquev2, name='add_item_lista_estoquev2'),
+    path('estoque/listas/excluiritem/<int:pk>', excluir_item_lista_estoquev2, name='excluir_item_lista_estoquev2'),
+    path('estoque/listas/editarQtd/<int:pk>', editar_qtd_requisitada, name='editar_qtd_requisitada'),
+    path('estoque/listas/editarObs/<int:pk>', editar_obs_lista, name='editar_obs_lista_estoquev2'),
+    
+    
+    #Relatórios v2
     path('estoque/relatorios', relatorios_estoquev2, name='relatorios_estoquev2'),
     
     
@@ -236,11 +248,12 @@ urlpatterns = [
     path('engenharia/obra/<int:pk>/os/<int:os>/imprimir_relatorio_fotografico_semsur', imprimir_relatorio_fotografico_semsur, name='imprimir_relatorio_fotografico_semsur'),
     path('engenharia/obra/<int:pk>/os/<int:os>/imprimir_ordem_servico_individual', imprimir_ordem_servico_individual, name='imprimir_ordem_servico_individual'),
     path('engenharia/obra/<int:pk>/os/<int:os>/<int:rdo>/imprimir_rdo_individual', imprimir_rdo_individual, name='imprimir_rdo_individual'),
-     #urls Engenharia PDF v.2
+    #urls Engenharia PDF v.2
     path('engenharia/obra/<int:pk>/os/<int:os>/<int:rdo>/pdf_rdo_individual', gerar_pdf_rdo_individual, name='gerar_pdf_rdo_individual'),
-
-    
-    
+    #urls Engenharia Diário de Obra Contrato v.2
+    path('engenharia/obra/<int:pk>/diario-obra-contrato', ver_diario_obra_contrato, name='ver_diario_obra_contrato'),
+    path('engenharia/obra/<int:pk>/diario-obra-contrato/salvar', salvar_diario_obra_contrato, name='salvar_diario_obra_contrato'),
+    path('engenharia/obra/<int:pk>/diario-obra-contrato/<int:do>/detalhar', detalhar_do_contrato, name='detalhar_do_contrato'),
     
     #urls Financeiro v.2
     path('contas-a-pagar/salvar-saida', salvar_nota_completa, name='salvar-saida'),

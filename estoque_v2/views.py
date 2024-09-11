@@ -6,13 +6,14 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from estoque.models import *
 from django.views.decorators.csrf import csrf_exempt
-from estoque_v2.models import CategoriaFerramenta, Cautela, CautelaFerramenta, Ferramenta
+from estoque_v2.models import CategoriaFerramenta, Cautela, CautelaFerramenta, Ferramenta, Lista, ListaItem
 from funcionarios.models import Funcionario
 from obras.models import Local, Obra
 from django.db.models import Sum, Count, F, Q
 from requisicao.models import ItemRequisicao, Requisicao
 from django_htmx.http import HttpResponseClientRedirect, push_url
 from django.core.cache import cache
+from django.contrib.auth.models import User
 
 from simo.utils import gerar_pdf_by_template
 from django.contrib.sites.shortcuts import get_current_site
@@ -138,10 +139,10 @@ def movimentar_item_de_estoque(request, pk):
     
 @login_required(login_url='login/')
 @csrf_exempt
-def filtrar_itens_estoque(request, template_name = 'estoque_v2/fragmentos/procurar/resultados_procurar.html'):
+def filtrar_itens_estoque(request, ):
 
     if request.method == 'GET':
-        
+                   
         descricao = request.GET.get('descricao') 
         marca = request.GET.get('marca') 
         categoria = request.GET.get('categoria')
@@ -151,11 +152,23 @@ def filtrar_itens_estoque(request, template_name = 'estoque_v2/fragmentos/procur
         else:
             itens = Estoque.objects.all().filter(item__descricao__icontains=descricao).filter(item__marca__icontains=marca).filter(item__categoria__pk=int(categoria))
     
-        context = {
+        
+        if request.GET.get('action') == "AddItemLista":
+            template_name = 'estoque_v2/fragmentos/listas/resultados_filtrar_add_itens_lista.html'
+            lista_atual = request.GET.get('listaID')
+            
+            context = {
          
-            'itens': itens
+            'itens': itens,
+            'lista_atual': lista_atual,
          
-        }
+            }
+            
+        else:
+            template_name = 'estoque_v2/fragmentos/procurar/resultados_procurar.html'
+            context = {
+                'itens': itens
+            }
      
         return render(request, template_name , context)
 
@@ -1223,20 +1236,181 @@ def editar_categoria_estoquev2(request, pk, className):
         return redirect('cadastrar_categoria_estoquev2')
     
     
+#-------------------------------------------------------------  LISTAS -------------------------------------------------------------#    
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def listas_estoquev2(request, template_name = 'estoque_v2/listas_estoquev2.html'):
+
+    if request.method == 'GET':
+        _menu_ativo = 'LISTAS'
+        listas = Lista.objects.all().order_by('-pk')
+     
+        context = {
+            'menu_ativo' : _menu_ativo,
+            'listas' : listas,
+         
+        }
+        return render(request, template_name , context)
     
     
 @login_required(login_url='login/')
 @csrf_exempt
-def impressoes_estoquev2(request, template_name = 'estoque_v2/impressoes_estoque.html'):
+def criarlista_estoquev2(request, template_name = 'estoque_v2/listas_estoquev2.html'):
 
-    if request.method == 'GET':
-        _menu_ativo = 'IMPRESSÃO'
-     
+    if request.method == 'POST':
+        _menu_ativo = 'LISTAS'
+        
+        
+        titulo_lista = request.POST.get('titulo_lista').upper()
+        solicitante_lista = request.user
+        
+        Lista.objects.create(
+            titulo = titulo_lista,
+            solicitante = solicitante_lista,
+            )
+
+        listas = Lista.objects.all().order_by('-pk')
+        
         context = {
             'menu_ativo' : _menu_ativo,
+            'listas' : listas,
          
         }
         return render(request, template_name , context)
+    
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def detalhar_lista_estoquev2(request, pk, template_name = 'estoque_v2/listas/detalhar_lista.html'):
+
+    if request.method == 'GET':
+        _menu_ativo = 'LISTAS'
+        
+        categorias = Categoria.objects.all()
+        lista_atual = Lista.objects.get(pk=pk)
+        itens_na_lista = ListaItem.objects.filter(lista = lista_atual).order_by('-id')
+        
+        context = {
+            'menu_ativo' : _menu_ativo,
+            'lista_atual' : lista_atual,
+            'categorias' : categorias,
+            'itens_na_lista' : itens_na_lista,
+         
+        }
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def imprimir_lista_estoquev2(request, pk, template_name = 'estoque_v2/impressoes/imprimir_lista_estoquev2.html'):
+
+    if request.method == 'GET':
+        _menu_ativo = 'LISTAS'
+        
+        categorias = Categoria.objects.all()
+        lista_atual = Lista.objects.get(pk=pk)
+        itens_na_lista = ListaItem.objects.filter(lista = lista_atual).order_by('-id')
+        
+        context = {
+            'menu_ativo' : _menu_ativo,
+            'lista_atual' : lista_atual,
+            'categorias' : categorias,
+            'itens_na_lista' : itens_na_lista,
+         
+        }
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def add_item_lista_estoquev2(request, pk, item, template_name = 'estoque_v2/listas/detalhar_lista.html'):
+
+    if request.method == 'GET':
+        
+        lista_atual = Lista.objects.get(pk=pk)
+        item_atual = Estoque.objects.get(pk=item).item
+        qtd = 0
+        
+        #verificar quantidade no estoque
+        try:
+            tem_no_estoque = Estoque.objects.get(item = item_atual)
+        
+        except Estoque.DoesNotExist:
+            tem_no_estoque = None
+        
+        if tem_no_estoque:
+            qtd = tem_no_estoque.quantidade
+                   
+        #add item na lista atual
+        
+        ListaItem.objects.create(
+            item = item_atual,
+            lista = lista_atual,
+            situacao = False,
+            qtd_estoque = qtd,
+        
+        )
+        
+        return redirect("detalhar_lista_estoquev2", pk=lista_atual.pk)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def editar_qtd_requisitada(request, pk):
+        
+    if request.method == 'POST':
+        item_atual = ListaItem.objects.get(pk=pk)
+        lista_atual = item_atual.lista
+    
+        #editar quantidade requisitada
+        qtd = float(request.POST.get('quantidade').replace(',', ''))
+    
+        item_atual.qtd_requisitada = qtd
+        item_atual.save()
+
+    return redirect("detalhar_lista_estoquev2", pk=lista_atual.pk)
+
+@login_required(login_url='login/')
+@csrf_exempt
+def editar_obs_lista(request, pk):
+        
+    if request.method == 'POST':
+        item_atual = ListaItem.objects.get(pk=pk)
+        lista_atual = item_atual.lista
+    
+        #editar OBS requisitada
+        obs_atual = request.POST.get('obs')
+    
+        item_atual.obs = obs_atual
+        item_atual.save()
+
+    return redirect("detalhar_lista_estoquev2", pk=lista_atual.pk)
+
+@login_required(login_url='login/')
+@csrf_exempt
+def excluir_item_lista_estoquev2(request, pk):
+        
+
+    item_atual = ListaItem.objects.get(pk=pk)
+    lista_atual = item_atual.lista
+    item_atual.delete()
+        
+
+    return redirect("detalhar_lista_estoquev2", pk=lista_atual.pk)
+
+@login_required(login_url='login/')
+@csrf_exempt
+def excluirlista_estoquev2(request, pk):
+        
+
+    lista_atual = Lista.objects.get(pk=pk)
+    lista_atual.delete()
+        
+
+    return redirect("listas_estoquev2")
+    
+    
+    
+    
+#-------------------------------------------------------------  RELATÓRIOS -------------------------------------------------------------#     
     
 @login_required(login_url='login/')
 @csrf_exempt

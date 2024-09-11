@@ -1,0 +1,35 @@
+<div class="texto-enfase text-end" style=""> Situação:  <span class="text-success"> <i class="fas fa-square"></i></span> solicitado  -   <span class="text-danger"><i class="fas fa-square"></i></span> à comprar  </div>
+
+
+<div class="p-2" style="border-color: #093637;">
+        <table class="table table-sm table-bordered table-striped tabelaResultados" style="font-size:9pt">
+                <thead class="text-white text-center" style="background:#39423b;">
+                <tr style="line-height: 12px;white-space: nowrap; ">
+                  
+                  <th scope="col">#</th>
+                  <th scope="col">Data</th>
+                  <th scope="col">Título da Lista</th>
+                  <th scope="col">Autor</th>
+                  
+  
+                </tr>
+              </thead>
+              <tbody>
+                {% if listas %}
+                  {% for i in listas  %}
+                    <tr class='linha_clicavel'>
+                      <td class="text-center"><a target="_blank" href="{% url 'detalhar_lista_estoquev2' i.pk %}"><div style="height:100%;width:100%">{{forloop.counter}}</div></a></td>
+                      <td class="text-center"><a target="_blank" href="{% url 'detalhar_lista_estoquev2' i.pk %}"><div style="height:100%;width:100%">{{i.data|date:'d/m/y'|default_if_none:"-"}}</div></a></td>
+                      <td class="text-left"><a target="_blank" href="{% url 'detalhar_lista_estoquev2' i.pk %}"><div style="height:100%;width:100%">{{i.titulo|default_if_none:"-"}}  -  ({{i.get_all_itens_by_lista.count}} itens)</div></a></td>
+                      <td class="text-center"><a target="_blank" href="{% url 'detalhar_lista_estoquev2' i.pk %}"><div style="height:100%;width:100%">{{i.solicitante.username|default_if_none:"-"}}</div></a></td>
+                     </tr>
+
+                  {% endfor %}
+          
+                {% else %}
+                       
+                {% endif %}  
+              </tbody>
+      </table>
+</div>
+

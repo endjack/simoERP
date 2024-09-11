@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block titleHead %}Lista: {{lista_atual.titulo}} {% endblock %}
+{% block styleHead %}
+<style>
+    .htmx-indicator {
+        display:none;
+        opacity: 0;
+        transition: opacity 200ms ease-in;
+    }
+    .htmx-request {
+      display:block;
+      opacity: 1;
+      transition: opacity 200ms ease-in;
+    }
+    
+       table {
+        border-collapse: collapse;
+    
+      } 
+      
+      .linha_clicavel {
+        border: 1px solid black;
+        cursor: pointer;
+        
+      } 
+      
+      .linha_clicavel:hover {
+        background: #bad6f7 !important;
+     
+      }
+      td a, td a:hover{
+        text-decoration:none;
+        color:black;
+      }
+      
+    
+    </style>  
+ 
+{% endblock %}
+
+{% block conteudo %}
+
+{% include "estoque_v2/fragmentos/menu_estoque.html" %}
+
+<div class="container mt-2">
+    <div class="d-flex flex-row align-items-center" >
+        <h4 class="me-auto"><i class="fas fa-list-alt"></i><span style="color:gray"> [ID:{{lista_atual.pk}}]</span> Lista: {{lista_atual.titulo}}  </h4>
+    
+        
+        <!-- Button Modal ADD ITEM LISTA -->
+        <a  style="" class="btn btn-sm  btn-primary m-1" data-bs-toggle="modal" data-bs-target="#addItemListaEstoquev2" href="addItemlista" 
+        title="Adicionar Item na Lista"><i class="fas fa-plus"></i>  Item </a>
+        
+        <!-- Button IMPRIMIR LISTA -->
+        <a  style="" class="btn btn-sm  btn-secondary m-1"  href="{% url 'imprimir_lista_estoquev2' lista_atual.pk  %}" title="Imprimir Lista"><i class="fas fa-print"></i>  Imprimir Lista </a>
+        
+        <!-- Button Modal EXCLUIR LISTA -->
+        <a  style="" class="btn btn-sm  btn-danger m-1" data-bs-toggle="modal" data-bs-target="#excluirListaEstoquev2" href="excluirlista" 
+        title="Excluir Lista"><i class="fas fa-trash"></i>  Excluir </a>
+
+    </div>
+
+    <hr>
+   
+    <div class="container" id="lista_itens">
+        {% include "estoque_v2/fragmentos/listas/lista_itens.html" %}
+    </div>
+
+</div>
+
+<!-- Modal Add Item Lista -->
+<div class="modal fade" id="addItemListaEstoquev2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl">
+    <div class="modal-content" style="background-color:#edeef5">
+        <div class="modal-header">
+            <div class="d-flex flex-column bd-highlight">
+                <h6 class="bd-highlight"><span style="color:blue"> <i class="fas fa-plus"></i> Adicionar Itens na Lista: {{lista_atual.titulo}}</span> </h6>
+            </div>  
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="">
+
+
+
+            <div class="container">
+                <h6 class="mt-1"><i class="fas fa-search"></i> Filtrar Itens do Estoque:</h6>
+                
+                  
+                  <div class="p-1">
+                    <form id="form_filtro_itens_lista" 
+                    hx-get="{% url 'filtrar_itens_estoque' %}" 
+                    hx-target="#resultados_filtro_itens_lista" 
+                    hx-swap="innerHTML"
+                    hx-vals='{"action": "AddItemLista","listaID": "{{lista_atual.pk}}"} ' 
+                    hx-indicator="#spinner"
+                    style="line-height: normal; font-size:9pt">
+                      {% csrf_token %}
+            
+            
+                
+                      <div class="form-group row mb-2 ">
+                        <div class="col-5">
+                          <div class="col-12 ">
+                            <label for="inputDescricao" class="">Descrição</label>
+                            <input type="text" class="form-control form-control-sm" name="descricao">
+                          </div>
+                
+                        </div>
+                        <div class="col-2">
+                          <div class="col-12">
+                            <label for="inputmarca" class="">Marca</label>
+                            <input type="text" class="form-control form-control-sm" name="marca">
+                          </div>
+                        </div>
+                
+                        <div class="col-2">
+                          <div class="col-12">
+                            <label for="input0" class="">Categoria:</label>
+                            <select id="input0" class="form-control form-control-sm"  name="categoria" >
+                                    <option value="todas"> Todas</option>
+                                    {% for i in categorias %}
+                                    <option value="{{i.pk}}"> {{i.categoria}}</option>
+                                    {% endfor %}      
+                            </select>
+                          </div>
+                        </div>   
+                       
+                
+                        <div class="col-2 d-flex align-items-end">
+                          <button form="form_filtro_itens_lista" title="Filtrar itens" class="btn btn-sm btn-primary "><i class="fas fa-search"></i> </button>
+                          <a class="btn btn-sm btn-secondary" title="Limpar Lista" style="margin-left:1rem" href="{% url 'procurar_estoquev2' %}"> <i class="fas fa-broom"></i></a>
+                        </div>
+                        <span class="help-block">*Para ver todos os itens do estoque: filtrar com os campos vazios.</span>
+                      </div>
+                
+                    </form>
+                  </div>
+            </div>
+
+            <hr>
+            Resultados Filtro:
+            <div class="container" id="resultados_filtro_itens_lista">
+                {% include "estoque_v2/fragmentos/listas/resultados_filtrar_add_itens_lista.html" %}
+            </div>
+
+
+           
+                
+        </div>
+        <div class="modal-footer form-control" style="background-color:#edeef5"> 
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        
+        </div>
+    </div>
+    </div>
+    </div>
+    <!-- Fim Modal -->  
+
+
+
+<!-- Modal Excluir Lista -->
+<div class="modal fade" id="excluirListaEstoquev2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content" style="background-color:#edeef5">
+        <div class="modal-header">
+            <div class="d-flex flex-column bd-highlight">
+                <h6 class="bd-highlight"><span style="color:red"> <i class="fas fa-trash"></i> Excluir Lista:</span> </h6>
+            </div>  
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="font-size: 20px;">
+
+            <div class="container col-10">
+
+                <form id="formExcluirListav2"
+                hx-post="{% url 'excluirlista_estoquev2' lista_atual.pk %}" 
+                hx-target="body" 
+                hx-swap="innerHTML" >
+                {% csrf_token %}
+
+                    
+                <span style="color:red"> Confirma EXCLUIR lista?</span> <br>
+                        Id:{{lista_atual.pk}}<br>
+                        Título: {{lista_atual.titulo}}
+                    
+
+
+                </form>
+                
+                <div class="text-center text-danger" id="ErrorRequisicao"></div>
+                
+            </div>
+                            
+                
+        </div>
+        <div class="modal-footer form-control" style="background-color:#edeef5"> 
+            <button class="btn btn-sm btn-danger" form="formExcluirListav2"><i class="fas fa-trash"></i> Excluir</button>      
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        
+        </div>
+    </div>
+    </div>
+    </div>
+    <!-- Fim Modal -->  
+
+{% endblock%}
+
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>  
+{% block jquery %}
+<script>
+
+
+    $('.tabelaLista').DataTable({
+    responsive: true,
+    // "bSort": false,
+    "aaSorting": [],
+    "pageLength": 50,
+    "language": {
+
+      "decimal": "",
+      "emptyTable": "Vazio.",
+      "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+      "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+      "infoFiltered": "(filtrado de _MAX_ registros no total)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "Mostrar _MENU_ registros",
+      "loadingRecords": "A carregar dados...",
+      "processing": "A processar...",
+      "search": "Busca nos resultados:",
+      "zeroRecords": "Não foram encontrados resultados",
+      "paginate": {
+          "first": "Primeiro",
+          "last": "Último",
+          "next": "Seguinte",
+          "previous": "Anterior"
+      },
+      "aria": {
+          "sortAscending": ": ordem crescente",
+          "sortDescending": ": ordem decrescente"
+      }
+    }
+});
+</script>
+{% endblock%}
+
+
+
+
+
+

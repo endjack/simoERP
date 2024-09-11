@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-
+{% block titleHead %}Estoque - Requisições{% endblock %}
 {% block styleHead %}
 <style>
     .htmx-indicator {
@@ -103,7 +103,7 @@
   </div>
 
 </div>
-            <!-- Modal Adicionar Funcionário -->
+            <!-- Modal Adicionar Requisição -->
             <div class="modal fade" id="novaRequisicaoEstoquev2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-scrollable modal-lg">
                 <div class="modal-content" style="background-color:#edeef5">

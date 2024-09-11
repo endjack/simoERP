@@ -1,0 +1,224 @@
+<div class="texto-enfase text-start" style=""> ({{itens_na_lista.count|default_if_none:'0'}}) Itens na Lista:  </div>
+
+
+<div class="p-2" style="border-color: #093637;">
+        <table class="table table-sm table-bordered table-striped tabelaLista" style="font-size:9pt">
+                <thead class="text-white text-center" style="background:#39423b;">
+                <tr style="line-height: 12px;white-space: nowrap; ">
+                  
+                  <th scope="col">#</th>
+                  <th scope="col">Item</th>
+                  <th scope="col">Marca</th>
+                  <th scope="col">Categoria</th>
+                  <th scope="col">Preço</th>
+                  <th scope="col">Qtd No Estoque</th>
+                  <th scope="col">Qtd Requisitada</th>
+                  <th scope="col">Obs</th>
+                  <th scope="col">-</th>
+                  
+  
+                </tr>
+              </thead>
+              <tbody>
+                {% if itens_na_lista %}
+                  {% for i in itens_na_lista  %}
+                    <tr class='linha_clicavel'>
+                      <td class="text-center"><a target="_blank" href="{% url 'detalhar_item_nao_estoquev2' i.item.pk %}"><div style="height:100%;width:100%">{{forloop.counter}}</div></a></td>
+                      <td class="text-center"><a target="_blank" href="{% url 'detalhar_item_nao_estoquev2' i.item.pk %}"><div style="height:100%;width:100%">{{i.item.descricao}}</div></a></td>
+                      <td class="text-center"><a target="_blank" href="{% url 'detalhar_item_nao_estoquev2' i.item.pk %}"><div style="height:100%;width:100%">{{i.item.marca}}</div></a></td>
+                      <td class="text-center"><a target="_blank" href="{% url 'detalhar_item_nao_estoquev2' i.item.pk %}"><div style="height:100%;width:100%">{{i.item.categoria}}</div></a></td>
+                      <td class="text-center"><a target="_blank" href="{% url 'detalhar_item_nao_estoquev2' i.item.pk %}"><div style="height:100%;width:100%">{{i.item.preco}}</div></a></td>
+                      <td class="text-center"><a target="_blank" href="{% url 'detalhar_item_nao_estoquev2' i.item.pk %}"><div style="height:100%;width:100%">{{i.qtd_estoque}}</div></a></td>
+                      
+                      <td class="text-center">
+                        <div style="height:100%;width:100%;cursor: initial;">
+                          <div class="row">    
+                            
+                            <div class="col-9">{{i.qtd_requisitada}}</div>
+                            <div class="col-3">
+                              
+                              
+                               <!-- Button Modal QTD REQUISITADA -->
+                              <a data-bs-toggle="modal" data-bs-target="#addQtdRequisItemListaEstoquev2{{i.pk}}" href="addQTDlista"  title="Add Qtd Requisitada no Item da Lista"><i class="fas fa-edit" style="color:blue"></i></a>
+                              <!-- Modal QTD REQUISITADA  -->
+                              <div class="modal fade" id="addQtdRequisItemListaEstoquev2{{i.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-scrollable">
+                                <div class="modal-content" style="background-color:#edeef5">
+                                    <div class="modal-header">
+                                        <div class="d-flex flex-column bd-highlight">
+                                            <h6 class="bd-highlight"><span style=""> <i class="fas fa-plus"></i> Adicionar Quantidade Requisitada:</span> </h6>
+                                        </div>  
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body" style="font-size: 20px;">
+
+                                        <div class="container col-12">
+
+                                            <form  id="formAddQtdRequisItemListaEstoquev2{{i.pk}}"
+                                            hx-post="{% url 'editar_qtd_requisitada' i.pk %}" 
+                                            hx-target="body" 
+                                            hx-swap="innerHTML" >
+                                            {% csrf_token %}
+        
+                                            
+                                            <div class="row">
+                                            
+                                              <div class="col-5">
+                                                <input type="number" value="{{i.qtd_requisitada|stringformat:'s'}}" step="any" min="0" class="form-control form-control-sm" name="quantidade">
+                                              
+                                              </div>
+                                              <div class="col-4"></div>
+                                              <div class="col-3">
+                                                <button form="formAddQtdRequisItemListaEstoquev2{{i.pk}}" class="btn btn-sm btn-primary ">Salvar</button>                            
+                                              </div>
+                                            </div>
+                                          
+                                          
+                                            </form>
+                                            
+                                            <div class="text-center text-danger" id="ErrorRequisicao"></div>
+                                            
+                                        </div>
+                                                        
+                                            
+                                    </div>
+                                    
+                            </div>
+                            </div>
+                            </div>
+                        </div>
+                        <!-- FIM Modal -->
+                              
+                          
+                          </div>
+                        </div>
+                      </td>
+                      
+                      <td class="text-center" >
+                        <div style="height:100%;width:100%;cursor: initial;" >
+                          <div class="row">
+
+                            
+                            <div class="col-9" style="overflow: hidden; text-overflow: ellipsis;white-space: nowrap;" title="{{i.obs|default_if_none:' Add Observação '}}">{{i.obs|default_if_none:" - "}}</div>
+                            
+                              
+                            <div class="col-2"> 
+                                <!-- Button Modal OBS -->
+                                <a data-bs-toggle="modal" data-bs-target="#addOBSItemListaEstoquev2{{i.pk}}" href="addQTDlista"  title="Add Observação"><i class="fas fa-edit" style="color:blue"></i></a>
+                                <!-- Modal OBS  -->
+                                <div class="modal fade" id="addOBSItemListaEstoquev2{{i.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                  <div class="modal-dialog modal-dialog-scrollable">
+                                  <div class="modal-content" style="background-color:#edeef5">
+                                      <div class="modal-header">
+                                          <div class="d-flex flex-column bd-highlight">
+                                              <h6 class="bd-highlight"><span style=""> <i class="fas fa-plus"></i> Escrever Observação:</span> </h6>
+                                          </div>  
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body" style="font-size: 20px;">
+
+                                          <div class="container col-12">
+
+                                              <form id="formobsItemListav2{{i.pk}}"
+                                              hx-post="{% url 'editar_obs_lista_estoquev2' i.pk %}" 
+                                              hx-target="body" 
+                                              hx-swap="innerHTML" >
+                                              {% csrf_token %}
+          
+                                              
+
+                                              <div class="row">
+                                                  
+                                                <div class="col-10">
+                                                  <input type="text" value="{{i.obs|default_if_none:' - '}}" class="form-control form-control-sm" name="obs">
+                                                
+                                                </div>
+                                              
+                                                <div class="col-2">
+                                                  <button form="formobsItemListav2{{i.pk}}" class="btn btn-sm btn-primary ">Salvar</button>                            
+                                                </div>
+                                              </div>
+                                            
+                                            
+                                                                                    
+                                              </form>
+                                              
+                                              <div class="text-center text-danger" id="ErrorRequisicao"></div>
+                                              
+                                          </div>
+                                                          
+                                              
+                                      </div>
+                                    
+                                  </div>
+                                  </div>
+                                  </div>
+                              </div>
+                              <!-- FIM Modal -->
+                              
+                            </div> 
+
+  
+                          </div> 
+                        </div> 
+                        </div>
+                      </td>
+                      
+                      <td class="text-center">
+                        <div style="height:100%;width:100%;cursor: initial;">
+                          <!-- Button Modal EXCLUIR LISTA -->
+                          <a data-bs-toggle="modal" data-bs-target="#excluirItemListaEstoquev2{{i.pk}}" href="excluirlista"  title="Excluir Item da Lista"><i class="fas fa-trash" style="color:red"></i></a>
+                          <!-- Modal Excluir Lista -->
+                          <div class="modal fade" id="excluirItemListaEstoquev2{{i.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-scrollable">
+                            <div class="modal-content" style="background-color:#edeef5">
+                                <div class="modal-header">
+                                    <div class="d-flex flex-column bd-highlight">
+                                        <h6 class="bd-highlight"><span style="color:red"> <i class="fas fa-trash"></i> Excluir Item da Lista:</span> </h6>
+                                    </div>  
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body" style="font-size: 20px;">
+
+                                    <div class="container col-10">
+
+                                        <form id="formExcluirItemListav2{{i.pk}}"
+                                        hx-post="{% url 'excluir_item_lista_estoquev2' i.pk %}" 
+                                        hx-target="body" 
+                                        hx-swap="innerHTML" >
+                                        {% csrf_token %}
+    
+                                        Confirma <span style="color:red"> EXCLUIR</span> <strong>{{i.item.descricao}}</strong> da lista? <br>
+                                                                               
+                                        </form>
+                                        
+                                        <div class="text-center text-danger" id="ErrorRequisicao"></div>
+                                        
+                                    </div>
+                                                    
+                                        
+                                </div>
+                                <div class="modal-footer form-control" style="background-color:#edeef5"> 
+                                    <button class="btn btn-sm btn-danger" form="formExcluirItemListav2{{i.pk}}"><i class="fas fa-trash"></i> Excluir</button>      
+                                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                
+                                </div>
+                            </div>
+                            </div>
+                            </div>
+                        </div>
+                        <!-- FIM Modal -->
+                    </td>
+                      
+                    </tr>
+
+                  {% endfor %}
+          
+                {% else %}
+                   
+                {% endif %}  
+              </tbody>
+      </table>
+</div>
+
+

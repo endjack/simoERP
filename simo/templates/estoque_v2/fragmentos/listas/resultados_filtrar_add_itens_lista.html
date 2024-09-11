@@ -1,0 +1,41 @@
+<div class="texto-enfase text-end" style=""> Legenda:  <span class="text-success"> <i class="fas fa-square"></i></span> Suficiente -  <span class="text-warning"><i class="fas fa-square"></i></span> Insuficiente - <span class="text-danger"><i class="fas fa-square"></i></span> Zerado  </div>
+
+<div class="p-2" style="border-color: #093637;">
+    <table class="table table-sm table-bordered table-striped tabelaResultados" style="font-size:9pt">
+            <thead class="text-white text-center" style="background:#39423b;">
+            <tr style="line-height: 12px;white-space: nowrap; ">
+            
+                <th scope="col">Cód</th>
+                <th scope="col" style="text-align: left;">Item</th>
+                <th scope="col" style="text-align: left;">Marca</th>
+                <th scope="col">Categoria</th>
+                <th scope="col">Peso</th>
+                <th scope="col">Preço</th>
+                <th scope="col">Qtd Mínima</th>
+                <th scope="col">NO ESTOQUE</th>
+                <th scope="col">Unidade</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% if itens %}
+                {% for i in itens  %}
+            <tr class='linha_clicavel'>
+                <td class="text-center "><a href="{% url 'add_item_lista_estoquev2'  lista_atual i.pk %}"><div style="height:100%;width:100%">{{i.item.pk}}</div></a></td>
+                <td class=""><a href="{% url 'add_item_lista_estoquev2' lista_atual i.pk %}"><div style="height:100%;width:100%">{{i.item.descricao|default_if_none:"-"}}</div></a></td>
+                <td class=""><a href="{% url 'add_item_lista_estoquev2' lista_atual i.pk %}"><div style="height:100%;width:100%">{{i.item.marca|default_if_none:"-"}}</div></a></td>
+                <td class="text-center"><a href="{% url 'add_item_lista_estoquev2' lista_atual i.pk %}"><div style="height:100%;width:100%">{{i.item.categoria|default_if_none:"-"}}</div></a></td>
+                <td class="text-center"><a href="{% url 'add_item_lista_estoquev2' lista_atual i.pk %}"><div style="height:100%;width:100%">{{i.item.peso|default_if_none:"-"}}</div></a></td>
+                <td class="text-center"><a href="{% url 'add_item_lista_estoquev2' lista_atual i.pk %}"><div style="height:100%;width:100%">{{i.item.preco|default_if_none:"-"}}</div></a></td>
+                <td class="text-center"><a href="{% url 'add_item_lista_estoquev2' lista_atual i.pk %}"><div style="height:100%;width:100%">{{i.item.qtd_minima|default_if_none:"-"}}</div></a></td>
+                <td class="text-center"><a href="{% url 'add_item_lista_estoquev2' lista_atual i.pk %}"><div class="text-center bg-{{i.get_situacao}}" style="height:100%;width:100%"><span style="font-size:10pt; font-weight:bold">{{i.quantidade|default_if_none:"-"}}</span></div></a></td>
+                <td class="text-center"><a href="{% url 'add_item_lista_estoquev2' lista_atual i.pk %}"><div style="height:100%;width:100%">{{i.item.unid_medida|default_if_none:"-"}}</div></a></td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                
+            {% endif %}
+        
+            </tbody>
+    </table>
+</div>

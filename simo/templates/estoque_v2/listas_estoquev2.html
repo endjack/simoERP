@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block titleHead %}Estoque - Listas{% endblock %}
+{% block styleHead %}
+<style>
+    .htmx-indicator {
+        display:none;
+        opacity: 0;
+        transition: opacity 200ms ease-in;
+    }
+    .htmx-request {
+      display:block;
+      opacity: 1;
+      transition: opacity 200ms ease-in;
+    }
+    
+       table {
+        border-collapse: collapse;
+    
+      } 
+      
+      .linha_clicavel {
+        border: 1px solid black;
+        cursor: pointer;
+        
+      } 
+      
+      .linha_clicavel:hover {
+        background: #bad6f7 !important;
+     
+      }
+      td a, td a:hover{
+        text-decoration:none;
+        color:black;
+      }
+      
+    
+    </style>  
+ 
+{% endblock %}
+
+{% block conteudo %}
+
+{% include "estoque_v2/fragmentos/menu_estoque.html" %}
+
+<div class="container mt-2">
+    <div class="d-flex flex-row align-items-center" >
+        <h4 class="me-auto"><i class="fas fa-list-alt"></i> Lista de Itens: </h4>
+    
+    <!-- Button Modal ADD LISTA -->
+    <a  style="" class="btn btn-sm  btn-dark m-1" data-bs-toggle="modal" data-bs-target="#novaListaEstoquev2" href="novalista" 
+    title="Nova Requisição de Estoque"><i class="fas fa-plus"></i>  Nova Lista </a>
+
+    <a  style="" class="btn btn-sm  btn-secondary m-1" href="{% url 'buscar_requisicao_estoquev2' %}" title="Buscar Listas de Compras"><i class="fas fa-search"></i></i> Buscar Listas</a>
+
+
+    </div>
+
+
+    <hr>
+</div>
+
+
+
+<div class="container" id="resultados_filtro">
+    {% include "estoque_v2/fragmentos/listas/resultados_procurar.html" %}
+</div>
+
+
+
+<!-- Modal Adicionar Lista -->
+<div class="modal fade" id="novaListaEstoquev2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content" style="background-color:#edeef5">
+        <div class="modal-header">
+            <div class="d-flex flex-column bd-highlight">
+                <h6 class="bd-highlight"><i class="fas fa-plus"></i> Nova Lista: </h6>
+            </div>  
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+            <div class="container col-10">
+
+                <form id="formInserirListav2"
+                hx-post="{% url 'criarlista_estoquev2' %}" 
+                hx-target="body" 
+                hx-swap="innerHTML" >
+                {% csrf_token %}
+
+                    <div class="form-group row mb-2 ">
+                        <div class="col-8">
+                        <div class="col-12 ">
+                            <label for="inputDescricao" class=""><i class="fas fa-pen-square"></i> Título da Lista:</label>
+                            <input type="text" class="form-control form-control-sm" name="titulo_lista">
+                        </div>
+                        </div>  
+                    </div>
+
+
+                </form>
+                
+                <div class="text-center text-danger" id="ErrorRequisicao"></div>
+                
+            </div>
+                            
+                
+        </div>
+        <div class="modal-footer form-control" style="background-color:#edeef5"> 
+            <button class="btn btn-sm btn-success" form="formInserirListav2"><i class="fas fa-save"></i> Salvar</button>      
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        
+        </div>
+    </div>
+    </div>
+    </div>
+    <!-- Fim Modal -->  
+
+{% endblock%}
+
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>  
+{% block jquery %}
+<script>
+
+
+    $('.tabelaResultados').DataTable({
+    responsive: true,
+    // "bSort": false,
+    "aaSorting": [],
+    "pageLength": 10,
+    "language": {
+
+      "decimal": "",
+      "emptyTable": "Vazio.",
+      "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+      "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+      "infoFiltered": "(filtrado de _MAX_ registros no total)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "Mostrar _MENU_ registros",
+      "loadingRecords": "A carregar dados...",
+      "processing": "A processar...",
+      "search": "Busca nos resultados:",
+      "zeroRecords": "Não foram encontrados resultados",
+      "paginate": {
+          "first": "Primeiro",
+          "last": "Último",
+          "next": "Seguinte",
+          "previous": "Anterior"
+      },
+      "aria": {
+          "sortAscending": ": ordem crescente",
+          "sortDescending": ": ordem decrescente"
+      }
+    }
+});
+</script>
+{% endblock%}
+
+
+
+
+

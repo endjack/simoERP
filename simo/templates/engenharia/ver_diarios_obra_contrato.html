@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block styleHead %}
+<style>
+  
+</style>
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="cabecalho-contas mb-2">
+
+    
+    {% include "engenharia/fragmentos/cabecalho_resumo_obras.html" %}
+
+    <div class="d-flex align-items-center flex-row bd-highlight mb-1">
+   
+        <div class="p-2 bd-highlight">
+            <a class="btn btn-sm btn-secondary m-2" href="{% url 'home_obra_os' obra.pk  %}"><i class="fas fa-arrow-left"></i> Voltar</a>
+    
+        </div>
+        <div class="p-2 bd-highlight">
+            <!-- Button --> 
+            <a title="Adicionar Diário de Obra" data-bs-toggle="modal" data-bs-target="#AddDOContrato" href="modal" class="btn btn-sm btn-primary m-2"><i class="fas fa-plus"></i> Diário de Obra</a>       
+                        
+        </div>
+
+        <div class="p-2 bd-highlight">
+           
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="exampleCheck1" checked>
+                <label class="form-check-label" for="exampleCheck1">Preencher com OS anterior</label>
+              </div>
+                    
+               
+        </div>
+       
+   
+    </div>
+        <div class="p-2">
+             <!-- Modal -->
+            <div class="modal fade" id="AddDOContrato" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content" style="background-color:#edeef5">
+                <div class="modal-header">
+                    <div class="d-flex flex-column bd-highlight">
+                        <h6 class="bd-highlight">Adicionar Diário de Obra:</h6>
+                        Diário de Obra 
+                    </div>  
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <form id="formInserirDOcontrato" class="row g-2" method="POST" action="{% url 'salvar_diario_obra_contrato' obra.pk %}">
+                        <div class="mb-3">  
+                            <div class="row">
+                                <div class="col-3">
+                                    <strong>Data:</strong> <input value="{% now 'Y-m-d' %}" type="date" class="form-control form-control-sm date enterDesabilitado" name="data" id="input4" >
+                                </div>
+                                <div class="col-4 text-end"><strong>Tempo/Condições:</strong>
+                                    <br>
+                                    <small class="">Condição Climática do dia</small>
+                                 <br></div>
+                                <div class="col-5">
+                                    
+                                    Manhã <input type="text" name="tempo_manha" class="form-control form-control-sm enterDesabilitado">
+                                    Tarde <input type="text" name="tempo_tarde" class="form-control form-control-sm enterDesabilitado">
+                                </div>
+                            </div> 
+
+                            <span class="p-2"><hr></span>
+
+                            <div class="row">
+                                   <div class="col-6">
+                                    <strong>Mão-de-Obra:</strong> <br>
+                                    <small class="">Indicar a quantidade de funcionários e prestadores de serviço.</small>
+                                    <textarea name="mao_de_obra" rows="3" cols="50" class="form-control form-control-sm"></textarea>
+                                   </div>
+                                   <div class="col-6">
+                                    <strong>Equipamentos:</strong><br>
+                                    <small class="">Indicar a quantidade de Equipamentos disponíveis na obra.</small>  <textarea name="equipamentos" rows="3" cols="50" class="form-control form-control-sm"></textarea>
+                                   </div> 
+
+                            </div>
+
+                            <span class="p-2"><hr></span>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <strong>Atividades/Tarefas do dia:</strong> 
+                                    <br>
+                                    <small class="">Tarefas que estão em execução e finalizadas no dia.</small> 
+                                    <textarea name="atividades" rows="5" cols="50" class="form-control form-control-sm"></textarea>
+                                </div>
+                            </div>
+                            
+                            <span class="p-2"><hr></span>
+                            <div class="row">
+                                <div class="col-12">
+                                    <strong>Ocorrências/Observações:</strong>
+                                    <br>
+                                    <small class="">Indicar as ocorrências do dia que precisam ser registradas.</small>
+                                    <textarea name="ocorrencias" rows="5" cols="50" class="form-control form-control-sm"></textarea>
+                            
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                        
+                </div>
+                <div class="modal-footer form-control" style="background-color:#edeef5">
+                <button class="btn btn-sm btn-success" form="formInserirDOcontrato">Salvar</button>   
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                
+                </div>
+            </div>
+            </div>
+            </div>
+            <!-- Fim Modal -->  
+        <div class="p-2">
+            {% include 'engenharia/fragmentos/lista_diario_de_obra_contrato.html' %}
+        </div>
+        </div>
+</div>
+
+
+{% endblock%}
+
+
+{% block jquery %}
+<script>
+
+     //DatePicker
+     $(".date").datepicker({
+        format: "dd/mm/yyyy",
+        todayHighlight: true,
+        language: "pt-BR",
+        container: '#modal1',
+      });
+    
+      
+
+    $('.money').mask('000.000.000,00', {
+        reverse: true
+    });
+
+    //DESATIVAR O SUBMIT DO FORM BY TECLA ENTER
+    $(document).ready(function() {
+        $('.enterDesabilitado').bind("keypress", function(e) {
+            if ((e.keyCode == 10)||(e.keyCode == 13)) {
+                e.preventDefault();
+            }
+        });
+    });
+
+
+
+	//DESATIVAR '.' (DOT) NOS INPUTS
+	$(".nodot").on("keypress", function(evt) {
+	 var keycode = evt.charCode || evt.keyCode;
+	 if (keycode == 46) {
+	 return false;
+	 }
+    })
+
+</script>
+{% endblock%}

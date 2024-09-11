@@ -1075,6 +1075,8 @@ def imprimir_rdo_individual(request, pk, os, rdo, template_name = 'engenharia/fr
             
         }
         return render(request, template_name , context)
+
+
     
 @login_required(login_url='login/')
 @csrf_exempt
@@ -1096,23 +1098,86 @@ def gerar_pdf_rdo_individual(request, pk, os, rdo, template_name = 'engenharia/f
         }
         
         return render(request, template_name , context)
+  
         
-        # html_string = render_to_string(template_name, context)
+#------------------------------------------------------------- DIARIO DE OBRA CONTRATO------------------------------------------------  
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def ver_diario_obra_contrato(request, pk, template_name = 'engenharia/ver_diarios_obra_contrato.html'):
+
+
+    if request.method == 'GET':
+        obra = Obra.objects.get(pk=pk)
+        diarios = DiarioDeObraContrato.objects.filter(obra=obra)
+        
+   
+        context = {
+            
+            'obra': obra,
+            'diarios': diarios,
+            
+        }
+        
+        return render(request, template_name , context)
+    
+@login_required(login_url='login/')
+@csrf_exempt
+def salvar_diario_obra_contrato(request, pk):
+
+    if request.method == 'POST':
+        obra = Obra.objects.get(pk=pk)
+        
+        data = datetime.strptime(request.POST.get('data'), '%Y-%m-%d') or None
+        tempo_manha = request.POST.get('tempo_manha') 
+        tempo_tarde = request.POST.get('tempo_tarde') or ''
+        mao_de_obra = request.POST.get('mao_de_obra') or ''
+        equipamentos = request.POST.get('equipamentos') or ''
+        atividades = request.POST.get('atividades') or ''
+        ocorrencias = request.POST.get('ocorrencias') or ''
+ 
+        DiarioDeObraContrato.objects.create(
+                        obra = obra,
+                        data=data,
+                        atividades = atividades,
+                        tempo_manha = tempo_manha,
+                        tempo_tarde = tempo_tarde,
+                        equipamentos = equipamentos,
+                        mao_de_obra = mao_de_obra,
+                        ocorrencias = ocorrencias
+                        )
+      
         
         
-        # import pydf
-        # pdf = pydf.generate_pdf(html_string)
+        return redirect('ver_diario_obra_contrato', pk=pk)   
+
+
+@login_required(login_url='login/')
+@csrf_exempt
+def detalhar_do_contrato(request, pk, do, template_name = 'engenharia/diariodeobracontrato/detalhar_do_contrato.html'):
+
+    if request.method == 'GET':
+        obra = Obra.objects.get(pk=pk)
+        do_atual = DiarioDeObraContrato.objects.get(pk=do)
         
-                    
+        context = {
+            
+            'obra': obra,
+            'do_atual':do_atual
+
+            
+        }
+        
+        return render(request, template_name , context)
+
+
+
+
+
         
 
-        # http_response = HttpResponse(pdf, content_type='application/pdf',)
-        # http_response['Content-Disposition'] = 'attachment; filename="rdo-{}.pdf"'.format(rdo_atual.pk)
-        # return http_response
-        
-          
-
-#VIEWS FUNCIONÁRIOS
+#------------------------------------------------------------- FUNCIONÁRIOS----------------------------------------------------------
         
 @login_required(login_url='login/')
 @csrf_exempt

@@ -1,0 +1,114 @@
+{% load static %}
+<style>
+    .limitar {
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      } 
+      
+    
+    .link_tr:hover { 
+            background: #d9f5fc; 
+    
+        
+    }
+    .link_os:hover { 
+            text-decoration: none;
+            color: black;
+    
+    } 
+    .link_os { 
+            display: block; 
+            text-decoration: none;
+            color: black;
+    }
+     
+
+</style>
+         
+<li class="list-group-item align-items-start ">
+        
+    <div class="fw-bold">Relatórios salvos:</div>
+
+
+    <table class="table table-sm table-bordered dt-responsive tabela-listar" style="font-size:12px;">
+        <thead style="border:solid 1px;border-color:silver;background:#0d6efd; color: white;" class="text-center">
+            <tr>
+                <th scope="col">Data</th>
+                <th scope="col">Atividades</th>
+                <th scope="col">Ocorrências</th>
+                <th scope="col">Mão-de-Obra</th>
+                <th scope="col">Equipamentos</th>
+            </tr>
+        </thead>
+        
+        <tbody class="text-center">
+            {% for rdo in diarios %}
+            
+            <tr class="link_tr" >
+                <td class="text-center limitar"><a class="link_os" href="{% url 'detalhar_rdo_rdo_orden_servico' obra.pk ordem_atual.pk rdo.pk %}">{{rdo.data}}</a></td>
+                <td class="text-start limitar"><a class="link_os" href="{% url 'detalhar_rdo_rdo_orden_servico' obra.pk ordem_atual.pk rdo.pk %}">{{rdo.atividades}}</a></td>
+                <td class="text-start limitar"><a class="link_os" href="{% url 'detalhar_rdo_rdo_orden_servico' obra.pk ordem_atual.pk rdo.pk %}">{{rdo.ocorrencias}}</a></td>
+                <td class="text-start limitar"><a class="link_os" href="{% url 'detalhar_rdo_rdo_orden_servico' obra.pk ordem_atual.pk rdo.pk %}">{{rdo.mao_de_obra}}</a></td>
+                <td class="text-start limitar"><a class="link_os" href="{% url 'detalhar_rdo_rdo_orden_servico' obra.pk ordem_atual.pk rdo.pk %}">{{rdo.equipamentos}}</a></td>
+            </tr>
+            
+            {% endfor %}
+        </tbody>
+   
+    </table>
+
+   
+        
+    </div>
+    
+</li>
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/datatables.min.js' %}"></script>
+{% block jquery %}
+
+<script>
+    $(document).ready(function () {
+
+
+        $('.tabela-listar').DataTable({
+            responsive: true,
+            // "bSort": false,
+            "aaSorting": [],
+            "pageLength": 10,
+            "order": [
+                [0, "asc"]
+            ], //3º tabela em ordem decrescente
+            "language": {
+
+                "decimal": ",",
+                "emptyTable": "Sem registro",
+                "info": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando de 0 até 0 de 0 registros",
+                "infoFiltered": "(filtrado de _MAX_ registros no total)",
+                "infoPostFix": "",
+                "thousands": ".",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "loadingRecords": "A carregar dados...",
+                "processing": "A processar...",
+                "search": "Procurar:",
+                "zeroRecords": "Não foram encontrados resultados",
+                "paginate": {
+                    "first": "Primeiro",
+                    "last": "Último",
+                    "next": "Seguinte",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": ordem crescente",
+                    "sortDescending": ": ordem decrescente"
+                }
+            }
+        });
+
+    });
+   
+</script>
+
+{% endblock%}

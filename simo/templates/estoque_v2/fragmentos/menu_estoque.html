@@ -60,11 +60,11 @@
             + Categorias
             </div>
         </a>
-        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'IMPRESSÃO' %} _menu_ativo{% endif %}" href="{% url 'impressoes_estoquev2' %}" 
-            title="Impressões">
+        <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'LISTAS' %} _menu_ativo{% endif %}" href="{% url 'listas_estoquev2' %}" 
+            title="Listas">
             <div class="d-flex flex-column">
-            <span style="width:5rem"><i class="fas fa-print"></i></span>
-            Impressões
+            <span style="width:5rem"><i class="fas fa-list-alt"></i></span>
+            Listas
             </div>
         </a>
         <a  class="btn  btn-dark m-1 _menu {% if menu_ativo == 'RELATÓRIO' %} _menu_ativo{% endif %}" href="{% url 'relatorios_estoquev2' %}" 

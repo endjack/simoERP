@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from estoque.models import Item
 from funcionarios.models import Funcionario
 from obras.models import Local, Obra
 
@@ -122,4 +123,27 @@ class CautelaFerramenta(models.Model):
     def __str__(self) -> str:
         return f'CautelaFerramenta {self.pk}'
     
- 
+class Lista(models.Model):
+    titulo = models.CharField(max_length=200, blank=True, null=True, unique=True)
+    data = models.DateTimeField(default=timezone.now)
+    solicitante = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='user_lista')
+    
+    
+    def __str__(self) -> str:
+        return f'Lista {self.pk} - Titulo {self.titulo}'
+    
+    def get_all_itens_by_lista(self):
+        return ListaItem.objects.filter(lista = self)
+    
+class ListaItem(models.Model):
+    
+    item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True, related_name='item')
+    qtd_estoque = models.FloatField(default=0, null=True)
+    qtd_requisitada = models.FloatField(default=0, null=True)
+    lista = models.ForeignKey(Lista, on_delete=models.CASCADE, null=True, related_name='lista')
+    obs =  models.CharField(max_length=300, null=True, blank=True)
+    situacao = models.BooleanField(default=False)
+
+    
+    def __str__(self) -> str:
+        return f'ListaItem {self.pk}'
